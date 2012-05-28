@@ -90,7 +90,7 @@ namespace boost
             template<typename T>
             struct term
             {
-                BOOST_PROTO_CLASS_DEFAULTS(term);
+                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(term);
 
                 typedef std::integral_constant<std::size_t, 0> proto_arity;
                 typedef T proto_value_type;
@@ -116,7 +116,7 @@ namespace boost
             template<BOOST_PP_ENUM_PARAMS(N, typename T)>                                           \
             struct args<BOOST_PP_ENUM_PARAMS(N, T)>                                                 \
             {                                                                                       \
-                BOOST_PROTO_CLASS_DEFAULTS(args);                                                   \
+                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(args);                                                   \
                                                                                                     \
                 template<BOOST_PP_ENUM_PARAMS(N, typename U) DISABLE_COPY_IF(args, N, U0)>          \
                 explicit constexpr args(BOOST_PP_ENUM_BINARY_PARAMS(N, U, &&u))                     \
@@ -135,7 +135,7 @@ namespace boost
             template<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, typename T), typename ...Tail>
             struct args<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, T), Tail...>
             {
-                BOOST_PROTO_CLASS_DEFAULTS(args);
+                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(args);
 
                 template<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, typename U), typename ...Rest
                   , BOOST_PROTO_ENABLE_IF(sizeof...(Rest) == sizeof...(Tail))

@@ -24,7 +24,7 @@
     decltype(static_cast<void>(__VA_ARGS__)) *& = boost::proto::detail::enabler
 
 // For adding defaulted default, copy and move constructors, and move/copy assign.
-#define BOOST_PROTO_CLASS_DEFAULTS(CLASS)                                                           \
+#define BOOST_PROTO_REGULAR_TRIVIAL_CLASS(CLASS)                                                    \
     CLASS() = default; /*required for the type to be trivial!*/                                     \
     CLASS(CLASS const &) = default; /* memberwise copy */                                           \
     CLASS(CLASS &&) = default; /* member-wise move */                                               \
@@ -42,6 +42,9 @@ namespace boost
         {
             extern void* enabler;
             template<typename ...T> void ignore(T &&...);
+            struct not_a_generator;
+            struct not_a_grammar;
+            struct not_a_domain;
         }
 
         ///////////////////////////////////////////////////////////////////////////////
@@ -107,12 +110,43 @@ namespace boost
         }
 
         using namespace tagns;
+
+        namespace wildcardns
+        {
+            struct _;
+        }
+
+        using namespace wildcardns;
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        struct identity;
+
+        template<typename Fun>
+        struct static_cast_with;
+
+        template<template<class Expr> class Extends>
+        struct expr_wrap;
+
+        template<typename ConvertFun = identity, typename CastFun = static_cast_with<ConvertFun>>
+        struct generator;
+
+        struct default_generator;
+
         namespace domainns
         {
+            typedef detail::not_a_domain no_super_domain;
+
+            template<
+                typename Generator  = default_generator
+              , typename Grammar    = _
+              , typename Super      = no_super_domain
+            >
+            struct domain;
+
             struct default_domain;
         }
 
-        using domainns::default_domain;
+        using namespace domainns;
 
         namespace exprns
         {
@@ -122,13 +156,17 @@ namespace boost
             template<typename ...T>
             struct args;
 
-            template<typename Tag, typename Args>
+            template<typename Tag, typename Args, typename Domain = default_domain>
             struct expr;
+
+            template<typename T, typename Domain = default_domain>
+            using literal = expr<tag::terminal, term<T>, Domain>;
         }
 
         using exprns::args;
         using exprns::term;
         using exprns::expr;
+        using exprns::literal;
     }
 }
 

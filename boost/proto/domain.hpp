@@ -11,4 +11,42 @@
 #ifndef BOOST_PROTO_DOMAIN_HPP_INCLUDED
 #define BOOST_PROTO_DOMAIN_HPP_INCLUDED
 
+#include <boost/proto/proto_fwd.hpp>
+#include <boost/proto/generator.hpp>
+
+namespace boost
+{
+    namespace proto
+    {
+        namespace detail
+        {
+            struct not_a_generator
+            {};
+
+            struct not_a_grammar
+            {};
+
+            struct not_a_domain
+            {};
+        }
+
+        namespace domainns
+        {
+            template<typename Generator, typename Grammar, typename Super>
+            struct domain
+            {
+                typedef Generator proto_generator;
+                typedef Grammar proto_grammar;
+                typedef Super proto_super_domain;
+                typedef domain proto_base_domain;
+
+            };
+
+            struct default_domain
+              : domain<>
+            {};
+        }
+    }
+}
+
 #endif

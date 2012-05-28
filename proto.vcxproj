@@ -60,6 +60,7 @@
     <ClInclude Include="boost\proto\args.hpp" />
     <ClInclude Include="boost\proto\domain.hpp" />
     <ClInclude Include="boost\proto\expr.hpp" />
+    <ClInclude Include="boost\proto\generator.hpp" />
     <ClInclude Include="boost\proto\proto.hpp" />
     <ClInclude Include="boost\proto\proto_fwd.hpp" />
     <ClInclude Include="boost\proto\tags.hpp" />
