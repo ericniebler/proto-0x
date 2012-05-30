@@ -10,37 +10,28 @@ static_assert(std::is_trivial<B>::value, "not trivial!");
 static_assert(std::is_trivial<proto::expr<proto::tag::terminal, proto::term<int>>>::value, "not trivial!");
 constexpr proto::expr<proto::tag::terminal, proto::term<int>> i_(42);
 
-struct A { A(int) {} };
+//template<typename Expr>
+//struct MyExpr;
+//
+//struct MyDomain
+//  : proto::domain<proto::generator<proto::expr_wrap<MyExpr>>>
+//{};
+//
+//template<typename Expr>
+//struct MyExpr
+//  : Expr
+//{
+//    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(MyExpr);
+//
+//    constexpr explicit MyExpr(Expr e)
+//      : Expr(static_cast<Expr &&>(e))
+//    {};
+//};
 
-template<typename T>
-decltype(A(std::declval<T>())) foo(T) { return A(42); }
-
-int foo(...) { return 69; }
-
-template<typename Expr>
-struct MyExpr;
-
-struct MyDomain
-  : proto::domain<proto::generator<proto::expr_wrap<MyExpr>>>
-{};
-
-template<typename Expr>
-struct MyExpr
-  : Expr
-{
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(MyExpr);
-
-    template<typename Expr2>
-    constexpr explicit MyExpr(Expr2 && e)
-      : Expr(static_cast<Expr2 &&>(e))
-    {};
-};
+template<typename T> struct undefined;
 
 int main()
 {
-    A a = foo(42);
-    A b = foo("");
-
     typedef proto::literal<int> int_;
     int_ p(42);
     int_ const pc(42);
@@ -49,8 +40,12 @@ int main()
     ints_ is(p,p,p,p,p,p,p,p,p,p,p,p,p,p);
     p = proto::child<13>(is);
 
-    proto::as_expr(42);
-    proto::as_expr(p);
+    // quick sanity check for as_expr
+    auto a1 = proto::as_expr(42);
+    auto a2 = proto::as_expr(p);
+    std::printf("type of 'proto::as_expr(42)' = '%s'\n", typeid(a1).name());
+    std::printf("type of 'proto::as_expr(p)'  = '%s'\n", typeid(a2).name());
+    static_assert(std::is_same<decltype(a1), decltype(a2)>::value, "not the same!");
 
     int i = proto::value(p);
 
@@ -58,20 +53,24 @@ int main()
 
     auto y0 = (p=p);
     auto y1 = (p=pc);
-    static_assert(std::is_same<decltype(y0)::proto_tag, proto::tag::terminal>::value, "");
-    static_assert(std::is_same<decltype(y1)::proto_tag, proto::tag::terminal>::value, "");
+    static_assert(std::is_same<decltype(y0.proto_tag()), proto::tag::terminal>::value, "");
+    static_assert(std::is_same<decltype(y1.proto_tag()), proto::tag::terminal>::value, "");
 
     auto y2 = (p='c');
-    static_assert(std::is_same<decltype(y2)::proto_tag, proto::tag::assign>::value, "");
+    static_assert(std::is_same<decltype(y2.proto_tag()), proto::tag::assign>::value, "");
+
+    int_().proto_args();
+
+    static_assert(sizeof(proto::literal<int>) == sizeof(int), "sizeof(proto::literal<int>) != sizeof(int)");
 
     //typedef int_ const cint_;
     //cint_(42)[p];
 
-    MyExpr<proto::literal<int, MyDomain>> iii_(proto::literal<int, MyDomain>(42));
-    auto jjj_ = iii_[42];
-    std::printf("iii_[42] has type '%s'\n", typeid(jjj_).name());
-    std::printf("child<0>(iii_[42]) has type '%s'\n", typeid(proto::child<0>(jjj_)).name());
-    std::printf("child<1>(iii_[42]) has type '%s'\n", typeid(proto::child<1>(jjj_)).name());
+    //MyExpr<proto::literal<int, MyDomain>> iii_(proto::literal<int, MyDomain>(42));
+    //auto jjj_ = iii_[42];
+    //std::printf("iii_[42] has type '%s'\n", typeid(jjj_).name());
+    //std::printf("child<0>(iii_[42]) has type '%s'\n", typeid(proto::child<0>(jjj_)).name());
+    //std::printf("child<1>(iii_[42]) has type '%s'\n", typeid(proto::child<1>(jjj_)).name());
 
     std::printf("hello proto-0x!\n");
     void done();

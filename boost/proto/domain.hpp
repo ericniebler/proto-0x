@@ -30,6 +30,12 @@ namespace boost
             {};
         }
 
+        template<typename Expr, typename U = void>
+        struct domain_of
+        {
+            typedef typename Expr::proto_domain type;
+        };
+
         namespace domainns
         {
             template<typename Generator, typename Grammar, typename Super>
@@ -40,6 +46,25 @@ namespace boost
                 typedef Super proto_super_domain;
                 typedef domain proto_base_domain;
 
+                struct as_expr
+                {
+                    template<typename T, BOOST_PROTO_ENABLE_IF(!is_expr<T>::value)>
+                    inline constexpr auto operator()(T &&t) const
+                    BOOST_PROTO_RETURN(
+                        expr<tag::terminal, term<detail::as_arg<T>>>(static_cast<T &&>(t))
+                    )
+
+                    template<typename T, BOOST_PROTO_ENABLE_IF(is_expr<T>::value)>
+                    inline constexpr T && operator()(T &&t) const noexcept
+                    {
+                        return static_cast<T &&>(t);
+                    }
+                };
+
+                template<typename Tag>
+                struct make_expr
+                {
+                };
             };
 
             struct default_domain

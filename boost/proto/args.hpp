@@ -34,51 +34,46 @@ namespace boost
 {
     namespace proto
     {
+        namespace detail
+        {
+            ///////////////////////////////////////////////////////////////////////////
+            // unrefwrap
+            template<typename T>
+            struct unrefwrap
+            {
+                typedef T type;
+            };
+
+            template<typename T>
+            struct unrefwrap<std::reference_wrapper<T> >
+            {
+                typedef T &type;
+            };
+
+            #define BOOST_PP_LOCAL_MACRO(N)                                                         \
+            template<typename Args>                                                                 \
+            inline constexpr auto child_impl(Args &&that, std::integral_constant<std::size_t, N>)   \
+            BOOST_PROTO_RETURN(                                                                     \
+                /*extra parens are significant!*/                                                   \
+                (static_cast<Args &&>(that).BOOST_PP_CAT(proto_child, N))                           \
+            )                                                                                       \
+            /**/
+
+            #define BOOST_PP_LOCAL_LIMITS (0, BOOST_PP_DEC(BOOST_PROTO_ARGS_UNROLL_MAX))
+            #include BOOST_PP_LOCAL_ITERATE()
+
+            template<typename Args, std::size_t I>
+            inline constexpr auto child_impl(Args &&that, std::integral_constant<std::size_t, I>)
+            BOOST_PROTO_RETURN(
+                detail::child_impl(
+                    static_cast<Args &&>(that).proto_args_tail
+                    , std::integral_constant<std::size_t, I-BOOST_PROTO_ARGS_UNROLL_MAX>()
+                )
+            )
+        }
+
         namespace exprns
         {
-            namespace detail
-            {
-                ///////////////////////////////////////////////////////////////////////////
-                // unrefwrap
-                template<typename T>
-                struct unrefwrap
-                {
-                    typedef T type;
-                };
-
-                template<typename T>
-                struct unrefwrap<std::reference_wrapper<T> >
-                {
-                    typedef T &type;
-                };
-
-                ///////////////////////////////////////////////////////////////////////////
-                // as_arg
-                template<typename T>
-                using as_arg = typename unrefwrap<typename std::decay<T>::type>::type;
-
-                #define BOOST_PP_LOCAL_MACRO(N)                                                 \
-                template<typename Args>                                                         \
-                inline constexpr auto child_impl(Args &&that, std::integral_constant<std::size_t, N>)\
-                BOOST_PROTO_RETURN(                                                             \
-                    /*extra parens are significant!*/                                           \
-                    (static_cast<Args &&>(that).BOOST_PP_CAT(proto_child, N))                   \
-                )                                                                               \
-                /**/
-
-                #define BOOST_PP_LOCAL_LIMITS (0, BOOST_PP_DEC(BOOST_PROTO_ARGS_UNROLL_MAX))
-                #include BOOST_PP_LOCAL_ITERATE()
-
-                template<typename Args, std::size_t I>
-                inline constexpr auto child_impl(Args &&that, std::integral_constant<std::size_t, I>)
-                BOOST_PROTO_RETURN(
-                    detail::child_impl(
-                        static_cast<Args &&>(that).proto_args_tail
-                      , std::integral_constant<std::size_t, I-BOOST_PROTO_ARGS_UNROLL_MAX>()
-                    )
-                )
-            }
-
             #define DISABLE_COPY_IF(CLASS, N, T)                                                    \
                 BOOST_PP_COMMA_IF(BOOST_PP_EQUAL(N, 1))                                             \
                 BOOST_PP_EXPR_IF(                                                                   \
@@ -116,7 +111,7 @@ namespace boost
             template<BOOST_PP_ENUM_PARAMS(N, typename T)>                                           \
             struct args<BOOST_PP_ENUM_PARAMS(N, T)>                                                 \
             {                                                                                       \
-                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(args);                                                   \
+                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(args);                                            \
                                                                                                     \
                 template<BOOST_PP_ENUM_PARAMS(N, typename U) DISABLE_COPY_IF(args, N, U0)>          \
                 explicit constexpr args(BOOST_PP_ENUM_BINARY_PARAMS(N, U, &&u))                     \

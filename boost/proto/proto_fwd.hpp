@@ -10,6 +10,7 @@
 #define BOOST_PROTO_FWD_HPP_INCLUDED
 
 #include <utility>
+#include <type_traits>
 
 // C++11 eliminates the need for macros! Oh, wait ...
 #define BOOST_PROTO_RETURN(...)                                                                     \
@@ -45,6 +46,10 @@ namespace boost
             struct not_a_generator;
             struct not_a_grammar;
             struct not_a_domain;
+            template<typename T>
+            struct unrefwrap;
+            template<typename T>
+            using as_arg = typename unrefwrap<typename std::decay<T>::type>::type;
         }
 
         ///////////////////////////////////////////////////////////////////////////////
@@ -148,6 +153,9 @@ namespace boost
 
         using namespace domainns;
 
+        template<typename T>
+        struct is_expr;
+
         namespace exprns
         {
             template<typename T>
@@ -156,11 +164,11 @@ namespace boost
             template<typename ...T>
             struct args;
 
-            template<typename Tag, typename Args, typename Domain = default_domain>
+            template<typename Tag, typename Args>
             struct expr;
 
-            template<typename T, typename Domain = default_domain>
-            using literal = expr<tag::terminal, term<T>, Domain>;
+            template<typename T>
+            using literal = expr<tag::terminal, term<T>>;
         }
 
         using exprns::args;
