@@ -142,9 +142,9 @@ namespace boost
             typedef detail::not_a_domain no_super_domain;
 
             template<
-                typename Generator  = default_generator
-              , typename Grammar    = _
-              , typename Super      = no_super_domain
+                typename SubDomain
+              , typename Grammar        = _
+              , typename SuperDomain    = no_super_domain
             >
             struct domain;
 
@@ -163,6 +163,15 @@ namespace boost
 
             template<typename ...T>
             struct args;
+
+            template<typename Expr, typename Domain = default_domain>
+            struct expr_assign;
+
+            template<typename Expr, typename Domain = default_domain>
+            struct expr_subscript;
+
+            template<typename Expr, typename Domain = default_domain>
+            struct expr_function;
 
             template<typename Tag, typename Args>
             struct expr;

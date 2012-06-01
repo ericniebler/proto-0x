@@ -38,13 +38,12 @@ namespace boost
 
         namespace domainns
         {
-            template<typename Generator, typename Grammar, typename Super>
+            template<typename SubDomain, typename Grammar, typename SuperDomain>
             struct domain
             {
-                typedef Generator proto_generator;
                 typedef Grammar proto_grammar;
-                typedef Super proto_super_domain;
-                typedef domain proto_base_domain;
+                typedef SuperDomain proto_super_domain;
+                typedef SubDomain proto_derived_domain;
 
                 struct as_expr
                 {
@@ -61,14 +60,24 @@ namespace boost
                     }
                 };
 
-                template<typename Tag>
                 struct make_expr
                 {
+                    template<typename Tag, typename ...T>
+                    static inline constexpr auto impl_(Tag tag, T &&...t)
+                    BOOST_PROTO_RETURN(
+                        expr<Tag, args<T...>>(tag, static_cast<T &&>(t)...)
+                    )
+
+                    template<typename Tag, typename ...T>
+                    inline constexpr auto operator()(Tag tag, T &&... t) const
+                    BOOST_PROTO_RETURN(
+                        make_expr::impl_(static_cast<Tag &&>(tag), typename SubDomain::as_expr()(static_cast<T &&>(t))...)
+                    )
                 };
             };
 
             struct default_domain
-              : domain<>
+              : domain<default_domain>
             {};
         }
     }

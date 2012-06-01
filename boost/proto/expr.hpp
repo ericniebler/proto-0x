@@ -22,7 +22,7 @@ namespace boost
     {
         namespace detail
         {
-            struct any { template<typename T> any(T const &); };
+            struct any { template<typename T> constexpr any(T const &) noexcept; };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // is_expr
@@ -33,14 +33,6 @@ namespace boost
             std::true_type is_expr(args<T...> const &);
 
             std::false_type is_expr(any);
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // make_expr
-            template<typename Tag, typename ...T>
-            inline constexpr auto make_expr(Tag tag, T &&...t)
-            BOOST_PROTO_RETURN(
-                expr<Tag, args<T...>>(tag, static_cast<T &&>(t)...)
-            )
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,57 +42,43 @@ namespace boost
           : decltype(detail::is_expr(std::declval<T>()))
         {};
 
-        // TODO move as_expr and make_expr wholly into the domain.
-
         ////////////////////////////////////////////////////////////////////////////////////////////
         // as_expr (no domain)
-        template<typename T, BOOST_PROTO_ENABLE_IF(!is_expr<T>::value)>
+        template<typename T>
         inline constexpr auto as_expr(T &&t)
         BOOST_PROTO_RETURN(
-            expr<tag::terminal, term<detail::as_arg<T>>>(tag::terminal(), static_cast<T &&>(t))
+            default_domain::as_expr()(static_cast<T &&>(t))
         )
-
-        template<typename T, BOOST_PROTO_ENABLE_IF(is_expr<T>::value)>
-        inline constexpr T && as_expr(T &&t) noexcept
-        {
-            return static_cast<T &&>(t);
-        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // as_expr (with domain)
         template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(!is_expr<T>::value)>
-        inline auto as_expr(T &&t)
+        inline constexpr auto as_expr(T &&t)
         BOOST_PROTO_RETURN(
-            typename Domain::proto_generator()(expr<tag::terminal, term<detail::as_arg<T>>>(tag::terminal(), static_cast<T &&>(t)))
+            typename Domain::as_expr()(static_cast<T &&>(t))
         )
-
-        template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(is_expr<T>::value)>
-        inline constexpr T && as_expr(T &&t) noexcept
-        {
-            return static_cast<T &&>(t);
-        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // make_expr (no domain)
         template<typename Tag, typename ...T>
         inline constexpr auto make_expr(Tag tag, T &&...t)
         BOOST_PROTO_RETURN(
-            detail::make_expr(tag, proto::as_expr(static_cast<T &&>(t))...)
+            default_domain::make_expr()(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
         )
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // make_expr (with domain)
         template<typename Domain, typename Tag, typename ...T>
-        inline auto make_expr(Tag tag, T &&...t)
+        inline constexpr auto make_expr(Tag tag, T &&...t)
         BOOST_PROTO_RETURN(
-            typename Domain::proto_generator()(detail::make_expr(tag, proto::as_expr<Domain>(static_cast<T &&>(t))...))
+            typename Domain::make_expr()(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
         )
 
         namespace exprns
         {
             ////////////////////////////////////////////////////////////////////////////////////////
             // struct expr_assign
-            template<typename Expr, typename Domain = default_domain>
+            template<typename Expr, typename Domain>
             struct expr_assign
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr_assign);
@@ -109,23 +87,23 @@ namespace boost
                 // operator=
                 template<typename U, BOOST_PROTO_ENABLE_IF(!std::is_same<Expr const, typename std::remove_reference<U>::type const>::value)>
                 auto operator=(U && u) &
-                 -> decltype(proto::make_expr<Domain>(tag::assign(), std::declval<Expr &>(), static_cast<U &&>(u)))
+                 -> decltype(typename Domain::make_expr()(tag::assign(), std::declval<Expr &>(), static_cast<U &&>(u)))
                 {
-                    return proto::make_expr<Domain>(tag::assign(), static_cast<Expr &>(*this), static_cast<U &&>(u));
+                    return typename Domain::make_expr()(tag::assign(), static_cast<Expr &>(*this), static_cast<U &&>(u));
                 }
 
                 template<typename U, BOOST_PROTO_ENABLE_IF(!std::is_same<Expr const, typename std::remove_reference<U>::type const>::value)>
                 auto operator=(U && u) const &
-                 -> decltype(proto::make_expr<Domain>(tag::assign(), std::declval<Expr const &>(), static_cast<U &&>(u)))
+                 -> decltype(typename Domain::make_expr()(tag::assign(), std::declval<Expr const &>(), static_cast<U &&>(u)))
                 {
-                    return proto::make_expr<Domain>(tag::assign(), static_cast<Expr const &>(*this), static_cast<U &&>(u));
+                    return typename Domain::make_expr()(tag::assign(), static_cast<Expr const &>(*this), static_cast<U &&>(u));
                 }
 
                 template<typename U, BOOST_PROTO_ENABLE_IF(!std::is_same<Expr const, typename std::remove_reference<U>::type const>::value)>
                 auto operator=(U && u) &&
-                 -> decltype(proto::make_expr<Domain>(tag::assign(), std::declval<Expr>(), static_cast<U &&>(u)))
+                 -> decltype(typename Domain::make_expr()(tag::assign(), std::declval<Expr>(), static_cast<U &&>(u)))
                 {
-                    return proto::make_expr<Domain>(tag::assign(), static_cast<Expr &&>(static_cast<expr_assign &&>(*this)), static_cast<U &&>(u));
+                    return typename Domain::make_expr()(tag::assign(), static_cast<Expr &&>(static_cast<expr_assign &&>(*this)), static_cast<U &&>(u));
                 }
 
                 template<typename U, BOOST_PROTO_ENABLE_IF(!std::is_same<Expr const, typename std::remove_reference<U>::type const>::value)>
@@ -134,7 +112,7 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // struct expr_subscript
-            template<typename Expr, typename Domain = default_domain>
+            template<typename Expr, typename Domain>
             struct expr_subscript
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr_subscript);
@@ -143,23 +121,23 @@ namespace boost
                 // operator[]
                 template<typename U>
                 auto operator[](U && u) &
-                 -> decltype(proto::make_expr<Domain>(tag::subscript(), std::declval<Expr &>(), static_cast<U &&>(u)))
+                 -> decltype(typename Domain::make_expr()(tag::subscript(), std::declval<Expr &>(), static_cast<U &&>(u)))
                 {
-                    return proto::make_expr<Domain>(tag::subscript(), static_cast<Expr &>(*this), static_cast<U &&>(u));
+                    return typename Domain::make_expr()(tag::subscript(), static_cast<Expr &>(*this), static_cast<U &&>(u));
                 }
 
                 template<typename U>
                 auto operator[](U && u) const &
-                 -> decltype(proto::make_expr<Domain>(tag::subscript(), std::declval<Expr const &>(), static_cast<U &&>(u)))
+                 -> decltype(typename Domain::make_expr()(tag::subscript(), std::declval<Expr const &>(), static_cast<U &&>(u)))
                 {
-                    return proto::make_expr<Domain>(tag::subscript(), static_cast<Expr const &>(*this), static_cast<U &&>(u));
+                    return typename Domain::make_expr()(tag::subscript(), static_cast<Expr const &>(*this), static_cast<U &&>(u));
                 }
 
                 template<typename U>
                 auto operator[](U && u) &&
-                 -> decltype(proto::make_expr<Domain>(tag::subscript(), std::declval<Expr>(), static_cast<U &&>(u)))
+                 -> decltype(typename Domain::make_expr()(tag::subscript(), std::declval<Expr>(), static_cast<U &&>(u)))
                 {
-                    return proto::make_expr<Domain>(tag::subscript(), static_cast<Expr &&>(static_cast<expr_subscript &&>(*this)), static_cast<U &&>(u));
+                    return typename Domain::make_expr()(tag::subscript(), static_cast<Expr &&>(static_cast<expr_subscript &&>(*this)), static_cast<U &&>(u));
                 }
 
                 template<typename U>
@@ -168,7 +146,7 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // struct expr_function
-            template<typename Expr, typename Domain = default_domain>
+            template<typename Expr, typename Domain>
             struct expr_function
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr_function);
@@ -177,23 +155,23 @@ namespace boost
                 // operator()
                 template<typename ...U>
                 auto operator()(U &&... u) &
-                 -> decltype(proto::make_expr<Domain>(tag::function(), std::declval<Expr &>(), static_cast<U &&>(u)...))
+                 -> decltype(typename Domain::make_expr()(tag::function(), std::declval<Expr &>(), static_cast<U &&>(u)...))
                 {
-                    return proto::make_expr<Domain>(tag::function(), static_cast<Expr &>(*this), static_cast<U &&>(u)...);
+                    return typename Domain::make_expr()(tag::function(), static_cast<Expr &>(*this), static_cast<U &&>(u)...);
                 }
 
                 template<typename ...U>
                 auto operator()(U &&... u) const &
-                 -> decltype(proto::make_expr<Domain>(tag::function(), std::declval<Expr const &>(), static_cast<U &&>(u)...))
+                 -> decltype(typename Domain::make_expr()(tag::function(), std::declval<Expr const &>(), static_cast<U &&>(u)...))
                 {
-                    return proto::make_expr<Domain>(tag::function(), static_cast<Expr const &>(*this), static_cast<U &&>(u)...);
+                    return typename Domain::make_expr()(tag::function(), static_cast<Expr const &>(*this), static_cast<U &&>(u)...);
                 }
 
                 template<typename ...U>
                 auto operator()(U &&... u) &&
-                 -> decltype(proto::make_expr<Domain>(tag::function(), std::declval<Expr>(), static_cast<U &&>(u)...))
+                 -> decltype(typename Domain::make_expr()(tag::function(), std::declval<Expr>(), static_cast<U &&>(u)...))
                 {
-                    return proto::make_expr<Domain>(tag::function(), static_cast<Expr &&>(static_cast<expr_function &&>(*this)), static_cast<U &&>(u)...);
+                    return typename Domain::make_expr()(tag::function(), static_cast<Expr &&>(static_cast<expr_function &&>(*this)), static_cast<U &&>(u)...);
                 }
 
                 template<typename ...U>
@@ -221,7 +199,7 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // constructors
                 constexpr expr(Tag tag, Args args)
-                  : Tag(tag)
+                  : Tag(static_cast<Tag &&>(tag))
                   , Args(static_cast<Args &&>(args))
                 {}
 
@@ -231,7 +209,7 @@ namespace boost
 
                 template<typename A, BOOST_PROTO_ENABLE_IF(Args::proto_arity::value <= 1 && !std::is_same<expr &, A>::value)>
                 constexpr expr(Tag tag, A &&a)
-                  : Tag(tag)
+                  : Tag(static_cast<Tag &&>(tag))
                   , Args(static_cast<A &&>(a))
                 {}
 
@@ -242,7 +220,7 @@ namespace boost
 
                 template<typename A, typename B, typename ...C, BOOST_PROTO_ENABLE_IF(sizeof...(C) + 2 == Args::proto_arity::value)>
                 constexpr expr(Tag tag, A &&a, B &&b, C &&... c)
-                  : Tag(tag)
+                  : Tag(static_cast<Tag &&>(tag))
                   , Args(static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...)
                 {}
 
@@ -285,19 +263,19 @@ namespace boost
                 template<typename U, BOOST_PROTO_ENABLE_IF(!std::is_same<expr const, typename std::remove_reference<U>::type const>::value)>
                 auto operator=(U && u) &
                 BOOST_PROTO_RETURN(
-                    proto::make_expr(tag::assign(), *this, static_cast<U &&>(u))
+                    default_domain::make_expr()(tag::assign(), *this, static_cast<U &&>(u))
                 )
 
                 template<typename U, BOOST_PROTO_ENABLE_IF(!std::is_same<expr const, typename std::remove_reference<U>::type const>::value)>
                 auto operator=(U && u) const &
                 BOOST_PROTO_RETURN(
-                    proto::make_expr(tag::assign(), *this, static_cast<U &&>(u))
+                    default_domain::make_expr()(tag::assign(), *this, static_cast<U &&>(u))
                 )
 
                 template<typename U, BOOST_PROTO_ENABLE_IF(!std::is_same<expr const, typename std::remove_reference<U>::type const>::value)>
                 auto operator=(U && u) &&
                 BOOST_PROTO_RETURN(
-                    proto::make_expr(tag::assign(), static_cast<expr &&>(*this), static_cast<U &&>(u))
+                    default_domain::make_expr()(tag::assign(), static_cast<expr &&>(*this), static_cast<U &&>(u))
                 )
 
                 template<typename U, BOOST_PROTO_ENABLE_IF(!std::is_same<expr const, typename std::remove_reference<U>::type const>::value)>
