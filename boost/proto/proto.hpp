@@ -12,7 +12,6 @@
 #include <boost/proto/args.hpp>
 #include <boost/proto/domain.hpp>
 #include <boost/proto/expr.hpp>
-#include <boost/proto/generator.hpp>
 #include <boost/proto/tags.hpp>
 
 #endif

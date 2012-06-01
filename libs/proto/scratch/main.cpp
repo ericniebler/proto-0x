@@ -49,7 +49,9 @@ int main()
 
     int i = proto::value(p);
 
-    auto x = p(1,2,3,4);
+    auto x = p(1,2,3,"hello");
+    std::printf("type of 'p(1,2,3,\"hello\")'  = '%s'\n", typeid(x).name());
+    std::printf("type of '\"hello\"'  = '%s'\n", typeid(proto::value(proto::child<4>(x))).name());
 
     auto y0 = (p=p);
     auto y1 = (p=pc);

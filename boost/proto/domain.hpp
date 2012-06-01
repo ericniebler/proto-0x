@@ -12,7 +12,6 @@
 #define BOOST_PROTO_DOMAIN_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/generator.hpp>
 
 namespace boost
 {
@@ -28,13 +27,22 @@ namespace boost
 
             struct not_a_domain
             {};
+
+            template<typename T>
+            inline constexpr auto make_terminal(T &&t)
+            BOOST_PROTO_RETURN(
+                expr<tag::terminal, term<T>>(static_cast<T &&>(t))
+            )
+
+            template<typename Tag, typename ...T>
+            inline constexpr auto make_expr(Tag tag, T &&...t)
+            BOOST_PROTO_RETURN(
+                expr<Tag, args<T...>>(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
+            )
         }
 
-        template<typename Expr, typename U = void>
-        struct domain_of
-        {
-            typedef typename Expr::proto_domain type;
-        };
+        template<typename Expr>
+        using domain_of = typename Expr::proto_domain;
 
         namespace domainns
         {
@@ -45,12 +53,21 @@ namespace boost
                 typedef SuperDomain proto_super_domain;
                 typedef SubDomain proto_derived_domain;
 
+                struct as_value
+                {
+                    template<typename T>
+                    inline constexpr T operator()(T &&t) const
+                    {
+                        return static_cast<T &&>(t);
+                    }
+                };
+
                 struct as_expr
                 {
                     template<typename T, BOOST_PROTO_ENABLE_IF(!is_expr<T>::value)>
                     inline constexpr auto operator()(T &&t) const
                     BOOST_PROTO_RETURN(
-                        expr<tag::terminal, term<detail::as_arg<T>>>(static_cast<T &&>(t))
+                        detail::make_terminal(typename SubDomain::as_value()(static_cast<T &&>(t)))
                     )
 
                     template<typename T, BOOST_PROTO_ENABLE_IF(is_expr<T>::value)>
@@ -63,15 +80,9 @@ namespace boost
                 struct make_expr
                 {
                     template<typename Tag, typename ...T>
-                    static inline constexpr auto impl_(Tag tag, T &&...t)
-                    BOOST_PROTO_RETURN(
-                        expr<Tag, args<T...>>(tag, static_cast<T &&>(t)...)
-                    )
-
-                    template<typename Tag, typename ...T>
                     inline constexpr auto operator()(Tag tag, T &&... t) const
                     BOOST_PROTO_RETURN(
-                        make_expr::impl_(static_cast<Tag &&>(tag), typename SubDomain::as_expr()(static_cast<T &&>(t))...)
+                        detail::make_expr(static_cast<Tag &&>(tag), typename SubDomain::as_expr()(static_cast<T &&>(t))...)
                     )
                 };
             };

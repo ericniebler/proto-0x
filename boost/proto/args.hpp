@@ -36,20 +36,6 @@ namespace boost
     {
         namespace detail
         {
-            ///////////////////////////////////////////////////////////////////////////
-            // unrefwrap
-            template<typename T>
-            struct unrefwrap
-            {
-                typedef T type;
-            };
-
-            template<typename T>
-            struct unrefwrap<std::reference_wrapper<T> >
-            {
-                typedef T &type;
-            };
-
             #define BOOST_PP_LOCAL_MACRO(N)                                                         \
             template<typename Args>                                                                 \
             inline constexpr auto child_impl(Args &&that, std::integral_constant<std::size_t, N>)   \
@@ -187,14 +173,6 @@ namespace boost
             BOOST_PROTO_RETURN(
                 (static_cast<term<T> &&>(that).proto_value)  // extra parens are significant!
             )
-
-            ///////////////////////////////////////////////////////////////////////////////
-            // make_args
-            template<typename ...T>
-            inline args<detail::as_arg<T>...> make_args(T &&...t)
-            {
-                return args<detail::as_arg<T>...>{t...};
-            }
         }
 
         using exprns::child;

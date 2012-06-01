@@ -43,13 +43,8 @@ namespace boost
         {
             extern void* enabler;
             template<typename ...T> void ignore(T &&...);
-            struct not_a_generator;
             struct not_a_grammar;
             struct not_a_domain;
-            template<typename T>
-            struct unrefwrap;
-            template<typename T>
-            using as_arg = typename unrefwrap<typename std::decay<T>::type>::type;
         }
 
         ///////////////////////////////////////////////////////////////////////////////
@@ -123,20 +118,6 @@ namespace boost
 
         using namespace wildcardns;
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////
-        struct identity;
-
-        template<typename Fun>
-        struct static_cast_with;
-
-        template<template<class Expr> class Extends>
-        struct expr_wrap;
-
-        template<typename ConvertFun = identity, typename CastFun = static_cast_with<ConvertFun>>
-        struct generator;
-
-        struct default_generator;
-
         namespace domainns
         {
             typedef detail::not_a_domain no_super_domain;
@@ -175,15 +156,17 @@ namespace boost
 
             template<typename Tag, typename Args>
             struct expr;
-
-            template<typename T>
-            using literal = expr<tag::terminal, term<T>>;
         }
 
         using exprns::args;
         using exprns::term;
+        using exprns::expr_assign;
+        using exprns::expr_subscript;
+        using exprns::expr_function;
         using exprns::expr;
-        using exprns::literal;
+
+        template<typename T>
+        using literal = expr<tag::terminal, term<T>>;
     }
 }
 
