@@ -58,7 +58,7 @@ namespace boost
             )
         }
 
-        namespace exprns
+        namespace exprs
         {
             #define DISABLE_COPY_IF(CLASS, N, T)                                                    \
                 BOOST_PP_COMMA_IF(BOOST_PP_EQUAL(N, 1))                                             \
@@ -68,26 +68,10 @@ namespace boost
                 )                                                                                   \
                 /**/
 
-            template<typename T>
-            struct term
-            {
-                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(term);
-
-                typedef std::integral_constant<std::size_t, 0> proto_arity;
-                typedef T proto_value_type;
-
-                template<typename U DISABLE_COPY_IF(term, 1, U)>
-                explicit constexpr term(U &&u)
-                  : proto_value(static_cast<U &&>(u)) // std::forward is NOT constexpr!
-                {}
-
-                T proto_value;
-            };
-
             template<>
             struct args<>
             {
-                typedef std::integral_constant<std::size_t, 0> proto_arity;
+                typedef std::integral_constant<std::size_t, 0> proto_size;
             };
 
             #define INIT(Z, N, D) proto_child ## N(static_cast< U ## N && >( u ## N ))
@@ -104,7 +88,7 @@ namespace boost
                   : BOOST_PP_ENUM(N, INIT, ~)                                                       \
                 {}                                                                                  \
                                                                                                     \
-                typedef std::integral_constant<std::size_t, N> proto_arity;                         \
+                typedef std::integral_constant<std::size_t, N> proto_size;                          \
                 BOOST_PP_REPEAT(N, MEMBERS, ~)                                                      \
             };                                                                                      \
             /**/
@@ -127,7 +111,7 @@ namespace boost
                   , proto_args_tail(static_cast<Rest &&>(rest)...) // std::forward is NOT constexpr!
                 {}
 
-                typedef std::integral_constant<std::size_t, BOOST_PROTO_ARGS_UNROLL_MAX + sizeof...(Tail)> proto_arity;
+                typedef std::integral_constant<std::size_t, BOOST_PROTO_ARGS_UNROLL_MAX + sizeof...(Tail)> proto_size;
                 BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, MEMBERS, ~)
                 args<Tail...> proto_args_tail;
             };
@@ -157,26 +141,32 @@ namespace boost
             )
 
             template<typename T>
-            inline constexpr auto value(term<T> &that)
+            inline constexpr auto value(args<T> &that)
             BOOST_PROTO_RETURN(
-                (that.proto_value) // extra parens are significant!
+                (that.proto_child0) // extra parens are significant!
             )
 
             template<typename T>
-            inline constexpr auto value(term<T> const &that)
+            inline constexpr auto value(args<T> const &that)
             BOOST_PROTO_RETURN(
-                (that.proto_value) // extra parens are significant!
+                (that.proto_child0) // extra parens are significant!
             )
 
             template<typename T>
-            inline constexpr auto value(term<T> &&that)
+            inline constexpr auto value(args<T> &&that)
             BOOST_PROTO_RETURN(
-                (static_cast<term<T> &&>(that).proto_value)  // extra parens are significant!
+                (static_cast<args<T> &&>(that).proto_child0)  // extra parens are significant!
+            )
+
+            template<typename ...T>
+            inline constexpr auto make_args(T &&... t)
+            BOOST_PROTO_RETURN(
+                args<T...>(static_cast<T &&>(t)...)
             )
         }
 
-        using exprns::child;
-        using exprns::value;
+        using exprs::child;
+        using exprs::value;
     }
 }
 

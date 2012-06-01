@@ -12,9 +12,11 @@
 #include <utility>
 #include <type_traits>
 
-// C++11 eliminates the need for macros! Oh, wait ...
+// Usage: auto fun(T t) BOOST_PROTO_RETURN( some-expression )
+//   noexcept clause from Dave Abrahams
 #define BOOST_PROTO_RETURN(...)                                                                     \
-    -> decltype(__VA_ARGS__) { return __VA_ARGS__; }
+    noexcept(noexcept(decltype(__VA_ARGS__)(std::move(__VA_ARGS__))))                               \
+    -> decltype(__VA_ARGS__) { return (__VA_ARGS__); }
 
 // New-style enable_if from Matt Calabrese
 #define BOOST_PROTO_ENABLE_IF(...)                                                                  \
@@ -49,8 +51,11 @@ namespace boost
 
         ///////////////////////////////////////////////////////////////////////////////
         // Operator tags
-        namespace tagns
+        namespace tags
         {
+            template<typename Tag, typename IsTerminal = std::false_type>
+            struct def_tag;
+
             namespace tag
             {
                 struct terminal;
@@ -109,7 +114,7 @@ namespace boost
             }
         }
 
-        using namespace tagns;
+        using namespace tags;
 
         namespace wildcardns
         {
@@ -118,7 +123,7 @@ namespace boost
 
         using namespace wildcardns;
 
-        namespace domainns
+        namespace domains
         {
             typedef detail::not_a_domain no_super_domain;
 
@@ -132,16 +137,13 @@ namespace boost
             struct default_domain;
         }
 
-        using namespace domainns;
+        using namespace domains;
 
         template<typename T>
         struct is_expr;
 
-        namespace exprns
+        namespace exprs
         {
-            template<typename T>
-            struct term;
-
             template<typename ...T>
             struct args;
 
@@ -155,18 +157,25 @@ namespace boost
             struct expr_function;
 
             template<typename Tag, typename Args>
+            struct basic_expr;
+
+            template<typename Tag, typename Args>
             struct expr;
         }
 
-        using exprns::args;
-        using exprns::term;
-        using exprns::expr_assign;
-        using exprns::expr_subscript;
-        using exprns::expr_function;
-        using exprns::expr;
+        using exprs::args;
+        using exprs::expr_assign;
+        using exprs::expr_subscript;
+        using exprs::expr_function;
+        using exprs::basic_expr;
+        using exprs::expr;
 
+        // Handy aliases
         template<typename T>
-        using literal = expr<tag::terminal, term<T>>;
+        using literal = expr<tag::terminal, args<T>>;
+
+        template<typename Expr>
+        using domain_of = typename Expr::proto_domain;
     }
 }
 
