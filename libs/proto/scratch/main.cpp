@@ -27,13 +27,16 @@ struct MyDomain
 template<typename Tag, typename Args>
 struct MyExpr
   : proto::basic_expr<Tag, Args>
+  , proto::expr_assign<MyExpr<Tag, Args>, MyDomain>
   , proto::expr_subscript<MyExpr<Tag, Args>, MyDomain>
   , proto::expr_function<MyExpr<Tag, Args>, MyDomain>
 {
-    typedef proto::basic_expr<Tag, Args> proto_basic_expr;
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(MyExpr);
-    BOOST_PROTO_INHERIT_EXPR_CTORS(MyExpr, proto_basic_expr) // inconsistent semicolon after macros
-    BOOST_PROTO_DEFINE_EXPR_ASSIGN(MyExpr, MyDomain)
+
+    typedef proto::basic_expr<Tag, Args> proto_basic_expr;
+    BOOST_PROTO_INHERIT_EXPR_CTORS(MyExpr, proto_basic_expr);
+
+    using proto::expr_assign<MyExpr<Tag, Args>, MyDomain>::operator=;
 };
 
 static_assert(std::is_trivial<MyExpr<proto::tag::terminal, proto::args<int>>>::value, "not is trivial!");
