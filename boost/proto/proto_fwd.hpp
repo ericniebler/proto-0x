@@ -135,6 +135,9 @@ namespace boost
             struct domain;
 
             struct default_domain;
+
+            template<template<typename...> class Expr, typename Domain>
+            struct make_custom_expr;
         }
 
         using namespace domains;
@@ -147,19 +150,19 @@ namespace boost
             template<typename ...T>
             struct args;
 
-            template<typename Expr, typename Domain = default_domain>
+            template<typename Expr, typename Domain>
             struct expr_assign;
 
-            template<typename Expr, typename Domain = default_domain>
+            template<typename Expr, typename Domain>
             struct expr_subscript;
 
-            template<typename Expr, typename Domain = default_domain>
+            template<typename Expr, typename Domain>
             struct expr_function;
 
-            template<typename Tag, typename Args>
+            template<typename Tag, typename Args, typename Domain>
             struct basic_expr;
 
-            template<typename Tag, typename Args>
+            template<typename Tag, typename Args, typename Domain = default_domain>
             struct expr;
         }
 
@@ -171,11 +174,11 @@ namespace boost
         using exprs::expr;
 
         // Handy aliases
-        template<typename T>
-        using literal = expr<tag::terminal, args<T>>;
+        template<typename T, typename Domain = default_domain>
+        using literal = expr<tag::terminal, args<T>, Domain>;
 
         template<typename Expr>
-        using domain_of = typename Expr::proto_domain;
+        using domain_of = typename Expr::proto_domain_type;
     }
 }
 

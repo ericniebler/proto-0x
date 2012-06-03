@@ -63,7 +63,7 @@ namespace boost
         {};
 
         #define BOOST_PROTO_IS_SAME_EXPR(EXPR, T)                                                   \
-            decltype(boost::proto::detail::is_same_expr<EXPR>(std::declval<U>()))::value
+            decltype(boost::proto::detail::is_same_expr<EXPR>(std::declval<T>()))::value
 
         #define BOOST_PROTO_DEPENDENT_STATIC_CAST(TO, FROM, ...)                                    \
             boost::proto::detail::dependent_static_cast<TO>(FROM, __VA_ARGS__)
@@ -71,7 +71,6 @@ namespace boost
         ////////////////////////////////////////////////////////////////////////////////////
         // constructors TODO: add noexcept clauses
         // This will no longer be needed once clang implements inheriting constructors
-        // BUGBUG Tag and Args, oops.
         #define BOOST_PROTO_INHERIT_EXPR_CTORS(EXPR, BASE)                                          \
             using typename BASE::proto_tag_type;                                                    \
             using typename BASE::proto_args_type;                                                   \
@@ -80,73 +79,48 @@ namespace boost
               : BASE(static_cast<proto_tag_type &&>(tag), static_cast<proto_args_type &&>(args))    \
             {}                                                                                      \
                                                                                                     \
-            constexpr EXPR(proto_args_type args)                                                    \
+            constexpr explicit EXPR(proto_args_type args)                                           \
               : EXPR(proto_tag_type(), static_cast<proto_args_type &&>(args))                       \
             {}                                                                                      \
                                                                                                     \
-            template<typename A, BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == 1 && !std::is_same<EXPR &, A>::value)> \
+            template<typename A                                                                     \
+              , BOOST_PROTO_ENABLE_IF(                                                              \
+                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_SAME_EXPR(EXPR &, A) \
+                )                                                                                   \
+            >                                                                                       \
             constexpr EXPR(proto_tag_type tag, A &&a)                                               \
               : BASE(static_cast<proto_tag_type &&>(tag), static_cast<A &&>(a))                     \
             {}                                                                                      \
                                                                                                     \
-            template<typename A, BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == 1 && !std::is_same<EXPR &, A>::value)> \
+            template<typename A                                                                     \
+              , BOOST_PROTO_ENABLE_IF(                                                              \
+                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_SAME_EXPR(EXPR &, A) \
+                )                                                                                   \
+            >                                                                                       \
             explicit constexpr EXPR(A &&a)                                                          \
               : EXPR(proto_tag_type(), static_cast<A &&>(a))                                        \
             {}                                                                                      \
                                                                                                     \
-            template<typename A, typename B, typename ...C, BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == sizeof...(C) + 2)> \
+            template<typename A, typename B, typename ...C                                          \
+              , BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == sizeof...(C) + 2)       \
+            >                                                                                       \
             constexpr EXPR(proto_tag_type tag, A &&a, B &&b, C &&... c)                             \
-              : BASE(static_cast<proto_tag_type &&>(tag), static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...) \
+              : BASE(                                                                               \
+                    static_cast<proto_tag_type &&>(tag)                                             \
+                  , static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...             \
+                )                                                                                   \
             {}                                                                                      \
                                                                                                     \
-            template<typename A, typename B, typename ...C, BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == sizeof...(C) + 2)> \
+            template<typename A, typename B, typename ...C                                          \
+              , BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == sizeof...(C) + 2)>      \
             constexpr EXPR(A &&a, B &&b, C &&... c)                                                 \
-              : EXPR(proto_tag_type(), static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...) \
+              : EXPR(                                                                               \
+                    proto_tag_type()                                                                \
+                  , static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...             \
+                )                                                                                   \
             {}                                                                                      \
                                                                                                     \
             typedef int boost_proto_inherited_ctors ## __LINE__                                     \
-            /**/
-
-        ////////////////////////////////////////////////////////////////////////////////////
-        // operator=
-        // Not correct to use this in expr_assign because *this needs to be static_cast to Expr
-        #define BOOST_PROTO_DEFINE_EXPR_ASSIGN_IMPL(EXPR, BASE, DOMAIN)                             \
-            template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(BASE, U))>         \
-            auto operator=(U && u) &                                                                \
-            BOOST_PROTO_RETURN(                                                                     \
-                boost::proto::domains::make_expr<DOMAIN>(                                           \
-                    boost::proto::tag::assign()                                                     \
-                  , BOOST_PROTO_DEPENDENT_STATIC_CAST(EXPR &, *this, u)                             \
-                  , static_cast<U &&>(u)                                                            \
-                )                                                                                   \
-            )                                                                                       \
-                                                                                                    \
-            template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(BASE, U))>         \
-            auto operator=(U && u) const &                                                          \
-            BOOST_PROTO_RETURN(                                                                     \
-                boost::proto::domains::make_expr<DOMAIN>(                                           \
-                    boost::proto::tag::assign()                                                     \
-                  , BOOST_PROTO_DEPENDENT_STATIC_CAST(EXPR const &, *this, u)                       \
-                  , static_cast<U &&>(u)                                                            \
-                )                                                                                   \
-            )                                                                                       \
-                                                                                                    \
-            template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(BASE, U))>         \
-            auto operator=(U && u) &&                                                               \
-            BOOST_PROTO_RETURN(                                                                     \
-                boost::proto::domains::make_expr<DOMAIN>(                                           \
-                    boost::proto::tag::assign()                                                     \
-                  , BOOST_PROTO_DEPENDENT_STATIC_CAST(EXPR &&, static_cast<BASE &&>(*this), u)      \
-                  , static_cast<U &&>(u)                                                            \
-                )                                                                                   \
-            )                                                                                       \
-                                                                                                    \
-            template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(BASE, U))>         \
-            void operator=(U && u) const && = delete                                                \
-            /**/
-
-        #define BOOST_PROTO_DEFINE_EXPR_ASSIGN(EXPR, DOMAIN)                                        \
-            BOOST_PROTO_DEFINE_EXPR_ASSIGN_IMPL(EXPR, EXPR, DOMAIN)                                 \
             /**/
 
         namespace exprs
@@ -160,7 +134,38 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // operator=
-                BOOST_PROTO_DEFINE_EXPR_ASSIGN_IMPL(Expr, expr_assign, Domain);
+                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(expr_assign, U))>
+                auto operator=(U && u) &
+                BOOST_PROTO_RETURN(
+                    boost::proto::domains::make_expr<Domain>(
+                        boost::proto::tag::assign()
+                      , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr &, *this, u)
+                      , static_cast<U &&>(u)
+                    )
+                )
+
+                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(expr_assign, U))>
+                auto operator=(U && u) const &
+                BOOST_PROTO_RETURN(
+                    boost::proto::domains::make_expr<Domain>(
+                        boost::proto::tag::assign()
+                      , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr const &, *this, u)
+                      , static_cast<U &&>(u)
+                    )
+                )
+
+                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(expr_assign, U))>
+                auto operator=(U && u) &&
+                BOOST_PROTO_RETURN(
+                    boost::proto::domains::make_expr<Domain>(
+                        boost::proto::tag::assign()
+                      , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr &&, static_cast<expr_assign &&>(*this), u)
+                      , static_cast<U &&>(u)
+                    )
+                )
+
+                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(expr_assign, U))>
+                void operator=(U && u) const && = delete;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -251,7 +256,7 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // struct basic_expr
-            template<typename Tag, typename Args>
+            template<typename Tag, typename Args, typename Domain>
             struct basic_expr
               : Tag, Args
             {
@@ -266,9 +271,9 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // typedefs
-                typedef Tag             proto_tag_type;
-                typedef Args            proto_args_type;
-                typedef default_domain  proto_domain_type;
+                typedef Tag     proto_tag_type;
+                typedef Args    proto_args_type;
+                typedef Domain  proto_domain_type;
                 typedef
                     std::integral_constant<
                         std::size_t
@@ -289,26 +294,42 @@ namespace boost
                   : basic_expr(Tag(), static_cast<Args &&>(args))
                 {}
 
-                template<typename A, BOOST_PROTO_ENABLE_IF(Args::proto_size::value <= 1 && !std::is_same<basic_expr &, A>::value)>
+                template<typename A
+                  , BOOST_PROTO_ENABLE_IF(
+                        Args::proto_size::value == 1 && !BOOST_PROTO_IS_SAME_EXPR(basic_expr &, A)
+                    )
+                >
                 constexpr basic_expr(Tag tag, A &&a)
                   : Tag(static_cast<Tag &&>(tag))
                   , Args(static_cast<A &&>(a))
                 {}
 
-                template<typename A, BOOST_PROTO_ENABLE_IF(Args::proto_size::value <= 1 && !std::is_same<basic_expr &, A>::value)>
+                template<
+                    typename A
+                  , BOOST_PROTO_ENABLE_IF(
+                        Args::proto_size::value == 1 && !BOOST_PROTO_IS_SAME_EXPR(basic_expr &, A)
+                    )
+                >
                 explicit constexpr basic_expr(A &&a)
                   : basic_expr(Tag(), static_cast<A &&>(a))
                 {}
 
-                template<typename A, typename B, typename ...C, BOOST_PROTO_ENABLE_IF(sizeof...(C) + 2 == Args::proto_size::value)>
+                template<typename A, typename B, typename ...C
+                  , BOOST_PROTO_ENABLE_IF(sizeof...(C) + 2 == Args::proto_size::value)
+                >
                 constexpr basic_expr(Tag tag, A &&a, B &&b, C &&... c)
                   : Tag(static_cast<Tag &&>(tag))
                   , Args(static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...)
                 {}
 
-                template<typename A, typename B, typename ...C, BOOST_PROTO_ENABLE_IF(sizeof...(C) + 2 == Args::proto_size::value)>
+                template<typename A, typename B, typename ...C
+                  , BOOST_PROTO_ENABLE_IF(sizeof...(C) + 2 == Args::proto_size::value)
+                >
                 constexpr basic_expr(A &&a, B &&b, C &&... c)
-                  : basic_expr(Tag(), static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...)
+                  : basic_expr(
+                        Tag()
+                      , static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...
+                    )
                 {}
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -333,31 +354,31 @@ namespace boost
                     return static_cast<Args &&>(*this);
                 }
 
-                default_domain proto_domain()
+                Domain proto_domain()
                 {
-                    return default_domain();
+                    return Domain();
                 }
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // struct expr
-            template<typename Tag, typename Args>
+            template<typename Tag, typename Args, typename Domain>
             struct expr
-              : basic_expr<Tag, Args>
-              , expr_assign<expr<Tag, Args>>
-              , expr_subscript<expr<Tag, Args>>
-              , expr_function<expr<Tag, Args>>
+              : basic_expr<Tag, Args, Domain>
+              , expr_assign<expr<Tag, Args, Domain>, Domain>
+              , expr_subscript<expr<Tag, Args, Domain>, Domain>
+              , expr_function<expr<Tag, Args, Domain>, Domain>
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr);
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // constructors
-                typedef basic_expr<Tag, Args> proto_base_expr;
+                typedef basic_expr<Tag, Args, Domain> proto_base_expr;
                 BOOST_PROTO_INHERIT_EXPR_CTORS(expr, proto_base_expr);
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // operator=
-                using expr_assign<expr<Tag, Args>>::operator=;
+                using expr_assign<expr, Domain>::operator=;
             };
         }
     }

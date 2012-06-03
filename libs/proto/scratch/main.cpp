@@ -13,33 +13,37 @@ typedef proto::literal<int> int_;
 static_assert(std::is_trivial<decltype(int_())>::value, "not trivial!");
 static_assert(std::is_trivial<decltype(int_()(42,3.14))>::value, "not trivial!");
 
-template<typename Tag, typename Args>
-struct MyExpr;
+    template<typename Tag, typename Args>
+    struct MyExpr;
 
-struct MyDomain
-  : proto::domain<MyDomain>
-{
-    struct make_expr
-      : proto::custom_expr<MyExpr, MyDomain>
-    {};
-};
+    struct MyDomain
+      : proto::domain<MyDomain>
+    {
+        struct make_expr
+          : proto::make_custom_expr<MyExpr, MyDomain>
+        {};
+    };
 
-template<typename Tag, typename Args>
-struct MyExpr
-  : proto::basic_expr<Tag, Args>
-  , proto::expr_assign<MyExpr<Tag, Args>, MyDomain>
-  , proto::expr_subscript<MyExpr<Tag, Args>, MyDomain>
-  , proto::expr_function<MyExpr<Tag, Args>, MyDomain>
-{
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(MyExpr);
+    template<typename Tag, typename Args>
+    struct MyExpr
+      : proto::basic_expr<Tag, Args, MyDomain>
+      , proto::expr_assign<MyExpr<Tag, Args>, MyDomain>
+      , proto::expr_subscript<MyExpr<Tag, Args>, MyDomain>
+      , proto::expr_function<MyExpr<Tag, Args>, MyDomain>
+    {
+        BOOST_PROTO_REGULAR_TRIVIAL_CLASS(MyExpr);
 
-    typedef proto::basic_expr<Tag, Args> proto_basic_expr;
-    BOOST_PROTO_INHERIT_EXPR_CTORS(MyExpr, proto_basic_expr);
+        //using proto::basic_expr<Tag, Args, MyDomain>::basic_expr;
+        typedef proto::basic_expr<Tag, Args, MyDomain> proto_basic_expr;
+        BOOST_PROTO_INHERIT_EXPR_CTORS(MyExpr, proto_basic_expr);
 
-    using proto::expr_assign<MyExpr<Tag, Args>, MyDomain>::operator=;
-};
+        using proto::expr_assign<MyExpr, MyDomain>::operator=;
+    };
 
-static_assert(std::is_trivial<MyExpr<proto::tag::terminal, proto::args<int>>>::value, "not is trivial!");
+    template<typename T>
+    using MyLiteral = MyExpr<proto::tag::terminal, proto::args<T>>;
+
+    static_assert(std::is_trivial<MyLiteral<int>>::value, "not is trivial!");
 
 int main()
 {
@@ -87,10 +91,11 @@ int main()
     static_assert(sizeof(proto::literal<int>) == sizeof(int), "sizeof(proto::literal<int>) != sizeof(int)");
     static_assert(sizeof(proto::expr<proto::tag::function, proto::args<>>) == 1, "size of empty expr is not 1");
 
+    // This should fail to compile:
     //typedef int_ const cint_;
     //cint_(42)[p];
 
-    constexpr MyExpr<proto::tag::terminal, proto::args<int>> iii_(42);
+    constexpr MyLiteral<int> iii_(42);
     auto jjj_ = iii_[42];
     std::printf("iii_[42] has type '%s'\n", typeid(jjj_).name());
     std::printf("child<0>(iii_[42]) has type '%s'\n", typeid(proto::child<0>(jjj_)).name());

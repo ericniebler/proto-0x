@@ -26,10 +26,16 @@ namespace boost
             struct not_a_domain
             {};
 
-            template<template<typename...> class Expr, typename Tag, typename ...T>
+            template<template<typename, typename> class Expr, typename Domain, typename Tag, typename ...T>
             inline constexpr auto make_expr(Tag tag, T &&...t)
             BOOST_PROTO_RETURN(
                 Expr<Tag, args<T...>>(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
+            )
+
+            template<template<typename, typename, typename> class Expr, typename Domain, typename Tag, typename ...T>
+            inline constexpr auto make_expr(Tag tag, T &&...t)
+            BOOST_PROTO_RETURN(
+                Expr<Tag, args<T...>, Domain>(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
             )
         }
 
@@ -50,7 +56,7 @@ namespace boost
             BOOST_PROTO_RETURN(
                 typename Domain::make_expr()(
                     proto::tag::terminal()
-                  , exprs::make_args(typename Domain::store_value()(static_cast<T &&>(t)))
+                  , exprs::make_args(typename Domain::store_value()(static_cast<T &&>(t))) // HACK
                 )
             )
 
@@ -60,12 +66,38 @@ namespace boost
                 typename Domain::store_child()(static_cast<T &&>(t))
             )
 
-            /// INTERNAL ONLY total hack
+            /// INTERNAL ONLY total HACK
             template<typename Domain, typename T>
             inline constexpr auto as_expr(args<T> &&t)
             BOOST_PROTO_RETURN(
                 (static_cast<args<T> &&>(t).proto_child0)
             )
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // make_custom_expr
+            template<template<typename...> class Expr, typename Domain>
+            struct make_custom_expr
+            {
+                template<typename Tag, typename ...T>
+                inline constexpr auto operator()(Tag tag, T &&... t) const
+                BOOST_PROTO_RETURN(
+                    detail::make_expr<Expr, Domain>(
+                        static_cast<Tag &&>(tag)
+                      , proto::domains::as_expr<Domain>(static_cast<T &&>(t))...
+                    )
+                )
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // identity
+            struct identity
+            {
+                template<typename T>
+                inline constexpr T && operator()(T &&t) const noexcept
+                {
+                    return static_cast<T &&>(t);
+                }
+            };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // domain
@@ -79,38 +111,20 @@ namespace boost
                 // Define this in your derived domain class to control how
                 // objects are stored within the terminals of your domain.
                 struct store_value
-                {
-                    template<typename T>
-                    inline constexpr T && operator()(T &&t) const noexcept
-                    {
-                        return static_cast<T &&>(t);
-                    }
-                };
+                  : identity
+                {};
 
                 // Define this in your derived domain class to control how intermediate
                 // nodes are stored within your expressions.
                 struct store_child
-                {
-                    template<typename T>
-                    inline constexpr T && operator()(T &&t) const noexcept
-                    {
-                        return static_cast<T &&>(t);
-                    }
-                };
+                  : identity
+                {};
 
                 // Define this in your derived domain class to control expressions are
                 // assembled.
                 struct make_expr
-                {
-                    template<typename Tag, typename ...T>
-                    inline constexpr auto operator()(Tag tag, T &&... t) const
-                    BOOST_PROTO_RETURN(
-                        detail::make_expr<proto::expr>(
-                            static_cast<Tag &&>(tag)
-                          , proto::domains::as_expr<default_domain>(static_cast<T &&>(t))...
-                        )
-                    )
-                };
+                  : make_custom_expr<expr, default_domain>
+                {};
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -118,22 +132,6 @@ namespace boost
             struct default_domain
               : domain<default_domain>
             {};
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // custom_expr
-            //template<template<typename Tag, typename Args> class Expr, typename Domain>
-            template<template<typename...> class Expr, typename Domain>
-            struct custom_expr
-            {
-                template<typename Tag, typename ...T>
-                inline constexpr auto operator()(Tag tag, T &&... t) const
-                BOOST_PROTO_RETURN(
-                    detail::make_expr<Expr>(
-                        static_cast<Tag &&>(tag)
-                      , proto::domains::as_expr<Domain>(static_cast<T &&>(t))...
-                    )
-                )
-            };
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
