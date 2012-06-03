@@ -123,7 +123,7 @@ namespace boost
                 // Define this in your derived domain class to control expressions are
                 // assembled.
                 struct make_expr
-                  : make_custom_expr<expr, default_domain>
+                  : make_custom_expr<expr, Domain>
                 {};
             };
 
