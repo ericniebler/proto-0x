@@ -53,7 +53,7 @@ namespace boost
             BOOST_PROTO_RETURN(
                 detail::child_impl(
                     static_cast<Args &&>(that).proto_args_tail
-                    , std::integral_constant<std::size_t, I-BOOST_PROTO_ARGS_UNROLL_MAX>()
+                  , std::integral_constant<std::size_t, I-BOOST_PROTO_ARGS_UNROLL_MAX>()
                 )
             )
         }
@@ -71,25 +71,48 @@ namespace boost
             template<>
             struct args<>
             {
+                inline constexpr bool operator==(args const &) const
+                {
+                    return true;
+                }
+
+                inline constexpr bool operator!=(args const &) const
+                {
+                    return false;
+                }
+
                 typedef std::integral_constant<std::size_t, 0> proto_size;
             };
 
             #define INIT(Z, N, D) proto_child ## N(static_cast< U ## N && >( u ## N ))
             #define MEMBERS(Z, N, D) typedef T ## N proto_child_type ## N; T ## N proto_child ## N;
+            #define EQUAL_TO(Z, N, D) proto_child ## N == that. proto_child ## N &&
 
             #define BOOST_PP_LOCAL_MACRO(N)                                                         \
             template<BOOST_PP_ENUM_PARAMS(N, typename T)>                                           \
             struct args<BOOST_PP_ENUM_PARAMS(N, T)>                                                 \
             {                                                                                       \
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(args);                                            \
+                typedef std::integral_constant<std::size_t, N> proto_size;                          \
+                BOOST_PP_REPEAT(N, MEMBERS, ~)                                                      \
                                                                                                     \
                 template<BOOST_PP_ENUM_PARAMS(N, typename U) DISABLE_COPY_IF(args, N, U0)>          \
                 explicit constexpr args(BOOST_PP_ENUM_BINARY_PARAMS(N, U, &&u))                     \
                   : BOOST_PP_ENUM(N, INIT, ~)                                                       \
                 {}                                                                                  \
                                                                                                     \
-                typedef std::integral_constant<std::size_t, N> proto_size;                          \
-                BOOST_PP_REPEAT(N, MEMBERS, ~)                                                      \
+                template<BOOST_PP_ENUM_PARAMS(N, typename U)>                                       \
+                inline auto operator==(args<BOOST_PP_ENUM_PARAMS(N, U)> const &that) const          \
+                BOOST_PROTO_RETURN(                                                                 \
+                    BOOST_PP_REPEAT(N, EQUAL_TO, ~) true                                            \
+                )                                                                                   \
+                                                                                                    \
+                template<BOOST_PP_ENUM_PARAMS(N, typename U)>                                       \
+                inline auto operator!=(args<BOOST_PP_ENUM_PARAMS(N, U)> const &that) const          \
+                BOOST_PROTO_RETURN(                                                                 \
+                    !(*this == that)                                                                \
+                )                                                                                   \
+                                                                                                    \
             };                                                                                      \
             /**/
 
@@ -101,6 +124,9 @@ namespace boost
             struct args<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, T), Tail...>
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(args);
+                typedef std::integral_constant<std::size_t, BOOST_PROTO_ARGS_UNROLL_MAX + sizeof...(Tail)> proto_size;
+                BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, MEMBERS, ~)
+                args<Tail...> proto_args_tail;
 
                 template<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, typename U), typename ...Rest
                   , BOOST_PROTO_ENABLE_IF(sizeof...(Rest) == sizeof...(Tail))
@@ -111,13 +137,22 @@ namespace boost
                   , proto_args_tail(static_cast<Rest &&>(rest)...) // std::forward is NOT constexpr!
                 {}
 
-                typedef std::integral_constant<std::size_t, BOOST_PROTO_ARGS_UNROLL_MAX + sizeof...(Tail)> proto_size;
-                BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, MEMBERS, ~)
-                args<Tail...> proto_args_tail;
+                template<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, typename U), typename ...Rest>
+                inline auto operator==(args<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, U), Rest...> const &that) const
+                BOOST_PROTO_RETURN(
+                    BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, EQUAL_TO, ~) proto_args_tail == that.proto_args_tail
+                )
+
+                template<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, typename U), typename ...Rest>
+                inline auto operator!=(args<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, U), Rest...> const &that) const
+                BOOST_PROTO_RETURN(
+                    !(*this == that)
+                )
             };
 
             #undef INIT
             #undef MEMBERS
+            #undef EQUAL_TO
             #undef DISABLE_COPY_IF
 
             ///////////////////////////////////////////////////////////////////////////////
@@ -138,6 +173,46 @@ namespace boost
             inline constexpr auto child(args<T...> &&a)
             BOOST_PROTO_RETURN(
                 detail::child_impl(static_cast<args<T...> &&>(a), std::integral_constant<std::size_t, I>())
+            )
+
+            ///////////////////////////////////////////////////////////////////////////////
+            // left
+            template<typename L, typename R>
+            inline constexpr auto left(args<L, R> &a)
+            BOOST_PROTO_RETURN(
+                detail::child_impl(a, std::integral_constant<std::size_t, 0>())
+            )
+
+            template<typename L, typename R>
+            inline constexpr auto left(args<L, R> const &a)
+            BOOST_PROTO_RETURN(
+                detail::child_impl(a, std::integral_constant<std::size_t, 0>())
+            )
+
+            template<typename L, typename R>
+            inline constexpr auto left(args<L, R> &&a)
+            BOOST_PROTO_RETURN(
+                detail::child_impl(static_cast<args<L, R> &&>(a), std::integral_constant<std::size_t, 0>())
+            )
+
+            ///////////////////////////////////////////////////////////////////////////////
+            // right
+            template<typename L, typename R>
+            inline constexpr auto right(args<L, R> &a)
+            BOOST_PROTO_RETURN(
+                detail::child_impl(a, std::integral_constant<std::size_t, 1>())
+            )
+
+            template<typename L, typename R>
+            inline constexpr auto right(args<L, R> const &a)
+            BOOST_PROTO_RETURN(
+                detail::child_impl(a, std::integral_constant<std::size_t, 1>())
+            )
+
+            template<typename L, typename R>
+            inline constexpr auto right(args<L, R> &&a)
+            BOOST_PROTO_RETURN(
+                detail::child_impl(static_cast<args<L, R> &&>(a), std::integral_constant<std::size_t, 1>())
             )
 
             template<typename T>
@@ -166,6 +241,8 @@ namespace boost
         }
 
         using exprs::child;
+        using exprs::left;
+        using exprs::right;
         using exprs::value;
     }
 }

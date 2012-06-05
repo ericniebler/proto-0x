@@ -34,9 +34,7 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // is_expr
-            template<typename ...T>
-            std::true_type is_expr(args<T...> const &);
-
+            std::true_type is_expr(expr_base const &);
             std::false_type is_expr(any);
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -46,6 +44,32 @@ namespace boost
 
             template<typename Expr>
             std::false_type is_same_expr(any);
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // logical_and_
+            inline constexpr bool logical_and_()
+            {
+                return true;
+            }
+
+            template<typename ...Bool>
+            inline constexpr bool logical_and_(bool b0, Bool... rest)
+            {
+                return b0 && detail::logical_and_(rest...);
+            }
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // logical_or_
+            inline constexpr bool logical_or_()
+            {
+                return false;
+            }
+
+            template<typename ...Bool>
+            inline constexpr bool logical_or_(bool b0, Bool... rest)
+            {
+                return b0 || detail::logical_or_(rest...);
+            }
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -254,11 +278,53 @@ namespace boost
                 void operator()(U &&... u) const && = delete;
             };
 
+            template<typename Expr>
+            struct expr_equality_comparable_base
+            {
+                template<typename Other>
+                inline auto proto_equal_to(Other const &that) const
+                BOOST_PROTO_RETURN(
+                    BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr const &, *this, that).proto_args() == that.proto_args()
+                )
+            };
+
+            template<typename Expr>
+            struct expr_equality_comparable
+              : expr_equality_comparable_base<Expr>
+            {};
+
+            template<typename T, typename U, typename Domain>
+            struct expr_equality_comparable<basic_expr<tag::equal_to, args<T, U>, Domain>>
+              : expr_equality_comparable_base<basic_expr<tag::equal_to, args<T, U>, Domain>>
+            {
+                explicit inline operator bool() const
+                {
+                    auto const &self = static_cast<basic_expr<tag::equal_to, args<T, U>, Domain> const &>(*this);
+                    return proto::left(self).proto_equal_to(proto::right(self));
+                }
+            };
+
+            template<typename T, typename U, typename Domain>
+            struct expr_equality_comparable<basic_expr<tag::not_equal_to, args<T, U>, Domain>>
+              : expr_equality_comparable_base<basic_expr<tag::not_equal_to, args<T, U>, Domain>>
+            {
+                explicit inline operator bool() const
+                {
+                    auto const &self = static_cast<basic_expr<tag::not_equal_to, args<T, U>, Domain> const &>(*this);
+                    return !proto::left(self).proto_equal_to(proto::right(self));
+                }
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // struct expr_base
+            struct expr_base
+            {};
+
             ////////////////////////////////////////////////////////////////////////////////////////
             // struct basic_expr
             template<typename Tag, typename Args, typename Domain>
             struct basic_expr
-              : Tag, Args
+              : expr_base, Tag, Args, expr_equality_comparable<basic_expr<Tag, Args, Domain>>
             {
                 ////////////////////////////////////////////////////////////////////////////////////
                 // Check constraints
@@ -271,9 +337,10 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // typedefs
-                typedef Tag     proto_tag_type;
-                typedef Args    proto_args_type;
-                typedef Domain  proto_domain_type;
+                typedef Tag         proto_tag_type;
+                typedef Args        proto_args_type;
+                typedef Domain      proto_domain_type;
+                typedef basic_expr  proto_basic_expr_type;
                 typedef
                     std::integral_constant<
                         std::size_t
@@ -334,9 +401,19 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // accessors
-                Tag proto_tag() const
+                Tag & proto_tag() &
                 {
                     return *this;
+                }
+
+                Tag const & proto_tag() const &
+                {
+                    return *this;
+                }
+
+                Tag && proto_tag() &&
+                {
+                    return static_cast<Args &&>(*this);
                 }
 
                 Args & proto_args() &
@@ -354,9 +431,21 @@ namespace boost
                     return static_cast<Args &&>(*this);
                 }
 
-                Domain proto_domain()
+                Domain proto_domain() const
                 {
                     return Domain();
+                }
+
+                template<
+                    typename T
+                  , BOOST_PROTO_ENABLE_IF(
+                        std::is_same<T, bool>::value &&
+                        (std::is_same<Tag, tag::equal_to>::value || std::is_same<Tag, tag::not_equal_to>::value)
+                    )
+                >
+                explicit constexpr operator T() const
+                {
+                    return true;
                 }
             };
 
@@ -373,6 +462,7 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // constructors
+                //using basic_expr<Tag, Args, Domain>::basic_expr;
                 typedef basic_expr<Tag, Args, Domain> proto_base_expr;
                 BOOST_PROTO_INHERIT_EXPR_CTORS(expr, proto_base_expr);
 

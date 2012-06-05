@@ -54,7 +54,7 @@ namespace boost
         namespace tags
         {
             template<typename Tag, typename IsTerminal = std::false_type>
-            struct def_tag;
+            struct def;
 
             namespace tag
             {
@@ -142,9 +142,6 @@ namespace boost
 
         using namespace domains;
 
-        template<typename T>
-        struct is_expr;
-
         namespace exprs
         {
             template<typename ...T>
@@ -159,6 +156,8 @@ namespace boost
             template<typename Expr, typename Domain>
             struct expr_function;
 
+            struct expr_base;
+
             template<typename Tag, typename Args, typename Domain>
             struct basic_expr;
 
@@ -170,12 +169,166 @@ namespace boost
         using exprs::expr_assign;
         using exprs::expr_subscript;
         using exprs::expr_function;
+        using exprs::expr_base;
         using exprs::basic_expr;
         using exprs::expr;
 
+        template<typename T>
+        struct is_expr;
+
         // Handy aliases
-        template<typename T, typename Domain = default_domain>
-        using literal = expr<tag::terminal, args<T>, Domain>;
+        //template<typename T>
+        //using is_expr = std::is_base_of<expr_base, T>;
+
+        template<typename Tag, typename T>
+        using nullary_expr = expr<Tag, args<T>>;
+
+        template<typename Tag, typename T>
+        using unary_expr = expr<Tag, args<T>>;
+
+        template<typename Tag, typename L, typename R>
+        using binary_expr = expr<Tag, args<L, R>>;
+
+        template<typename Tag, typename ...T>
+        using nary_expr = expr<Tag, args<T...>>;
+
+        template<typename T>
+        using terminal = expr<tag::terminal, args<T>>;
+
+        template<typename T>
+        using unary_plus = expr<tag::unary_plus, args<T>>;
+
+        template<typename T>
+        using negate = expr<tag::negate, args<T>>;
+
+        template<typename T>
+        using dereference = expr<tag::dereference, args<T>>;
+
+        template<typename T>
+        using complement = expr<tag::complement, args<T>>;
+
+        template<typename T>
+        using address_of = expr<tag::address_of, args<T>>;
+
+        template<typename T>
+        using logical_not = expr<tag::logical_not, args<T>>;
+
+        template<typename T>
+        using pre_inc = expr<tag::pre_inc, args<T>>;
+
+        template<typename T>
+        using pre_dec = expr<tag::pre_dec, args<T>>;
+
+        template<typename T>
+        using post_inc = expr<tag::post_inc, args<T>>;
+
+        template<typename T>
+        using post_dec = expr<tag::post_dec, args<T>>;
+
+        template<typename L, typename R>
+        using shift_left = expr<tag::shift_left, args<L, R>>;
+
+        template<typename L, typename R>
+        using shift_right = expr<tag::shift_right, args<L, R>>;
+
+        template<typename L, typename R>
+        using multiplies = expr<tag::multiplies, args<L, R>>;
+
+        template<typename L, typename R>
+        using divides = expr<tag::divides, args<L, R>>;
+
+        template<typename L, typename R>
+        using modulus = expr<tag::modulus, args<L, R>>;
+
+        template<typename L, typename R>
+        using plus = expr<tag::plus, args<L, R>>;
+
+        template<typename L, typename R>
+        using minus = expr<tag::minus, args<L, R>>;
+
+        template<typename L, typename R>
+        using less = expr<tag::less, args<L, R>>;
+
+        template<typename L, typename R>
+        using greater = expr<tag::greater, args<L, R>>;
+
+        template<typename L, typename R>
+        using less_equal = expr<tag::less_equal, args<L, R>>;
+
+        template<typename L, typename R>
+        using greater_equal = expr<tag::greater_equal, args<L, R>>;
+
+        template<typename L, typename R>
+        using equal_to = expr<tag::equal_to, args<L, R>>;
+
+        template<typename L, typename R>
+        using not_equal_to = expr<tag::not_equal_to, args<L, R>>;
+
+        template<typename L, typename R>
+        using logical_or = expr<tag::logical_or, args<L, R>>;
+
+        template<typename L, typename R>
+        using logical_and = expr<tag::logical_and, args<L, R>>;
+
+        template<typename L, typename R>
+        using bitwise_and = expr<tag::bitwise_and, args<L, R>>;
+
+        template<typename L, typename R>
+        using bitwise_or = expr<tag::bitwise_or, args<L, R>>;
+
+        template<typename L, typename R>
+        using bitwise_xor = expr<tag::bitwise_xor, args<L, R>>;
+
+        template<typename L, typename R>
+        using comma = expr<tag::comma, args<L, R>>;
+
+        template<typename L, typename R>
+        using mem_ptr = expr<tag::mem_ptr, args<L, R>>;
+
+        template<typename L, typename R>
+        using assign = expr<tag::assign, args<L, R>>;
+
+        template<typename L, typename R>
+        using shift_left_assign = expr<tag::shift_left_assign, args<L, R>>;
+
+        template<typename L, typename R>
+        using shift_right_assign = expr<tag::shift_right_assign, args<L, R>>;
+
+        template<typename L, typename R>
+        using multiplies_assign = expr<tag::multiplies_assign, args<L, R>>;
+
+        template<typename L, typename R>
+        using divides_assign = expr<tag::divides_assign, args<L, R>>;
+
+        template<typename L, typename R>
+        using modulus_assign = expr<tag::modulus_assign, args<L, R>>;
+
+        template<typename L, typename R>
+        using plus_assign = expr<tag::plus_assign, args<L, R>>;
+
+        template<typename L, typename R>
+        using minus_assign = expr<tag::minus_assign, args<L, R>>;
+
+        template<typename L, typename R>
+        using bitwise_and_assign = expr<tag::bitwise_and_assign, args<L, R>>;
+
+        template<typename L, typename R>
+        using bitwise_or_assign = expr<tag::bitwise_or_assign, args<L, R>>;
+
+        template<typename L, typename R>
+        using bitwise_xor_assign = expr<tag::bitwise_xor_assign, args<L, R>>;
+
+        template<typename L, typename R>
+        using subscript = expr<tag::subscript, args<L, R>>;
+
+        template<typename L, typename R>
+        using member = expr<tag::member, args<L, R>>;
+
+        template<typename C, typename T, typename F>
+        using if_else_ = expr<tag::if_else_, args<C, T, F>>;
+
+        template<typename ...A>
+        using function = expr<tag::function, args<A...>>;
 
         template<typename Expr>
         using domain_of = typename Expr::proto_domain_type;

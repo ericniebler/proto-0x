@@ -12,6 +12,7 @@
 #define BOOST_PROTO_DOMAIN_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
+#include <boost/proto/args.hpp>
 #include <boost/proto/tags.hpp>
 
 namespace boost
@@ -37,6 +38,37 @@ namespace boost
             BOOST_PROTO_RETURN(
                 Expr<Tag, args<T...>, Domain>(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
             )
+
+            template<typename T, typename Domain, bool IsExpr = is_expr<T>::value>
+            struct as_expr
+            {
+                inline constexpr auto operator()(T &&t) const
+                BOOST_PROTO_RETURN(
+                    typename Domain::store_child()(static_cast<T &&>(t))
+                )
+            };
+
+            template<typename T, typename Domain>
+            struct as_expr<T, Domain, false>
+            {
+                inline constexpr auto operator()(T &&t) const
+                BOOST_PROTO_RETURN(
+                    typename Domain::make_expr()(
+                        proto::tag::terminal()
+                      , exprs::make_args(typename Domain::store_value()(static_cast<T &&>(t))) // HACK
+                    )
+                )
+            };
+
+            /// INTERNAL ONLY total HACK
+            template<typename T, typename Domain>
+            struct as_expr<args<T>, Domain, false>
+            {
+                inline constexpr auto operator()(args<T> &&t) const
+                BOOST_PROTO_RETURN(
+                    (static_cast<args<T> &&>(t).proto_child0)
+                )
+            };
         }
 
         namespace domains
@@ -51,6 +83,13 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////////
             // as_expr (with domain)
+#if 1
+            template<typename Domain, typename T>
+            inline constexpr auto as_expr(T &&t)
+            BOOST_PROTO_RETURN(
+                detail::as_expr<T, Domain>()(static_cast<T &&>(t))
+            )
+#else // clang wierdness
             template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(!is_expr<T>::value)>
             inline constexpr auto as_expr(T &&t)
             BOOST_PROTO_RETURN(
@@ -72,6 +111,7 @@ namespace boost
             BOOST_PROTO_RETURN(
                 (static_cast<args<T> &&>(t).proto_child0)
             )
+#endif
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // make_custom_expr
