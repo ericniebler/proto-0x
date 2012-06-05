@@ -117,13 +117,13 @@ int main()
         std::printf("%s\n", "***ERROR 2**** iii_[42] is equal to iii_[43]");
 
     // Test convertibility to bool
-    if(!proto::make_expr(proto::tag::equal_to(), jjj_, iii_[42]))
+    if(!proto::domains::make_expr<MyDomain>(proto::tag::equal_to(), jjj_, iii_[42]))
         std::printf("%s\n", "***ERROR 3**** iii_[42] is not equal to iii_[42]");
-    if(proto::make_expr(proto::tag::equal_to(), jjj_, iii_[43]))
+    if(proto::domains::make_expr<MyDomain>(proto::tag::equal_to(), jjj_, iii_[43]))
         std::printf("%s\n", "***ERROR 4**** iii_[42] is equal to iii_[43]");
-    if(proto::make_expr(proto::tag::not_equal_to(), jjj_, iii_[42]))
+    if(proto::domains::make_expr<MyDomain>(proto::tag::not_equal_to(), jjj_, iii_[42]))
         std::printf("%s\n", "***ERROR 5**** iii_[42] is not equal to iii_[42]");
-    if(!proto::make_expr(proto::tag::not_equal_to(), jjj_, iii_[43]))
+    if(!proto::domains::make_expr<MyDomain>(proto::tag::not_equal_to(), jjj_, iii_[43]))
         std::printf("%s\n", "***ERROR 6**** iii_[42] is equal to iii_[43]");
 
     void done();
