@@ -22,7 +22,13 @@ namespace boost
     {
         namespace detail
         {
-            struct any { template<typename T> constexpr any(T const &) noexcept; };
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // any
+            struct any
+            {
+                template<typename T>
+                constexpr any(T const &) noexcept;
+            };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // dependent_static_cast

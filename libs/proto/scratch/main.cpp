@@ -1,8 +1,12 @@
+#define BOOST_PROTO_ASSERT_VALID_DOMAIN(DOM) typedef DOM DOM ## _
+
 #include <cstdio>
 #include <typeinfo>
 #include <boost/assert.hpp>
 #include <boost/proto/proto.hpp>
+#include <boost/proto/detail/deduce_domain.hpp>
 namespace proto = boost::proto;
+using proto::_;
 
 template<typename T>
 struct undefined;
@@ -135,6 +139,116 @@ int main()
 
     void done();
     done();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// deduce_domain tests
+struct D0 : proto::domain<D0>
+{
+};
+
+struct D1 : proto::domain<D1, proto::_, D0>
+{
+};
+
+struct D2 : proto::domain<D2, proto::_, D0>
+{
+};
+
+struct D3 : proto::domain<D3>
+{
+};
+
+struct DD0 : proto::domain<DD0, proto::_, proto::default_domain>
+{
+};
+
+struct DD1 : proto::domain<DD1, proto::_, proto::default_domain>
+{
+};
+
+struct DD2 : proto::domain<DD2, proto::_, proto::default_domain>
+{
+};
+
+struct DD3 : proto::domain<DD3, proto::_, DD2>
+{
+};
+
+struct DD4 : proto::domain<DD4, proto::_, DD2>
+{
+};
+
+void test1()
+{
+    static_assert(std::is_same<proto::detail::common_domain<D0, D0, D0>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<proto::default_domain, D0, D0>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D0, proto::default_domain, D0>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D0, D0, proto::default_domain>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D0, proto::default_domain, proto::default_domain>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<proto::default_domain, D0, proto::default_domain>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<proto::default_domain, proto::default_domain, D0>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<proto::default_domain, proto::default_domain, proto::default_domain>::type, proto::default_domain>::value, "");
+
+    static_assert(std::is_same<proto::detail::common_domain<DD0, D0, D0>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D0, DD0, D0>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D0, D0, DD0>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D0, DD0, DD0>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<DD0, D0, DD0>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<DD0, DD0, D0>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<proto::default_domain, DD0, DD0>::type, DD0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<DD0, proto::default_domain, DD0>::type, DD0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<DD0, DD0, proto::default_domain>::type, DD0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<proto::default_domain, proto::default_domain, DD0>::type, DD0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<proto::default_domain, DD0, proto::default_domain>::type, DD0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<DD0, DD0, proto::default_domain>::type, DD0>::value, "");
+
+    static_assert(std::is_same<proto::detail::common_domain<D0, D0, D1>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D0, D1, D0>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D0, D1, D1>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D1, D0, D0>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D1, D0, D1>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D1, D1, D0>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D1, D1, D1>::type, D1>::value, "");
+
+    // Very tricky to get right
+    static_assert(std::is_same<proto::detail::common_domain<D2, D2, D1>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D2, D1, D2>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D2, D1, D1>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D1, D2, D2>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D1, D2, D1>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D1, D1, D2>::type, D0>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D1, D1, D1>::type, D1>::value, "");
+
+    static_assert(std::is_same<proto::detail::common_domain<D3, D0, D0>::type, proto::detail::not_a_domain>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D0, D3, D0>::type, proto::detail::not_a_domain>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D0, D0, D3>::type, proto::detail::not_a_domain>::value, "");
+
+    static_assert(std::is_same<proto::detail::common_domain<D3, D1, D0>::type, proto::detail::not_a_domain>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D3, D0, D1>::type, proto::detail::not_a_domain>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D1, D3, D0>::type, proto::detail::not_a_domain>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D0, D3, D1>::type, proto::detail::not_a_domain>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D0, D1, D3>::type, proto::detail::not_a_domain>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D1, D0, D3>::type, proto::detail::not_a_domain>::value, "");
+
+    static_assert(std::is_same<proto::detail::common_domain<D3, D1, D2>::type, proto::detail::not_a_domain>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D3, D2, D1>::type, proto::detail::not_a_domain>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D1, D3, D2>::type, proto::detail::not_a_domain>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D2, D3, D1>::type, proto::detail::not_a_domain>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D2, D1, D3>::type, proto::detail::not_a_domain>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<D1, D2, D3>::type, proto::detail::not_a_domain>::value, "");
+
+    // These should be ambiguous.
+    static_assert(std::is_same<proto::detail::common_domain<DD1, DD0, DD0>::type, proto::detail::not_a_domain>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<DD0, DD1, DD0>::type, proto::detail::not_a_domain>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<DD0, DD0, DD1>::type, proto::detail::not_a_domain>::value, "");
+
+    static_assert(std::is_same<proto::detail::common_domain<DD3, DD2, DD2>::type, DD2>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<DD2, DD3, DD2>::type, DD2>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<DD2, DD2, DD3>::type, DD2>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<DD3, DD4, DD4>::type, DD2>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<DD4, DD3, DD4>::type, DD2>::value, "");
+    static_assert(std::is_same<proto::detail::common_domain<DD4, DD4, DD3>::type, DD2>::value, "");
 }
 
 //////////////////////////////////////////////////////

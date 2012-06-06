@@ -47,6 +47,15 @@ namespace boost
     {
         namespace detail
         {
+            typedef char yes_type;
+            typedef char (&no_type)[2];
+
+            template<int N>
+            struct sized_type
+            {
+                typedef char (&type)[N];
+            };
+
             extern void* enabler;
             template<typename ...T> void ignore(T &&...);
             struct not_a_grammar;
@@ -120,12 +129,12 @@ namespace boost
 
         using namespace tags;
 
-        namespace wildcardns
+        namespace wildcards
         {
             struct _;
         }
 
-        using namespace wildcardns;
+        using namespace wildcards;
 
         namespace domains
         {
