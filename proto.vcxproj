@@ -61,6 +61,7 @@
     <ClInclude Include="boost\proto\detail\deduce_domain.hpp" />
     <ClInclude Include="boost\proto\domain.hpp" />
     <ClInclude Include="boost\proto\expr.hpp" />
+    <ClInclude Include="boost\proto\operators.hpp" />
     <ClInclude Include="boost\proto\proto.hpp" />
     <ClInclude Include="boost\proto\proto_fwd.hpp" />
     <ClInclude Include="boost\proto\tags.hpp" />

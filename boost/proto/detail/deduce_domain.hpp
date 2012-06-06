@@ -4,7 +4,7 @@
 // for finding the domain that is common among the specified
 // domains
 //
-//  Copyright 2010 Daniel Wallin, Eric Niebler. Distributed under the Boost
+//  Copyright 2012 Daniel Wallin, Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -118,13 +118,6 @@ namespace boost
             template<typename D0, typename D1, typename ...DS>
             struct common_domain<D0, D1, DS...>
               : common_domain<typename common_domain2<D0, D1>::type, DS...>
-            {};
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // deduce_domain
-            template<typename ...ES>
-            struct deduce_domain
-              : common_domain<domain_of<ES>...>
             {};
         }
     }

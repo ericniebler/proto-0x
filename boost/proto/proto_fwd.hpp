@@ -50,10 +50,20 @@ namespace boost
             typedef char yes_type;
             typedef char (&no_type)[2];
 
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // sized_type
             template<int N>
             struct sized_type
             {
                 typedef char (&type)[N];
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // any
+            struct any
+            {
+                template<typename T>
+                constexpr any(T const &) noexcept;
             };
 
             extern void* enabler;
@@ -139,6 +149,8 @@ namespace boost
         namespace domains
         {
             typedef detail::not_a_domain no_super_domain;
+
+            struct deduce_domain;
 
             template<
                 typename SubDomain

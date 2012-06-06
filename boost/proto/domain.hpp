@@ -14,11 +14,20 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/args.hpp>
 #include <boost/proto/tags.hpp>
+#include <boost/proto/detail/deduce_domain.hpp>
 
 namespace boost
 {
     namespace proto
     {
+        namespace domains
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // deduce_domain
+            struct deduce_domain
+            {};
+        }
+
         namespace detail
         {
             struct not_a_grammar
@@ -27,6 +36,51 @@ namespace boost
             struct not_a_domain
             {};
 
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // get_domain
+            template<typename T>
+            typename T::proto_domain_type get_domain(T const &);
+
+            default_domain get_domain(any);
+
+            template<typename Domain, typename ...T>
+            inline constexpr auto value_storer(Domain, T const &...)
+            BOOST_PROTO_AUTO_RETURN(
+                typename Domain::store_value{}
+            )
+
+            template<typename ...T>
+            inline constexpr auto value_storer(deduce_domain, T const &... t)
+            BOOST_PROTO_AUTO_RETURN(
+                typename common_domain<decltype(get_domain(t))...>::type::store_value{}
+            )
+
+            template<typename Domain, typename ...T>
+            inline constexpr auto child_storer(Domain, T const &...)
+            BOOST_PROTO_AUTO_RETURN(
+                typename Domain::store_child{}
+            )
+
+            template<typename ...T>
+            inline constexpr auto child_storer(deduce_domain, T const &... t)
+            BOOST_PROTO_AUTO_RETURN(
+                typename common_domain<decltype(get_domain(t))...>::type::store_child{}
+            )
+
+            template<typename Domain, typename ...T>
+            inline constexpr auto expr_maker(Domain, T const &...)
+            BOOST_PROTO_AUTO_RETURN(
+                typename Domain::make_expr{}
+            )
+
+            template<typename ...T>
+            inline constexpr auto expr_maker(deduce_domain, T const &... t)
+            BOOST_PROTO_AUTO_RETURN(
+                typename common_domain<decltype(get_domain(t))...>::type::make_expr{}
+            )
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // detail::make_expr
             template<template<typename, typename> class Expr, typename Domain, typename Tag, typename ...T>
             inline constexpr auto make_expr(Tag tag, T &&...t)
             BOOST_PROTO_AUTO_RETURN(
@@ -44,7 +98,7 @@ namespace boost
             {
                 inline constexpr auto operator()(T &&t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    typename Domain::store_child()(static_cast<T &&>(t))
+                    child_storer(Domain(), t)(static_cast<T &&>(t))
                 )
             };
 
@@ -53,7 +107,7 @@ namespace boost
             {
                 inline constexpr auto operator()(T &&t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    typename Domain::make_expr()(
+                    expr_maker(Domain(), t)(
                         proto::tag::terminal()
                       , exprs::make_args(typename Domain::store_value()(static_cast<T &&>(t))) // HACK
                     )
@@ -78,7 +132,7 @@ namespace boost
             template<typename Domain, typename Tag, typename ...T>
             inline constexpr auto make_expr(Tag tag, T &&...t)
             BOOST_PROTO_AUTO_RETURN(
-                typename Domain::make_expr()(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
+                detail::expr_maker(Domain(), t...)(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////////

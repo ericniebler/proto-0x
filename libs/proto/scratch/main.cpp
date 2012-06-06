@@ -4,7 +4,6 @@
 #include <typeinfo>
 #include <boost/assert.hpp>
 #include <boost/proto/proto.hpp>
-#include <boost/proto/detail/deduce_domain.hpp>
 namespace proto = boost::proto;
 using proto::_;
 
@@ -136,6 +135,13 @@ int main()
     static_assert(std::is_convertible<proto::not_equal_to<int_, int_>, bool>::value, "not convertible to bool");
     static_assert(!std::is_convertible<proto::equal_to<int_, proto::terminal<void *>>, bool>::value, "convertible to bool");
     static_assert(!std::is_convertible<proto::not_equal_to<int_, proto::terminal<void *>>, bool>::value, "convertible to bool");
+
+    bool b0 = (int_(42) + 42) == (42 + int_(42));
+    if(!b0)
+        std::printf("%s\n", "***ERROR 7**** (int_(42) + 42) is not equal to (42 + int_(42))");
+    bool b1 = (int_(42) + int_(42)) == (int_(42) + int_(43));
+    if(b1)
+        std::printf("%s\n", "***ERROR 7**** (int_(42) + int_(42)) is equal to (int_(42) + int_(43))");
 
     void done();
     done();

@@ -13,5 +13,6 @@
 #include <boost/proto/domain.hpp>
 #include <boost/proto/expr.hpp>
 #include <boost/proto/tags.hpp>
+#include <boost/proto/operators.hpp>
 
 #endif
