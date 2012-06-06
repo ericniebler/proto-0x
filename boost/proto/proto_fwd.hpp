@@ -12,18 +12,22 @@
 #include <utility>
 #include <type_traits>
 
-// Usage: auto fun(T t) BOOST_PROTO_RETURN( some-expression )
+// Usage: auto fun(T t) BOOST_PROTO_AUTO_RETURN( some-expression )
 //   noexcept clause from Dave Abrahams
-#define BOOST_PROTO_RETURN(...)                                                                     \
+#define BOOST_PROTO_AUTO_RETURN(...)                                                                \
     noexcept(noexcept(decltype(__VA_ARGS__)(std::move(__VA_ARGS__))))                               \
     -> decltype(__VA_ARGS__) { return (__VA_ARGS__); }
+
+#define BOOST_PROTO_RETURN(...)                                                                     \
+    noexcept(noexcept(decltype(__VA_ARGS__)(std::move(__VA_ARGS__))))                               \
+    { return (__VA_ARGS__); }
 
 // New-style enable_if from Matt Calabrese
 #define BOOST_PROTO_ENABLE_IF(...)                                                                  \
     typename std::enable_if<(__VA_ARGS__)>::type *& = boost::proto::detail::enabler
 
 // New-style enable_if from Matt Calabrese
-#define BOOST_PROTO_ENABLE_IF_VALID_EXPR(...)                                                             \
+#define BOOST_PROTO_ENABLE_IF_VALID_EXPR(...)                                                       \
     decltype(static_cast<void>(__VA_ARGS__)) *& = boost::proto::detail::enabler
 
 // For adding defaulted default, copy and move constructors, and move/copy assign.

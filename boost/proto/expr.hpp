@@ -75,6 +75,86 @@ namespace boost
             {
                 return b0 || detail::logical_or_(rest...);
             }
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // are_equality_comparible
+            template<typename L, typename R
+              , BOOST_PROTO_ENABLE_IF_VALID_EXPR(std::declval<L>().proto_equal_to(std::declval<R>()))>
+            std::true_type are_equality_comparible_(int);
+
+            template<typename L, typename R>
+            std::false_type are_equality_comparible_(any);
+
+            template<typename L, typename R>
+            struct are_equality_comparible
+              : decltype(are_equality_comparible_<L, R>(1))
+            {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // struct smart_bool
+            struct smart_bool
+            {
+                int member;
+            };
+
+            typedef int smart_bool::*unspecified_bool_type;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // struct expr_equality_comparable_base
+            //  expr_equality_comparable_base and friends are very carefully crafted, along with
+            //  proto::args::operator==, to only allow expressions that can be compared to have
+            //  a functioning proto_equal_to, and also to allow a==b and a!=b to have implicit
+            //  conversions to bool only where it makes sense to allow it.
+            template<typename Expr>
+            struct expr_equality_comparable_base;
+
+            template<typename Tag, typename ...A, typename Domain>
+            struct expr_equality_comparable_base<basic_expr<Tag, args<A...>, Domain>>
+            {
+                template<typename ...B>
+                inline auto proto_equal_to(basic_expr<Tag, args<B...>, Domain> const &that) const
+                BOOST_PROTO_AUTO_RETURN(
+                    dependent_static_cast<basic_expr<Tag, args<A...>, Domain> const &>(*this, that).proto_args() == that.proto_args()
+                )
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // struct expr_equality_comparable
+            template<typename Expr, typename EnableIf = void>
+            struct expr_equality_comparable
+              : expr_equality_comparable_base<Expr>
+            {};
+
+            // We use the nasty, old smart-bool idiom below instead of an explicit converion
+            // to bool because an explicit boolean conversion doesn't satisfy the requirements
+            // of the EqualityComparible concept.
+            template<typename T, typename U, typename Domain>
+            struct expr_equality_comparable<
+                basic_expr<tag::equal_to, args<T, U>, Domain>
+              , typename std::enable_if<are_equality_comparible<T, U>::value>::type
+            >
+              : expr_equality_comparable_base<basic_expr<tag::equal_to, args<T, U>, Domain>>
+            {
+                inline operator unspecified_bool_type() const
+                BOOST_PROTO_RETURN(
+                    proto::child<0>(static_cast<basic_expr<tag::equal_to, args<T, U>, Domain> const &>(*this)).proto_equal_to(
+                    proto::child<1>(static_cast<basic_expr<tag::equal_to, args<T, U>, Domain> const &>(*this))) ? &smart_bool::member : 0
+                )
+            };
+
+            template<typename T, typename U, typename Domain>
+            struct expr_equality_comparable<
+                basic_expr<tag::not_equal_to, args<T, U>, Domain>
+              , typename std::enable_if<are_equality_comparible<T, U>::value>::type
+            >
+              : expr_equality_comparable_base<basic_expr<tag::not_equal_to, args<T, U>, Domain>>
+            {
+                inline operator unspecified_bool_type() const
+                BOOST_PROTO_RETURN(
+                    proto::child<0>(static_cast<basic_expr<tag::not_equal_to, args<T, U>, Domain> const &>(*this)).proto_equal_to(
+                    proto::child<1>(static_cast<basic_expr<tag::not_equal_to, args<T, U>, Domain> const &>(*this))) ? 0 : &smart_bool::member
+                )
+            };
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +177,7 @@ namespace boost
         #define BOOST_PROTO_DEPENDENT_STATIC_CAST(TO, FROM, ...)                                    \
             boost::proto::detail::dependent_static_cast<TO>(FROM, __VA_ARGS__)
 
-        #define BOOST_PROTO_DEPENDENT_DECLVAL(T, ...)                                             \
+        #define BOOST_PROTO_DEPENDENT_DECLVAL(T, ...)                                               \
             boost::proto::detail::dependent_declval<T, __VA_ARGS__>()
 
         ////////////////////////////////////////////////////////////////////////////////////
@@ -168,7 +248,7 @@ namespace boost
                 // operator=
                 template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(expr_assign, U))>
                 auto operator=(U && u) &
-                BOOST_PROTO_RETURN(
+                BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::assign()
                       , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr &, *this, u)
@@ -178,7 +258,7 @@ namespace boost
 
                 template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(expr_assign, U))>
                 auto operator=(U && u) const &
-                BOOST_PROTO_RETURN(
+                BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::assign()
                       , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr const &, *this, u)
@@ -188,7 +268,7 @@ namespace boost
 
                 template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(expr_assign, U))>
                 auto operator=(U && u) &&
-                BOOST_PROTO_RETURN(
+                BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::assign()
                       , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr &&, static_cast<expr_assign &&>(*this), u)
@@ -211,7 +291,7 @@ namespace boost
                 // operator[]
                 template<typename U>
                 auto operator[](U && u) &
-                BOOST_PROTO_RETURN(
+                BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::subscript()
                       , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr &, *this, u)
@@ -221,7 +301,7 @@ namespace boost
 
                 template<typename U>
                 auto operator[](U && u) const &
-                BOOST_PROTO_RETURN(
+                BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::subscript()
                       , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr const &, *this, u)
@@ -231,7 +311,7 @@ namespace boost
 
                 template<typename U>
                 auto operator[](U && u) &&
-                BOOST_PROTO_RETURN(
+                BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::subscript()
                       , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr &&, static_cast<expr_subscript &&>(*this), u)
@@ -254,7 +334,7 @@ namespace boost
                 // operator()
                 template<typename ...U>
                 auto operator()(U &&... u) &
-                BOOST_PROTO_RETURN(
+                BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::function()
                       , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr &, *this, u...)
@@ -264,7 +344,7 @@ namespace boost
 
                 template<typename ...U>
                 auto operator()(U &&... u) const &
-                BOOST_PROTO_RETURN(
+                BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::function()
                       , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr const &, *this, u...)
@@ -274,7 +354,7 @@ namespace boost
 
                 template<typename ...U>
                 auto operator()(U &&... u) &&
-                BOOST_PROTO_RETURN(
+                BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::function()
                       , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr &&, static_cast<expr_function &&>(*this), u...)
@@ -284,74 +364,6 @@ namespace boost
 
                 template<typename ...U>
                 void operator()(U &&... u) const && = delete;
-            };
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // struct expr_equality_comparable_base
-            template<typename Expr>
-            struct expr_equality_comparable_base;
-
-            template<typename Tag, typename ...A, typename Domain>
-            struct expr_equality_comparable_base<basic_expr<Tag, args<A...>, Domain>>
-            {
-                template<typename ...B>
-                inline auto proto_equal_to(basic_expr<Tag, args<B...>, Domain> const &that) const
-                BOOST_PROTO_RETURN(
-                    detail::dependent_static_cast<basic_expr<Tag, args<A...>, Domain> const &>(*this, that).proto_args() == that.proto_args()
-                )
-            };
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // struct expr_equality_comparable
-            template<typename Expr>
-            struct expr_equality_comparable
-              : expr_equality_comparable_base<Expr>
-            {};
-
-            template<typename T, typename U, typename Domain>
-            struct expr_equality_comparable<basic_expr<tag::equal_to, args<T, U>, Domain>>
-              : expr_equality_comparable_base<basic_expr<tag::equal_to, args<T, U>, Domain>>
-            {
-                template<
-                    typename Bool
-                  , BOOST_PROTO_ENABLE_IF(std::is_same<Bool, bool>::value)
-                  , BOOST_PROTO_ENABLE_IF_VALID_EXPR(
-                        proto::child<0>(detail::dependent_declval<basic_expr<tag::equal_to, args<T, U>, Domain>, Bool>()).proto_equal_to(
-                        proto::child<1>(detail::dependent_declval<basic_expr<tag::equal_to, args<T, U>, Domain>, Bool>()))
-                    )
-                >
-                explicit inline operator Bool() const
-                    noexcept(noexcept(Bool(
-                        proto::child<0>(detail::dependent_declval<basic_expr<tag::equal_to, args<T, U>, Domain>, Bool>()).proto_equal_to(
-                        proto::child<1>(detail::dependent_declval<basic_expr<tag::equal_to, args<T, U>, Domain>, Bool>()))
-                    )))
-                {
-                    auto const &self = static_cast<basic_expr<tag::equal_to, args<T, U>, Domain> const &>(*this);
-                    return proto::child<0>(self).proto_equal_to(proto::child<1>(self));
-                }
-            };
-
-            template<typename T, typename U, typename Domain>
-            struct expr_equality_comparable<basic_expr<tag::not_equal_to, args<T, U>, Domain>>
-              : expr_equality_comparable_base<basic_expr<tag::not_equal_to, args<T, U>, Domain>>
-            {
-                template<
-                    typename Bool
-                  , BOOST_PROTO_ENABLE_IF(std::is_same<Bool, bool>::value)
-                  , BOOST_PROTO_ENABLE_IF_VALID_EXPR(
-                        proto::child<0>(detail::dependent_declval<basic_expr<tag::equal_to, args<T, U>, Domain>, Bool>()).proto_equal_to(
-                        proto::child<1>(detail::dependent_declval<basic_expr<tag::equal_to, args<T, U>, Domain>, Bool>()))
-                    )
-                >
-                explicit inline operator Bool() const
-                    noexcept(noexcept(Bool(
-                        proto::child<0>(detail::dependent_declval<basic_expr<tag::equal_to, args<T, U>, Domain>, Bool>()).proto_equal_to(
-                        proto::child<1>(detail::dependent_declval<basic_expr<tag::equal_to, args<T, U>, Domain>, Bool>()))
-                    )))
-                {
-                    auto const &self = static_cast<basic_expr<tag::not_equal_to, args<T, U>, Domain> const &>(*this);
-                    return !proto::child<0>(self).proto_equal_to(proto::child<1>(self));
-                }
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -366,7 +378,7 @@ namespace boost
               : expr_base
               , Tag
               , Args
-              , expr_equality_comparable<basic_expr<Tag, Args, Domain>>
+              , detail::expr_equality_comparable<basic_expr<Tag, Args, Domain>>
             {
                 ////////////////////////////////////////////////////////////////////////////////////
                 // Check constraints

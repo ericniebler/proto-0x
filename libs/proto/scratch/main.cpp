@@ -7,20 +7,22 @@ namespace proto = boost::proto;
 template<typename T>
 struct undefined;
 
+template<typename A, typename B>
+struct AAA;
+
+template<typename A>
+using BBB = AAA<A, int>;
+
+template<template<typename> class C>
+struct CCC {};
+CCC<BBB> ccc;
+
 // Test that simple proto expressions are trivial.
 // Note: expressions that store references are not, and cannot be, trivial because
 // they are not default constructable.
 typedef proto::terminal<int> int_;
 static_assert(std::is_trivial<decltype(int_())>::value, "not trivial!");
 static_assert(std::is_trivial<decltype(int_()(3.14))>::value, "not trivial!");
-
-//void foo()
-//{
-//    //static_assert(!proto::is_expr<proto::args<float>>::value, "");
-//    //proto::domains::as_expr<proto::default_domain>(proto::exprs::make_args(3.14));
-//    proto::domains::as_expr<proto::default_domain>(int_());
-//    //proto::default_domain::make_expr()(proto::tag::function(), int_(), 3.14);
-//}
 
 template<typename Tag, typename Args>
 struct MyExpr;
@@ -125,6 +127,11 @@ int main()
         std::printf("%s\n", "***ERROR 5**** iii_[42] is not equal to iii_[42]");
     if(!proto::domains::make_expr<MyDomain>(proto::tag::not_equal_to(), jjj_, iii_[43]))
         std::printf("%s\n", "***ERROR 6**** iii_[42] is equal to iii_[43]");
+
+    static_assert(std::is_convertible<proto::equal_to<int_, int_>, bool>::value, "not convertible to bool");
+    static_assert(std::is_convertible<proto::not_equal_to<int_, int_>, bool>::value, "not convertible to bool");
+    static_assert(!std::is_convertible<proto::equal_to<int_, proto::terminal<void *>>, bool>::value, "convertible to bool");
+    static_assert(!std::is_convertible<proto::not_equal_to<int_, proto::terminal<void *>>, bool>::value, "convertible to bool");
 
     void done();
     done();

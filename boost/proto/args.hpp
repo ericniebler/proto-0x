@@ -39,7 +39,7 @@ namespace boost
             #define BOOST_PP_LOCAL_MACRO(N)                                                         \
             template<typename Args>                                                                 \
             inline constexpr auto child_impl(Args &&that, std::integral_constant<std::size_t, N>)   \
-            BOOST_PROTO_RETURN(                                                                     \
+            BOOST_PROTO_AUTO_RETURN(                                                                \
                 /*extra parens are significant!*/                                                   \
                 (static_cast<Args &&>(that).BOOST_PP_CAT(proto_child, N))                           \
             )                                                                                       \
@@ -50,7 +50,7 @@ namespace boost
 
             template<typename Args, std::size_t I>
             inline constexpr auto child_impl(Args &&that, std::integral_constant<std::size_t, I>)
-            BOOST_PROTO_RETURN(
+            BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl(
                     static_cast<Args &&>(that).proto_args_tail
                   , std::integral_constant<std::size_t, I-BOOST_PROTO_ARGS_UNROLL_MAX>()
@@ -86,7 +86,7 @@ namespace boost
 
             #define INIT(Z, N, D) proto_child ## N(static_cast< U ## N && >( u ## N ))
             #define MEMBERS(Z, N, D) typedef T ## N proto_child_type ## N; T ## N proto_child ## N;
-            #define EQUAL_TO(Z, N, D) proto_child ## N == that. proto_child ## N &&
+            #define EQUAL_TO(Z, N, D) static_cast<bool>(proto_child ## N == that. proto_child ## N) &&
 
             #define BOOST_PP_LOCAL_MACRO(N)                                                         \
             template<BOOST_PP_ENUM_PARAMS(N, typename T)>                                           \
@@ -103,16 +103,15 @@ namespace boost
                                                                                                     \
                 template<BOOST_PP_ENUM_PARAMS(N, typename U)>                                       \
                 inline auto operator==(args<BOOST_PP_ENUM_PARAMS(N, U)> const &that) const          \
-                BOOST_PROTO_RETURN(                                                                 \
+                BOOST_PROTO_AUTO_RETURN(                                                            \
                     BOOST_PP_REPEAT(N, EQUAL_TO, ~) true                                            \
                 )                                                                                   \
                                                                                                     \
                 template<BOOST_PP_ENUM_PARAMS(N, typename U)>                                       \
                 inline auto operator!=(args<BOOST_PP_ENUM_PARAMS(N, U)> const &that) const          \
-                BOOST_PROTO_RETURN(                                                                 \
+                BOOST_PROTO_AUTO_RETURN(                                                            \
                     !(*this == that)                                                                \
                 )                                                                                   \
-                                                                                                    \
             };                                                                                      \
             /**/
 
@@ -139,13 +138,13 @@ namespace boost
 
                 template<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, typename U), typename ...Rest>
                 inline auto operator==(args<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, U), Rest...> const &that) const
-                BOOST_PROTO_RETURN(
+                BOOST_PROTO_AUTO_RETURN(
                     BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, EQUAL_TO, ~) proto_args_tail == that.proto_args_tail
                 )
 
                 template<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, typename U), typename ...Rest>
                 inline auto operator!=(args<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, U), Rest...> const &that) const
-                BOOST_PROTO_RETURN(
+                BOOST_PROTO_AUTO_RETURN(
                     !(*this == that)
                 )
             };
@@ -159,19 +158,19 @@ namespace boost
             // child
             template<std::size_t I, typename ...T>
             inline constexpr auto child(args<T...> &a)
-            BOOST_PROTO_RETURN(
+            BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl(a, std::integral_constant<std::size_t, I>())
             )
 
             template<std::size_t I, typename ...T>
             inline constexpr auto child(args<T...> const &a)
-            BOOST_PROTO_RETURN(
+            BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl(a, std::integral_constant<std::size_t, I>())
             )
 
             template<std::size_t I, typename ...T>
             inline constexpr auto child(args<T...> &&a)
-            BOOST_PROTO_RETURN(
+            BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl(static_cast<args<T...> &&>(a), std::integral_constant<std::size_t, I>())
             )
 
@@ -179,19 +178,19 @@ namespace boost
             // left
             template<typename L, typename R>
             inline constexpr auto left(args<L, R> &a)
-            BOOST_PROTO_RETURN(
+            BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl(a, std::integral_constant<std::size_t, 0>())
             )
 
             template<typename L, typename R>
             inline constexpr auto left(args<L, R> const &a)
-            BOOST_PROTO_RETURN(
+            BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl(a, std::integral_constant<std::size_t, 0>())
             )
 
             template<typename L, typename R>
             inline constexpr auto left(args<L, R> &&a)
-            BOOST_PROTO_RETURN(
+            BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl(static_cast<args<L, R> &&>(a), std::integral_constant<std::size_t, 0>())
             )
 
@@ -199,43 +198,43 @@ namespace boost
             // right
             template<typename L, typename R>
             inline constexpr auto right(args<L, R> &a)
-            BOOST_PROTO_RETURN(
+            BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl(a, std::integral_constant<std::size_t, 1>())
             )
 
             template<typename L, typename R>
             inline constexpr auto right(args<L, R> const &a)
-            BOOST_PROTO_RETURN(
+            BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl(a, std::integral_constant<std::size_t, 1>())
             )
 
             template<typename L, typename R>
             inline constexpr auto right(args<L, R> &&a)
-            BOOST_PROTO_RETURN(
+            BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl(static_cast<args<L, R> &&>(a), std::integral_constant<std::size_t, 1>())
             )
 
             template<typename T>
             inline constexpr auto value(args<T> &that)
-            BOOST_PROTO_RETURN(
+            BOOST_PROTO_AUTO_RETURN(
                 (that.proto_child0) // extra parens are significant!
             )
 
             template<typename T>
             inline constexpr auto value(args<T> const &that)
-            BOOST_PROTO_RETURN(
+            BOOST_PROTO_AUTO_RETURN(
                 (that.proto_child0) // extra parens are significant!
             )
 
             template<typename T>
             inline constexpr auto value(args<T> &&that)
-            BOOST_PROTO_RETURN(
+            BOOST_PROTO_AUTO_RETURN(
                 (static_cast<args<T> &&>(that).proto_child0)  // extra parens are significant!
             )
 
             template<typename ...T>
             inline constexpr auto make_args(T &&... t)
-            BOOST_PROTO_RETURN(
+            BOOST_PROTO_AUTO_RETURN(
                 args<T...>(static_cast<T &&>(t)...)
             )
         }
