@@ -31,10 +31,11 @@
     decltype(static_cast<void>(__VA_ARGS__)) *& = boost::proto::detail::enabler
 
 // For adding defaulted default, copy and move constructors, and move/copy assign.
+// clang needs the constexpr's here, but it looks like a compiler bug.
 #define BOOST_PROTO_REGULAR_TRIVIAL_CLASS(CLASS)                                                    \
-    CLASS() = default; /*required for the type to be trivial!*/                                     \
-    CLASS(CLASS const &) = default; /* memberwise copy */                                           \
-    CLASS(CLASS &&) = default; /* member-wise move */                                               \
+    constexpr CLASS() = default; /*required for the type to be trivial!*/                           \
+    constexpr CLASS(CLASS const &) = default; /* memberwise copy */                                 \
+    constexpr CLASS(CLASS &&) = default; /* member-wise move */                                     \
     /* These would otherwise be deleted because we */                                               \
     /* declared a move constructor! */                                                              \
     CLASS &operator=(CLASS const &) = default; /* memberwise copy assign */                         \

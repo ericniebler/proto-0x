@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <typeinfo>
+#include <string>
 #include <boost/assert.hpp>
 #include <boost/proto/proto.hpp>
 namespace proto = boost::proto;
@@ -142,6 +143,21 @@ int main()
     bool b1 = (int_(42) + int_(42)) == (int_(42) + int_(43));
     if(b1)
         std::printf("%s\n", "***ERROR 7**** (int_(42) + int_(42)) is equal to (int_(42) + int_(43))");
+
+    // test for nothrow operations
+    typedef proto::not_equal_to<int_, int_> int_ne_int;
+    int_ne_int inei(int_(42), int_(42));
+    constexpr int_ne_int cinei(int_(42), int_(42));
+    static_assert(noexcept(int_ne_int()), "not noexcept default constructor");
+    static_assert(noexcept(int_ne_int(cinei)), "not noexcept copy constructor");
+    static_assert(noexcept(int_ne_int(int_ne_int())), "not noexcept move constructor");
+    static_assert(noexcept(inei = cinei), "not noexcept copy assign");
+    static_assert(noexcept(inei = int_ne_int()), "not noexcept move assign");
+
+    // Verify that the constexpr ctors can be called even when the
+    // contained objects have non-constexpr constructors
+    typedef proto::terminal<std::string> string_;
+    string_ str("hellohellohellohellohellohellohellohello!");
 
     void done();
     done();

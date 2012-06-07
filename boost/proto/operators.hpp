@@ -170,7 +170,7 @@ namespace boost { namespace proto
         inline auto if_else(A0 &&a0, A1 &&a1, A2 &&a2)
         BOOST_PROTO_AUTO_RETURN(
             ::boost::proto::domains::make_expr<
-                typename detail::common_domain<
+                typename detail::common_domain2<
                     decltype(detail::get_domain(a1))
                   , decltype(detail::get_domain(a2))
                 >::type

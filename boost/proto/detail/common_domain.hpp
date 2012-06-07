@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// deduce_domain.hpp
-// Contains definition of deduce_domain\<\> class templates
+// common_domain.hpp
+// Contains definition of common_domain\<\> class template
 // for finding the domain that is common among the specified
 // domains
 //
@@ -12,8 +12,8 @@
 // also to Jeremiah Willcock, John Bytheway and Krishna Achuthan who
 // offered alternate solutions to this tricky programming problem.
 
-#ifndef BOOST_PROTO_DEDUCE_DOMAIN_HPP_INCLUDED
-#define BOOST_PROTO_DEDUCE_DOMAIN_HPP_INCLUDED
+#ifndef BOOST_PROTO_COMMON_DOMAIN_HPP_INCLUDED
+#define BOOST_PROTO_COMMON_DOMAIN_HPP_INCLUDED
 
 #include <cstddef>
 #include <type_traits>
@@ -123,4 +123,4 @@ namespace boost
     }
 }
 
-#endif // BOOST_PROTO_DEDUCE_DOMAIN_HPP_INCLUDED
+#endif // BOOST_PROTO_COMMON_DOMAIN_HPP_INCLUDED

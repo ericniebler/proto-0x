@@ -14,7 +14,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/args.hpp>
 #include <boost/proto/tags.hpp>
-#include <boost/proto/detail/deduce_domain.hpp>
+#include <boost/proto/detail/common_domain.hpp>
 
 namespace boost
 {

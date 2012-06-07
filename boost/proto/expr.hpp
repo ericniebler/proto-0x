@@ -229,10 +229,16 @@ namespace boost
             using typename BASE::proto_args_type;                                                   \
                                                                                                     \
             constexpr EXPR(proto_tag_type tag, proto_args_type args)                                \
+                noexcept(noexcept(                                                                  \
+                    BASE(static_cast<proto_tag_type &&>(tag), static_cast<proto_args_type &&>(args))\
+                ))                                                                                  \
               : BASE(static_cast<proto_tag_type &&>(tag), static_cast<proto_args_type &&>(args))    \
             {}                                                                                      \
                                                                                                     \
             constexpr explicit EXPR(proto_args_type args)                                           \
+                noexcept(noexcept(                                                                  \
+                    EXPR(proto_tag_type(), static_cast<proto_args_type &&>(args))                   \
+                ))                                                                                  \
               : EXPR(proto_tag_type(), static_cast<proto_args_type &&>(args))                       \
             {}                                                                                      \
                                                                                                     \
@@ -242,6 +248,9 @@ namespace boost
                 )                                                                                   \
             >                                                                                       \
             constexpr EXPR(proto_tag_type tag, A &&a)                                               \
+                noexcept(noexcept(                                                                  \
+                    BASE(static_cast<proto_tag_type &&>(tag), static_cast<A &&>(a))                 \
+                ))                                                                                  \
               : BASE(static_cast<proto_tag_type &&>(tag), static_cast<A &&>(a))                     \
             {}                                                                                      \
                                                                                                     \
@@ -251,6 +260,9 @@ namespace boost
                 )                                                                                   \
             >                                                                                       \
             explicit constexpr EXPR(A &&a)                                                          \
+                noexcept(noexcept(                                                                  \
+                    EXPR(proto_tag_type(), static_cast<A &&>(a))                                    \
+                ))                                                                                  \
               : EXPR(proto_tag_type(), static_cast<A &&>(a))                                        \
             {}                                                                                      \
                                                                                                     \
@@ -258,6 +270,12 @@ namespace boost
               , BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == sizeof...(C) + 2)       \
             >                                                                                       \
             constexpr EXPR(proto_tag_type tag, A &&a, B &&b, C &&... c)                             \
+                noexcept(noexcept(                                                                  \
+                    BASE(                                                                           \
+                        static_cast<proto_tag_type &&>(tag)                                         \
+                      , static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...         \
+                    )                                                                               \
+                ))                                                                                  \
               : BASE(                                                                               \
                     static_cast<proto_tag_type &&>(tag)                                             \
                   , static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...             \
@@ -267,6 +285,12 @@ namespace boost
             template<typename A, typename B, typename ...C                                          \
               , BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == sizeof...(C) + 2)>      \
             constexpr EXPR(A &&a, B &&b, C &&... c)                                                 \
+                noexcept(noexcept(                                                                  \
+                    EXPR(                                                                           \
+                        proto_tag_type()                                                            \
+                      , static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...         \
+                    )                                                                               \
+                ))                                                                                  \
               : EXPR(                                                                               \
                     proto_tag_type()                                                                \
                   , static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...             \
@@ -448,11 +472,16 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // constructors
                 constexpr basic_expr(Tag tag, Args args)
+                    noexcept(noexcept(
+                        static_cast<void>(Tag(static_cast<Tag &&>(tag)))
+                      , static_cast<void>(Args(static_cast<Args &&>(args)))
+                    ))
                   : Tag(static_cast<Tag &&>(tag))
                   , Args(static_cast<Args &&>(args))
                 {}
 
                 explicit constexpr basic_expr(Args args)
+                    noexcept(noexcept(basic_expr(Tag(), static_cast<Args &&>(args))))
                   : basic_expr(Tag(), static_cast<Args &&>(args))
                 {}
 
@@ -462,6 +491,10 @@ namespace boost
                     )
                 >
                 constexpr basic_expr(Tag tag, A &&a)
+                    noexcept(noexcept(
+                        static_cast<void>(Tag(static_cast<Tag &&>(tag)))
+                      , static_cast<void>(Args(static_cast<A &&>(a)))
+                    ))
                   : Tag(static_cast<Tag &&>(tag))
                   , Args(static_cast<A &&>(a))
                 {}
@@ -473,6 +506,9 @@ namespace boost
                     )
                 >
                 explicit constexpr basic_expr(A &&a)
+                    noexcept(noexcept(
+                        basic_expr(Tag(), static_cast<A &&>(a))
+                    ))
                   : basic_expr(Tag(), static_cast<A &&>(a))
                 {}
 
@@ -480,6 +516,10 @@ namespace boost
                   , BOOST_PROTO_ENABLE_IF(sizeof...(C) + 2 == Args::proto_size::value)
                 >
                 constexpr basic_expr(Tag tag, A &&a, B &&b, C &&... c)
+                    noexcept(noexcept(
+                        static_cast<void>(Tag(static_cast<Tag &&>(tag)))
+                      , static_cast<void>(Args(static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...))
+                    ))
                   : Tag(static_cast<Tag &&>(tag))
                   , Args(static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...)
                 {}
@@ -488,6 +528,12 @@ namespace boost
                   , BOOST_PROTO_ENABLE_IF(sizeof...(C) + 2 == Args::proto_size::value)
                 >
                 constexpr basic_expr(A &&a, B &&b, C &&... c)
+                    noexcept(noexcept(
+                        basic_expr(
+                            Tag()
+                          , static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...
+                        )
+                    ))
                   : basic_expr(
                         Tag()
                       , static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...
@@ -496,37 +542,37 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // accessors
-                Tag & proto_tag() &
+                Tag & proto_tag() & noexcept
                 {
                     return *this;
                 }
 
-                Tag const & proto_tag() const &
+                Tag const & proto_tag() const & noexcept
                 {
                     return *this;
                 }
 
-                Tag && proto_tag() &&
+                Tag && proto_tag() && noexcept
                 {
                     return static_cast<Tag &&>(*this);
                 }
 
-                Args & proto_args() &
+                Args & proto_args() & noexcept
                 {
                     return *this;
                 }
 
-                Args const & proto_args() const &
+                Args const & proto_args() const & noexcept
                 {
                     return *this;
                 }
 
-                Args && proto_args() &&
+                Args && proto_args() && noexcept
                 {
                     return static_cast<Args &&>(*this);
                 }
 
-                Domain proto_domain() const
+                Domain proto_domain() const noexcept(noexcept(Domain()))
                 {
                     return Domain();
                 }

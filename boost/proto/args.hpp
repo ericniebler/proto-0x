@@ -85,6 +85,7 @@ namespace boost
             };
 
             #define INIT(Z, N, D) proto_child ## N(static_cast< U ## N && >( u ## N ))
+            #define CTORS(Z, N, D) static_cast<void>(T ## N(static_cast< U ## N && >( u ## N )))
             #define MEMBERS(Z, N, D) typedef T ## N proto_child_type ## N; T ## N proto_child ## N;
             #define EQUAL_TO(Z, N, D) static_cast<bool>(proto_child ## N == that. proto_child ## N) &&
 
@@ -98,6 +99,7 @@ namespace boost
                                                                                                     \
                 template<BOOST_PP_ENUM_PARAMS(N, typename U) DISABLE_COPY_IF(args, N, U0)>          \
                 explicit constexpr args(BOOST_PP_ENUM_BINARY_PARAMS(N, U, &&u))                     \
+                    noexcept(noexcept(BOOST_PP_ENUM(N, CTORS, ~)))                                  \
                   : BOOST_PP_ENUM(N, INIT, ~)                                                       \
                 {}                                                                                  \
                                                                                                     \
@@ -132,6 +134,10 @@ namespace boost
                     DISABLE_COPY_IF(args, BOOST_PROTO_ARGS_UNROLL_MAX, U0)
                 >
                 explicit constexpr args(BOOST_PP_ENUM_BINARY_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, U, &&u), Rest &&...rest)
+                    noexcept(noexcept(
+                        BOOST_PP_ENUM(BOOST_PROTO_ARGS_UNROLL_MAX, CTORS, ~)
+                      , static_cast<void>(args<Tail...>(static_cast<Rest &&>(rest)...))
+                    ))
                   : BOOST_PP_ENUM(BOOST_PROTO_ARGS_UNROLL_MAX, INIT, ~)
                   , proto_args_tail(static_cast<Rest &&>(rest)...) // std::forward is NOT constexpr!
                 {}
@@ -150,6 +156,7 @@ namespace boost
             };
 
             #undef INIT
+            #undef CTORS
             #undef MEMBERS
             #undef EQUAL_TO
             #undef DISABLE_COPY_IF
