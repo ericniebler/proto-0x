@@ -93,18 +93,22 @@ namespace boost { namespace proto
 #define BOOST_PROTO_UNARY_OP_IS_POSTFIX_1 , int
 
 #define BOOST_PROTO_DEFINE_UNARY_OPERATOR(OP, TAG, TRAIT, DOMAIN, POST)                             \
-    template<typename Arg, BOOST_PROTO_ENABLE_IF(BOOST_PROTO_APPLY_UNARY_(TRAIT, Arg))>             \
+    template<typename Arg                                                                           \
+      , BOOST_PROTO_ENABLE_IF(BOOST_PROTO_APPLY_UNARY_(TRAIT, Arg))>                                \
     inline auto operator OP(Arg &&arg BOOST_PROTO_UNARY_OP_IS_POSTFIX_ ## POST)                     \
     BOOST_PROTO_AUTO_RETURN(                                                                        \
-        ::boost::proto::domains::make_expr<DOMAIN>(TAG(), static_cast<Arg &&>(arg))                 \
+        ::boost::proto::domains::make_expr<DOMAIN>(                                                 \
+            TAG(), static_cast<Arg &&>(arg))                                                        \
     )                                                                                               \
     /**/
 
 #define BOOST_PROTO_DEFINE_BINARY_OPERATOR(OP, TAG, TRAIT, DOMAIN)                                  \
-    template<typename Left, typename Right, BOOST_PROTO_ENABLE_IF(BOOST_PROTO_APPLY_BINARY_(TRAIT, Left, Right))>\
+    template<typename Left, typename Right                                                          \
+      , BOOST_PROTO_ENABLE_IF(BOOST_PROTO_APPLY_BINARY_(TRAIT, Left, Right))>                       \
     inline auto operator OP(Left &&left, Right &&right)                                             \
     BOOST_PROTO_AUTO_RETURN(                                                                        \
-        ::boost::proto::domains::make_expr<DOMAIN>(TAG(), static_cast<Left &&>(left), static_cast<Right &&>(right))\
+        ::boost::proto::domains::make_expr<DOMAIN>(                                                 \
+            TAG(), static_cast<Left &&>(left), static_cast<Right &&>(right))                        \
     )                                                                                               \
     /**/
 
@@ -169,12 +173,7 @@ namespace boost { namespace proto
         template<typename A0, typename A1, typename A2>
         inline auto if_else(A0 &&a0, A1 &&a1, A2 &&a2)
         BOOST_PROTO_AUTO_RETURN(
-            ::boost::proto::domains::make_expr<
-                typename detail::common_domain2<
-                    decltype(detail::get_domain(a1))
-                  , decltype(detail::get_domain(a2))
-                >::type
-            >(
+            ::boost::proto::domains::make_expr<deduce_domain>(
                 tag::if_else_()
               , static_cast<A0 &&>(a0)
               , static_cast<A1 &&>(a1)
