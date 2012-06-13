@@ -11,6 +11,8 @@
 
 #include <utility>
 #include <type_traits>
+//#include <limits>
+#include <climits>
 
 // Usage: auto fun(T t) BOOST_PROTO_AUTO_RETURN( some-expression )
 //   noexcept clause from Dave Abrahams
@@ -201,8 +203,19 @@ namespace boost
         template<typename T>
         struct is_expr;
 
+        template<typename T>
+        struct exact;
+
+        template<typename T>
+        struct convertible_to;
+
         template<typename Grammar>
         struct vararg;
+
+        // Boost bug https://svn.boost.org/trac/boost/ticket/4602
+        //int const N = INT_MAX;
+        //constexpr int N = (std::numeric_limits<int>::max() >> 10);
+        constexpr int N = (INT_MAX >> 10);
 
         template<typename Expr, typename Grammar>
         struct matches;
