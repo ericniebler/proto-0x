@@ -201,6 +201,12 @@ namespace boost
         template<typename T>
         struct is_expr;
 
+        template<typename Grammar>
+        struct vararg;
+
+        template<typename Expr, typename Grammar>
+        struct matches;
+
         template<typename Tag, typename T>
         using nullary_expr = expr<Tag, args<T>>;
 
