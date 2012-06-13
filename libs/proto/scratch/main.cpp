@@ -273,11 +273,19 @@ void test_common_domain()
     static_assert(std::is_same<proto::detail::common_domain<DD4, DD4, DD3>::type, DD2>::value, "");
 }
 
+struct MyIntWrap : int_ {};
+
 void test_matches()
 {
     static_assert(proto::matches<int_, int_>::value, "");
+    static_assert(proto::matches<MyIntWrap, int_>::value, "");
+    static_assert(proto::matches<MyIntWrap &, int_>::value, "");
     static_assert(!proto::matches<int_, proto::unary_plus<_>>::value, "");
     static_assert(!proto::matches<int_, string_>::value, ""); // oops
+    static_assert(proto::matches<proto::function<int_, int_, int_>, proto::function<proto::vararg<int_>>>::value, ""); // oops
+    static_assert(proto::matches<proto::function<int_>, proto::function<int_, proto::vararg<string_>>>::value, ""); // oops
+    static_assert(!proto::matches<proto::function<int_, int_, string_>, proto::function<proto::vararg<int_>>>::value, ""); // oops
+    static_assert(!proto::matches<int_, proto::function<int_, int_>>::value, "");
 }
 
 //////////////////////////////////////////////////////

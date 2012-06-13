@@ -21,6 +21,11 @@ namespace boost
         namespace detail
         {
             ////////////////////////////////////////////////////////////////////////////////////////
+            // matches_impl
+            template<typename Expr, typename BasicExpr, typename Grammar, typename EnableIf = void>
+            struct matches_impl;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
             // get_basic_expr
             template<typename Expr>
             typename Expr::proto_basic_expr_type get_basic_expr(Expr const &);
@@ -46,7 +51,7 @@ namespace boost
             // or_ (like mpl::or_, but variadic)
             template<typename ...T>
             struct or_
-              : std::false_type
+              : std::true_type
             {};
 
             template<typename Head, typename ...T>
@@ -75,7 +80,7 @@ namespace boost
             // and_  (like mpl::and_, but variadic)
             template<typename ...T>
             struct and_
-              : std::false_type
+              : std::true_type
             {};
 
             template<typename Head, typename ...T>
@@ -244,8 +249,63 @@ namespace boost
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
+            // is_vararg
+            template<typename ...T>
+            struct is_vararg
+              : std::false_type
+            {};
+
+            template<typename Grammar>
+            struct is_vararg<vararg<Grammar>>
+              : std::true_type
+            {};
+
+            template<typename T0, typename Grammar>
+            struct is_vararg<T0, vararg<Grammar>>
+              : std::true_type
+            {};
+
+            template<typename T0, typename T1, typename Grammar>
+            struct is_vararg<T0, T1, vararg<Grammar>>
+              : std::true_type
+            {};
+
+            template<typename T0, typename T1, typename T2, typename ...Rest>
+            struct is_vararg<T0, T1, T2, Rest...>
+              : is_vararg<Rest...>
+            {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // vararg_matches
+            template<typename Args0, typename Args1>
+            struct vararg_matches
+              : std::false_type
+            {};
+
+            template<typename Head0, typename ...Tail0, typename Head1, typename ...Tail1>
+            struct vararg_matches<args<Head0, Tail0...>, args<Head1, Tail1...>>
+              : detail::and_c<
+                    matches_impl<Head0, Head0, Head1>::value
+                  , vararg_matches<args<Tail0...>, args<Tail1...>>
+                >
+            {};
+
+            template<typename Head0, typename ...Tail0, typename Grammar>
+            struct vararg_matches<args<Head0, Tail0...>, args<vararg<Grammar>>>
+              : detail::and_c<
+                    matches_impl<Head0, Head0, Grammar>::value
+                  , matches_impl<Tail0, Tail0, Grammar>...
+                >
+            {};
+
+            template<typename Grammar>
+            struct vararg_matches<args<>, args<vararg<Grammar>>>
+              : std::true_type
+            {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
             // matches_impl
-            template<typename Expr, typename BasicExpr, typename Grammar, typename EnableIf = void>
+            template<typename Expr, typename BasicExpr, typename Grammar, typename EnableIf>
             struct matches_impl
               : matches_impl<
                     Expr
@@ -285,6 +345,29 @@ namespace boost
                 typename Expr
               , template<typename, typename, typename...> class Expr0
               , template<typename, typename, typename...> class Expr1
+              , typename Tag0, typename ...Args0, typename ...Rest0
+              , typename Tag1, typename ...Args1, typename ...Rest1
+            >
+            struct matches_impl<
+                Expr
+              , Expr0<Tag0, args<Args0...>, Rest0...>
+              , Expr1<Tag1, args<Args1...>, Rest1...>
+              , typename std::enable_if<
+                    !Tag0::proto_is_terminal::value &&
+                    sizeof...(Args0) != sizeof...(Args1)
+                >::type
+            >
+              : detail::and_c<
+                    tag_matches<Tag0, Tag1>::value
+                  , is_vararg<Args1...>
+                  , vararg_matches<args<Args0...>, args<Args1...>>
+                >
+            {};
+
+            template<
+                typename Expr
+              , template<typename, typename, typename...> class Expr0
+              , template<typename, typename, typename...> class Expr1
               , typename Tag0, typename Value0, typename ...Rest0
               , typename Tag1, typename Value1, typename ...Rest1
             >
@@ -298,6 +381,22 @@ namespace boost
                     tag_matches<Tag0, Tag1>::value
                   , terminal_matches<Value0, Value1>
                 >
+            {};
+
+            template<
+                typename Expr
+              , template<typename, typename, typename...> class Expr0
+              , template<typename, typename, typename...> class Expr1
+              , typename Tag0, typename ...Args0, typename ...Rest0
+              , typename Tag1, typename ...Args1, typename ...Rest1
+            >
+            struct matches_impl<
+                Expr
+              , Expr0<Tag0, args<Args0...>, Rest0...>
+              , Expr1<Tag1, args<Args1...>, Rest1...>
+              , typename std::enable_if<Tag0::proto_is_terminal::value>::type
+            >
+              : std::false_type
             {};
         }
 
