@@ -182,7 +182,7 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // locals
-                constexpr locals_type const & locals = utility::static_const<locals_type>::value;
+                constexpr _locals const & locals = utility::static_const<_locals>::value;
             }
         } // namespace tags
 

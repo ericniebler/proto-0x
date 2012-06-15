@@ -112,9 +112,8 @@ namespace boost
 
         template<typename Ret, typename ...Args>
         struct as_transform<Ret(Args...)>
+          : transform<as_transform<Ret(Args...)>>
         {
-            typedef as_transform proto_transform_type;
-
             template<typename ...T, typename R = Ret>
             auto operator()(T &&... t) const
             BOOST_PROTO_AUTO_RETURN(
@@ -128,9 +127,8 @@ namespace boost
 
         template<typename Ret, typename ...Args>
         struct as_transform<Ret(*)(Args...)>
+          : transform<as_transform<Ret(*)(Args...)>>
         {
-            typedef as_transform proto_transform_type;
-
             template<typename ...T, typename R = Ret>
             auto operator()(T &&... t) const
             BOOST_PROTO_AUTO_RETURN(

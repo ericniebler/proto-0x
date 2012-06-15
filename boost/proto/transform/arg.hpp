@@ -49,7 +49,7 @@ namespace boost
             template<typename E, typename S, typename Env, typename ...Rest>
             auto operator()(E &&, S &&, Env && env, Rest &&...) const
             BOOST_PROTO_AUTO_RETURN(
-                env[Tag()]
+                static_cast<Env &&>(env)[Tag()]
             )
         };
     }

@@ -163,8 +163,8 @@ namespace boost
                 typedef def<struct data_> _data;
                 extern _data const & data;
 
-                typedef def<struct locals_> locals_type;
-                extern locals_type const & locals;
+                typedef def<struct locals_> _locals;
+                extern _locals const & locals;
             }
         }
 
@@ -270,6 +270,15 @@ namespace boost
 
         template<typename Expr>
         struct pass_through;
+
+        template<typename T, T Value>
+        struct constant;
+
+        template<int I>
+        using int_ = constant<int, I>;
+
+        template<std::size_t N>
+        using size_t = constant<std::size_t, N>;
 
         template<typename T>
         struct is_callable;

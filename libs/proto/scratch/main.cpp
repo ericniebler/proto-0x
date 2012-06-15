@@ -172,6 +172,19 @@ int main()
         char const (&sz)[6] = proto::_data()(p, 42, (proto::tag::data = "hello"));
     }
 
+    {
+        proto::or_<
+            proto::when<proto::terminal<int>, proto::int_<42>>
+          , proto::when<proto::terminal<std::string>, proto::int_<43>>
+        > SimpleGrammar;
+
+        int i = SimpleGrammar(int_(0));
+        std::printf("This should be 42: %d\n", i);
+
+        i = SimpleGrammar(string_("hello!"));
+        std::printf("This should be 43: %d\n", i);
+    }
+
     void done();
     done();
 }

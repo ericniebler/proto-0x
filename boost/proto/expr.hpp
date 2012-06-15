@@ -175,7 +175,7 @@ namespace boost
                                                                                                     \
             template<typename A                                                                     \
               , BOOST_PROTO_ENABLE_IF(                                                              \
-                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(A, EXPR)   \
+                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(A, EXPR) \
                 )                                                                                   \
             >                                                                                       \
             constexpr EXPR(proto_tag_type tag, A &&a)                                               \
@@ -187,7 +187,7 @@ namespace boost
                                                                                                     \
             template<typename A                                                                     \
               , BOOST_PROTO_ENABLE_IF(                                                              \
-                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(A, EXPR)   \
+                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(A, EXPR) \
                 )                                                                                   \
             >                                                                                       \
             explicit constexpr EXPR(A &&a)                                                          \
@@ -242,7 +242,8 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // operator=
-                template<typename U, typename E = Expr, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
+                template<typename U, typename E = Expr
+                  , BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
                 auto operator=(U && u) &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
@@ -252,7 +253,8 @@ namespace boost
                     )
                 )
 
-                template<typename U, typename E = Expr, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
+                template<typename U, typename E = Expr
+                  , BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
                 auto operator=(U && u) const &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
@@ -262,7 +264,8 @@ namespace boost
                     )
                 )
 
-                template<typename U, typename E = Expr, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
+                template<typename U, typename E = Expr
+                  , BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
                 auto operator=(U && u) &&
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
@@ -272,7 +275,8 @@ namespace boost
                     )
                 )
 
-                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
+                template<typename U
+                  , BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
                 void operator=(U && u) const && = delete;
             };
 
@@ -399,8 +403,6 @@ namespace boost
                       , Tag::proto_is_terminal::value ? 0 : Args::proto_size::value
                     >
                 proto_arity;
-
-                // TODO: add noexcept to ctors
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // constructors

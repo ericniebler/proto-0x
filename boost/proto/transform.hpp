@@ -11,6 +11,7 @@
 
 #include <boost/proto/transform/impl.hpp>
 #include <boost/proto/transform/arg.hpp>
+#include <boost/proto/transform/constant.hpp>
 #include <boost/proto/transform/when.hpp>
 
 #endif

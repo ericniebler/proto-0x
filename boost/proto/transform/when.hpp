@@ -22,7 +22,7 @@ namespace boost
         struct when
           : transform<when<Grammar, Transform>>
         {
-            typedef typename Grammar::proto_grammar_type proto_grammar_type;
+            typedef Grammar proto_grammar_type;
 
             template<typename ...T>
             auto operator()(T &&... t) const

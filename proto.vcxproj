@@ -69,6 +69,7 @@
     <ClInclude Include="boost\proto\tags.hpp" />
     <ClInclude Include="boost\proto\transform.hpp" />
     <ClInclude Include="boost\proto\transform\arg.hpp" />
+    <ClInclude Include="boost\proto\transform\constant.hpp" />
     <ClInclude Include="boost\proto\transform\impl.hpp" />
     <ClInclude Include="boost\proto\transform\when.hpp" />
     <ClInclude Include="boost\proto\utility.hpp" />
