@@ -4,6 +4,7 @@
 #include <typeinfo>
 #include <string>
 #include <boost/assert.hpp>
+#include <boost/proto/args.hpp>
 #include <boost/proto/proto.hpp>
 namespace proto = boost::proto;
 using proto::_;
@@ -159,6 +160,17 @@ int main()
     // contained objects have non-constexpr constructors
     string_ str("hellohellohellohellohellohellohellohello!");
 
+    {
+        int i = (proto::tag::data = 42)[proto::tag::data];
+        auto env = (proto::tag::data = 42, proto::tag::locals = "hello", proto::tag::locals = "goodbye");
+        i = env[proto::tag::data];
+        char const *loc = env[proto::tag::locals];
+        std::printf("%s\n", loc); // should print "goodbye"
+        i = env.at(1,1); // lookup with a key that doesn't exist, return default
+
+        char const (&sz)[6] = proto::_data()(p, 42, (proto::tag::data = "hello"));
+    }
+
     void done();
     done();
 }
@@ -280,11 +292,13 @@ void test_matches()
     static_assert(proto::matches<int_, int_>::value, "");
     static_assert(proto::matches<MyIntWrap, int_>::value, "");
     static_assert(proto::matches<MyIntWrap &, int_>::value, "");
+    static_assert(proto::matches<MyIntWrap &, MyIntWrap>::value, "");
     static_assert(!proto::matches<int_, proto::unary_plus<_>>::value, "");
-    static_assert(!proto::matches<int_, string_>::value, ""); // oops
-    static_assert(proto::matches<proto::function<int_, int_, int_>, proto::function<proto::vararg<int_>>>::value, ""); // oops
-    static_assert(proto::matches<proto::function<int_>, proto::function<int_, proto::vararg<string_>>>::value, ""); // oops
-    static_assert(!proto::matches<proto::function<int_, int_, string_>, proto::function<proto::vararg<int_>>>::value, ""); // oops
+    static_assert(!proto::matches<int_, string_>::value, "");
+    static_assert(proto::matches<proto::function<int_, int_, int_>, proto::function<proto::vararg<int_>>>::value, "");
+    static_assert(proto::matches<proto::function<int_>, proto::function<int_, proto::vararg<string_>>>::value, "");
+    static_assert(proto::matches<proto::function<int_>, proto::function<proto::vararg<int_>>>::value, "");
+    static_assert(!proto::matches<proto::function<int_, int_, string_>, proto::function<proto::vararg<int_>>>::value, "");
     static_assert(!proto::matches<int_, proto::function<int_, int_>>::value, "");
 }
 

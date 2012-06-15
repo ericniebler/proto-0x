@@ -24,6 +24,7 @@
 #include <boost/preprocessor/control/expr_if.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 #include <boost/proto/proto_fwd.hpp>
+#include <boost/proto/transform/impl.hpp>
 
 // Must be greater than or equal to 1. (1 means don't do loop unrolling.)
 #ifndef BOOST_PROTO_ARGS_UNROLL_MAX
@@ -250,6 +251,31 @@ namespace boost
         using exprs::left;
         using exprs::right;
         using exprs::value;
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // _child
+        template<std::size_t N>
+        struct _child
+          : transform<_child<N>>
+        {
+            template<typename E, typename ...Rest>
+            auto operator()(E && e, Rest &&...) const
+            BOOST_PROTO_AUTO_RETURN(
+                proto::child<N>(e)
+            )
+        };
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // _value
+        struct _value
+          : transform<_value>
+        {
+            template<typename E, typename ...Rest>
+            auto operator()(E && e, Rest &&...) const
+            BOOST_PROTO_AUTO_RETURN(
+                proto::value(e)
+            )
+        };
     }
 }
 

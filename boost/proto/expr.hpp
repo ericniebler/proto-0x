@@ -15,6 +15,7 @@
 #include <boost/proto/args.hpp>
 #include <boost/proto/domain.hpp>
 #include <boost/proto/tags.hpp>
+#include <boost/proto/utility.hpp>
 
 namespace boost
 {
@@ -38,15 +39,7 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // is_expr
             std::true_type is_expr(expr_base const &);
-            std::false_type is_expr(any);
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // is_same_expr
-            template<typename Expr>
-            std::true_type is_same_expr(Expr const &);
-
-            template<typename Expr>
-            std::false_type is_same_expr(any);
+            std::false_type is_expr(utility::any const &);
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // logical_and_
@@ -81,7 +74,7 @@ namespace boost
             std::true_type are_equality_comparible_(int);
 
             template<typename L, typename R>
-            std::false_type are_equality_comparible_(any);
+            std::false_type are_equality_comparible_(utility::any);
 
             template<typename L, typename R>
             struct are_equality_comparible
@@ -212,9 +205,6 @@ namespace boost
           : Expr::proto_is_terminal
         {};
 
-        #define BOOST_PROTO_IS_SAME_EXPR(EXPR, T)                                                   \
-            decltype(boost::proto::detail::is_same_expr<EXPR>(std::declval<T>()))::value
-
         #define BOOST_PROTO_DEPENDENT_STATIC_CAST(TO, FROM, ...)                                    \
             boost::proto::detail::dependent_static_cast<TO>(FROM, __VA_ARGS__)
 
@@ -244,7 +234,7 @@ namespace boost
                                                                                                     \
             template<typename A                                                                     \
               , BOOST_PROTO_ENABLE_IF(                                                              \
-                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_SAME_EXPR(EXPR &, A) \
+                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(A, EXPR)   \
                 )                                                                                   \
             >                                                                                       \
             constexpr EXPR(proto_tag_type tag, A &&a)                                               \
@@ -256,7 +246,7 @@ namespace boost
                                                                                                     \
             template<typename A                                                                     \
               , BOOST_PROTO_ENABLE_IF(                                                              \
-                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_SAME_EXPR(EXPR &, A) \
+                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(A, EXPR)   \
                 )                                                                                   \
             >                                                                                       \
             explicit constexpr EXPR(A &&a)                                                          \
@@ -311,7 +301,7 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // operator=
-                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(expr_assign, U))>
+                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
                 auto operator=(U && u) &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
@@ -321,7 +311,7 @@ namespace boost
                     )
                 )
 
-                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(expr_assign, U))>
+                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
                 auto operator=(U && u) const &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
@@ -331,7 +321,7 @@ namespace boost
                     )
                 )
 
-                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(expr_assign, U))>
+                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
                 auto operator=(U && u) &&
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
@@ -341,7 +331,7 @@ namespace boost
                     )
                 )
 
-                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_SAME_EXPR(expr_assign, U))>
+                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
                 void operator=(U && u) const && = delete;
             };
 
@@ -460,6 +450,7 @@ namespace boost
                 typedef Args        proto_args_type;
                 typedef Domain      proto_domain_type;
                 typedef basic_expr  proto_basic_expr_type;
+                typedef basic_expr  proto_grammar_type;
                 typedef
                     std::integral_constant<
                         std::size_t
@@ -487,7 +478,7 @@ namespace boost
 
                 template<typename A
                   , BOOST_PROTO_ENABLE_IF(
-                        Args::proto_size::value == 1 && !BOOST_PROTO_IS_SAME_EXPR(basic_expr &, A)
+                        Args::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(A, basic_expr)
                     )
                 >
                 constexpr basic_expr(Tag tag, A &&a)
@@ -502,7 +493,7 @@ namespace boost
                 template<
                     typename A
                   , BOOST_PROTO_ENABLE_IF(
-                        Args::proto_size::value == 1 && !BOOST_PROTO_IS_SAME_EXPR(basic_expr &, A)
+                        Args::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(A, basic_expr)
                     )
                 >
                 explicit constexpr basic_expr(A &&a)

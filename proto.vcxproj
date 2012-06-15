@@ -67,6 +67,10 @@
     <ClInclude Include="boost\proto\proto.hpp" />
     <ClInclude Include="boost\proto\proto_fwd.hpp" />
     <ClInclude Include="boost\proto\tags.hpp" />
+    <ClInclude Include="boost\proto\transform.hpp" />
+    <ClInclude Include="boost\proto\transform\arg.hpp" />
+    <ClInclude Include="boost\proto\transform\impl.hpp" />
+    <ClInclude Include="boost\proto\utility.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="libs\proto\scratch\main.cpp" />

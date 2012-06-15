@@ -12,6 +12,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/args.hpp>
 #include <boost/proto/tags.hpp>
+#include <boost/proto/utility.hpp>
 #include <boost/proto/detail/common_domain.hpp>
 
 namespace boost
@@ -25,7 +26,7 @@ namespace boost
             template<typename T>
             typename T::proto_domain_type get_domain(T const &);
 
-            default_domain get_domain(any);
+            default_domain get_domain(utility::any);
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // Misc domain helpers

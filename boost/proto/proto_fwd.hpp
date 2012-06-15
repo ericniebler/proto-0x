@@ -43,10 +43,30 @@
     CLASS &operator=(CLASS &&) = default /* memberwise move assign */                               \
     /**/
 
+#define BOOST_PROTO_IS_CONVERTIBLE(T, U)                                                            \
+    decltype(boost::proto::detail::is_convertible<U>(std::declval<T>()))::value                     \
+    /**/
+
+#define BOOST_PROTO_IGNORE(U)                                                                       \
+    static_cast<void>(U)                                                                            \
+    /**/
+
 namespace boost
 {
     namespace proto
     {
+        namespace utility
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // any
+            struct any;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // static_const
+            template<typename T>
+            struct static_const;
+        }
+
         namespace detail
         {
             typedef char yes_type;
@@ -61,17 +81,19 @@ namespace boost
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // any
-            struct any
-            {
-                template<typename T>
-                constexpr any(T const &) noexcept;
-            };
-
+            // for use by BOOST_PROTO_ENABLE_IF
             extern void* enabler;
-            template<typename ...T> void ignore(T &&...);
+
             struct not_a_grammar;
             struct not_a_domain;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // is_convertible
+            template<typename T>
+            std::true_type is_convertible(T const &);
+
+            template<typename T>
+            std::false_type is_convertible(utility::any const &);
         }
 
         ///////////////////////////////////////////////////////////////////////////////
@@ -136,17 +158,19 @@ namespace boost
                 struct proto_expr;
                 struct proto_expr_iterator;
                 struct proto_flat_view;
+
+                // Transform environment tags
+                typedef def<struct data_> _data;
+                extern _data const & data;
+
+                typedef def<struct locals_> locals_type;
+                extern locals_type const & locals;
             }
         }
 
         using namespace tags;
 
-        namespace wildcards
-        {
-            struct _;
-        }
-
-        using namespace wildcards;
+        struct _;
 
         namespace domains
         {
@@ -200,6 +224,46 @@ namespace boost
         using exprs::basic_expr;
         using exprs::expr;
 
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // stuff for transforms here
+        struct environment_base;
+
+        template<typename Tag, typename Value, typename Base = environment_base>
+        struct environment;
+
+        struct transform_base;
+
+        template<typename Transform>
+        struct transform;
+
+        struct _expr;
+
+        struct _state;
+
+        template<typename Tag>
+        struct _env;
+
+        typedef _env<tag::_data> _data;
+
+        struct _value;
+
+        template<std::size_t N>
+        struct _child;
+
+        typedef _child<0> _left;
+        typedef _child<1> _right;
+
+        template<typename T>
+        struct is_transform;
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // Misc. traits
+        template<typename Expr>
+        struct domain_of;
+
+        template<typename Expr>
+        struct tag_of;
+
         template<typename T>
         struct is_expr;
 
@@ -216,6 +280,21 @@ namespace boost
         //int const N = INT_MAX;
         //constexpr int N = (std::numeric_limits<int>::max() >> 10);
         constexpr int N = (INT_MAX >> 10);
+
+        template<typename... Grammar>
+        struct or_;
+
+        template<typename... Grammar>
+        struct and_;
+
+        template<typename Grammar>
+        struct not_;
+
+        template<typename Condition, typename Then = _, typename Else = not_<_> >
+        struct if_;
+
+        template<typename Cases, typename Transform = tag_of<_>()>
+        struct switch_;
 
         template<typename Expr, typename Grammar>
         struct matches;
@@ -369,9 +448,6 @@ namespace boost
 
         template<typename ...A>
         using function = expr<tag::function, args<A...>>;
-
-        template<typename Expr>
-        using domain_of = typename Expr::proto_domain_type;
     }
 }
 
