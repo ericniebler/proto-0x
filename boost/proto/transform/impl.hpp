@@ -92,7 +92,9 @@ namespace boost
         template<typename Transform>
         struct transform
           : transform_base
-        {};
+        {
+            typedef Transform proto_transform_type;
+        };
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // is_transform
@@ -100,6 +102,45 @@ namespace boost
         struct is_transform
           : decltype(detail::is_transform(std::declval<T>()))
         {};
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // as_transform
+        template<typename T>
+        struct as_transform
+          : T::proto_transform_type
+        {};
+
+        template<typename Ret, typename ...Args>
+        struct as_transform<Ret(Args...)>
+        {
+            typedef as_transform proto_transform_type;
+
+            template<typename ...T, typename R = Ret>
+            auto operator()(T &&... t) const
+            BOOST_PROTO_AUTO_RETURN(
+                typename std::conditional<
+                    is_callable<R>::value
+                  , call<R(Args...)>
+                  , make<R(Args...)>
+                >::type()(static_cast<T &&>(t)...)
+            )
+        };
+
+        template<typename Ret, typename ...Args>
+        struct as_transform<Ret(*)(Args...)>
+        {
+            typedef as_transform proto_transform_type;
+
+            template<typename ...T, typename R = Ret>
+            auto operator()(T &&... t) const
+            BOOST_PROTO_AUTO_RETURN(
+                typename std::conditional<
+                    is_callable<R>::value
+                  , call<R(Args...)>
+                  , make<R(Args...)>
+                >::type()(static_cast<T &&>(t)...)
+            )
+        };
     }
 }
 

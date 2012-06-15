@@ -36,6 +36,32 @@ namespace boost
 
             template<typename T>
             constexpr T static_const<T>::value;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // logical_and
+            inline constexpr bool logical_and()
+            {
+                return true;
+            }
+
+            template<typename ...Bool>
+            inline constexpr bool logical_and(bool b0, Bool... rest)
+            {
+                return b0 && utility::logical_and(rest...);
+            }
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // logical_or
+            inline constexpr bool logical_or()
+            {
+                return false;
+            }
+
+            template<typename ...Bool>
+            inline constexpr bool logical_or(bool b0, Bool... rest)
+            {
+                return b0 || utility::logical_or(rest...);
+            }
         }
     }
 }

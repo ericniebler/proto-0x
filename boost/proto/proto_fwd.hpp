@@ -256,17 +256,40 @@ namespace boost
         template<typename T>
         struct is_transform;
 
+        template<typename T>
+        struct as_transform;
+
+        template<typename Grammar, typename Transform = Grammar>
+        struct when;
+
+        template<typename CallableTransform>
+        struct call;
+
+        template<typename ObjectTransform>
+        struct make;
+
+        template<typename Expr>
+        struct pass_through;
+
+        template<typename T>
+        struct is_callable;
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Misc. traits
+        template<typename T>
+        struct is_expr;
+
+        template<typename Expr>
+        struct is_terminal;
+
         template<typename Expr>
         struct domain_of;
 
         template<typename Expr>
         struct tag_of;
 
-        template<typename T>
-        struct is_expr;
-
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // Stuff for grammar building
         template<typename T>
         struct exact;
 
@@ -290,7 +313,7 @@ namespace boost
         template<typename Grammar>
         struct not_;
 
-        template<typename Condition, typename Then = _, typename Else = not_<_> >
+        template<typename If, typename Then = _, typename Else = not_<_>>
         struct if_;
 
         template<typename Cases, typename Transform = tag_of<_>()>

@@ -168,6 +168,7 @@ int main()
         std::printf("%s\n", loc); // should print "goodbye"
         i = env.at(1,1); // lookup with a key that doesn't exist, return default
 
+        // Look, ma! A transform!
         char const (&sz)[6] = proto::_data()(p, 42, (proto::tag::data = "hello"));
     }
 

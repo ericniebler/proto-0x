@@ -24,48 +24,9 @@ namespace boost
         namespace detail
         {
             ////////////////////////////////////////////////////////////////////////////////////////
-            // dependent_static_cast
-            template<typename T, typename U, typename ...V>
-            inline constexpr T dependent_static_cast(U &&u, V &&...)
-            {
-                return static_cast<T>(static_cast<U &&>(u));
-            }
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // dependent_declval
-            template<typename T, typename ...Dummy>
-            T && dependent_declval();
-
-            ////////////////////////////////////////////////////////////////////////////////////////
             // is_expr
             std::true_type is_expr(expr_base const &);
             std::false_type is_expr(utility::any const &);
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // logical_and_
-            inline constexpr bool logical_and_()
-            {
-                return true;
-            }
-
-            template<typename ...Bool>
-            inline constexpr bool logical_and_(bool b0, Bool... rest)
-            {
-                return b0 && detail::logical_and_(rest...);
-            }
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // logical_or_
-            inline constexpr bool logical_or_()
-            {
-                return false;
-            }
-
-            template<typename ...Bool>
-            inline constexpr bool logical_or_(bool b0, Bool... rest)
-            {
-                return b0 || detail::logical_or_(rest...);
-            }
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // are_equality_comparible
@@ -78,7 +39,7 @@ namespace boost
 
             template<typename L, typename R>
             struct are_equality_comparible
-              : decltype(are_equality_comparible_<L, R>(1))
+              : decltype(detail::are_equality_comparible_<L, R>(1))
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -191,26 +152,6 @@ namespace boost
             };
         }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // is_expr
-        template<typename T>
-        struct is_expr
-          : decltype(detail::is_expr(std::declval<T>()))
-        {};
-
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // is_terminal
-        template<typename Expr>
-        struct is_terminal
-          : Expr::proto_is_terminal
-        {};
-
-        #define BOOST_PROTO_DEPENDENT_STATIC_CAST(TO, FROM, ...)                                    \
-            boost::proto::detail::dependent_static_cast<TO>(FROM, __VA_ARGS__)
-
-        #define BOOST_PROTO_DEPENDENT_DECLVAL(T, ...)                                               \
-            boost::proto::detail::dependent_declval<T, __VA_ARGS__>()
-
         ////////////////////////////////////////////////////////////////////////////////////
         // constructors TODO: add noexcept clauses
         // This will no longer be needed once clang implements inheriting constructors
@@ -301,32 +242,32 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // operator=
-                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
+                template<typename U, typename E = Expr, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
                 auto operator=(U && u) &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::assign()
-                      , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr &, *this, u)
+                      , static_cast<E &>(*this)
                       , static_cast<U &&>(u)
                     )
                 )
 
-                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
+                template<typename U, typename E = Expr, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
                 auto operator=(U && u) const &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::assign()
-                      , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr const &, *this, u)
+                      , static_cast<E const &>(*this)
                       , static_cast<U &&>(u)
                     )
                 )
 
-                template<typename U, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
+                template<typename U, typename E = Expr, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
                 auto operator=(U && u) &&
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::assign()
-                      , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr &&, static_cast<expr_assign &&>(*this), u)
+                      , static_cast<E &&>(static_cast<expr_assign &&>(*this))
                       , static_cast<U &&>(u)
                     )
                 )
@@ -344,32 +285,32 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // operator[]
-                template<typename U>
+                template<typename U, typename E = Expr>
                 auto operator[](U && u) &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::subscript()
-                      , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr &, *this, u)
+                      , static_cast<E &>(*this)
                       , static_cast<U &&>(u)
                     )
                 )
 
-                template<typename U>
+                template<typename U, typename E = Expr>
                 auto operator[](U && u) const &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::subscript()
-                      , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr const &, *this, u)
+                      , static_cast<E const &>(*this)
                       , static_cast<U &&>(u)
                     )
                 )
 
-                template<typename U>
+                template<typename U, typename E = Expr>
                 auto operator[](U && u) &&
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::subscript()
-                      , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr &&, static_cast<expr_subscript &&>(*this), u)
+                      , static_cast<E &&>(static_cast<expr_subscript &&>(*this))
                       , static_cast<U &&>(u)
                     )
                 )
@@ -387,32 +328,32 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // operator()
-                template<typename ...U>
+                template<typename ...U, typename E = Expr>
                 auto operator()(U &&... u) &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::function()
-                      , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr &, *this, u...)
+                      , static_cast<E &>(*this)
                       , static_cast<U &&>(u)...
                     )
                 )
 
-                template<typename ...U>
+                template<typename ...U, typename E = Expr>
                 auto operator()(U &&... u) const &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::function()
-                      , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr const &, *this, u...)
+                      , static_cast<E const &>(*this)
                       , static_cast<U &&>(u)...
                     )
                 )
 
-                template<typename ...U>
+                template<typename ...U, typename E = Expr>
                 auto operator()(U &&... u) &&
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
                         boost::proto::tag::function()
-                      , BOOST_PROTO_DEPENDENT_STATIC_CAST(Expr &&, static_cast<expr_function &&>(*this), u...)
+                      , static_cast<E &&>(static_cast<expr_function &&>(*this))
                       , static_cast<U &&>(u)...
                     )
                 )
@@ -446,11 +387,12 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // typedefs
-                typedef Tag         proto_tag_type;
-                typedef Args        proto_args_type;
-                typedef Domain      proto_domain_type;
-                typedef basic_expr  proto_basic_expr_type;
-                typedef basic_expr  proto_grammar_type;
+                typedef Tag                         proto_tag_type;
+                typedef Args                        proto_args_type;
+                typedef Domain                      proto_domain_type;
+                typedef basic_expr                  proto_basic_expr_type;
+                typedef basic_expr                  proto_grammar_type;
+                typedef pass_through<basic_expr>    proto_transform_type;
                 typedef
                     std::integral_constant<
                         std::size_t
@@ -597,6 +539,26 @@ namespace boost
                 using expr_assign<expr, Domain>::operator=;
             };
         }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // is_expr
+        template<typename T>
+        struct is_expr
+          : decltype(detail::is_expr(std::declval<T>()))
+        {};
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // is_terminal
+        template<typename Expr>
+        struct is_terminal
+          : Expr::proto_is_terminal
+        {};
+
+        template<typename Expr>
+        struct is_terminal<Expr &>
+          : Expr::proto_is_terminal
+        {};
+
     }
 }
 
