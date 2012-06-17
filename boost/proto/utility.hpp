@@ -142,6 +142,71 @@ namespace boost
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////
+            // back_type - fetch the last element of a variadic template pack
+            template<typename ...T>
+            struct back_type;
+
+            template<typename T0>
+            struct back_type<T0>
+            {
+                typedef T0 type;
+            };
+
+            template<typename T0, typename T1>
+            struct back_type<T0, T1>
+            {
+                typedef T1 type;
+            };
+
+
+            template<typename T0, typename T1, typename T2>
+            struct back_type<T0, T1, T2>
+            {
+                typedef T2 type;
+            };
+
+            template<typename T0, typename T1, typename T2, typename ...Rest>
+            struct back_type<T0, T1, T2, Rest...>
+              : back_type<Rest...>
+            {};
+
+            ///////////////////////////////////////////////////////////////////////////
+            // ints
+            template<std::size_t ...I>
+            struct ints
+            {};
+
+            ///////////////////////////////////////////////////////////////////////////
+            // indices
+            template<std::size_t N, typename Ints>
+            struct indices_;
+
+            template<std::size_t N, std::size_t... I>
+            struct indices_<N, ints<I...>>
+              : indices_<N-1, ints<N-1, I...>>
+            {};
+
+            template<std::size_t... I>
+            struct indices_<0, ints<I...>>
+            {
+                typedef ints<I...> type;
+            };
+
+            template<std::size_t I>
+            using indices = typename indices_<I, ints<>>::type;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // identity
+            struct identity
+            {
+                template<typename T>
+                inline constexpr T && operator()(T &&t) const noexcept
+                {
+                    return static_cast<T &&>(t);
+                }
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
             // logical_and
             inline constexpr bool logical_and()
             {
@@ -166,6 +231,18 @@ namespace boost
             {
                 return b0 || utility::logical_or(rest...);
             }
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // lazy_condition
+            template<bool Cond, typename Fun0, typename Fun1>
+            struct lazy_condition
+              : Fun0
+            {};
+
+            template<typename Fun0, typename Fun1>
+            struct lazy_condition<false, Fun0, Fun1>
+              : Fun1
+            {};
         }
     }
 }

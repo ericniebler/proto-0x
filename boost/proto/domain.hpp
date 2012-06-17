@@ -49,17 +49,6 @@ namespace boost
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // identity
-            struct identity
-            {
-                template<typename T>
-                inline constexpr T && operator()(T &&t) const noexcept
-                {
-                    return static_cast<T &&>(t);
-                }
-            };
-
-            ////////////////////////////////////////////////////////////////////////////////////////
             // domain
             template<typename Domain, typename Grammar, typename SuperDomain>
             struct domain
@@ -71,13 +60,13 @@ namespace boost
                 // Define this in your derived domain class to control how
                 // objects are stored within the terminals of your domain.
                 struct store_value
-                  : identity
+                  : utility::identity
                 {};
 
                 // Define this in your derived domain class to control how intermediate
                 // nodes are stored within your expressions.
                 struct store_child
-                  : identity
+                  : utility::identity
                 {};
 
                 // Define this in your derived domain class to control expressions are

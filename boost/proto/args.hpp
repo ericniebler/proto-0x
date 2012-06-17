@@ -12,7 +12,6 @@
 
 #include <utility>
 #include <functional>
-#include <type_traits>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/repetition/enum_params.hpp>
 #include <boost/preprocessor/repetition/enum_binary_params.hpp>
@@ -65,7 +64,7 @@ namespace boost
                 BOOST_PP_COMMA_IF(BOOST_PP_EQUAL(N, 1))                                             \
                 BOOST_PP_EXPR_IF(                                                                   \
                     BOOST_PP_EQUAL(N, 1)                                                            \
-                  , BOOST_PROTO_ENABLE_IF(!std::is_same<T, CLASS &>::value)                         \
+                  , BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(T, CLASS))                    \
                 )                                                                                   \
                 /**/
 

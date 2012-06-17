@@ -262,8 +262,8 @@ namespace boost
             // Handle (probably-)non-variadic non-terminal matches
             template<
                 typename Expr
-              , template<typename, typename, typename...> class Expr0
-              , template<typename, typename, typename...> class Expr1
+              , template<typename...> class Expr0
+              , template<typename...> class Expr1
               , typename Tag0, typename ...Args0, typename ...Rest0
               , typename Tag1, typename ...Args1, typename ...Rest1
             >
@@ -287,8 +287,8 @@ namespace boost
             // Handle (most definitely) variadic non-terminal matches
             template<
                 typename Expr
-              , template<typename, typename, typename...> class Expr0
-              , template<typename, typename, typename...> class Expr1
+              , template<typename...> class Expr0
+              , template<typename...> class Expr1
               , typename Tag0, typename ...Args0, typename ...Rest0
               , typename Tag1, typename ...Args1, typename ...Rest1
             >
@@ -313,8 +313,8 @@ namespace boost
             // Handle terminal matches.
             template<
                 typename Expr
-              , template<typename, typename, typename...> class Expr0
-              , template<typename, typename, typename...> class Expr1
+              , template<typename...> class Expr0
+              , template<typename...> class Expr1
               , typename Tag0, typename Value0, typename ...Rest0
               , typename Tag1, typename Value1, typename ...Rest1
             >
@@ -336,8 +336,8 @@ namespace boost
             // grammar.
             template<
                 typename Expr
-              , template<typename, typename, typename...> class Expr0
-              , template<typename, typename, typename...> class Expr1
+              , template<typename...> class Expr0
+              , template<typename...> class Expr1
               , typename Tag0, typename ...Args0, typename ...Rest0
               , typename Tag1, typename ...Args1, typename ...Rest1
             >

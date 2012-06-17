@@ -185,6 +185,8 @@ int main()
         std::printf("This should be 43: %d\n", i);
     }
 
+    p = proto::as_transform<int_>()(p);
+
     void done();
     done();
 }
