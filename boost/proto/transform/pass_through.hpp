@@ -24,24 +24,67 @@ namespace boost
     {
         namespace detail
         {
+            template<std::size_t N, std::size_t M>
+            struct pass_through_fail_
+            {
+                static_assert(N == M, "Wrong number of arguments to pass-through transform");
+            };
+
             template<std::size_t N, std::size_t M, typename Ints, typename ...Args>
             struct pass_through_1_;
 
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // pass_through_4_
             template<std::size_t N, std::size_t M, typename Ints, typename T, typename ...Args>
-            struct pass_through_2_
-              : pass_through_2_<N, M+1, Ints, T, Args..., T>
-            {
-                static_assert(N >= M+1, "Too few children in the expression to use this pass-through trasform");
-            };
+            struct pass_through_4_
+              : pass_through_fail_<N, M>
+            {};
+
+            template<std::size_t N, std::size_t M, typename Ints, typename T, typename ...Args>
+            struct pass_through_4_<N, M, Ints, proto::vararg<T>, Args...>
+              : pass_through_4_<N, M + 1, Ints, proto::vararg<T>, Args..., proto::vararg<T>>
+            {};
 
             template<std::size_t N, typename Ints, typename T, typename ...Args>
-            struct pass_through_2_<N, N, Ints, T, Args...>
+            struct pass_through_4_<N, N, Ints, proto::vararg<T>, Args...>
               : pass_through_1_<N, N, Ints, Args...>
             {};
 
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // pass_through_3_
+            template<std::size_t N, typename Ints, typename Args>
+            struct pass_through_3_;
+
+            template<std::size_t N, typename Ints, typename ...Args>
+            struct pass_through_3_<N, Ints, utility::list<Args...>>
+              : pass_through_1_<N, N, Ints, Args...>
+            {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // pass_through_2_
+            template<std::size_t N, typename Ints, typename T, typename ...Args>
+            struct pass_through_2_
+              : pass_through_fail_<N, N + 1>
+            {};
+
+            template<std::size_t N, typename Ints, typename T, typename ...Args>
+            struct pass_through_2_<N, Ints, proto::vararg<T>, Args...>
+              : pass_through_3_<N, Ints, utility::pop_back<Args...>>
+            {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // pass_through_1_
             template<std::size_t N, std::size_t M, typename Ints, typename ...Args>
             struct pass_through_1_
-              : pass_through_2_<N, M, Ints, typename utility::back_type<Args...>::type, Args...>
+              : std::conditional<
+                    (N >= M)
+                  , pass_through_4_<N, M, Ints, typename utility::back_type<Args...>::type, Args...>
+                  , utility::lazy_conditional<
+                        (N == M - 1)
+                      , pass_through_2_<N, Ints, typename utility::back_type<Args...>::type, Args...>
+                      , pass_through_fail_<N, M>
+                    >
+                >::type
             {};
 
             template<std::size_t N, std::size_t... Indices, typename ...Args>
@@ -50,12 +93,15 @@ namespace boost
                 template<typename E, typename ...T>
                 auto operator()(E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    proto::domains::make_expr<typename proto::domain_of<E>::type>(
-                        as_transform<Args>()(proto::child<Indices>(static_cast<E &&>(e)), static_cast<T &&>(t)...)...
+                    proto::domains::make_expr<decltype(e.proto_domain())>(
+                        e.proto_tag()
+                      , as_transform<Args>()(proto::child<Indices>(static_cast<E &&>(e)), static_cast<T &&>(t)...)...
                     )
                 )
             };
 
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // pass_through_0_
             template<bool IsTerminal, std::size_t N, std::size_t M, typename ...Args>
             struct pass_through_0_
               : pass_through_1_<N, M, utility::indices<N>, Args...>

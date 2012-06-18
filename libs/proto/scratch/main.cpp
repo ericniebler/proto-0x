@@ -186,6 +186,10 @@ int main()
     }
 
     p = proto::as_transform<int_>()(p);
+    proto::as_transform<proto::function<int_, int_, proto::vararg<int_>>>()(p(p));
+    proto::as_transform<proto::function<int_, int_, proto::vararg<int_>>>()(p(p, p));
+    proto::as_transform<proto::function<int_, int_, proto::vararg<int_>>>()(p(p, p, p));
+    proto::as_transform<proto::function<int_, int_, int_>>()(p(p, p));
 
     void done();
     done();

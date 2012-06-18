@@ -68,6 +68,11 @@ namespace boost
         namespace utility
         {
             ////////////////////////////////////////////////////////////////////////////////////////
+            // empty
+            struct empty
+            {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
             // any
             struct any
             {
@@ -235,14 +240,52 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // lazy_condition
             template<bool Cond, typename Fun0, typename Fun1>
-            struct lazy_condition
+            struct lazy_conditional
               : Fun0
             {};
 
             template<typename Fun0, typename Fun1>
-            struct lazy_condition<false, Fun0, Fun1>
+            struct lazy_conditional<false, Fun0, Fun1>
               : Fun1
             {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // undef
+            template<typename T>
+            struct undef;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // list
+            template<typename ...T>
+            struct list;
+
+            namespace detail
+            {
+                ////////////////////////////////////////////////////////////////////////////////////////
+                // pop_back
+                template<typename List, typename ...T>
+                struct pop_back;
+
+                template<typename ...List, typename T0>
+                struct pop_back<list<List...>, T0>
+                {
+                    typedef list<List...> type;
+                };
+
+                template<typename ...List, typename T0, typename T1>
+                struct pop_back<list<List...>, T0, T1>
+                {
+                    typedef list<List..., T0> type;
+                };
+
+                template<typename ...List, typename T0, typename T1, typename... Tail>
+                struct pop_back<list<List...>, T0, T1, Tail...>
+                  : pop_back<list<List..., T0, T1>, Tail...>
+                {};
+            }
+
+            template<typename ...T>
+            using pop_back = typename utility::detail::pop_back<utility::list<>, T...>::type;
         }
     }
 }
