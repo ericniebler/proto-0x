@@ -10,6 +10,7 @@
 #define BOOST_PROTO_TRANSFORM_IMPL_HPP_INCLUDED
 
 #include <utility>
+#include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/utility.hpp>
 
@@ -17,14 +18,6 @@ namespace boost
 {
     namespace proto
     {
-        namespace detail
-        {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // is_transform
-            std::true_type is_transform(transform_base const &);
-            std::false_type is_transform(utility::any const &);
-        }
-
         ////////////////////////////////////////////////////////////////////////////////////////////
         // evironment_base
         struct environment_base
@@ -82,8 +75,49 @@ namespace boost
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////////
+        // callable
+        struct callable
+        {};
+
+        namespace detail
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // is_transform
+            std::true_type is_transform_(transform_base const &);
+            std::false_type is_transform_(utility::any const &);
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // is_transform
+            std::true_type is_callable_(callable const &);
+            std::false_type is_callable_(utility::any const &);
+
+            template<typename T>
+            struct is_callable_2_
+              : decltype(detail::is_callable_(std::declval<T>()))
+            {};
+
+            template<typename T>
+            struct is_callable_1_
+              : is_callable_2_<T>
+            {};
+
+            template<template<typename...> class T, typename... Args>
+            struct is_callable_1_<T<Args...>>
+              : std::is_same<typename utility::back_type<Args...>::type, callable>
+            {};
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // is_callable
+        template<typename T>
+        struct is_callable
+          : detail::is_callable_1_<T>
+        {};
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
         // transform_base
         struct transform_base
+          : callable
         {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +134,7 @@ namespace boost
         // is_transform
         template<typename T>
         struct is_transform
-          : decltype(detail::is_transform(std::declval<T>()))
+          : decltype(detail::is_transform_(std::declval<T>()))
         {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,18 +161,8 @@ namespace boost
 
         template<typename Ret, typename ...Args>
         struct as_transform<Ret(*)(Args...)>
-          : transform<as_transform<Ret(*)(Args...)>>
-        {
-            template<typename ...T, typename R = Ret>
-            auto operator()(T &&... t) const
-            BOOST_PROTO_AUTO_RETURN(
-                typename std::conditional<
-                    is_callable<R>::value
-                  , call<R(Args...)>
-                  , make<R(Args...)>
-                >::type()(static_cast<T &&>(t)...)
-            )
-        };
+          : as_transform<Ret(Args...)>
+        {};
     }
 }
 

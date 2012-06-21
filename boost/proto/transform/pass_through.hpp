@@ -24,14 +24,16 @@ namespace boost
     {
         namespace detail
         {
+            template<std::size_t N, std::size_t M, typename Ints, typename ...Args>
+            struct pass_through_1_;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // pass_through_fail_
             template<std::size_t N, std::size_t M>
             struct pass_through_fail_
             {
                 static_assert(N == M, "Wrong number of arguments to pass-through transform");
             };
-
-            template<std::size_t N, std::size_t M, typename Ints, typename ...Args>
-            struct pass_through_1_;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // pass_through_4_
@@ -94,8 +96,11 @@ namespace boost
                 auto operator()(E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     proto::domains::make_expr<decltype(e.proto_domain())>(
-                        e.proto_tag()
-                      , as_transform<Args>()(proto::child<Indices>(static_cast<E &&>(e)), static_cast<T &&>(t)...)...
+                        static_cast<E &&>(e).proto_tag()
+                      , as_transform<Args>()(
+                            proto::child<Indices>(static_cast<E &&>(e))
+                          , static_cast<T &&>(t)...
+                        )...
                     )
                 )
             };

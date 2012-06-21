@@ -268,6 +268,9 @@ namespace boost
         template<typename ObjectTransform>
         struct make;
 
+        template<typename T>
+        struct noinvoke;
+
         template<typename Expr>
         struct pass_through;
 

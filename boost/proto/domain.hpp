@@ -86,21 +86,21 @@ namespace boost
             // deduce_domain
             struct deduce_domain
             {};
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // domain_of
-            template<typename Expr>
-            struct domain_of
-            {
-                typedef typename Expr::proto_domain_type type;
-            };
-
-            template<typename Expr>
-            struct domain_of<Expr &>
-            {
-                typedef typename Expr::proto_domain_type type;
-            };
         }
+
+        ////////////////////////////////////////////////////////////////////////////////////////
+        // domain_of
+        template<typename Expr>
+        struct domain_of
+        {
+            typedef typename Expr::proto_domain_type type;
+        };
+
+        template<typename Expr>
+        struct domain_of<Expr &>
+        {
+            typedef typename Expr::proto_domain_type type;
+        };
     }
 }
 

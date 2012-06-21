@@ -186,6 +186,8 @@ namespace boost
             }
         } // namespace tags
 
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // tag_of
         template<typename Expr>
         struct tag_of
         {

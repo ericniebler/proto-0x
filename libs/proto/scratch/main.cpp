@@ -4,8 +4,10 @@
 #include <typeinfo>
 #include <string>
 #include <boost/assert.hpp>
+#include <boost/mpl/identity.hpp>
 #include <boost/proto/args.hpp>
 #include <boost/proto/proto.hpp>
+namespace mpl = boost::mpl;
 namespace proto = boost::proto;
 using proto::_;
 
@@ -191,6 +193,9 @@ int main()
     proto::as_transform<proto::function<int_, int_, proto::vararg<int_>>>()(p(p, p, p));
     proto::as_transform<proto::function<int_, int_, int_>>()(p(p, p));
 
+    void make_tests();
+    make_tests();
+
     void done();
     done();
 }
@@ -320,6 +325,86 @@ void test_matches()
     static_assert(proto::matches<proto::function<int_>, proto::function<proto::vararg<int_>>>::value, "");
     static_assert(!proto::matches<proto::function<int_, int_, string_>, proto::function<proto::vararg<int_>>>::value, "");
     static_assert(!proto::matches<int_, proto::function<int_, int_>>::value, "");
+}
+
+#define BOOST_CHECK_EQUAL(X, Y)\
+    if((X)==(Y)) {} else {std::printf("ERROR: '%s' != '%s' on line %d\n", #X, #Y, __LINE__);}
+
+namespace test_make
+{
+    template<typename T>
+    struct type2type {};
+
+    template<typename T>
+    struct wrapper
+    {
+        T t_;
+        explicit wrapper(T const & t = T()) : t_(t) {}
+    };
+
+    template<typename T>
+    struct careful
+    {
+        typedef typename T::not_there not_there;
+    };
+
+    // Test that when no substitution is done, we don't instantiate templates
+    struct MakeTest1
+      : proto::make< type2type< careful<int> > >
+    {};
+
+    void make_test1()
+    {
+        proto::terminal<int> i{42};
+        type2type< careful<int> > res = MakeTest1()(i);
+    }
+
+    // Test that when substitution is done, and there is no nested ::type
+    // typedef, the result is the wrapper
+    struct MakeTest2
+      : proto::make< wrapper< proto::_value > >
+    {};
+
+    void make_test2()
+    {
+        proto::terminal<int> i{42};
+        wrapper<int> res = MakeTest2()(i);
+        BOOST_CHECK_EQUAL(res.t_, 0);
+    }
+
+    // Test that when substitution is done, and there is no nested ::type
+    // typedef, the result is the wrapper
+    struct MakeTest3
+      : proto::make< wrapper< proto::_value >(proto::_value) >
+    {};
+
+    void make_test3()
+    {
+        proto::terminal<int> i{42};
+        wrapper<int> res = MakeTest3()(i);
+        BOOST_CHECK_EQUAL(res.t_, 42);
+    }
+
+    // Test that when substitution is done, and there is no nested ::type
+    // typedef, the result is the wrapper
+    struct MakeTest4
+      : proto::make< mpl::identity< proto::_value >(proto::_value) >
+    {};
+
+    void make_test4()
+    {
+        proto::terminal<int> i{42};
+        int res = MakeTest4()(i);
+        BOOST_CHECK_EQUAL(res, 42);
+    }
+}
+
+void make_tests()
+{
+    test_make::make_test1();
+    test_make::make_test2();
+    test_make::make_test3();
+    test_make::make_test4();
 }
 
 //////////////////////////////////////////////////////

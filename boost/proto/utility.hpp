@@ -163,7 +163,6 @@ namespace boost
                 typedef T1 type;
             };
 
-
             template<typename T0, typename T1, typename T2>
             struct back_type<T0, T1, T2>
             {
@@ -278,9 +277,15 @@ namespace boost
                     typedef list<List..., T0> type;
                 };
 
-                template<typename ...List, typename T0, typename T1, typename... Tail>
-                struct pop_back<list<List...>, T0, T1, Tail...>
-                  : pop_back<list<List..., T0, T1>, Tail...>
+                template<typename ...List, typename T0, typename T1, typename T2>
+                struct pop_back<list<List...>, T0, T1, T2>
+                {
+                    typedef list<List..., T0, T1> type;
+                };
+
+                template<typename ...List, typename T0, typename T1, typename T2, typename... Tail>
+                struct pop_back<list<List...>, T0, T1, T2, Tail...>
+                  : pop_back<list<List..., T0, T1, T2>, Tail...>
                 {};
             }
 
