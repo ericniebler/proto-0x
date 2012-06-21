@@ -291,6 +291,11 @@ namespace boost
 
             template<typename ...T>
             using pop_back = typename utility::detail::pop_back<utility::list<>, T...>::type;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // by_val
+            template<typename T>
+            T by_val(T const &);
         }
     }
 }

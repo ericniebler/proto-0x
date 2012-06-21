@@ -9,11 +9,11 @@
 #ifndef BOOST_PROTO_TRANSFORM_CALL_HPP_INCLUDED
 #define BOOST_PROTO_TRANSFORM_CALL_HPP_INCLUDED
 
+#include <utility>
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/utility.hpp>
 #include <boost/proto/transform/impl.hpp>
-#include <boost/mpl/aux_/has_type.hpp>
 
 namespace boost
 {
@@ -22,134 +22,72 @@ namespace boost
         namespace detail
         {
             template<typename T>
-            struct is_applyable
-              : utility::and_<is_callable<T>, is_transform<T>>
-            {};
+            typename T::type nested_type_(int);
 
-            template<typename R, typename ...A>
-            struct is_applyable<R(A...)>
-              : std::true_type
-            {};
+            template<typename T>
+            T nested_type_(utility::any);
 
-            template<typename R, typename ...A>
-            struct is_applyable<R(*)(A...)>
-              : std::true_type
-            {};
-
-            template<typename T, bool HasType = mpl::aux::has_type<T>::value>
+            template<typename T, bool Applied>
             struct nested_type
             {
-                typedef typename T::type type;
+                typedef decltype(detail::nested_type_<T>(1)) type;
+                typedef std::true_type applied;
             };
 
             template<typename T>
             struct nested_type<T, false>
             {
                 typedef T type;
-            };
-
-            template<typename T, bool Applied>
-            struct nested_type_if
-            {
-                typedef T type;
                 typedef std::false_type applied;
             };
 
-            template<typename T>
-            struct nested_type_if<T, true>
-              : nested_type<T>
+            template<typename R, typename ...Args>
+            struct make_1_;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // make_2_
+            template<typename R, typename ...Args>
+            struct make_2_
+              : make_1_<R, Args...>
             {
+                static_assert(!std::is_pointer<R>::value, "ptr to function?");
+            };
+
+            template<typename R, typename ...A, typename ...Args>
+            struct make_2_<R(A...), Args...>
+            {
+                typedef
+                    decltype(utility::by_val(as_transform<R(A...)>()(std::declval<Args>()...)))
+                type;
                 typedef std::true_type applied;
             };
 
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // make_1_
             template<typename R, typename ...Args>
-            struct make_
+            struct make_1_
             {
-                typedef R type;
-                typedef std::false_type applied;
-            };
-
-            template<typename R, bool IsApplyable, typename ...Args>
-            struct make_if_
-              : make_<R, Args...>
-            {};
-
-            template<typename R, typename ...Args>
-            struct make_if_<R, true, Args...>
-              : std::remove_const<
-                    typename std::remove_reference<
-                        decltype(as_transform<R>()(std::declval<Args>()...))
-                    >::type
-                >
-            {
-                typedef std::true_type applied;
+                typedef
+                    decltype(utility::by_val(as_transform<R>()(std::declval<Args>()...)))
+                type;
+                typedef is_transform<R> applied;
             };
 
             template<template<typename...> class R, typename ...A, typename ...Args>
-            struct make_<R<A...>, Args...>
-              : nested_type_if<
-                    R<typename make_if_<A, is_applyable<A>::value, Args...>::type...>
-                  , utility::or_<
-                        typename make_if_<A, is_applyable<A>::value, Args...>::applied...
-                    >::value
+            struct make_1_<R<A...>, Args...>
+              : nested_type<
+                    R<typename make_2_<A, Args...>::type...>
+                  , utility::or_<typename make_2_<A, Args...>::applied...>::value
                 >
             {};
 
             template<template<typename...> class R, typename ...A, typename ...Args>
-            struct make_<noinvoke<R<A...>>, Args...>
+            struct make_1_<noinvoke<R<A...>>, Args...>
             {
-                typedef R<typename make_if_<A, is_applyable<A>::value, Args...>::type...> type;
+                typedef R<typename make_2_<A, Args...>::type...> type;
                 typedef std::true_type applied;
             };
         }
-
-        /// \brief A PrimitiveTransform which prevents another PrimitiveTransform
-        /// from being applied in an \c ObjectTransform.
-        ///
-        /// When building higher order transforms with <tt>make\<\></tt> or
-        /// <tt>lazy\<\></tt>, you sometimes would like to build types that
-        /// are parameterized with Proto transforms. In such lambda-style
-        /// transforms, Proto will unhelpfully find all nested transforms
-        /// and apply them, even if you don't want them to be applied. Consider
-        /// the following transform, which will replace the \c _ in
-        /// <tt>Bar<_>()</tt> with <tt>proto::terminal\<int\>::type</tt>:
-        ///
-        /// \code
-        /// template<typename T>
-        /// struct Bar
-        /// {};
-        /// 
-        /// struct Foo
-        ///   : proto::when<_, Bar<_>() >
-        /// {};
-        /// 
-        /// proto::terminal<int>::type i = {0};
-        /// 
-        /// int main()
-        /// {
-        ///     Foo()(i);
-        ///     std::cout << typeid(Foo()(i)).name() << std::endl;
-        /// }
-        /// \endcode
-        ///
-        /// If you actually wanted to default-construct an object of type
-        /// <tt>Bar\<_\></tt>, you would have to protect the \c _ to prevent
-        /// it from being applied. You can use <tt>proto::protect\<\></tt>
-        /// as follows:
-        ///
-        /// \code
-        /// // OK: replace anything with Bar<_>()
-        /// struct Foo
-        ///   : proto::when<_, Bar<protect<_> >() >
-        /// {};
-        /// \endcode
-        template<typename PrimitiveTransform>
-        struct protect
-          : transform<protect<PrimitiveTransform> >
-        {
-            template<typename... T>
-            PrimitiveTransform operator()(T &&...) const;
-        };
 
         /// \brief A PrimitiveTransform which computes a type by evaluating any
         /// nested transforms and then constructs an object of that type.
@@ -183,12 +121,12 @@ namespace boost
         /// and <tt>make\<\></tt>, so the above procedure is evaluated recursively.
         template<typename Object>
         struct make
-          : transform<make<Object> >
+          : transform<make<Object>>
         {
             template<typename ...Args>
             auto operator()(Args &&... args) const
             BOOST_PROTO_AUTO_RETURN(
-                typename detail::make_if_<Object, detail::is_applyable<Object>::value, Args...>::type{}
+                typename detail::make_2_<Object, Args...>::type{}
             )
         };
 
@@ -198,30 +136,16 @@ namespace boost
         /// to \c A0 through \c AN.
         template<typename Object, typename... A>
         struct make<Object(A...)>
-          : transform<make<Object(A...)> >
+          : transform<make<Object(A...)>>
         {
             template<typename ...Args>
             auto operator()(Args &&... args) const
             BOOST_PROTO_AUTO_RETURN(
-                typename detail::make_if_<Object, detail::is_applyable<Object>::value, Args...>::type{
+                decltype(make<Object>()(static_cast<Args &&>(args)...)){
                     as_transform<A>()(static_cast<Args &&>(args)...)...
                 }
             )
         };
-
-        /// INTERNAL ONLY
-        ///
-        template<typename Object>
-        struct is_callable<make<Object> >
-          : mpl::true_
-        {};
-
-        /// INTERNAL ONLY
-        ///
-        template<typename PrimitiveTransform>
-        struct is_callable<protect<PrimitiveTransform> >
-          : mpl::true_
-        {};
 
     } // namespace proto
 } // namespace boost

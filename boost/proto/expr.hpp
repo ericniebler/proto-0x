@@ -25,8 +25,8 @@ namespace boost
         {
             ////////////////////////////////////////////////////////////////////////////////////////
             // is_expr
-            std::true_type is_expr(expr_base const &);
-            std::false_type is_expr(utility::any const &);
+            std::true_type is_expr_(expr_base const &);
+            std::false_type is_expr_(utility::any const &);
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // are_equality_comparible
@@ -153,7 +153,7 @@ namespace boost
         }
 
         ////////////////////////////////////////////////////////////////////////////////////
-        // constructors TODO: add noexcept clauses
+        // constructors
         // This will no longer be needed once clang implements inheriting constructors
         #define BOOST_PROTO_INHERIT_EXPR_CTORS(EXPR, BASE)                                          \
             using typename BASE::proto_tag_type;                                                    \
@@ -546,7 +546,7 @@ namespace boost
         // is_expr
         template<typename T>
         struct is_expr
-          : decltype(detail::is_expr(std::declval<T>()))
+          : decltype(detail::is_expr_(std::declval<T>()))
         {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////

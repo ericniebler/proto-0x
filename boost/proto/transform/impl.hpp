@@ -82,36 +82,21 @@ namespace boost
         namespace detail
         {
             ////////////////////////////////////////////////////////////////////////////////////////
-            // is_transform
-            std::true_type is_transform_(transform_base const &);
-            std::false_type is_transform_(utility::any const &);
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // is_transform
+            // is_callable_
             std::true_type is_callable_(callable const &);
             std::false_type is_callable_(utility::any const &);
 
-            template<typename T>
-            struct is_callable_2_
-              : decltype(detail::is_callable_(std::declval<T>()))
-            {};
-
-            template<typename T>
-            struct is_callable_1_
-              : is_callable_2_<T>
-            {};
-
-            template<template<typename...> class T, typename... Args>
-            struct is_callable_1_<T<Args...>>
-              : std::is_same<typename utility::back_type<Args...>::type, callable>
-            {};
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // is_transform_
+            std::true_type is_transform_(transform_base const &);
+            std::false_type is_transform_(utility::any const &);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // is_callable
         template<typename T>
         struct is_callable
-          : detail::is_callable_1_<T>
+          : decltype(detail::is_callable_(std::declval<T>()))
         {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,6 +115,57 @@ namespace boost
             typedef Transform proto_transform_type;
         };
 
+        /// \brief A PrimitiveTransform which prevents another PrimitiveTransform
+        /// from being applied in an \c ObjectTransform.
+        ///
+        /// When building higher order transforms with <tt>make\<\></tt> or
+        /// <tt>lazy\<\></tt>, you sometimes would like to build types that
+        /// are parameterized with Proto transforms. In such lambda-style
+        /// transforms, Proto will unhelpfully find all nested transforms
+        /// and apply them, even if you don't want them to be applied. Consider
+        /// the following transform, which will replace the \c _ in
+        /// <tt>Bar<_>()</tt> with <tt>proto::terminal\<int\>::type</tt>:
+        ///
+        /// \code
+        /// template<typename T>
+        /// struct Bar
+        /// {};
+        /// 
+        /// struct Foo
+        ///   : proto::when<_, Bar<_>() >
+        /// {};
+        /// 
+        /// proto::terminal<int>::type i = {0};
+        /// 
+        /// int main()
+        /// {
+        ///     Foo()(i);
+        ///     std::cout << typeid(Foo()(i)).name() << std::endl;
+        /// }
+        /// \endcode
+        ///
+        /// If you actually wanted to default-construct an object of type
+        /// <tt>Bar\<_\></tt>, you would have to protect the \c _ to prevent
+        /// it from being applied. You can use <tt>proto::protect\<\></tt>
+        /// as follows:
+        ///
+        /// \code
+        /// // OK: replace anything with Bar<_>()
+        /// struct Foo
+        ///   : proto::when<_, Bar<protect<_> >() >
+        /// {};
+        /// \endcode
+        template<typename T>
+        struct protect
+          : transform<protect<T>>
+        {
+            template<typename... Args>
+            T operator()(Args &&...) const noexcept(noexcept(T{}))
+            {
+                return T{};
+            }
+        };
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         // is_transform
         template<typename T>
@@ -137,30 +173,49 @@ namespace boost
           : decltype(detail::is_transform_(std::declval<T>()))
         {};
 
+        template<typename R, typename...A>
+        struct is_transform<R(A...)>
+          : std::true_type
+        {};
+
+        template<typename R, typename...A>
+        struct is_transform<R(*)(A...)>
+          : std::true_type
+        {};
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         // as_transform
-        template<typename T>
+        template<typename T, bool B>
         struct as_transform
+          : protect<T>
+        {};
+
+        template<typename T>
+        struct as_transform<T, true>
           : T::proto_transform_type
         {};
 
         template<typename Ret, typename ...Args>
-        struct as_transform<Ret(Args...)>
+        struct as_transform<Ret(Args...), true>
           : transform<as_transform<Ret(Args...)>>
         {
-            template<typename ...T, typename R = Ret>
+            template<
+                typename ...T
+              , typename R = Ret
+              , typename O = decltype(make<R>()(std::declval<T>()...))
+            >
             auto operator()(T &&... t) const
             BOOST_PROTO_AUTO_RETURN(
                 typename std::conditional<
-                    is_callable<R>::value
-                  , call<R(Args...)>
-                  , make<R(Args...)>
+                    is_callable<O>::value
+                  , call<O(Args...)>
+                  , make<O(Args...)>
                 >::type()(static_cast<T &&>(t)...)
             )
         };
 
         template<typename Ret, typename ...Args>
-        struct as_transform<Ret(*)(Args...)>
+        struct as_transform<Ret(*)(Args...), true>
           : as_transform<Ret(Args...)>
         {};
     }
