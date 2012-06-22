@@ -41,25 +41,51 @@ namespace boost
                 typedef std::false_type applied;
             };
 
-            template<typename R, typename ...Args>
-            struct make_1_;
-
             ////////////////////////////////////////////////////////////////////////////////////////
-            // make_2_
+            // make_3_
             template<typename R, typename ...Args>
-            struct make_2_
-              : make_1_<R, Args...>
+            struct make_3_
+              : make_2_<R, Args...>
             {
                 static_assert(!std::is_pointer<R>::value, "ptr to function?");
             };
 
             template<typename R, typename ...A, typename ...Args>
-            struct make_2_<R(A...), Args...>
+            struct make_3_<R(A...), Args...>
             {
-                typedef
-                    decltype(utility::by_val(as_transform<R(A...)>()(std::declval<Args>()...)))
-                type;
+                typedef decltype(utility::by_val(as_transform<R(A...)>()(std::declval<Args>()...))) type;
                 typedef std::true_type applied;
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // make_2_
+            template<typename R, typename ...Args>
+            struct make_2_
+            {
+                typedef decltype(utility::by_val(as_transform<R>()(std::declval<Args>()...))) type;
+                typedef is_transform<R> applied;
+            };
+
+            template<template<typename...> class R, typename ...A, typename ...Args>
+            struct make_2_<R<A...>, Args...>
+              : nested_type<
+                    R<typename make_3_<A, Args...>::type...>
+                  , utility::or_<typename make_3_<A, Args...>::applied...>::value
+                >
+            {};
+
+            template<typename R, typename ...Args>
+            struct make_2_<noinvoke<R>, Args...>
+            {
+                typedef R type;
+                typedef std::false_type applied;
+            };
+
+            template<template<typename...> class R, typename ...A, typename ...Args>
+            struct make_2_<noinvoke<R<A...>>, Args...>
+            {
+                typedef R<typename make_3_<A, Args...>::type...> type;
+                typedef utility::or_<typename make_3_<A, Args...>::applied...> applied;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -67,25 +93,30 @@ namespace boost
             template<typename R, typename ...Args>
             struct make_1_
             {
-                typedef
-                    decltype(utility::by_val(as_transform<R>()(std::declval<Args>()...)))
-                type;
-                typedef is_transform<R> applied;
+                typedef R type;
+                typedef std::false_type applied;
             };
 
             template<template<typename...> class R, typename ...A, typename ...Args>
             struct make_1_<R<A...>, Args...>
               : nested_type<
-                    R<typename make_2_<A, Args...>::type...>
-                  , utility::or_<typename make_2_<A, Args...>::applied...>::value
+                    R<typename make_3_<A, Args...>::type...>
+                  , utility::or_<typename make_3_<A, Args...>::applied...>::value
                 >
             {};
+
+            template<typename R, typename ...Args>
+            struct make_1_<noinvoke<R>, Args...>
+            {
+                typedef R type;
+                typedef std::false_type applied;
+            };
 
             template<template<typename...> class R, typename ...A, typename ...Args>
             struct make_1_<noinvoke<R<A...>>, Args...>
             {
-                typedef R<typename make_2_<A, Args...>::type...> type;
-                typedef std::true_type applied;
+                typedef R<typename make_3_<A, Args...>::type...> type;
+                typedef utility::or_<typename make_3_<A, Args...>::applied...> applied;
             };
         }
 
@@ -126,7 +157,7 @@ namespace boost
             template<typename ...Args>
             auto operator()(Args &&... args) const
             BOOST_PROTO_AUTO_RETURN(
-                typename detail::make_2_<Object, Args...>::type{}
+                typename detail::make_3_<Object, Args...>::type{}
             )
         };
 
@@ -141,7 +172,7 @@ namespace boost
             template<typename ...Args>
             auto operator()(Args &&... args) const
             BOOST_PROTO_AUTO_RETURN(
-                decltype(make<Object>()(static_cast<Args &&>(args)...)){
+                typename detail::make_3_<Object, Args...>::type{
                     as_transform<A>()(static_cast<Args &&>(args)...)...
                 }
             )

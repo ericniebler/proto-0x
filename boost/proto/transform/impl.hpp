@@ -183,6 +183,60 @@ namespace boost
           : std::true_type
         {};
 
+        namespace detail
+        {
+            struct void_
+              : transform<void_>
+            {
+                template<typename ...T>
+                void_ operator()(T &&...) const noexcept
+                {
+                    return void_{};
+                }
+            };
+
+            template<typename T, typename U>
+            T && either_or(T &&t, U &&) noexcept
+            {
+                return static_cast<T &&>(t);
+            }
+
+            template<typename U>
+            U && either_or(void_, U &&u) noexcept
+            {
+                return static_cast<U &&>(u);
+            }
+
+            template<std::size_t N, std::size_t M, typename ...T>
+            struct pad_until
+              : pad_until<N, M+1, T..., void_>
+            {};
+
+            template<std::size_t N, typename ...T>
+            struct pad_until<N, N, T...>
+            {
+                typedef utility::list<T...> type;
+            };
+
+            template<typename O, typename Args>
+            struct invoke_transform;
+
+            template<typename O, typename ...Args>
+            struct invoke_transform<O, utility::list<Args...>>
+            {
+                template<typename ...T>
+                auto operator()(T &&... t) const
+                BOOST_PROTO_AUTO_RETURN(
+                    typename O::proto_transform_type()(
+                        detail::either_or(
+                            as_transform<Args>()(static_cast<T &&>(t)...)
+                          , static_cast<T &&>(t)
+                        )...
+                    )
+                )
+            };
+        }
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         // as_transform
         template<typename T, bool B>
@@ -199,18 +253,49 @@ namespace boost
         struct as_transform<Ret(Args...), true>
           : transform<as_transform<Ret(Args...)>>
         {
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // Handle transforms.
             template<
                 typename ...T
-              , typename R = Ret
-              , typename O = decltype(make<R>()(std::declval<T>()...))
+              , typename Transform = typename detail::make_1_<Ret, T...>::type
+              , BOOST_PROTO_ENABLE_IF(is_transform<Transform>::value)
             >
             auto operator()(T &&... t) const
             BOOST_PROTO_AUTO_RETURN(
-                typename std::conditional<
-                    is_callable<O>::value
-                  , call<O(Args...)>
-                  , make<O(Args...)>
-                >::type()(static_cast<T &&>(t)...)
+                detail::invoke_transform<
+                    Transform
+                  , typename detail::pad_until<sizeof...(T), sizeof...(Args), Args...>::type
+                >()(static_cast<T &&>(t)...)
+            )
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // Handle callables that are not transforms
+            template<
+                typename ...T
+              , typename Callable = typename detail::make_1_<Ret, T...>::type
+              , BOOST_PROTO_ENABLE_IF(!is_transform<Callable>::value)
+              , BOOST_PROTO_ENABLE_IF_VALID_EXPR(
+                    Callable{}(as_transform<Args>()(std::declval<T>()...)...)
+                )
+            >
+            auto operator()(T &&... t) const
+            BOOST_PROTO_AUTO_RETURN(
+                Callable{}(as_transform<Args>()(static_cast<T &&>(t)...)...)
+            )
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // Handle objects
+            template<
+                typename ...T
+              , typename Object = typename detail::make_1_<Ret, T...>::type
+              , BOOST_PROTO_ENABLE_IF(!is_transform<Object>::value)
+              , BOOST_PROTO_ENABLE_IF_VALID_EXPR(
+                    Object{as_transform<Args>()(std::declval<T>()...)...}
+                )
+            >
+            auto operator()(T &&... t) const
+            BOOST_PROTO_AUTO_RETURN(
+                Object{as_transform<Args>()(static_cast<T &&>(t)...)...}
             )
         };
 

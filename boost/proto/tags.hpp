@@ -176,13 +176,16 @@ namespace boost
                 /// Tag type for the n-ary function call operator.
                 struct function : def<function> {};
 
-                ////////////////////////////////////////////////////////////////////////////////////
-                // data
-                constexpr _data const & data = utility::static_const<_data>::value;
+                namespace
+                {
+                    ////////////////////////////////////////////////////////////////////////////////
+                    // data
+                    constexpr _data const & data = utility::static_const<_data>::value;
 
-                ////////////////////////////////////////////////////////////////////////////////////
-                // locals
-                constexpr _locals const & locals = utility::static_const<_locals>::value;
+                    ////////////////////////////////////////////////////////////////////////////////
+                    // locals
+                    constexpr _locals const & locals = utility::static_const<_locals>::value;
+                }
             }
         } // namespace tags
 

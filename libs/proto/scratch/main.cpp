@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// main.cpp
+//
+//  Copyright 2012 Eric Niebler. Distributed under the Boost
+//  Software License, Version 1.0. (See accompanying file
+//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 #define BOOST_PROTO_ASSERT_VALID_DOMAIN(DOM) typedef DOM DOM ## _
 
 #include <cstdio>
@@ -397,6 +404,40 @@ namespace test_make
         int res = MakeTest4()(i);
         BOOST_CHECK_EQUAL(res, 42);
     }
+
+    struct MakeTest5
+      : proto::make< wrapper< proto::_state(_, proto::_state) >(proto::_state(_)) >
+    {};
+
+    void make_test5()
+    {
+        proto::terminal<int> i{42};
+        wrapper<int> res = MakeTest5()(i, 43);
+        BOOST_CHECK_EQUAL(res.t_, 43);
+    }
+
+    using proto::utility::identity;
+    struct MakeTest6
+      : proto::make< wrapper< identity(proto::_state) >(proto::_state(_)) >
+    {};
+
+    void make_test6()
+    {
+        proto::terminal<int> i{42};
+        wrapper<int> res = MakeTest6()(i, 43);
+        BOOST_CHECK_EQUAL(res.t_, 43);
+    }
+
+    struct MakeTest7
+      : proto::make< wrapper< int(proto::_state) >(proto::_state(_)) >
+    {};
+
+    void make_test7()
+    {
+        proto::terminal<int> i{42};
+        wrapper<int> res = MakeTest7()(i, 43);
+        BOOST_CHECK_EQUAL(res.t_, 43);
+    }
 }
 
 void make_tests()
@@ -405,6 +446,9 @@ void make_tests()
     test_make::make_test2();
     test_make::make_test3();
     test_make::make_test4();
+    test_make::make_test5();
+    test_make::make_test6();
+    test_make::make_test7();
 }
 
 //////////////////////////////////////////////////////

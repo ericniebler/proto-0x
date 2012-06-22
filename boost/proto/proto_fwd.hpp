@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // proto_fwd.hpp
 //
 // Copyright 2012 Eric Niebler.
@@ -44,7 +44,7 @@
     /**/
 
 #define BOOST_PROTO_IS_CONVERTIBLE(T, U)                                                            \
-    decltype(boost::proto::detail::is_convertible<U>(std::declval<T>()))::value                     \
+    decltype(boost::proto::detail::is_convertible_<U>(std::declval<T>()))::value                    \
     /**/
 
 #define BOOST_PROTO_IGNORE(U)                                                                       \
@@ -90,10 +90,19 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // is_convertible
             template<typename T>
-            std::true_type is_convertible(T const &);
+            std::true_type is_convertible_(T const &);
 
             template<typename T>
-            std::false_type is_convertible(utility::any const &);
+            std::false_type is_convertible_(utility::any const &);
+
+            template<typename R, typename ...Args>
+            struct make_1_;
+
+            template<typename R, typename ...Args>
+            struct make_2_;
+
+            template<typename R, typename ...Args>
+            struct make_3_;
         }
 
         ///////////////////////////////////////////////////////////////////////////////
@@ -161,10 +170,7 @@ namespace boost
 
                 // Transform environment tags
                 typedef def<struct data_> _data;
-                extern _data const & data;
-
                 typedef def<struct locals_> _locals;
-                extern _locals const & locals;
             }
         }
 
