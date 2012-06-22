@@ -392,8 +392,8 @@ namespace test_make
         BOOST_CHECK_EQUAL(res.t_, 42);
     }
 
-    // Test that when substitution is done, and there is no nested ::type
-    // typedef, the result is the wrapper
+    // Test that when substitution is done, and there is a nested ::type
+    // typedef, the result is that type.
     struct MakeTest4
       : proto::make< mpl::identity< proto::_value >(proto::_value) >
     {};

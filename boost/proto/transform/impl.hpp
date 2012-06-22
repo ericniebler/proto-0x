@@ -74,18 +74,8 @@ namespace boost
             }
         };
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // callable
-        struct callable
-        {};
-
         namespace detail
         {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // is_callable_
-            std::true_type is_callable_(callable const &);
-            std::false_type is_callable_(utility::any const &);
-
             ////////////////////////////////////////////////////////////////////////////////////////
             // is_transform_
             std::true_type is_transform_(transform_base const &);
@@ -93,16 +83,8 @@ namespace boost
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        // is_callable
-        template<typename T>
-        struct is_callable
-          : decltype(detail::is_callable_(std::declval<T>()))
-        {};
-
-        ////////////////////////////////////////////////////////////////////////////////////////////
         // transform_base
         struct transform_base
-          : callable
         {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -185,6 +167,8 @@ namespace boost
 
         namespace detail
         {
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // void_
             struct void_
               : transform<void_>
             {
@@ -195,18 +179,22 @@ namespace boost
                 }
             };
 
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // either_or
             template<typename T, typename U>
-            T && either_or(T &&t, U &&) noexcept
+            inline T && either_or(T &&t, U &&) noexcept
             {
                 return static_cast<T &&>(t);
             }
 
             template<typename U>
-            U && either_or(void_, U &&u) noexcept
+            inline U && either_or(void_, U &&u) noexcept
             {
                 return static_cast<U &&>(u);
             }
 
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // pad_until
             template<std::size_t N, std::size_t M, typename ...T>
             struct pad_until
               : pad_until<N, M+1, T..., void_>
@@ -218,11 +206,13 @@ namespace boost
                 typedef utility::list<T...> type;
             };
 
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // invoke_transform_2_
             template<typename O, typename Args>
-            struct invoke_transform;
+            struct invoke_transform_2_;
 
             template<typename O, typename ...Args>
-            struct invoke_transform<O, utility::list<Args...>>
+            struct invoke_transform_2_<O, utility::list<Args...>>
             {
                 template<typename ...T>
                 auto operator()(T &&... t) const
@@ -233,6 +223,48 @@ namespace boost
                           , static_cast<T &&>(t)
                         )...
                     )
+                )
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // invoke_transform_1_
+            template<typename Sig, bool IsTransform>
+            struct invoke_transform_1_;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // Handle transforms.
+            template<typename Transform, typename ...Args>
+            struct invoke_transform_1_<Transform(Args...), true>
+            {
+                template<typename ...T>
+                auto operator()(T &&... t) const
+                BOOST_PROTO_AUTO_RETURN(
+                    invoke_transform_2_<
+                        Transform
+                      , typename detail::pad_until<sizeof...(T), sizeof...(Args), Args...>::type
+                    >()(static_cast<T &&>(t)...)
+                )
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // Handle callables and object constructions.
+            template<typename CallOrObj, typename ...Args>
+            struct invoke_transform_1_<CallOrObj(Args...), false>
+            {
+                ////////////////////////////////////////////////////////////////////////////////////
+                // Handle callables that are not transforms
+                template<typename ...T>
+                auto operator()(T &&... t) const
+                BOOST_PROTO_AUTO_RETURN(
+                    CallOrObj{}(as_transform<Args>()(static_cast<T &&>(t)...)...)
+                )
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // Handle objects
+                template<typename ...T>
+                auto operator()(T &&... t) const
+                BOOST_PROTO_AUTO_RETURN(
+                    CallOrObj{as_transform<Args>()(static_cast<T &&>(t)...)...}
                 )
             };
         }
@@ -250,59 +282,22 @@ namespace boost
         {};
 
         template<typename Ret, typename ...Args>
-        struct as_transform<Ret(Args...), true>
-          : transform<as_transform<Ret(Args...)>>
-        {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // Handle transforms.
-            template<
-                typename ...T
-              , typename Transform = typename detail::make_1_<Ret, T...>::type
-              , BOOST_PROTO_ENABLE_IF(is_transform<Transform>::value)
-            >
-            auto operator()(T &&... t) const
-            BOOST_PROTO_AUTO_RETURN(
-                detail::invoke_transform<
-                    Transform
-                  , typename detail::pad_until<sizeof...(T), sizeof...(Args), Args...>::type
-                >()(static_cast<T &&>(t)...)
-            )
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // Handle callables that are not transforms
-            template<
-                typename ...T
-              , typename Callable = typename detail::make_1_<Ret, T...>::type
-              , BOOST_PROTO_ENABLE_IF(!is_transform<Callable>::value)
-              , BOOST_PROTO_ENABLE_IF_VALID_EXPR(
-                    Callable{}(as_transform<Args>()(std::declval<T>()...)...)
-                )
-            >
-            auto operator()(T &&... t) const
-            BOOST_PROTO_AUTO_RETURN(
-                Callable{}(as_transform<Args>()(static_cast<T &&>(t)...)...)
-            )
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // Handle objects
-            template<
-                typename ...T
-              , typename Object = typename detail::make_1_<Ret, T...>::type
-              , BOOST_PROTO_ENABLE_IF(!is_transform<Object>::value)
-              , BOOST_PROTO_ENABLE_IF_VALID_EXPR(
-                    Object{as_transform<Args>()(std::declval<T>()...)...}
-                )
-            >
-            auto operator()(T &&... t) const
-            BOOST_PROTO_AUTO_RETURN(
-                Object{as_transform<Args>()(static_cast<T &&>(t)...)...}
-            )
-        };
-
-        template<typename Ret, typename ...Args>
         struct as_transform<Ret(*)(Args...), true>
           : as_transform<Ret(Args...)>
         {};
+
+        template<typename Ret, typename ...Args>
+        struct as_transform<Ret(Args...), true>
+          : transform<as_transform<Ret(Args...)>>
+        {
+            template<typename ...T, typename X = typename detail::make_1_<Ret, T...>::type>
+            auto operator()(T &&... t) const
+            BOOST_PROTO_AUTO_RETURN(
+                detail::invoke_transform_1_<X(Args...), is_transform<X>::value>()(
+                    static_cast<T &&>(t)...
+                )
+            )
+        };
     }
 }
 
