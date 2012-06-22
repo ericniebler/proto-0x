@@ -197,7 +197,7 @@ namespace boost
             template<typename Transform, typename ...Args>
             struct invoke_transform_2_<0, Transform(Args...)>
             {
-                template<typename ...T>
+                template<typename ...T, BOOST_PROTO_ENABLE_IF(sizeof...(T) == sizeof...(Args))>
                 auto operator()(T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     typename Transform::proto_transform_type()(
@@ -206,6 +206,12 @@ namespace boost
                           , static_cast<T &&>(t)
                         )...
                     )
+                )
+
+                template<typename ...T, BOOST_PROTO_ENABLE_IF(sizeof...(T) < sizeof...(Args))>
+                auto operator()(T &&... t) const
+                BOOST_PROTO_AUTO_RETURN(
+                    (*this)(static_cast<T &&>(t)..., 0)
                 )
             };
 
@@ -222,9 +228,10 @@ namespace boost
                 template<typename ...T>
                 auto operator()(T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    invoke_transform_2_<sizeof...(T) - sizeof...(Args), Transform(Args...)>()(
-                        static_cast<T &&>(t)...
-                    )
+                    invoke_transform_2_<
+                        (sizeof...(T) > sizeof...(Args) ? sizeof...(T) - sizeof...(Args) : 0)
+                      , Transform(Args...)
+                    >()(static_cast<T &&>(t)...)
                 )
             };
 
@@ -249,17 +256,21 @@ namespace boost
                     CallOrObj{as_transform<Args>()(static_cast<T &&>(t)...)...}
                 )
             };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // as_transform_
+            template<typename T>
+            typename T::proto_transform_type as_transform_(int);
+
+            template<typename T>
+            protect<T> as_transform_(...);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // as_transform
         template<typename T>
         struct as_transform
-          : std::conditional<
-                is_transform<T>::value || is_expr<T>::value
-              , T
-              , protect<T>
-            >::type::proto_transform_type
+          : decltype(detail::as_transform_<T>(1))
         {};
 
         template<typename Ret, typename ...Args>

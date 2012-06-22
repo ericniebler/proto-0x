@@ -438,6 +438,26 @@ namespace test_make
         wrapper<int> res = MakeTest7()(i, 43);
         BOOST_CHECK_EQUAL(res.t_, 43);
     }
+
+    struct tfx : proto::transform<tfx>
+    {
+        template<typename E, typename...T>
+        auto operator()(E && e, T &&... t) const
+        BOOST_PROTO_AUTO_RETURN(
+            static_cast<E &&>(e)
+        )
+    };
+
+    struct MakeTest8
+      : proto::make< wrapper< tfx(_, _) >(_) >
+    {};
+
+    void make_test8()
+    {
+        proto::terminal<int> i{42};
+        wrapper<proto::terminal<int>> res = MakeTest8()(i);
+        BOOST_CHECK_EQUAL(proto::value(res.t_), 42);
+    }
 }
 
 void make_tests()
@@ -449,6 +469,7 @@ void make_tests()
     test_make::make_test5();
     test_make::make_test6();
     test_make::make_test7();
+    test_make::make_test8();
 }
 
 //////////////////////////////////////////////////////
