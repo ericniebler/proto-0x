@@ -142,8 +142,9 @@ namespace boost
           : transform<protect<T>>
         {
             template<typename... Args>
-            T operator()(Args &&...) const noexcept(noexcept(T{}))
+            T operator()(Args &&...) const
             {
+                static_assert(std::is_same<T, void>::value, "don't call me at runtime!");
                 return T{};
             }
         };
@@ -153,16 +154,6 @@ namespace boost
         template<typename T>
         struct is_transform
           : decltype(detail::is_transform_(std::declval<T>()))
-        {};
-
-        template<typename R, typename...A>
-        struct is_transform<R(A...)>
-          : std::true_type
-        {};
-
-        template<typename R, typename...A>
-        struct is_transform<R(*)(A...)>
-          : std::true_type
         {};
 
         namespace detail
@@ -194,30 +185,22 @@ namespace boost
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // pad_until
-            template<std::size_t N, std::size_t M, typename ...T>
-            struct pad_until
-              : pad_until<N, M+1, T..., void_>
-            {};
-
-            template<std::size_t N, typename ...T>
-            struct pad_until<N, N, T...>
-            {
-                typedef utility::list<T...> type;
-            };
-
-            ////////////////////////////////////////////////////////////////////////////////////////
             // invoke_transform_2_
-            template<typename O, typename Args>
+            template<std::size_t N, typename Sig>
             struct invoke_transform_2_;
 
-            template<typename O, typename ...Args>
-            struct invoke_transform_2_<O, utility::list<Args...>>
+            template<std::size_t N, typename Transform, typename ...Args>
+            struct invoke_transform_2_<N, Transform(Args...)>
+              : invoke_transform_2_<N - 1, Transform(Args..., void_)>
+            {};
+
+            template<typename Transform, typename ...Args>
+            struct invoke_transform_2_<0, Transform(Args...)>
             {
                 template<typename ...T>
                 auto operator()(T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    typename O::proto_transform_type()(
+                    typename Transform::proto_transform_type()(
                         detail::either_or(
                             as_transform<Args>()(static_cast<T &&>(t)...)
                           , static_cast<T &&>(t)
@@ -228,31 +211,30 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // invoke_transform_1_
-            template<typename Sig, bool IsTransform>
+            template<bool IsTransform, typename Sig>
             struct invoke_transform_1_;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // Handle transforms.
             template<typename Transform, typename ...Args>
-            struct invoke_transform_1_<Transform(Args...), true>
+            struct invoke_transform_1_<true, Transform(Args...)>
             {
                 template<typename ...T>
                 auto operator()(T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    invoke_transform_2_<
-                        Transform
-                      , typename detail::pad_until<sizeof...(T), sizeof...(Args), Args...>::type
-                    >()(static_cast<T &&>(t)...)
+                    invoke_transform_2_<sizeof...(T) - sizeof...(Args), Transform(Args...)>()(
+                        static_cast<T &&>(t)...
+                    )
                 )
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // Handle callables and object constructions.
             template<typename CallOrObj, typename ...Args>
-            struct invoke_transform_1_<CallOrObj(Args...), false>
+            struct invoke_transform_1_<false, CallOrObj(Args...)>
             {
                 ////////////////////////////////////////////////////////////////////////////////////
-                // Handle callables that are not transforms
+                // Handle callables
                 template<typename ...T>
                 auto operator()(T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
@@ -271,29 +253,28 @@ namespace boost
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // as_transform
-        template<typename T, bool B>
-        struct as_transform
-          : protect<T>
-        {};
-
         template<typename T>
-        struct as_transform<T, true>
-          : T::proto_transform_type
+        struct as_transform
+          : std::conditional<
+                is_transform<T>::value || is_expr<T>::value
+              , T
+              , protect<T>
+            >::type::proto_transform_type
         {};
 
         template<typename Ret, typename ...Args>
-        struct as_transform<Ret(*)(Args...), true>
+        struct as_transform<Ret(*)(Args...)>
           : as_transform<Ret(Args...)>
         {};
 
         template<typename Ret, typename ...Args>
-        struct as_transform<Ret(Args...), true>
+        struct as_transform<Ret(Args...)>
           : transform<as_transform<Ret(Args...)>>
         {
             template<typename ...T, typename X = typename detail::make_1_<Ret, T...>::type>
             auto operator()(T &&... t) const
             BOOST_PROTO_AUTO_RETURN(
-                detail::invoke_transform_1_<X(Args...), is_transform<X>::value>()(
+                detail::invoke_transform_1_<is_transform<X>::value, X(Args...)>()(
                     static_cast<T &&>(t)...
                 )
             )

@@ -262,7 +262,7 @@ namespace boost
         template<typename T>
         struct is_transform;
 
-        template<typename T, bool B = is_transform<T>::value>
+        template<typename T>
         struct as_transform;
 
         template<typename Grammar, typename Transform = Grammar>
