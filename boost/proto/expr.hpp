@@ -35,7 +35,7 @@ namespace boost
             std::true_type are_equality_comparible_(int);
 
             template<typename L, typename R>
-            std::false_type are_equality_comparible_(utility::any);
+            std::false_type are_equality_comparible_(...);
 
             template<typename L, typename R>
             struct are_equality_comparible

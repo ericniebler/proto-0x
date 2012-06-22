@@ -159,27 +159,27 @@ namespace boost
         namespace detail
         {
             ////////////////////////////////////////////////////////////////////////////////////////
-            // void_
-            struct void_
-              : transform<void_>
+            // na
+            struct na
+              : transform<na>
             {
                 template<typename ...T>
-                void_ operator()(T &&...) const noexcept
+                na operator()(T &&...) const noexcept
                 {
-                    return void_{};
+                    return na{};
                 }
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // either_or
+            // select_value
             template<typename T, typename U>
-            inline T && either_or(T &&t, U &&) noexcept
+            inline T && select_value(T &&t, U &&) noexcept
             {
                 return static_cast<T &&>(t);
             }
 
             template<typename U>
-            inline U && either_or(void_, U &&u) noexcept
+            inline U && select_value(na, U &&u) noexcept
             {
                 return static_cast<U &&>(u);
             }
@@ -191,7 +191,7 @@ namespace boost
 
             template<std::size_t N, typename Transform, typename ...Args>
             struct invoke_transform_2_<N, Transform(Args...)>
-              : invoke_transform_2_<N - 1, Transform(Args..., void_)>
+              : invoke_transform_2_<N - 1, Transform(Args..., na)>
             {};
 
             template<typename Transform, typename ...Args>
@@ -201,7 +201,7 @@ namespace boost
                 auto operator()(T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     typename Transform::proto_transform_type()(
-                        detail::either_or(
+                        detail::select_value(
                             as_transform<Args>()(static_cast<T &&>(t)...)
                           , static_cast<T &&>(t)
                         )...
@@ -211,7 +211,9 @@ namespace boost
                 template<typename ...T, BOOST_PROTO_ENABLE_IF(sizeof...(T) < sizeof...(Args))>
                 auto operator()(T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    (*this)(static_cast<T &&>(t)..., 0)
+                    typename Transform::proto_transform_type()(
+                        as_transform<Args>()(static_cast<T &&>(t)...)...
+                    )
                 )
             };
 

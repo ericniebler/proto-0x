@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Proto Files">
+      <UniqueIdentifier>{ddec84e0-144c-4e2b-8c74-dd23488c6f2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{ea867dcc-019a-41c6-9b73-6646d07f3642}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Proto Files\detail">
+      <UniqueIdentifier>{8028ed3e-04d4-43ac-bcc1-f2f6bbb70ce0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Proto Files\transform">
+      <UniqueIdentifier>{347c023b-5a32-47a5-85ae-fda3411029bb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\boost\proto\expr.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\proto_fwd.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\proto.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\tags.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\domain.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\args.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\operators.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\detail\common_domain.hpp">
+      <Filter>Proto Files\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\make_expr.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\matches.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\arg.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\impl.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\utility.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\when.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\constant.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\pass_through.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\make.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\call.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile" />
+  </ItemGroup>
+</Project>

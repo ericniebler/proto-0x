@@ -6,8 +6,8 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_TRANSFORM_CALL_HPP_INCLUDED
-#define BOOST_PROTO_TRANSFORM_CALL_HPP_INCLUDED
+#ifndef BOOST_PROTO_TRANSFORM_MAKE_HPP_INCLUDED
+#define BOOST_PROTO_TRANSFORM_MAKE_HPP_INCLUDED
 
 #include <utility>
 #include <type_traits>
@@ -25,7 +25,7 @@ namespace boost
             typename T::type nested_type_(int);
 
             template<typename T>
-            T nested_type_(utility::any);
+            T nested_type_(...);
 
             template<typename T, bool Applied>
             struct nested_type
