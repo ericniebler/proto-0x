@@ -268,7 +268,7 @@ namespace boost
         template<typename Grammar, typename Transform = Grammar>
         struct when;
 
-        template<typename CallableTransform>
+        template<typename CallableTransform, int = 0>
         struct call;
 
         template<typename ObjectTransform>

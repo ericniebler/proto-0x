@@ -74,14 +74,6 @@ namespace boost
             }
         };
 
-        namespace detail
-        {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // is_transform_
-            std::true_type is_transform_(transform_base const &);
-            std::false_type is_transform_(utility::any const &);
-        }
-
         ////////////////////////////////////////////////////////////////////////////////////////////
         // transform_base
         struct transform_base
@@ -148,6 +140,14 @@ namespace boost
                 return T{};
             }
         };
+
+        namespace detail
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // is_transform_
+            std::true_type is_transform_(transform_base const &);
+            std::false_type is_transform_(utility::any const &);
+        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // is_transform
@@ -244,18 +244,18 @@ namespace boost
             {
                 ////////////////////////////////////////////////////////////////////////////////////
                 // Handle callables
-                template<typename ...T>
+                template<typename ...T, typename C = CallOrObj>
                 auto operator()(T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    CallOrObj{}(as_transform<Args>()(static_cast<T &&>(t)...)...)
+                    C{}(as_transform<Args>()(static_cast<T &&>(t)...)...)
                 )
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // Handle objects
-                template<typename ...T>
+                template<typename ...T, typename C = CallOrObj>
                 auto operator()(T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    CallOrObj{as_transform<Args>()(static_cast<T &&>(t)...)...}
+                    C{as_transform<Args>()(static_cast<T &&>(t)...)...}
                 )
             };
 

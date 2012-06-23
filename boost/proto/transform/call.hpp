@@ -63,17 +63,14 @@ namespace boost
         ///     >
         /// {};
         /// \endcode
-        template<typename PrimitiveTransform>
+        template<typename PrimitiveTransform, int>
         struct call
           : PrimitiveTransform::proto_transform_type
         {};
 
-        /// \brief Either call the PolymorphicFunctionObject with 0
-        /// arguments, or invoke the PrimitiveTransform with 3
-        /// arguments.
-        template<typename Fun, typename ...Args>
-        struct call<Fun(Args...)>
-          : transform<call<Fun(Args...)>>
+        template<typename Fun, typename ...Args, int N>
+        struct call<Fun(Args...), N>
+          : transform<call<Fun(Args...), N>>
         {
             template<typename ...T, typename X = Fun, BOOST_PROTO_ENABLE_IF(is_transform<X>::value)>
             auto operator()(T &&... t) const

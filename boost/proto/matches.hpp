@@ -532,7 +532,8 @@ namespace boost
         ///     >
         /// {};
         /// \endcode
-        struct _ : transform<_>
+        struct _
+          : transform<_>
         {
             typedef _ proto_grammar_type;
 
@@ -551,7 +552,8 @@ namespace boost
         /// \c E \e does match <tt>not_\<G\></tt>. For example,
         /// <tt>not_\<terminal\<_\> \></tt> will match any non-terminal.
         template<typename Grammar>
-        struct not_ : transform<not_<Grammar>>
+        struct not_
+          : transform<not_<Grammar>>
         {
             typedef not_ proto_grammar_type;
 
@@ -613,7 +615,8 @@ namespace boost
         /// {};
         /// \endcode
         template<typename If, typename Then /* = _*/, typename Else /*= not_<_>*/>
-        struct if_ : transform<if_<If, Then, Else>>
+        struct if_
+          : transform<if_<If, Then, Else>>
         {
             typedef if_ proto_grammar_type;
 
@@ -646,6 +649,7 @@ namespace boost
         /// number such that <tt>matches\<E,Bx\>::value</tt> is \c true.
         template<typename... Grammars>
         struct or_
+          : transform<or_<Grammars...>>
         {
             typedef or_ proto_grammar_type;
 
@@ -671,6 +675,7 @@ namespace boost
         /// equivalent to <tt>(B0()(e, s, d),B1()(e, s, d),...Bn()(e, s, d))</tt>.
         template<typename... Grammars>
         struct and_
+          : transform<and_<Grammars...>>
         {
             typedef and_ proto_grammar_type;
 
@@ -705,6 +710,7 @@ namespace boost
         /// <tt>C::case_\<std::result_of\<T(E,S,D)\>::type\>()(e, s, d)</tt>.
         template<typename Cases, typename Transform>
         struct switch_
+          : transform<switch_<Cases, Transform>>
         {
             typedef switch_ proto_grammar_type;
 
