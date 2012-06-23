@@ -13,6 +13,9 @@
     <Filter Include="Proto Files\transform">
       <UniqueIdentifier>{347c023b-5a32-47a5-85ae-fda3411029bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Test Files">
+      <UniqueIdentifier>{8146d17b-12da-4536-955c-5b5659f9033c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\boost\proto\expr.hpp">
@@ -72,13 +75,34 @@
     <ClInclude Include="..\..\..\boost\proto\transform\call.hpp">
       <Filter>Proto Files\transform</Filter>
     </ClInclude>
+    <ClInclude Include="..\test\unit_test.hpp">
+      <Filter>Test Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\test\make.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\matches.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\expr.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\as_transform.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\common_domain.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
+    <None Include="..\test\Jamfile">
+      <Filter>Test Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

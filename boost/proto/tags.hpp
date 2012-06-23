@@ -202,6 +202,16 @@ namespace boost
         {
             typedef typename Expr::proto_tag_type type;
         };
+
+        namespace detail
+        {
+            inline void ignore_tags()
+            {
+                BOOST_PROTO_IGNORE_UNUSED(tag::data);
+                BOOST_PROTO_IGNORE_UNUSED(tag::locals);
+            }
+        }
+
     } // namespace proto
 } // namespace boost
 

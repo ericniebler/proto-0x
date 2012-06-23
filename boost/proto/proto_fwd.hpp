@@ -26,7 +26,7 @@
 
 // New-style enable_if from Matt Calabrese
 #define BOOST_PROTO_ENABLE_IF(...)                                                                  \
-    typename std::enable_if<(__VA_ARGS__)>::type *& = boost::proto::detail::enabler
+    typename std::enable_if<static_cast<bool>(__VA_ARGS__)>::type *& = boost::proto::detail::enabler
 
 // New-style enable_if from Matt Calabrese
 #define BOOST_PROTO_ENABLE_IF_VALID_EXPR(...)                                                       \
@@ -47,7 +47,7 @@
     decltype(boost::proto::detail::is_convertible_<U>(std::declval<T>()))::value                    \
     /**/
 
-#define BOOST_PROTO_IGNORE(U)                                                                       \
+#define BOOST_PROTO_IGNORE_UNUSED(U)                                                                \
     static_cast<void>(U)                                                                            \
     /**/
 

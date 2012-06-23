@@ -1,0 +1,21 @@
+# (C) Copyright 2012: Eric Niebler
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+# bring in rules for testing
+import testing ;
+
+project
+    : requirements
+        <library>/boost/test//boost_unit_test_framework
+        <link>static
+    ;
+
+test-suite "proto"
+    :
+        [ run as_transform.cpp ]
+        [ run common_domain.cpp ]
+        [ run expr.cpp ]
+        [ run make.cpp ]
+        [ run matches.cpp ]
+    ;

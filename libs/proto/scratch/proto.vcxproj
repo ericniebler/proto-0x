@@ -73,11 +73,18 @@
     <ClInclude Include="..\..\..\boost\proto\transform\pass_through.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\when.hpp" />
     <ClInclude Include="..\..\..\boost\proto\utility.hpp" />
+    <ClInclude Include="..\test\unit_test.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\test\as_transform.cpp" />
+    <ClCompile Include="..\test\common_domain.cpp" />
+    <ClCompile Include="..\test\expr.cpp" />
+    <ClCompile Include="..\test\make.cpp" />
+    <ClCompile Include="..\test\matches.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\test\Jamfile" />
     <None Include="Makefile" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

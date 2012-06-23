@@ -21,7 +21,7 @@
 
 #ifndef BOOST_PROTO_ASSERT_VALID_DOMAIN
 # define BOOST_PROTO_ASSERT_VALID_DOMAIN(DOM)                                                       \
-    static_assert(!std::is_same<DOM, ::boost::proto::detail::not_a_domain>::type, "no common domain!")
+    static_assert(!std::is_same<DOM, ::boost::proto::detail::not_a_domain>::value, "no common domain!")
 #endif
 
 namespace boost
