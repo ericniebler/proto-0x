@@ -11,6 +11,7 @@
 
 #include <utility>
 #include <type_traits>
+#include <boost/mpl/print.hpp>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/utility.hpp>
 #include <boost/proto/transform/impl.hpp>

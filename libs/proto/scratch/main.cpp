@@ -7,6 +7,7 @@
 
 #include <cstdio>
 #include <string>
+#include <memory>
 #include <functional>
 #include <boost/proto/proto.hpp>
 
@@ -29,9 +30,8 @@ struct LambdaEval
             proto::terminal<int>
           , proto::_value
         >
-      , proto::when<
-            proto::plus<LambdaEval, LambdaEval>
-          , std::plus<int>(LambdaEval(proto::_left), LambdaEval(proto::_right))
+      , proto::otherwise<
+            proto::_eval<LambdaEval>
         >
     >
 {};
@@ -67,7 +67,6 @@ using LambdaLiteral = LambdaExpr<proto::tag::terminal, proto::args<T>>;
 
 constexpr LambdaLiteral<placeholder<mpl::int_<0>>> _1;
 
-
 int main()
 {
     std::printf("hello proto-11!\n\n");
@@ -78,7 +77,6 @@ int main()
     void done();
     done();
 }
-
 
 //////////////////////////////////////////////////////
 void done()

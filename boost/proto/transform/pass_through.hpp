@@ -109,7 +109,7 @@ namespace boost
             // pass_through_0_
             template<bool IsTerminal, std::size_t N, std::size_t M, typename ...Args>
             struct pass_through_0_
-              : pass_through_1_<N, M, utility::indices<N>, Args...>
+              : pass_through_1_<N, M, utility::indices<0, N>, Args...>
             {};
 
             template<std::size_t N, std::size_t M, typename ...Args>
@@ -119,15 +119,15 @@ namespace boost
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        // pass_through
+        // _pass_through
         template<typename Expr>
-        struct pass_through
-          : pass_through<typename Expr::proto_basic_expr_type>
+        struct _pass_through
+          : _pass_through<typename Expr::proto_basic_expr_type>
         {};
 
         template<template<typename...> class Expr, typename Tag, typename... Args, typename... Rest>
-        struct pass_through<Expr<Tag, args<Args...>, Rest...>>
-          : transform<pass_through<Expr<Tag, args<Args...>, Rest...>>>
+        struct _pass_through<Expr<Tag, args<Args...>, Rest...>>
+          : transform<_pass_through<Expr<Tag, args<Args...>, Rest...>>>
         {
             typedef Expr<Tag, args<Args...>, Rest...> proto_grammar_type;
 

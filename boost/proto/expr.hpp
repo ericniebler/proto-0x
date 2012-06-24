@@ -396,7 +396,7 @@ namespace boost
                 typedef Domain                      proto_domain_type;
                 typedef basic_expr                  proto_basic_expr_type;
                 typedef basic_expr                  proto_grammar_type;
-                typedef pass_through<basic_expr>    proto_transform_type;
+                typedef _pass_through<basic_expr>    proto_transform_type;
                 typedef
                     std::integral_constant<
                         std::size_t
@@ -559,6 +559,18 @@ namespace boost
         template<typename Expr>
         struct is_terminal<Expr &>
           : Expr::proto_is_terminal
+        {};
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // arity
+        template<typename Expr>
+        struct arity
+          : Expr::proto_arity
+        {};
+
+        template<typename Expr>
+        struct arity<Expr &>
+          : Expr::proto_arity
         {};
 
     }

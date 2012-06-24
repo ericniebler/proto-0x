@@ -78,6 +78,9 @@
     <ClInclude Include="..\test\unit_test.hpp">
       <Filter>Test Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\eval.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -96,6 +99,9 @@
       <Filter>Test Files</Filter>
     </ClCompile>
     <ClCompile Include="..\test\common_domain.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\mem_fun.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
   </ItemGroup>

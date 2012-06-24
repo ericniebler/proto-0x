@@ -52,6 +52,17 @@ namespace boost
                 static_cast<Env &&>(env)[Tag()]
             )
         };
+
+        template<>
+        struct _env<void>
+          : transform<_env<void>>
+        {
+            template<typename E, typename S, typename Env, typename ...Rest>
+            auto operator()(E &&, S &&, Env && env, Rest &&...) const
+            BOOST_PROTO_AUTO_RETURN(
+                static_cast<Env &&>(env)
+            )
+        };
     }
 }
 

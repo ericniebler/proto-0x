@@ -68,6 +68,7 @@
     <ClInclude Include="..\..\..\boost\proto\transform\arg.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\call.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\constant.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\transform\eval.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\impl.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\make.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\pass_through.hpp" />
@@ -81,6 +82,7 @@
     <ClCompile Include="..\test\expr.cpp" />
     <ClCompile Include="..\test\make.cpp" />
     <ClCompile Include="..\test\matches.cpp" />
+    <ClCompile Include="..\test\mem_fun.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>

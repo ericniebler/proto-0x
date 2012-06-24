@@ -15,14 +15,24 @@
 #include <climits>
 
 // Usage: auto fun(T t) BOOST_PROTO_AUTO_RETURN( some-expression )
-//   noexcept clause from Dave Abrahams
+//   noexcept clause from Dave Abrahams, tweaked by me.
 #define BOOST_PROTO_AUTO_RETURN(...)                                                                \
-    noexcept(noexcept(decltype(__VA_ARGS__)(std::move(__VA_ARGS__))))                               \
-    -> decltype(__VA_ARGS__) { return (__VA_ARGS__); }
+    noexcept(noexcept(                                                                              \
+        decltype(__VA_ARGS__)(boost::proto::detail::move_declval<decltype(__VA_ARGS__)>())          \
+    )) -> decltype(__VA_ARGS__)                                                                     \
+    {                                                                                               \
+        return (__VA_ARGS__);                                                                       \
+    }                                                                                               \
+    /**/
 
 #define BOOST_PROTO_RETURN(...)                                                                     \
-    noexcept(noexcept(decltype(__VA_ARGS__)(std::move(__VA_ARGS__))))                               \
-    { return (__VA_ARGS__); }
+    noexcept(noexcept(                                                                              \
+        decltype(__VA_ARGS__)(boost::proto::detail::move_declval<decltype(__VA_ARGS__)>())          \
+    ))                                                                                              \
+    {                                                                                               \
+        return (__VA_ARGS__);                                                                       \
+    }                                                                                               \
+    /**/
 
 // New-style enable_if from Matt Calabrese
 #define BOOST_PROTO_ENABLE_IF(...)                                                                  \
@@ -73,6 +83,31 @@ namespace boost
             typedef char (&no_type)[2];
 
             ////////////////////////////////////////////////////////////////////////////////////////
+            // rvalue_type
+            template<typename T>
+            struct rvalue_type
+            {
+                typedef T && type;
+            };
+
+            template<typename T>
+            struct rvalue_type<T &>
+            {
+                typedef T && type;
+            };
+
+            template<>
+            struct rvalue_type<void>
+            {
+                typedef void type;
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // a declval+move that allows void
+            template<typename T>
+            typename rvalue_type<T>::type move_declval();
+
+            ////////////////////////////////////////////////////////////////////////////////////////
             // sized_type
             template<int N>
             struct sized_type
@@ -103,6 +138,8 @@ namespace boost
 
             template<typename R, typename ...Args>
             struct make_3_;
+
+            struct _eval;
         }
 
         ///////////////////////////////////////////////////////////////////////////////
@@ -246,7 +283,7 @@ namespace boost
 
         struct _state;
 
-        template<typename Tag>
+        template<typename Tag = void>
         struct _env;
 
         typedef _env<tag::_data> _data;
@@ -268,11 +305,26 @@ namespace boost
         template<typename Grammar, typename Transform = Grammar>
         struct when;
 
+        template<typename Transform>
+        using otherwise = when<_, Transform>;
+
         template<typename CallableTransform, int = 0>
         struct call;
 
         template<typename ObjectTransform>
         struct make;
+
+        template<typename T, T Value>
+        struct _constant;
+
+        template<int I>
+        using _int = _constant<int, I>;
+
+        template<std::size_t N>
+        using _size_t = _constant<std::size_t, N>;
+
+        template<typename Grammar = detail::_eval>
+        struct _eval;
 
         template<typename T>
         struct noinvoke;
@@ -281,19 +333,7 @@ namespace boost
         struct protect;
 
         template<typename Expr>
-        struct pass_through;
-
-        template<typename T, T Value>
-        struct constant;
-
-        template<int I>
-        using int_ = constant<int, I>;
-
-        template<std::size_t N>
-        using size_t = constant<std::size_t, N>;
-
-        template<typename T>
-        struct is_callable;
+        struct _pass_through;
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Misc. traits
@@ -302,6 +342,9 @@ namespace boost
 
         template<typename Expr>
         struct is_terminal;
+
+        template<typename Expr>
+        struct arity;
 
         template<typename Expr>
         struct domain_of;

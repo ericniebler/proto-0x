@@ -73,12 +73,24 @@ namespace boost
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
+            // never
+            template<typename T>
+            struct never
+              : std::false_type
+            {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
             // any
             struct any
             {
+                any() = default;
+
                 template<typename T>
                 constexpr any(T const &) noexcept
                 {}
+
+                template<typename T>
+                operator T &&() const noexcept;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -182,22 +194,22 @@ namespace boost
 
             ///////////////////////////////////////////////////////////////////////////
             // indices
-            template<std::size_t N, typename Ints>
+            template<std::size_t From, std::size_t To, typename Ints>
             struct indices_;
 
-            template<std::size_t N, std::size_t... I>
-            struct indices_<N, ints<I...>>
-              : indices_<N-1, ints<N-1, I...>>
+            template<std::size_t From, std::size_t To, std::size_t... I>
+            struct indices_<From, To, ints<I...>>
+              : indices_<From, To-1, ints<To-1, I...>>
             {};
 
-            template<std::size_t... I>
-            struct indices_<0, ints<I...>>
+            template<std::size_t N, std::size_t... I>
+            struct indices_<N, N, ints<I...>>
             {
                 typedef ints<I...> type;
             };
 
-            template<std::size_t I>
-            using indices = typename indices_<I, ints<>>::type;
+            template<std::size_t From, std::size_t To>
+            using indices = typename indices_<From, To, ints<>>::type;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // identity

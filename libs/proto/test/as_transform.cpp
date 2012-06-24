@@ -38,8 +38,8 @@ void test_as_transform()
 
     {
         proto::or_<
-            proto::when<proto::terminal<int>, proto::int_<42>>
-          , proto::when<proto::terminal<std::string>, proto::int_<43>>
+            proto::when<proto::terminal<int>, proto::_int<42>>
+          , proto::when<proto::terminal<std::string>, proto::_int<43>>
         > SimpleGrammar;
 
         int i = SimpleGrammar(int_(0));

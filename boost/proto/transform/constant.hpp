@@ -18,11 +18,11 @@ namespace boost
     namespace proto
     {
         template<typename T, T Value>
-        struct constant
-          : transform<constant<T, Value>>
+        struct _constant
+          : transform<_constant<T, Value>>
         {
             template<typename ...Args>
-            T operator()(Args &&...) const noexcept(noexcept(T(std::declval<T &&>())))
+            T operator()(Args &&...) const noexcept(noexcept(T(std::declval<T>())))
             {
                 return Value;
             }
