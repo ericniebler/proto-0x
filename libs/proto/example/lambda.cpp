@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <boost/mpl/size_t.hpp>
 #include <boost/proto/proto.hpp>
+#include <boost/proto/debug.hpp>
 
 namespace mpl = boost::mpl;
 namespace proto = boost::proto;
@@ -19,6 +20,12 @@ struct placeholder
   : proto::tags::def<placeholder<T>>
 {
     using proto::tags::def<placeholder<T>>::operator=;
+
+    // So placeholder terminals can be pretty-printed with display_expr
+    friend std::ostream & operator << (std::ostream & s, placeholder<T>)
+    {
+        return s << "_" << (std::size_t)T() + 1;
+    }
 };
 
 template<std::size_t I>
@@ -94,6 +101,9 @@ int main()
 
     // Create a lambda
     auto fun = _1 + 42 * _2;
+
+    // pretty-print the expression
+    proto::display_expr(fun);
 
     // Call the lambda
     int i = fun(8, 2);

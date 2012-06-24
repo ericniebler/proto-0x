@@ -113,14 +113,19 @@
     <ClCompile Include="..\example\lambda.cpp">
       <Filter>Example Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\test\display_expr.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Makefile" />
     <None Include="..\test\Jamfile">
       <Filter>Test Files</Filter>
     </None>
     <None Include="..\example\Jamfile">
       <Filter>Example Files</Filter>
+    </None>
+    <None Include="Makefile">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
 </Project>

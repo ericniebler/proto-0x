@@ -102,11 +102,11 @@ int main()
     // Call the lambda
     int i = fun(8, 2);
 
-    // print the result
-    std::printf("The lambda '_1 + 42 * _2' yields '%d' when called with 8 and 2.\n", i);
-
     // pretty-print the expression
     proto::display_expr(fun);
+
+    // print the result
+    std::printf("The lambda '_1 + 42 * _2' yields '%d' when called with 8 and 2.\n", i);
 
     void done();
     done();
