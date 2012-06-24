@@ -16,6 +16,9 @@
     <Filter Include="Test Files">
       <UniqueIdentifier>{8146d17b-12da-4536-955c-5b5659f9033c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Example Files">
+      <UniqueIdentifier>{b7dc5246-2b26-4c29-8d49-dc17b45777c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\boost\proto\expr.hpp">
@@ -81,6 +84,9 @@
     <ClInclude Include="..\..\..\boost\proto\transform\eval.hpp">
       <Filter>Proto Files\transform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\debug.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -104,11 +110,17 @@
     <ClCompile Include="..\test\mem_fun.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\example\lambda.cpp">
+      <Filter>Example Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
     <None Include="..\test\Jamfile">
       <Filter>Test Files</Filter>
+    </None>
+    <None Include="..\example\Jamfile">
+      <Filter>Example Files</Filter>
     </None>
   </ItemGroup>
 </Project>

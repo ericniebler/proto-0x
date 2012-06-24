@@ -105,6 +105,12 @@ namespace boost
             constexpr T static_const<T>::value;
 
             ////////////////////////////////////////////////////////////////////////////////////////
+            // ignore
+            template<typename ...T>
+            void ignore(T &&...) noexcept
+            {}
+
+            ////////////////////////////////////////////////////////////////////////////////////////
             // or_ (like mpl::or_, but variadic)
             template<typename ...T>
             struct or_

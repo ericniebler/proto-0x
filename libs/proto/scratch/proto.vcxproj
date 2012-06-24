@@ -55,6 +55,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\boost\proto\args.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\debug.hpp" />
     <ClInclude Include="..\..\..\boost\proto\detail\common_domain.hpp" />
     <ClInclude Include="..\..\..\boost\proto\domain.hpp" />
     <ClInclude Include="..\..\..\boost\proto\expr.hpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="..\test\unit_test.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\example\lambda.cpp" />
     <ClCompile Include="..\test\as_transform.cpp" />
     <ClCompile Include="..\test\common_domain.cpp" />
     <ClCompile Include="..\test\expr.cpp" />
@@ -86,6 +88,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\example\Jamfile" />
     <None Include="..\test\Jamfile" />
     <None Include="Makefile" />
   </ItemGroup>

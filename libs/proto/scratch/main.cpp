@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <boost/mpl/size_t.hpp>
 #include <boost/proto/proto.hpp>
+#include <boost/proto/debug.hpp>
 
 namespace mpl = boost::mpl;
 namespace proto = boost::proto;
@@ -19,6 +20,11 @@ struct placeholder
   : proto::tags::def<placeholder<T>>
 {
     using proto::tags::def<placeholder<T>>::operator=;
+
+    friend std::ostream & operator << (std::ostream & s, placeholder<T>)
+    {
+        return s << "_" << (std::size_t)T() + 1;
+    }
 };
 
 template<std::size_t I>
@@ -88,10 +94,19 @@ namespace
 
 int main()
 {
-    std::printf("hello proto-11!\n\n");
+    std::printf("This program demonstrates how to build a lambda library with Proto.\n");
 
-    int i = (_1 + 42 * _2)(8, 2);
-    std::printf("result is %d\n", i);
+    // Create a lambda
+    auto fun = _1 + 42 * _2;
+
+    // Call the lambda
+    int i = fun(8, 2);
+
+    // print the result
+    std::printf("The lambda '_1 + 42 * _2' yields '%d' when called with 8 and 2.\n", i);
+
+    // pretty-print the expression
+    proto::display_expr(fun);
 
     void done();
     done();
