@@ -90,7 +90,7 @@ namespace boost
             {};
 
             template<std::size_t N, std::size_t... Indices, typename ...Args>
-            struct pass_through_1_<N, N, utility::ints<Indices...>, Args...>
+            struct pass_through_1_<N, N, utility::indices<Indices...>, Args...>
             {
                 template<typename E, typename ...T>
                 auto operator()(E && e, T &&... t) const
@@ -109,7 +109,7 @@ namespace boost
             // pass_through_0_
             template<bool IsTerminal, std::size_t N, std::size_t M, typename ...Args>
             struct pass_through_0_
-              : pass_through_1_<N, M, utility::indices<0, N>, Args...>
+              : pass_through_1_<N, M, utility::make_indices<0, N>, Args...>
             {};
 
             template<std::size_t N, std::size_t M, typename ...Args>

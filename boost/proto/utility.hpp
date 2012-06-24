@@ -74,7 +74,7 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // never
-            template<typename T>
+            template<typename ...T>
             struct never
               : std::false_type
             {};
@@ -187,29 +187,29 @@ namespace boost
             {};
 
             ///////////////////////////////////////////////////////////////////////////
-            // ints
+            // indices
             template<std::size_t ...I>
-            struct ints
+            struct indices
             {};
 
             ///////////////////////////////////////////////////////////////////////////
-            // indices
+            // make_indices
             template<std::size_t From, std::size_t To, typename Ints>
-            struct indices_;
+            struct make_indices_;
 
             template<std::size_t From, std::size_t To, std::size_t... I>
-            struct indices_<From, To, ints<I...>>
-              : indices_<From, To-1, ints<To-1, I...>>
+            struct make_indices_<From, To, indices<I...>>
+              : make_indices_<From, To-1, indices<To-1, I...>>
             {};
 
             template<std::size_t N, std::size_t... I>
-            struct indices_<N, N, ints<I...>>
+            struct make_indices_<N, N, indices<I...>>
             {
-                typedef ints<I...> type;
+                typedef indices<I...> type;
             };
 
             template<std::size_t From, std::size_t To>
-            using indices = typename indices_<From, To, ints<>>::type;
+            using make_indices = typename make_indices_<From, To, indices<>>::type;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // identity

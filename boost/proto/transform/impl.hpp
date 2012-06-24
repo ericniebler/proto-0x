@@ -74,6 +74,18 @@ namespace boost
             }
         };
 
+        template<typename T>
+        inline auto make_env(T && t)
+        BOOST_PROTO_AUTO_RETURN(
+            static_cast<T &&>(t)
+        )
+
+        template<typename T, typename ...U>
+        inline auto make_env(T && t, U &&... u)
+        BOOST_PROTO_AUTO_RETURN(
+            static_cast<T &&>(t), proto::make_env(static_cast<U &&>(u)...)
+        )
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         // transform_base
         struct transform_base
@@ -87,6 +99,19 @@ namespace boost
           : transform_base
         {
             typedef Transform proto_transform_type;
+
+            // Sometimes it's helpful to know why a given transform can't be applied to a
+            // set of arguments. The following code can help track it down.
+            //typedef utility::any (*non_deducable_args)(...);
+            //operator non_deducable_args() const
+            //{
+            //    static_assert(
+            //        utility::never<Transform>::value
+            //      , "The specified transform was passed arguments that it doesn't know "
+            //        "how to process correctly"
+            //    );
+            //    return 0;
+            //}
         };
 
         /// \brief A PrimitiveTransform which prevents another PrimitiveTransform

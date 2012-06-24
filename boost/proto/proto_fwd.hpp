@@ -105,7 +105,7 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // a declval+move that allows void
             template<typename T>
-            typename rvalue_type<T>::type move_declval();
+            typename rvalue_type<T>::type move_declval() noexcept;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // sized_type

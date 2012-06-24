@@ -6,9 +6,8 @@
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <cstdio>
-#include <string>
-#include <memory>
-#include <functional>
+#include <type_traits>
+#include <boost/mpl/size_t.hpp>
 #include <boost/proto/proto.hpp>
 
 namespace mpl = boost::mpl;
@@ -17,61 +16,81 @@ using proto::_;
 
 template<typename T>
 struct placeholder
-  : T
-{};
+  : proto::tags::def<placeholder<T>>
+{
+    using proto::tags::def<placeholder<T>>::operator=;
+};
 
-struct LambdaEval
+template<std::size_t I>
+using placeholder_c = placeholder<mpl::size_t<I>>;
+
+struct lambda_eval
   : proto::or_<
-        proto::when<
-            proto::terminal<placeholder<_>>
-          , proto::_data
-        >
-      , proto::when<
-            proto::terminal<int>
-          , proto::_value
-        >
-      , proto::otherwise<
-            proto::_eval<LambdaEval>
-        >
+        proto::when< proto::terminal<placeholder<_>>,   proto::_env<proto::_value>()>
+      , proto::when< proto::terminal<_>,                proto::_value>
+      , proto::when< _,                                 proto::_eval<lambda_eval>>
     >
 {};
 
-template<typename Tag, typename Args>
-struct LambdaExpr;
+template<std::size_t ...I, typename E, typename ...T>
+inline auto lambda_eval_(proto::utility::indices<I...>, E && e, T &&... t)
+BOOST_PROTO_AUTO_RETURN(
+    lambda_eval()(
+        std::forward<E>(e)
+      , 0
+      , proto::make_env(placeholder_c<I>() = std::forward<T>(t)...)
+    )
+)
 
-struct LambdaDomain
-  : proto::domain<LambdaDomain>
+template<typename Tag, typename Args>
+struct lambda_expr;
+
+struct lambda_domain
+  : proto::domain<lambda_domain>
 {
     struct make_expr
-      : proto::make_custom_expr<LambdaExpr, LambdaDomain>
+      : proto::make_custom_expr<lambda_expr, lambda_domain>
     {};
 };
 
 template<typename Tag, typename Args>
-struct LambdaExpr
-  : proto::basic_expr<Tag, Args, LambdaDomain>
-  , proto::expr_assign<LambdaExpr<Tag, Args>, LambdaDomain>
-  , proto::expr_subscript<LambdaExpr<Tag, Args>, LambdaDomain>
+struct lambda_expr
+  : proto::basic_expr<Tag, Args, lambda_domain>
+  , proto::expr_assign<lambda_expr<Tag, Args>, lambda_domain>
+  , proto::expr_subscript<lambda_expr<Tag, Args>, lambda_domain>
 {
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(LambdaExpr);
+    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(lambda_expr);
 
-    //using proto::basic_expr<Tag, Args, LambdaDomain>::basic_expr;
-    typedef proto::basic_expr<Tag, Args, LambdaDomain> proto_basic_expr;
-    BOOST_PROTO_INHERIT_EXPR_CTORS(LambdaExpr, proto_basic_expr);
+    using proto::expr_assign<lambda_expr, lambda_domain>::operator=;
+    //using proto::basic_expr<Tag, Args, lambda_domain>::basic_expr;
+    typedef proto::basic_expr<Tag, Args, lambda_domain> proto_basic_expr;
+    BOOST_PROTO_INHERIT_EXPR_CTORS(lambda_expr, proto_basic_expr);
 
-    using proto::expr_assign<LambdaExpr, LambdaDomain>::operator=;
+    template<typename ...T>
+    auto operator()(T &&... t) const
+    BOOST_PROTO_AUTO_RETURN(
+        lambda_eval_(proto::utility::make_indices<0, sizeof...(T)>(), *this, std::forward<T>(t)...)
+    )
 };
 
 template<typename T>
-using LambdaLiteral = LambdaExpr<proto::tag::terminal, proto::args<T>>;
+using lambda_var = lambda_expr<proto::tag::terminal, proto::args<T>>;
 
-constexpr LambdaLiteral<placeholder<mpl::int_<0>>> _1;
+typedef lambda_var<placeholder_c<0>> _1_type;
+typedef lambda_var<placeholder_c<1>> _2_type;
+static_assert(std::is_trivial<_1_type>::value, "_1 is not trivial");
+
+namespace
+{
+    constexpr _1_type const & _1 = proto::utility::static_const<_1_type>::value;
+    constexpr _2_type const & _2 = proto::utility::static_const<_2_type>::value;
+}
 
 int main()
 {
     std::printf("hello proto-11!\n\n");
 
-    int i = LambdaEval()(_1 + 42, 0, proto::tag::data = 8);
+    int i = (_1 + 42 * _2)(8, 2);
     std::printf("result is %d\n", i);
 
     void done();

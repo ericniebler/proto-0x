@@ -248,22 +248,8 @@ namespace boost
             struct _eval_function
               : transform<_eval_function<Grammar>>
             {
-                template<std::size_t ...I, typename Type, typename Class, typename ...Args, typename E, typename ...T>
-                auto impl_2_(utility::ints<I...>, Type (Class::*pm)(Args...), E && e, T &&... t) const
-                BOOST_PROTO_AUTO_RETURN(
-                    (proto_get_pointer(as_transform<Grammar>()(
-                        proto::child<1>(static_cast<E &&>(e))
-                      , static_cast<T &&>(t)...
-                    ), 0) ->* pm)(
-                        as_transform<Grammar>()(
-                            proto::child<I>(static_cast<E &&>(e))
-                          , static_cast<T &&>(t)...
-                        )...
-                    )
-                )
-
                 template<std::size_t...I, typename Fun, typename E, typename ...T>
-                auto impl_1_(utility::ints<I...>, Fun && fun, E && e, T &&... t) const
+                auto impl_(utility::indices<I...>, Fun && fun, E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     static_cast<Fun &&>(fun)(
                         as_transform<Grammar>()(
@@ -274,7 +260,7 @@ namespace boost
                 )
 
                 template<typename Type, typename Class, typename E, typename ...T>
-                auto impl_1_(utility::ints<1>, Type Class::*pm, E && e, T &&... t) const
+                auto impl_(utility::indices<1>, Type Class::*pm, E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     (proto_get_pointer(as_transform<Grammar>()(
                         proto::child<1>(static_cast<E &&>(e))
@@ -283,21 +269,24 @@ namespace boost
                 )
 
                 template<std::size_t ...I, typename Type, typename Class, typename ...Args, typename E, typename ...T>
-                auto impl_1_(utility::ints<I...>, Type (Class::*pm)(Args...), E && e, T &&... t) const
+                auto impl_(utility::indices<1, I...>, Type (Class::*pmf)(Args...), E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    this->impl_2_(
-                        utility::indices<2, arity<E>::value>()
-                      , pm
-                      , static_cast<E &&>(e)
+                    (proto_get_pointer(as_transform<Grammar>()(
+                        proto::child<1>(static_cast<E &&>(e))
                       , static_cast<T &&>(t)...
+                    ), 0) ->* pmf)(
+                        as_transform<Grammar>()(
+                            proto::child<I>(static_cast<E &&>(e))
+                          , static_cast<T &&>(t)...
+                        )...
                     )
                 )
 
                 template<typename E, typename ...T>
                 auto operator()(E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    this->impl_1_(
-                        utility::indices<1, arity<E>::value>()
+                    this->impl_(
+                        utility::make_indices<1, arity<E>::value>()
                       , as_transform<Grammar>()(
                             proto::child<0>(static_cast<E &&>(e))
                           , static_cast<T &&>(t)...
@@ -345,7 +334,7 @@ namespace boost
               : transform<_eval_mem_ptr<Grammar>>
             {
                 template<typename Right, typename E, typename ...T>
-                auto impl_1_(Right && r, E && e, T &&... t) const
+                auto impl_(Right && r, E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     as_transform<Grammar>()(
                         proto::child<0>(static_cast<E &&>(e))
@@ -354,7 +343,7 @@ namespace boost
                 )
 
                 template<typename Type, typename Class, typename E, typename ...T>
-                auto impl_1_(Type Class::*pm, E && e, T &&... t) const
+                auto impl_(Type Class::*pm, E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     (proto_get_pointer(as_transform<Grammar>()(
                         proto::child<0>(static_cast<E &&>(e))
@@ -363,7 +352,7 @@ namespace boost
                 )
 
                 template<typename Type, typename Class, typename ...Args, typename E, typename ...T>
-                auto impl_1_(Type (Class::*pmf)(Args...), E && e, T &&... t) const
+                auto impl_(Type (Class::*pmf)(Args...), E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     detail::as_memfun(
                         as_transform<Grammar>()(
@@ -377,7 +366,7 @@ namespace boost
                 template<typename E, typename ...T>
                 auto operator()(E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    this->impl_1_(
+                    this->impl_(
                         as_transform<Grammar>()(
                             proto::child<1>(static_cast<E &&>(e))
                           , static_cast<T &&>(t)...

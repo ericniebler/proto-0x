@@ -396,7 +396,7 @@ namespace boost
                 typedef Domain                      proto_domain_type;
                 typedef basic_expr                  proto_basic_expr_type;
                 typedef basic_expr                  proto_grammar_type;
-                typedef _pass_through<basic_expr>    proto_transform_type;
+                typedef _pass_through<basic_expr>   proto_transform_type;
                 typedef
                     std::integral_constant<
                         std::size_t
@@ -426,10 +426,10 @@ namespace boost
                     )
                 >
                 constexpr basic_expr(Tag tag, A &&a)
-                    noexcept(noexcept(
-                        static_cast<void>(Tag(static_cast<Tag &&>(tag)))
-                      , static_cast<void>(Args(static_cast<A &&>(a)))
-                    ))
+                    noexcept(
+                        noexcept(Tag(static_cast<Tag &&>(tag))) &&
+                        noexcept(Args(static_cast<A &&>(a)))
+                    )
                   : Tag(static_cast<Tag &&>(tag))
                   , Args(static_cast<A &&>(a))
                 {}
@@ -451,10 +451,10 @@ namespace boost
                   , BOOST_PROTO_ENABLE_IF(sizeof...(C) + 2 == Args::proto_size::value)
                 >
                 constexpr basic_expr(Tag tag, A &&a, B &&b, C &&... c)
-                    noexcept(noexcept(
-                        static_cast<void>(Tag(static_cast<Tag &&>(tag)))
-                      , static_cast<void>(Args(static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...))
-                    ))
+                    noexcept(
+                        noexcept(Tag(static_cast<Tag &&>(tag))) &&
+                        noexcept(Args(static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...))
+                    )
                   : Tag(static_cast<Tag &&>(tag))
                   , Args(static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...)
                 {}
