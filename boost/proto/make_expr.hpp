@@ -104,6 +104,26 @@ namespace boost
                     (static_cast<args<T> &&>(t).proto_child0)
                 )
             };
+        
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            // as_basic_expr
+            template<typename Domain, typename T, bool B = is_expr<T>::value>
+            struct as_basic_expr
+            {
+                typedef T type;
+            };
+        
+            template<typename Domain, typename T>
+            struct as_basic_expr<Domain, T, false>
+            {
+                typedef
+                    basic_expr<
+                        tag::terminal
+                      , args<decltype(typename Domain::store_value{}(std::declval<T>()))>
+                      , Domain
+                    >
+                type;
+            };
         }
 
         namespace domains
@@ -120,13 +140,12 @@ namespace boost
             // make_expr_if (with domain)
             template<typename Domain, typename Tag, typename ...T
               , typename D = decltype(detail::get_domain(Domain(), std::declval<T>()...))
-              , typename G = typename D::proto_grammar_type
-              , typename E = basic_expr<Tag, args<T...>, D>
-              , BOOST_PROTO_ENABLE_IF(matches<E, G>::value)
+              , typename E = basic_expr<Tag, args<typename detail::as_basic_expr<D, T>::type...>, D>
+              , BOOST_PROTO_ENABLE_IF(matches<E, typename D::proto_grammar_type>::value)
             >
             inline constexpr auto make_expr_if(Tag tag, T &&...t)
             BOOST_PROTO_AUTO_RETURN(
-                detail::expr_maker(Domain(), t...)(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
+                typename D::make_expr{}(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////////
