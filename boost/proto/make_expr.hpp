@@ -22,48 +22,42 @@ namespace boost
         namespace detail
         {
             ////////////////////////////////////////////////////////////////////////////////////////
-            // get_domain
+            // get_domain_1_
             template<typename T>
-            typename T::proto_domain_type get_domain(T const &);
+            typename T::proto_domain_type get_domain_1_(T const &);
 
-            default_domain get_domain(utility::any);
+            default_domain get_domain_1_(utility::any);
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // Misc domain helpers
             template<typename Domain, typename ...T>
-            inline constexpr auto value_storer(Domain const &, T const &...)
-            BOOST_PROTO_AUTO_RETURN(
-                typename Domain::store_value{}
+            inline constexpr Domain get_domain(Domain const &d, T const &...)
+            BOOST_PROTO_RETURN(
+                d
             )
 
             template<typename ...T>
-            inline constexpr auto value_storer(deduce_domain const &, T const &... t)
+            inline constexpr auto get_domain(deduce_domain const &, T const &... t)
             BOOST_PROTO_AUTO_RETURN(
-                typename common_domain<decltype(get_domain(t))...>::type::store_value{}
+                typename common_domain<decltype(detail::get_domain_1_(t))...>::type{}
             )
 
             template<typename Domain, typename ...T>
-            inline constexpr auto child_storer(Domain const &, T const &...)
+            inline constexpr auto value_storer(Domain const &d, T const &...t)
             BOOST_PROTO_AUTO_RETURN(
-                typename Domain::store_child{}
-            )
-
-            template<typename ...T>
-            inline constexpr auto child_storer(deduce_domain const &, T const &... t)
-            BOOST_PROTO_AUTO_RETURN(
-                typename common_domain<decltype(get_domain(t))...>::type::store_child{}
+                typename decltype(detail::get_domain(d, t...))::store_value{}
             )
 
             template<typename Domain, typename ...T>
-            inline constexpr auto expr_maker(Domain const &, T const &...)
+            inline constexpr auto child_storer(Domain const &d, T const &... t)
             BOOST_PROTO_AUTO_RETURN(
-                typename Domain::make_expr{}
+                typename decltype(detail::get_domain(d, t...))::store_child{}
             )
 
-            template<typename ...T>
-            inline constexpr auto expr_maker(deduce_domain const &, T const &... t)
+            template<typename Domain, typename ...T>
+            inline constexpr auto expr_maker(Domain const &d, T const &... t)
             BOOST_PROTO_AUTO_RETURN(
-                typename common_domain<decltype(get_domain(t))...>::type::make_expr{}
+                typename decltype(detail::get_domain(d, t...))::make_expr{}
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -118,6 +112,19 @@ namespace boost
             // make_expr (with domain)
             template<typename Domain, typename Tag, typename ...T>
             inline constexpr auto make_expr(Tag tag, T &&...t)
+            BOOST_PROTO_AUTO_RETURN(
+                detail::expr_maker(Domain(), t...)(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
+            )
+
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            // make_expr_if (with domain)
+            template<typename Domain, typename Tag, typename ...T
+              , typename D = decltype(detail::get_domain(Domain(), std::declval<T>()...))
+              , typename G = typename D::proto_grammar_type
+              , typename E = basic_expr<Tag, args<T...>, D>
+              , BOOST_PROTO_ENABLE_IF(matches<E, G>::value)
+            >
+            inline constexpr auto make_expr_if(Tag tag, T &&...t)
             BOOST_PROTO_AUTO_RETURN(
                 detail::expr_maker(Domain(), t...)(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
             )

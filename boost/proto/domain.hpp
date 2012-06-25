@@ -83,6 +83,16 @@ namespace boost
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
+            // basic_default_domain
+            struct basic_default_domain
+              : domain<basic_default_domain>
+            {
+                struct make_expr
+                  : make_custom_expr<basic_expr, basic_default_domain>
+                {};
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
             // deduce_domain
             struct deduce_domain
             {};

@@ -116,6 +116,9 @@
     <ClCompile Include="..\test\display_expr.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\test\bug2407.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\test\Jamfile">

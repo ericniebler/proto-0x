@@ -173,58 +173,58 @@ namespace boost
               : EXPR(proto_tag_type(), static_cast<proto_args_type &&>(args))                       \
             {}                                                                                      \
                                                                                                     \
-            template<typename A                                                                     \
+            template<typename proto_A_                                                              \
               , BOOST_PROTO_ENABLE_IF(                                                              \
-                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(A, EXPR) \
+                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(proto_A_, EXPR) \
                 )                                                                                   \
             >                                                                                       \
-            constexpr EXPR(proto_tag_type tag, A &&a)                                               \
+            constexpr EXPR(proto_tag_type tag, proto_A_ &&a)                                        \
                 noexcept(noexcept(                                                                  \
-                    BASE(static_cast<proto_tag_type &&>(tag), static_cast<A &&>(a))                 \
+                    BASE(static_cast<proto_tag_type &&>(tag), static_cast<proto_A_ &&>(a))          \
                 ))                                                                                  \
-              : BASE(static_cast<proto_tag_type &&>(tag), static_cast<A &&>(a))                     \
+              : BASE(static_cast<proto_tag_type &&>(tag), static_cast<proto_A_ &&>(a))              \
             {}                                                                                      \
                                                                                                     \
-            template<typename A                                                                     \
+            template<typename proto_A_                                                              \
               , BOOST_PROTO_ENABLE_IF(                                                              \
-                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(A, EXPR) \
+                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(proto_A_, EXPR)          \
                 )                                                                                   \
             >                                                                                       \
-            explicit constexpr EXPR(A &&a)                                                          \
+            explicit constexpr EXPR(proto_A_ &&a)                                                   \
                 noexcept(noexcept(                                                                  \
-                    EXPR(proto_tag_type(), static_cast<A &&>(a))                                    \
+                    EXPR(proto_tag_type(), static_cast<proto_A_ &&>(a))                             \
                 ))                                                                                  \
-              : EXPR(proto_tag_type(), static_cast<A &&>(a))                                        \
+              : EXPR(proto_tag_type(), static_cast<proto_A_ &&>(a))                                 \
             {}                                                                                      \
                                                                                                     \
-            template<typename A, typename B, typename ...C                                          \
-              , BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == sizeof...(C) + 2)       \
+            template<typename proto_A_, typename proto_B_, typename ...proto_C_                     \
+              , BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == sizeof...(proto_C_) + 2)                \
             >                                                                                       \
-            constexpr EXPR(proto_tag_type tag, A &&a, B &&b, C &&... c)                             \
+            constexpr EXPR(proto_tag_type tag, proto_A_ &&a, proto_B_ &&b, proto_C_ &&... c)        \
                 noexcept(noexcept(                                                                  \
                     BASE(                                                                           \
                         static_cast<proto_tag_type &&>(tag)                                         \
-                      , static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...         \
+                      , static_cast<proto_A_ &&>(a), static_cast<proto_B_ &&>(b), static_cast<proto_C_ &&>(c)...    \
                     )                                                                               \
                 ))                                                                                  \
               : BASE(                                                                               \
                     static_cast<proto_tag_type &&>(tag)                                             \
-                  , static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...             \
+                  , static_cast<proto_A_ &&>(a), static_cast<proto_B_ &&>(b), static_cast<proto_C_ &&>(c)...        \
                 )                                                                                   \
             {}                                                                                      \
                                                                                                     \
-            template<typename A, typename B, typename ...C                                          \
-              , BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == sizeof...(C) + 2)>      \
-            constexpr EXPR(A &&a, B &&b, C &&... c)                                                 \
+            template<typename proto_A_, typename proto_B_, typename ...proto_C_                     \
+              , BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == sizeof...(proto_C_) + 2)>               \
+            constexpr EXPR(proto_A_ &&a, proto_B_ &&b, proto_C_ &&... c)                            \
                 noexcept(noexcept(                                                                  \
                     EXPR(                                                                           \
                         proto_tag_type()                                                            \
-                      , static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...         \
+                      , static_cast<proto_A_ &&>(a), static_cast<proto_B_ &&>(b), static_cast<proto_C_ &&>(c)...    \
                     )                                                                               \
                 ))                                                                                  \
               : EXPR(                                                                               \
                     proto_tag_type()                                                                \
-                  , static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...             \
+                  , static_cast<proto_A_ &&>(a), static_cast<proto_B_ &&>(b), static_cast<proto_C_ &&>(c)...        \
                 )                                                                                   \
             {}                                                                                      \
                                                                                                     \

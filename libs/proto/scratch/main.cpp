@@ -38,6 +38,10 @@ struct lambda_eval
     >
 {};
 
+struct lambda_grammar
+  : proto::not_<proto::address_of<_>>
+{};
+
 template<std::size_t ...I, typename E, typename ...T>
 inline auto lambda_eval_(proto::utility::indices<I...>, E && e, T &&... t)
 BOOST_PROTO_AUTO_RETURN(
@@ -52,7 +56,7 @@ template<typename Tag, typename Args>
 struct lambda_expr;
 
 struct lambda_domain
-  : proto::domain<lambda_domain>
+  : proto::domain<lambda_domain, lambda_grammar, proto::default_domain>
 {
     struct make_expr
       : proto::make_custom_expr<lambda_expr, lambda_domain>

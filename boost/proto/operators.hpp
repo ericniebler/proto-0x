@@ -16,79 +16,10 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/tags.hpp>
 #include <boost/proto/domain.hpp>
+#include <boost/proto/matches.hpp>
 
 namespace boost { namespace proto
 {
-    //namespace detail
-    //{
-    //    template<typename MakeExpr, typename Grammar>
-    //    struct lazy_matches
-    //      : proto::matches<typename MakeExpr::type, Grammar>
-    //    {};
-
-    //    template<typename Domain, typename Grammar, typename Trait, typename Tag, typename Arg>
-    //    struct enable_unary
-    //      : boost::lazy_enable_if_c<
-    //            boost::mpl::and_<
-    //                Trait
-    //              , lazy_matches<result_of::make_expr<Tag, basic_default_domain, Arg>, Grammar>
-    //            >::value
-    //          , result_of::make_expr<Tag, Domain, Arg>
-    //        >
-    //    {};
-
-    //    template<typename Domain, typename Trait, typename Tag, typename Arg>
-    //    struct enable_unary<Domain, proto::_, Trait, Tag, Arg &>
-    //      : boost::lazy_enable_if_c<
-    //            Trait::value
-    //          , result_of::make_expr<Tag, Domain, Arg &>
-    //        >
-    //    {};
-
-    //    template<typename Trait, typename Tag, typename Arg>
-    //    struct enable_unary<deduce_domain, not_a_grammar, Trait, Tag, Arg &>
-    //      : enable_unary<
-    //            typename domain_of<Arg>::type
-    //          , typename domain_of<Arg>::type::proto_grammar
-    //          , Trait
-    //          , Tag
-    //          , Arg &
-    //        >
-    //    {};
-
-    //    template<typename Domain, typename Grammar, typename Trait, typename Tag, typename Left, typename Right>
-    //    struct enable_binary
-    //      : boost::lazy_enable_if_c<
-    //            boost::mpl::and_<
-    //                Trait
-    //              , lazy_matches<result_of::make_expr<Tag, basic_default_domain, Left, Right>, Grammar>
-    //            >::value
-    //          , result_of::make_expr<Tag, Domain, Left, Right>
-    //        >
-    //    {};
-
-    //    template<typename Domain, typename Trait, typename Tag, typename Left, typename Right>
-    //    struct enable_binary<Domain, proto::_, Trait, Tag, Left &, Right &>
-    //      : boost::lazy_enable_if_c<
-    //            Trait::value
-    //          , result_of::make_expr<Tag, Domain, Left &, Right &>
-    //        >
-    //    {};
-
-    //    template<typename Trait, typename Tag, typename Left, typename Right>
-    //    struct enable_binary<deduce_domain, not_a_grammar, Trait, Tag, Left &, Right &>
-    //      : enable_binary<
-    //            typename deduce_domain2<Left, Right>::type
-    //          , typename deduce_domain2<Left, Right>::type::proto_grammar
-    //          , Trait
-    //          , Tag
-    //          , Left &
-    //          , Right &
-    //        >
-    //    {};
-
-    //} // detail
-
 #define BOOST_PROTO_UNARY_OP_IS_POSTFIX_0
 #define BOOST_PROTO_UNARY_OP_IS_POSTFIX_1 , int
 
@@ -97,7 +28,7 @@ namespace boost { namespace proto
       , BOOST_PROTO_ENABLE_IF(BOOST_PROTO_APPLY_UNARY_(TRAIT, Arg))>                                \
     inline auto operator OP(Arg &&arg BOOST_PROTO_UNARY_OP_IS_POSTFIX_ ## POST)                     \
     BOOST_PROTO_AUTO_RETURN(                                                                        \
-        ::boost::proto::domains::make_expr<DOMAIN>(                                                 \
+        ::boost::proto::domains::make_expr_if<DOMAIN>(                                              \
             TAG(), static_cast<Arg &&>(arg))                                                        \
     )                                                                                               \
     /**/
@@ -107,7 +38,7 @@ namespace boost { namespace proto
       , BOOST_PROTO_ENABLE_IF(BOOST_PROTO_APPLY_BINARY_(TRAIT, Left, Right))>                       \
     inline auto operator OP(Left &&left, Right &&right)                                             \
     BOOST_PROTO_AUTO_RETURN(                                                                        \
-        ::boost::proto::domains::make_expr<DOMAIN>(                                                 \
+        ::boost::proto::domains::make_expr_if<DOMAIN>(                                              \
             TAG(), static_cast<Left &&>(left), static_cast<Right &&>(right))                        \
     )                                                                                               \
     /**/

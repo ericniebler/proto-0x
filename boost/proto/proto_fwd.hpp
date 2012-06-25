@@ -230,6 +230,8 @@ namespace boost
 
             struct default_domain;
 
+            struct basic_default_domain;
+
             template<template<typename...> class Expr, typename Domain>
             struct make_custom_expr;
         }
