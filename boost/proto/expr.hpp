@@ -24,11 +24,6 @@ namespace boost
         namespace detail
         {
             ////////////////////////////////////////////////////////////////////////////////////////
-            // is_expr
-            std::true_type is_expr_(expr_base const &);
-            std::false_type is_expr_(utility::any const &);
-
-            ////////////////////////////////////////////////////////////////////////////////////////
             // are_equality_comparible
             template<typename L, typename R
               , BOOST_PROTO_ENABLE_IF_VALID_EXPR(std::declval<L>().proto_equal_to(std::declval<R>()))>
@@ -175,7 +170,8 @@ namespace boost
                                                                                                     \
             template<typename proto_A_                                                              \
               , BOOST_PROTO_ENABLE_IF(                                                              \
-                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(proto_A_, EXPR) \
+                    proto_args_type::proto_size::value == 1 &&                                      \
+                    !(boost::proto::utility::is_base_of<EXPR, proto_A_>::value)                     \
                 )                                                                                   \
             >                                                                                       \
             constexpr EXPR(proto_tag_type tag, proto_A_ &&a)                                        \
@@ -187,7 +183,8 @@ namespace boost
                                                                                                     \
             template<typename proto_A_                                                              \
               , BOOST_PROTO_ENABLE_IF(                                                              \
-                    proto_args_type::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(proto_A_, EXPR)          \
+                    proto_args_type::proto_size::value == 1 &&                                      \
+                    !(boost::proto::utility::is_base_of<EXPR, proto_A_>::value)                     \
                 )                                                                                   \
             >                                                                                       \
             explicit constexpr EXPR(proto_A_ &&a)                                                   \
@@ -198,33 +195,41 @@ namespace boost
             {}                                                                                      \
                                                                                                     \
             template<typename proto_A_, typename proto_B_, typename ...proto_C_                     \
-              , BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == sizeof...(proto_C_) + 2)                \
+              , BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == sizeof...(proto_C_) + 2) \
             >                                                                                       \
             constexpr EXPR(proto_tag_type tag, proto_A_ &&a, proto_B_ &&b, proto_C_ &&... c)        \
                 noexcept(noexcept(                                                                  \
                     BASE(                                                                           \
                         static_cast<proto_tag_type &&>(tag)                                         \
-                      , static_cast<proto_A_ &&>(a), static_cast<proto_B_ &&>(b), static_cast<proto_C_ &&>(c)...    \
+                      , static_cast<proto_A_ &&>(a)                                                 \
+                      , static_cast<proto_B_ &&>(b)                                                 \
+                      , static_cast<proto_C_ &&>(c)...                                              \
                     )                                                                               \
                 ))                                                                                  \
               : BASE(                                                                               \
                     static_cast<proto_tag_type &&>(tag)                                             \
-                  , static_cast<proto_A_ &&>(a), static_cast<proto_B_ &&>(b), static_cast<proto_C_ &&>(c)...        \
+                  , static_cast<proto_A_ &&>(a)                                                     \
+                  , static_cast<proto_B_ &&>(b)                                                     \
+                  , static_cast<proto_C_ &&>(c)...                                                  \
                 )                                                                                   \
             {}                                                                                      \
                                                                                                     \
             template<typename proto_A_, typename proto_B_, typename ...proto_C_                     \
-              , BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == sizeof...(proto_C_) + 2)>               \
+              , BOOST_PROTO_ENABLE_IF(proto_args_type::proto_size::value == sizeof...(proto_C_) + 2)> \
             constexpr EXPR(proto_A_ &&a, proto_B_ &&b, proto_C_ &&... c)                            \
                 noexcept(noexcept(                                                                  \
                     EXPR(                                                                           \
                         proto_tag_type()                                                            \
-                      , static_cast<proto_A_ &&>(a), static_cast<proto_B_ &&>(b), static_cast<proto_C_ &&>(c)...    \
+                      , static_cast<proto_A_ &&>(a)                                                 \
+                      , static_cast<proto_B_ &&>(b)                                                 \
+                      , static_cast<proto_C_ &&>(c)...                                              \
                     )                                                                               \
                 ))                                                                                  \
               : EXPR(                                                                               \
                     proto_tag_type()                                                                \
-                  , static_cast<proto_A_ &&>(a), static_cast<proto_B_ &&>(b), static_cast<proto_C_ &&>(c)...        \
+                  , static_cast<proto_A_ &&>(a)                                                     \
+                  , static_cast<proto_B_ &&>(b)                                                     \
+                  , static_cast<proto_C_ &&>(c)...                                                  \
                 )                                                                                   \
             {}                                                                                      \
                                                                                                     \
@@ -243,7 +248,7 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // operator=
                 template<typename U, typename E = Expr
-                  , BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
+                  , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<expr_assign, U>::value))>
                 auto operator=(U && u) &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
@@ -254,7 +259,7 @@ namespace boost
                 )
 
                 template<typename U, typename E = Expr
-                  , BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
+                  , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<expr_assign, U>::value))>
                 auto operator=(U && u) const &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
@@ -265,7 +270,7 @@ namespace boost
                 )
 
                 template<typename U, typename E = Expr
-                  , BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
+                  , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<expr_assign, U>::value))>
                 auto operator=(U && u) &&
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
@@ -276,7 +281,7 @@ namespace boost
                 )
 
                 template<typename U
-                  , BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(U, expr_assign))>
+                  , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<expr_assign, U>::value))>
                 void operator=(U && u) const && = delete;
             };
 
@@ -422,7 +427,7 @@ namespace boost
 
                 template<typename A
                   , BOOST_PROTO_ENABLE_IF(
-                        Args::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(A, basic_expr)
+                        Args::proto_size::value == 1 && !(utility::is_base_of<basic_expr, A>::value)
                     )
                 >
                 constexpr basic_expr(Tag tag, A &&a)
@@ -437,7 +442,7 @@ namespace boost
                 template<
                     typename A
                   , BOOST_PROTO_ENABLE_IF(
-                        Args::proto_size::value == 1 && !BOOST_PROTO_IS_CONVERTIBLE(A, basic_expr)
+                        Args::proto_size::value == 1 && !(utility::is_base_of<basic_expr, A>::value)
                     )
                 >
                 explicit constexpr basic_expr(A &&a)
@@ -546,7 +551,12 @@ namespace boost
         // is_expr
         template<typename T>
         struct is_expr
-          : decltype(detail::is_expr_(std::declval<T>()))
+          : std::is_base_of<expr_base, T>
+        {};
+
+        template<typename T>
+        struct is_expr<T &>
+          : std::is_base_of<expr_base, T>
         {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////

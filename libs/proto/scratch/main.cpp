@@ -88,12 +88,14 @@ using lambda_var = lambda_expr<proto::tag::terminal, proto::args<T>>;
 
 typedef lambda_var<placeholder_c<0>> _1_type;
 typedef lambda_var<placeholder_c<1>> _2_type;
+typedef lambda_var<placeholder_c<2>> _3_type;
 static_assert(std::is_trivial<_1_type>::value, "_1 is not trivial");
 
 namespace
 {
     constexpr _1_type const & _1 = proto::utility::static_const<_1_type>::value;
     constexpr _2_type const & _2 = proto::utility::static_const<_2_type>::value;
+    constexpr _3_type const & _3 = proto::utility::static_const<_3_type>::value;
 }
 
 int main()

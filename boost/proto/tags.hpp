@@ -29,7 +29,7 @@ namespace boost
                 // So that tag objects of type (derived from) def can be used
                 // to create transform environments like (data=x, locals=y),
                 // where "data" and "locals" are tags.
-                template<typename V, BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(V, def))>
+                template<typename V, BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<def, V>::value))>
                 environment<def, V> operator=(V && v) const
                 {
                     return environment<def, V>{static_cast<V &&>(v)};

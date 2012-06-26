@@ -43,7 +43,7 @@ namespace boost
             Value value_;
 
             template<typename V, typename B = Base
-              , BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(V, environment))>
+              , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<environment, V>::value))>
             explicit environment(V && v, B && b = B())
               : Base(static_cast<B &&>(b))
               , value_(static_cast<V &&>(v))
@@ -74,16 +74,30 @@ namespace boost
             }
         };
 
-        template<typename T>
-        inline auto make_env(T && t)
-        BOOST_PROTO_AUTO_RETURN(
-            static_cast<T &&>(t)
-        )
+        namespace detail
+        {
+            struct proto_make_env_adl
+            {};
 
-        template<typename T, typename ...U>
-        inline auto make_env(T && t, U &&... u)
+            template<typename T>
+            inline T proto_make_env(proto_make_env_adl, T t)
+            {
+                return t;
+            }
+
+            template<typename T, typename U, typename ...V>
+            inline auto proto_make_env(proto_make_env_adl, T t, U u, V... v)
+            BOOST_PROTO_AUTO_RETURN(
+                proto_make_env(proto_make_env_adl(), (t, u), v...)
+            )
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // make_env
+        template<typename ...Tag, typename... Value>
+        inline auto make_env(environment<Tag, Value>... t)
         BOOST_PROTO_AUTO_RETURN(
-            static_cast<T &&>(t), proto::make_env(static_cast<U &&>(u)...)
+            detail::proto_make_env(detail::proto_make_env_adl(), t...)
         )
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,19 +180,16 @@ namespace boost
             }
         };
 
-        namespace detail
-        {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // is_transform_
-            std::true_type is_transform_(transform_base const &);
-            std::false_type is_transform_(utility::any const &);
-        }
-
         ////////////////////////////////////////////////////////////////////////////////////////////
         // is_transform
         template<typename T>
         struct is_transform
-          : decltype(detail::is_transform_(std::declval<T>()))
+          : std::is_base_of<transform_base, T>
+        {};
+
+        template<typename T>
+        struct is_transform<T &>
+          : std::is_base_of<transform_base, T>
         {};
 
         namespace detail

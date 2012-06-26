@@ -314,6 +314,28 @@ namespace boost
             // by_val
             template<typename T>
             T by_val(T const &);
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // is_base_of
+            template<typename T, typename U>
+            struct is_base_of
+              : std::is_base_of<T, U>
+            {};
+
+            template<typename T, typename U>
+            struct is_base_of<T &, U>
+              : std::is_base_of<T, U>
+            {};
+
+            template<typename T, typename U>
+            struct is_base_of<T, U &>
+              : std::is_base_of<T, U>
+            {};
+
+            template<typename T, typename U>
+            struct is_base_of<T &, U &>
+              : std::is_base_of<T, U>
+            {};
         }
     }
 }

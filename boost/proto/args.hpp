@@ -23,6 +23,7 @@
 #include <boost/preprocessor/control/expr_if.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 #include <boost/proto/proto_fwd.hpp>
+#include <boost/proto/utility.hpp>
 #include <boost/proto/transform/impl.hpp>
 
 // Must be greater than or equal to 1. (1 means don't do loop unrolling.)
@@ -64,7 +65,7 @@ namespace boost
                 BOOST_PP_COMMA_IF(BOOST_PP_EQUAL(N, 1))                                             \
                 BOOST_PP_EXPR_IF(                                                                   \
                     BOOST_PP_EQUAL(N, 1)                                                            \
-                  , BOOST_PROTO_ENABLE_IF(!BOOST_PROTO_IS_CONVERTIBLE(T, CLASS))                    \
+                  , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<CLASS, T>::value))                  \
                 )                                                                                   \
                 /**/
 

@@ -53,10 +53,6 @@
     CLASS &operator=(CLASS &&) = default /* memberwise move assign */                               \
     /**/
 
-#define BOOST_PROTO_IS_CONVERTIBLE(T, U)                                                            \
-    decltype(boost::proto::detail::is_convertible_<U>(std::declval<T>()))::value                    \
-    /**/
-
 #define BOOST_PROTO_IGNORE_UNUSED(U)                                                                \
     static_cast<void>(U)                                                                            \
     /**/
@@ -67,6 +63,11 @@ namespace boost
     {
         namespace utility
         {
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // is_base_of
+            template<typename T, typename U>
+            struct is_base_of;
+
             ////////////////////////////////////////////////////////////////////////////////////////
             // any
             struct any;
