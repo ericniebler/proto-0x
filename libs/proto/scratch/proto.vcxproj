@@ -59,6 +59,7 @@
     <ClInclude Include="..\..\..\boost\proto\detail\common_domain.hpp" />
     <ClInclude Include="..\..\..\boost\proto\domain.hpp" />
     <ClInclude Include="..\..\..\boost\proto\expr.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\fusion.hpp" />
     <ClInclude Include="..\..\..\boost\proto\make_expr.hpp" />
     <ClInclude Include="..\..\..\boost\proto\matches.hpp" />
     <ClInclude Include="..\..\..\boost\proto\operators.hpp" />
@@ -102,6 +103,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\test\expr.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\test\flatten.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>

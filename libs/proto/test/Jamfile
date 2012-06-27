@@ -18,6 +18,7 @@ test-suite "proto"
         [ run common_domain.cpp ]
         [ run display_expr.cpp ]
         [ run expr.cpp ]
+        [ run flatten.cpp ]
         [ run make.cpp ]
         [ run matches.cpp ]
         [ run mem_fun.cpp ]

@@ -244,6 +244,9 @@ namespace boost
             template<typename ...T>
             struct args;
 
+            template<std::size_t I, typename Args>
+            struct args_element;
+
             template<typename Expr, typename Domain>
             struct expr_assign;
 
@@ -263,6 +266,7 @@ namespace boost
         }
 
         using exprs::args;
+        using exprs::args_element;
         using exprs::expr_assign;
         using exprs::expr_subscript;
         using exprs::expr_function;
@@ -347,7 +351,7 @@ namespace boost
         struct is_terminal;
 
         template<typename Expr>
-        struct arity;
+        struct arity_of;
 
         template<typename Expr>
         struct domain_of;

@@ -286,7 +286,7 @@ namespace boost
                 auto operator()(E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     this->impl_(
-                        utility::make_indices<1, arity<E>::value>()
+                        utility::make_indices<1, arity_of<E>::value>()
                       , as_transform<Grammar>()(
                             proto::child<0>(static_cast<E &&>(e))
                           , static_cast<T &&>(t)...

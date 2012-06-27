@@ -409,6 +409,8 @@ namespace boost
                     >
                 proto_arity;
 
+                typedef tag::proto_expr             fusion_tag; ///< For Fusion
+
                 ////////////////////////////////////////////////////////////////////////////////////
                 // constructors
                 constexpr basic_expr(Tag tag, Args args)
@@ -512,6 +514,21 @@ namespace boost
                     return static_cast<Args &&>(*this);
                 }
 
+                basic_expr & proto_base() & noexcept
+                {
+                    return *this;
+                }
+
+                basic_expr const & proto_base() const & noexcept
+                {
+                    return *this;
+                }
+
+                basic_expr && proto_base() && noexcept
+                {
+                    return static_cast<basic_expr &&>(*this);
+                }
+
                 Domain proto_domain() const noexcept(noexcept(Domain()))
                 {
                     return Domain();
@@ -572,14 +589,14 @@ namespace boost
         {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        // arity
+        // arity_of
         template<typename Expr>
-        struct arity
+        struct arity_of
           : Expr::proto_arity
         {};
 
         template<typename Expr>
-        struct arity<Expr &>
+        struct arity_of<Expr &>
           : Expr::proto_arity
         {};
 

@@ -13,6 +13,7 @@
 #include <utility>
 #include <functional>
 #include <boost/preprocessor/cat.hpp>
+#include <boost/preprocessor/arithmetic/dec.hpp>
 #include <boost/preprocessor/repetition/enum_params.hpp>
 #include <boost/preprocessor/repetition/enum_binary_params.hpp>
 #include <boost/preprocessor/repetition/enum.hpp>
@@ -116,6 +117,12 @@ namespace boost
                     !(*this == that)                                                                \
                 )                                                                                   \
             };                                                                                      \
+                                                                                                    \
+            template<typename Args>                                                                 \
+            struct args_element<BOOST_PP_DEC(N), Args>                                              \
+            {                                                                                       \
+                typedef typename Args::BOOST_PP_CAT(proto_child_type, BOOST_PP_DEC(N)) type;        \
+            };                                                                                      \
             /**/
 
             #define BOOST_PP_LOCAL_LIMITS (1, BOOST_PROTO_ARGS_UNROLL_MAX)
@@ -128,6 +135,7 @@ namespace boost
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(args);
                 typedef std::integral_constant<std::size_t, BOOST_PROTO_ARGS_UNROLL_MAX + sizeof...(Tail)> proto_size;
                 BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, MEMBERS, ~)
+                typedef args<Tail...> proto_args_tail_type;
                 args<Tail...> proto_args_tail;
 
                 template<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, typename U), typename ...Rest
@@ -155,6 +163,13 @@ namespace boost
                     !(*this == that)
                 )
             };
+
+            ///////////////////////////////////////////////////////////////////////////////
+            // args_element
+            template<std::size_t N, typename Args>
+            struct args_element
+              : args_element<N - BOOST_PROTO_ARGS_UNROLL_MAX, typename Args::proto_args_tail_type>
+            {};
 
             #undef INIT
             #undef CTORS
@@ -251,6 +266,33 @@ namespace boost
         using exprs::left;
         using exprs::right;
         using exprs::value;
+
+        namespace result_of
+        {
+            template<typename Expr, std::size_t N>
+            struct child
+            {
+                typedef decltype(proto::child<N>(std::declval<Expr>())) type;
+            };
+
+            template<typename Expr>
+            struct left
+            {
+                typedef decltype(proto::left(std::declval<Expr>())) type;
+            };
+
+            template<typename Expr>
+            struct right
+            {
+                typedef decltype(proto::right(std::declval<Expr>())) type;
+            };
+
+            template<typename Expr>
+            struct value
+            {
+                typedef decltype(proto::value(std::declval<Expr>())) type;
+            };
+        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // _child
