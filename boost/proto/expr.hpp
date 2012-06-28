@@ -555,8 +555,8 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // constructors
                 //using basic_expr<Tag, Args, Domain>::basic_expr;
-                typedef basic_expr<Tag, Args, Domain> proto_base_expr;
-                BOOST_PROTO_INHERIT_EXPR_CTORS(expr, proto_base_expr);
+                typedef basic_expr<Tag, Args, Domain> proto_base_expr_type;
+                BOOST_PROTO_INHERIT_EXPR_CTORS(expr, proto_base_expr_type);
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // operator=

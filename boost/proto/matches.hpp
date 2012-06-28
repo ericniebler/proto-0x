@@ -259,6 +259,11 @@ namespace boost
                 typedef Grammar proto_grammar_type;
             };
 
+            template<typename Expr, typename BasicExpr, typename Grammar>
+            struct matches_<virtual_<Expr>, virtual_<BasicExpr>, Grammar, void>
+              : matches_<Expr, BasicExpr, Grammar>
+            {};
+
             // Handle (probably-)non-variadic non-terminal matches
             template<
                 typename Expr

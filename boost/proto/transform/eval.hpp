@@ -9,6 +9,7 @@
 #ifndef BOOST_PROTO_TRANSFORM_EVAL_HPP_INCLUDED
 #define BOOST_PROTO_TRANSFORM_EVAL_HPP_INCLUDED
 
+//#include <memory> for std::addressof
 #include <utility>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/punctuation/comma.hpp>
@@ -31,7 +32,7 @@ namespace boost
             template<typename T>
             auto proto_get_pointer(T & t, ...)
             BOOST_PROTO_AUTO_RETURN(
-                boost::addressof(t)
+                boost::addressof(t) // TODO replace with std::addressof
             )
 
             template<typename T>

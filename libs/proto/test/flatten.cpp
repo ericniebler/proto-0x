@@ -8,7 +8,6 @@
 #include <sstream>
 #include <boost/proto/proto.hpp>
 #include <boost/fusion/include/for_each.hpp>
-#include <boost/utility/addressof.hpp>
 #include "./unit_test.hpp"
 
 namespace fusion = boost::fusion;
@@ -135,8 +134,8 @@ struct My
   : proto::basic_expr<Tag, Args, MyDomain>
   , proto::expr_function<My<Tag, Args>, MyDomain>
 {
-    typedef proto::basic_expr<Tag, Args, MyDomain> proto_basic_expr;
-    BOOST_PROTO_INHERIT_EXPR_CTORS(My, proto_basic_expr);
+    typedef proto::basic_expr<Tag, Args, MyDomain> proto_basic_expr_type;
+    BOOST_PROTO_INHERIT_EXPR_CTORS(My, proto_basic_expr_type);
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(My);
 };
 

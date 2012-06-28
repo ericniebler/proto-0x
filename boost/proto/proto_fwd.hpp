@@ -13,6 +13,7 @@
 #include <type_traits>
 //#include <limits>
 #include <climits>
+#include <boost/preprocessor/cat.hpp>
 
 // Usage: auto fun(T t) BOOST_PROTO_AUTO_RETURN( some-expression )
 //   noexcept clause from Dave Abrahams, tweaked by me.
@@ -53,8 +54,14 @@
     CLASS &operator=(CLASS &&) = default /* memberwise move assign */                               \
     /**/
 
-#define BOOST_PROTO_IGNORE_UNUSED(U)                                                                \
-    static_cast<void>(U)                                                                            \
+#define BOOST_PROTO_IGNORE_UNUSED(...)                                                              \
+    static const struct BOOST_PP_CAT(boost_proto_ignore_unused_, __LINE__)                          \
+    {                                                                                               \
+        explicit BOOST_PP_CAT(boost_proto_ignore_unused_, __LINE__)(int)                            \
+        {}                                                                                          \
+    } BOOST_PP_CAT(boost_proto_ignore_unused_var_, __LINE__){                                       \
+        (boost::proto::utility::ignore(__VA_ARGS__), 0)                                             \
+    }                                                                                               \
     /**/
 
 namespace boost
@@ -122,14 +129,6 @@ namespace boost
 
             struct not_a_grammar;
             struct not_a_domain;
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // is_convertible
-            template<typename T>
-            std::true_type is_convertible_(T const &);
-
-            template<typename T>
-            std::false_type is_convertible_(utility::any const &);
 
             template<typename R, typename ...Args>
             struct make_1_;
@@ -222,9 +221,11 @@ namespace boost
 
             struct deduce_domain;
 
+            struct default_grammar;
+
             template<
                 typename SubDomain
-              , typename Grammar        = _
+              , typename Grammar        = default_grammar
               , typename SuperDomain    = no_super_domain
             >
             struct domain;
@@ -235,9 +236,24 @@ namespace boost
 
             template<template<typename...> class Expr, typename Domain>
             struct make_custom_expr;
+
+            namespace result_of
+            {
+                template<typename Domain, typename Tag, typename ...T>
+                struct make_expr;
+
+                template<typename Domain, typename T>
+                struct as_expr;
+            }
         }
 
-        using namespace domains;
+        using domains::no_super_domain;
+        using domains::deduce_domain;
+        using domains::default_grammar;
+        using domains::domain;
+        using domains::default_domain;
+        using domains::basic_default_domain;
+        using domains::make_custom_expr;
 
         namespace exprs
         {
@@ -263,6 +279,12 @@ namespace boost
 
             template<typename Tag, typename Args, typename Domain = default_domain>
             struct expr;
+
+            template<typename Tag, typename Args, typename Domain>
+            struct virtual_member_;
+
+            template<typename Expr>
+            struct virtual_;
         }
 
         using exprs::args;
@@ -273,6 +295,15 @@ namespace boost
         using exprs::expr_base;
         using exprs::basic_expr;
         using exprs::expr;
+        using exprs::virtual_;
+
+        template<typename This, typename Value, typename Domain = default_domain>
+        using virtual_member =
+            exprs::virtual_member_<
+                tag::member
+              , args<virtual_<This>, expr<tag::terminal, args<Value>>>
+              , Domain
+            >;
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // stuff for transforms here

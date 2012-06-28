@@ -294,24 +294,25 @@ namespace boost
                 template<typename Iterator, typename N>
                 struct apply
                 {
-                    static constexpr std::ptrdiff_t signed_sum =
+                    static constexpr std::ptrdiff_t signed_index =
                         (std::ptrdiff_t)Iterator::index + (std::ptrdiff_t)N::value;
 
                     // Range-check the result
                     static_assert(
-                        0 <= signed_sum
+                        0 <= signed_index
                       , "Cannot advance before the beginning of the sequence"
                     );
 
+                    // index == size allowed for 1-past the last element.
                     static_assert(
-                        Iterator::expr_type::proto_size::value >= (std::size_t)signed_sum
+                        Iterator::expr_type::proto_size::value >= (std::size_t)signed_index
                       , "Cannot advance past the end of the sequence"
                     );
 
                     typedef
                         proto::detail::expr_iterator<
                             typename Iterator::expr_type
-                          , (std::size_t)signed_sum
+                          , (std::size_t)signed_index
                         >
                     type;
 

@@ -38,6 +38,14 @@ namespace boost
     {
         namespace detail
         {
+            ///////////////////////////////////////////////////////////////////////////////
+            // as_virtual_member
+            template<typename L, typename R, typename D = typename L::proto_domain_type>
+            constexpr auto as_virtual_member(args<virtual_<L>, R> const &a)
+            BOOST_PROTO_AUTO_RETURN(
+                (char *)static_cast<exprs::virtual_member_<tag::member, args<virtual_<L>, R>, D> const *>(&a)
+            )
+
             #define BOOST_PP_LOCAL_MACRO(N)                                                         \
             template<typename Args>                                                                 \
             inline constexpr auto child_impl(Args &&that, std::integral_constant<std::size_t, N>)   \
@@ -55,7 +63,7 @@ namespace boost
             BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl(
                     static_cast<Args &&>(that).proto_args_tail
-                  , std::integral_constant<std::size_t, I-BOOST_PROTO_ARGS_UNROLL_MAX>()
+                  , std::integral_constant<std::size_t, I - BOOST_PROTO_ARGS_UNROLL_MAX>()
                 )
             )
         }
@@ -87,8 +95,8 @@ namespace boost
             };
 
             #define INIT(Z, N, D) proto_child ## N(static_cast< U ## N && >( u ## N ))
-            #define CTORS(Z, N, D) static_cast<void>(T ## N(static_cast< U ## N && >( u ## N )))
             #define MEMBERS(Z, N, D) typedef T ## N proto_child_type ## N; T ## N proto_child ## N;
+            #define NOEXCEPT(Z, N, D) noexcept(T ## N(static_cast< U ## N && >( u ## N ))) &&
             #define EQUAL_TO(Z, N, D) static_cast<bool>(proto_child ## N == that. proto_child ## N) &&
 
             #define BOOST_PP_LOCAL_MACRO(N)                                                         \
@@ -101,7 +109,7 @@ namespace boost
                                                                                                     \
                 template<BOOST_PP_ENUM_PARAMS(N, typename U) DISABLE_COPY_IF(args, N, U0)>          \
                 explicit constexpr args(BOOST_PP_ENUM_BINARY_PARAMS(N, U, &&u))                     \
-                    noexcept(noexcept(BOOST_PP_ENUM(N, CTORS, ~)))                                  \
+                    noexcept(BOOST_PP_REPEAT(N, NOEXCEPT, ~) true)                                  \
                   : BOOST_PP_ENUM(N, INIT, ~)                                                       \
                 {}                                                                                  \
                                                                                                     \
@@ -143,10 +151,10 @@ namespace boost
                     DISABLE_COPY_IF(args, BOOST_PROTO_ARGS_UNROLL_MAX, U0)
                 >
                 explicit constexpr args(BOOST_PP_ENUM_BINARY_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, U, &&u), Rest &&...rest)
-                    noexcept(noexcept(
-                        BOOST_PP_ENUM(BOOST_PROTO_ARGS_UNROLL_MAX, CTORS, ~)
-                      , static_cast<void>(args<Tail...>(static_cast<Rest &&>(rest)...))
-                    ))
+                    noexcept(
+                        BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, NOEXCEPT, ~)
+                        noexcept(args<Tail...>(static_cast<Rest &&>(rest)...))
+                    )
                   : BOOST_PP_ENUM(BOOST_PROTO_ARGS_UNROLL_MAX, INIT, ~)
                   , proto_args_tail(static_cast<Rest &&>(rest)...) // std::forward is NOT constexpr!
                 {}
@@ -164,6 +172,45 @@ namespace boost
                 )
             };
 
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // args specialization for virtual members
+            template<typename A, typename B>
+            struct args<virtual_<A>, B>
+            {
+                static_assert(
+                    is_terminal<B>::value
+                  , "Only empty terminal expressions are allowed as virtual data members"
+                );
+
+                static_assert(
+                    std::is_empty<typename args_element<0, typename B::proto_args_type>::type>::value
+                  , "Only empty terminal expressions are allowed as virtual data members"
+                );
+
+                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(args);
+                typedef std::integral_constant<std::size_t, 2> proto_size;
+                typedef A proto_child_type0;
+                typedef B proto_child_type1;
+                B proto_child1;
+
+                template<typename T, BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<args, T>::value))>
+                explicit constexpr args(T && t) noexcept(noexcept(B(static_cast<T &&>(t))))
+                  : proto_child1(static_cast<T &&>(t))
+                {}
+
+                template<typename U>
+                inline auto operator==(args<virtual_<A>, U> const & that) const
+                BOOST_PROTO_AUTO_RETURN(
+                    static_cast<bool>(proto_child1 == that.proto_child1)
+                )
+
+                template<typename U>
+                inline auto operator!=(args<virtual_<A>, U> const & that) const
+                BOOST_PROTO_AUTO_RETURN(
+                    !(*this == that)
+                )
+            };
+
             ///////////////////////////////////////////////////////////////////////////////
             // args_element
             template<std::size_t N, typename Args>
@@ -172,8 +219,8 @@ namespace boost
             {};
 
             #undef INIT
-            #undef CTORS
             #undef MEMBERS
+            #undef NOEXCEPT
             #undef EQUAL_TO
             #undef DISABLE_COPY_IF
 
@@ -198,6 +245,29 @@ namespace boost
             )
 
             ///////////////////////////////////////////////////////////////////////////////
+            // child when 0th element is virtual
+            template<std::size_t I, typename L, typename R, BOOST_PROTO_ENABLE_IF(I == 0)>
+            inline constexpr L & child(args<virtual_<L>, R> &a)
+            BOOST_PROTO_RETURN(
+                *(L *)(detail::as_virtual_member(a) -
+                    ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a))
+            )
+
+            template<std::size_t I, typename L, typename R, BOOST_PROTO_ENABLE_IF(I == 0)>
+            inline constexpr L const & child(args<virtual_<L>, R> const &a)
+            BOOST_PROTO_RETURN(
+                *(L const *)(detail::as_virtual_member(a) -
+                    ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a))
+            )
+
+            template<std::size_t I, typename L, typename R, BOOST_PROTO_ENABLE_IF(I == 0)>
+            inline constexpr L && child(args<virtual_<L>, R> &&a)
+            BOOST_PROTO_RETURN(
+                static_cast<L &&>(*(L*)(detail::as_virtual_member(a) -
+                    ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a)))
+            )
+
+            ///////////////////////////////////////////////////////////////////////////////
             // left
             template<typename L, typename R>
             inline constexpr auto left(args<L, R> &a)
@@ -215,6 +285,29 @@ namespace boost
             inline constexpr auto left(args<L, R> &&a)
             BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl(static_cast<args<L, R> &&>(a), std::integral_constant<std::size_t, 0>())
+            )
+
+            ///////////////////////////////////////////////////////////////////////////////
+            // left when 0th element is virtual
+            template<typename L, typename R>
+            inline constexpr L & left(args<virtual_<L>, R> &a)
+            BOOST_PROTO_RETURN(
+                *(L *)(detail::as_virtual_member(a) -
+                    ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a))
+            )
+
+            template<typename L, typename R>
+            inline constexpr L const & left(args<virtual_<L>, R> const &a)
+            BOOST_PROTO_RETURN(
+                *(L const *)(detail::as_virtual_member(a) -
+                    ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a))
+            )
+
+            template<typename L, typename R>
+            inline constexpr L && left(args<virtual_<L>, R> &&a)
+            BOOST_PROTO_RETURN(
+                static_cast<L &&>(*(L *)(detail::as_virtual_member(a) -
+                    ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a)))
             )
 
             ///////////////////////////////////////////////////////////////////////////////
@@ -237,6 +330,8 @@ namespace boost
                 detail::child_impl(static_cast<args<L, R> &&>(a), std::integral_constant<std::size_t, 1>())
             )
 
+            ///////////////////////////////////////////////////////////////////////////////
+            // value
             template<typename T>
             inline constexpr auto value(args<T> &that)
             BOOST_PROTO_AUTO_RETURN(
@@ -255,6 +350,8 @@ namespace boost
                 (static_cast<args<T> &&>(that).proto_child0)  // extra parens are significant!
             )
 
+            ///////////////////////////////////////////////////////////////////////////////
+            // make_args
             template<typename ...T>
             inline constexpr auto make_args(T &&... t)
             BOOST_PROTO_AUTO_RETURN(

@@ -13,6 +13,7 @@
 
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/make_expr.hpp>
+#include <boost/proto/matches.hpp>
 
 namespace boost
 {
@@ -77,15 +78,21 @@ namespace boost
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
+            // default_grammar
+            struct default_grammar
+              : not_<address_of<_>>
+            {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
             // default_domain
             struct default_domain
-              : domain<default_domain>
+              : domain<default_domain, default_grammar>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // basic_default_domain
             struct basic_default_domain
-              : domain<basic_default_domain>
+              : domain<basic_default_domain, default_grammar>
             {
                 struct make_expr
                   : make_custom_expr<basic_expr, basic_default_domain>

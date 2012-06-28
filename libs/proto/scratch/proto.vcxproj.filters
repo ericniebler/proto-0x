@@ -90,6 +90,9 @@
     <ClInclude Include="..\..\..\boost\proto\fusion.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\virtual_member.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -123,6 +126,9 @@
       <Filter>Test Files</Filter>
     </ClCompile>
     <ClCompile Include="..\test\flatten.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\virtual_member.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -18,5 +18,6 @@
 #include <boost/proto/tags.hpp>
 #include <boost/proto/transform.hpp>
 #include <boost/proto/utility.hpp>
+#include <boost/proto/virtual_member.hpp>
 
 #endif

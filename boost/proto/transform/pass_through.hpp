@@ -97,10 +97,10 @@ namespace boost
                 BOOST_PROTO_AUTO_RETURN(
                     proto::domains::make_expr<decltype(e.proto_domain())>(
                         static_cast<E &&>(e).proto_tag()
-                      , as_transform<Args>()(
+                      , utility::by_val(as_transform<Args>()(
                             proto::child<Indices>(static_cast<E &&>(e))
                           , static_cast<T &&>(t)...
-                        )...
+                        ))...
                     )
                 )
             };
@@ -114,8 +114,13 @@ namespace boost
 
             template<std::size_t N, std::size_t M, typename ...Args>
             struct pass_through_0_<true, N, M, Args...>
-              : utility::identity
-            {};
+            {
+                template<typename E, typename ...T>
+                auto operator()(E && e, T &&...) const
+                BOOST_PROTO_AUTO_RETURN(
+                    utility::by_val(static_cast<E &&>(e))
+                )
+            };
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////

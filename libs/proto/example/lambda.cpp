@@ -6,12 +6,11 @@
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <cstdio>
+#include <utility>
 #include <type_traits>
-#include <boost/mpl/size_t.hpp>
 #include <boost/proto/proto.hpp>
 #include <boost/proto/debug.hpp>
 
-namespace mpl = boost::mpl;
 namespace proto = boost::proto;
 using proto::_;
 
@@ -24,12 +23,12 @@ struct placeholder
     // So placeholder terminals can be pretty-printed with display_expr
     friend std::ostream & operator << (std::ostream & s, placeholder<T>)
     {
-        return s << "_" << (std::size_t)T() + 1;
+        return s << "_" << T::value + 1;
     }
 };
 
 template<std::size_t I>
-using placeholder_c = placeholder<mpl::size_t<I>>;
+using placeholder_c = placeholder<std::integral_constant<std::size_t, I>>;
 
 struct lambda_eval
   : proto::or_<
@@ -70,8 +69,8 @@ struct lambda_expr
 
     using proto::expr_assign<lambda_expr, lambda_domain>::operator=;
     //using proto::basic_expr<Tag, Args, lambda_domain>::basic_expr;
-    typedef proto::basic_expr<Tag, Args, lambda_domain> proto_basic_expr;
-    BOOST_PROTO_INHERIT_EXPR_CTORS(lambda_expr, proto_basic_expr);
+    typedef proto::basic_expr<Tag, Args, lambda_domain> proto_basic_expr_type;
+    BOOST_PROTO_INHERIT_EXPR_CTORS(lambda_expr, proto_basic_expr_type);
 
     template<typename ...T>
     auto operator()(T &&... t) const
@@ -85,13 +84,17 @@ using lambda_var = lambda_expr<proto::tag::terminal, proto::args<T>>;
 
 typedef lambda_var<placeholder_c<0>> _1_type;
 typedef lambda_var<placeholder_c<1>> _2_type;
-static_assert(std::is_trivial<_1_type>::value, "_1 is not trivial");
+typedef lambda_var<placeholder_c<2>> _3_type;
+static_assert(std::is_trivial<_1_type>::value, "_1 should be trivial");
 
 namespace
 {
     constexpr _1_type const & _1 = proto::utility::static_const<_1_type>::value;
     constexpr _2_type const & _2 = proto::utility::static_const<_2_type>::value;
+    constexpr _3_type const & _3 = proto::utility::static_const<_3_type>::value;
 }
+
+BOOST_PROTO_IGNORE_UNUSED(_1, _2, _3);
 
 int main()
 {

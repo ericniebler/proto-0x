@@ -9,14 +9,6 @@
 #define BOOST_PROTO_TEST_UNIT_TEST_HPP_INCLUDED
 
 #include <boost/test/unit_test.hpp>
-
-namespace detail
-{
-    inline void ignore_unit_test()
-    {
-        BOOST_PROTO_IGNORE_UNUSED(boost::test_tools::check_is_close);
-        BOOST_PROTO_IGNORE_UNUSED(boost::test_tools::check_is_small);
-    }
-}
+BOOST_PROTO_IGNORE_UNUSED(boost::test_tools::check_is_close, boost::test_tools::check_is_small);
 
 #endif

@@ -195,6 +195,7 @@ namespace boost
 
             namespace result_of
             {
+                // BUGBUG make_expr<xxx, tag::terminal ...> should behave like as_expr?
                 template<typename Domain, typename Tag, typename ...T>
                 struct make_expr
                 {
