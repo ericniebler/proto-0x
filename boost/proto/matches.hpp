@@ -260,7 +260,7 @@ namespace boost
             };
 
             template<typename Expr, typename BasicExpr, typename Grammar>
-            struct matches_<virtual_<Expr>, virtual_<BasicExpr>, Grammar, void>
+            struct matches_<exprs::virtual_<Expr>, exprs::virtual_<BasicExpr>, Grammar, void>
               : matches_<Expr, BasicExpr, Grammar>
             {};
 

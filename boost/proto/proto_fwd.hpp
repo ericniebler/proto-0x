@@ -295,13 +295,12 @@ namespace boost
         using exprs::expr_base;
         using exprs::basic_expr;
         using exprs::expr;
-        using exprs::virtual_;
 
         template<typename This, typename Value, typename Domain = default_domain>
         using virtual_member =
             exprs::virtual_member_<
                 tag::member
-              , args<virtual_<This>, expr<tag::terminal, args<Value>>>
+              , args<exprs::virtual_<This>, expr<tag::terminal, args<Value>>>
               , Domain
             >;
 

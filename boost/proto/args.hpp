@@ -38,12 +38,12 @@ namespace boost
     {
         namespace detail
         {
-            ///////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////
             // as_virtual_member
             template<typename L, typename R, typename D = typename L::proto_domain_type>
-            constexpr auto as_virtual_member(args<virtual_<L>, R> const &a)
+            constexpr auto as_virtual_member(args<exprs::virtual_<L>, terminal<R>> const &a)
             BOOST_PROTO_AUTO_RETURN(
-                (char *)static_cast<exprs::virtual_member_<tag::member, args<virtual_<L>, R>, D> const *>(&a)
+                (char *)static_cast<virtual_member<L, R, D> const *>(&a)
             )
 
             #define BOOST_PP_LOCAL_MACRO(N)                                                         \
@@ -211,7 +211,7 @@ namespace boost
                 )
             };
 
-            ///////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////
             // args_element
             template<std::size_t N, typename Args>
             struct args_element
@@ -224,7 +224,7 @@ namespace boost
             #undef EQUAL_TO
             #undef DISABLE_COPY_IF
 
-            ///////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////
             // child
             template<std::size_t I, typename ...T>
             inline constexpr auto child(args<T...> &a)
@@ -244,8 +244,8 @@ namespace boost
                 detail::child_impl(static_cast<args<T...> &&>(a), std::integral_constant<std::size_t, I>())
             )
 
-            ///////////////////////////////////////////////////////////////////////////////
-            // child when 0th element is virtual
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // child when 0th element is "virtual" (see virtual_member)
             template<std::size_t I, typename L, typename R, BOOST_PROTO_ENABLE_IF(I == 0)>
             inline constexpr L & child(args<virtual_<L>, R> &a)
             BOOST_PROTO_RETURN(
@@ -267,7 +267,7 @@ namespace boost
                     ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a)))
             )
 
-            ///////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////
             // left
             template<typename L, typename R>
             inline constexpr auto left(args<L, R> &a)
@@ -287,8 +287,8 @@ namespace boost
                 detail::child_impl(static_cast<args<L, R> &&>(a), std::integral_constant<std::size_t, 0>())
             )
 
-            ///////////////////////////////////////////////////////////////////////////////
-            // left when 0th element is virtual
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // left when 0th element is "virtual" (see virtual_member)
             template<typename L, typename R>
             inline constexpr L & left(args<virtual_<L>, R> &a)
             BOOST_PROTO_RETURN(
@@ -310,7 +310,7 @@ namespace boost
                     ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a)))
             )
 
-            ///////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////
             // right
             template<typename L, typename R>
             inline constexpr auto right(args<L, R> &a)
@@ -330,7 +330,7 @@ namespace boost
                 detail::child_impl(static_cast<args<L, R> &&>(a), std::integral_constant<std::size_t, 1>())
             )
 
-            ///////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////
             // value
             template<typename T>
             inline constexpr auto value(args<T> &that)
@@ -350,7 +350,7 @@ namespace boost
                 (static_cast<args<T> &&>(that).proto_child0)  // extra parens are significant!
             )
 
-            ///////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////
             // make_args
             template<typename ...T>
             inline constexpr auto make_args(T &&... t)

@@ -93,6 +93,9 @@
     <ClInclude Include="..\..\..\boost\proto\virtual_member.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\fold.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
