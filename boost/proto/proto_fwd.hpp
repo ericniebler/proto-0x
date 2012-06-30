@@ -336,7 +336,7 @@ namespace boost
         template<typename T>
         struct is_transform;
 
-        template<typename T>
+        template<typename T, int = 0>
         struct as_transform;
 
         template<typename Grammar, typename Transform = Grammar>
@@ -371,6 +371,18 @@ namespace boost
 
         template<typename Expr>
         struct _pass_through;
+
+        template<typename Seq, typename State0, typename Fun>
+        struct fold;
+
+        template<typename Seq, typename State0, typename Fun>
+        struct recursive_fold;
+
+        template<typename Seq, typename State0, typename Fun>
+        struct reverse_fold;
+
+        template<typename Seq, typename State0, typename Fun>
+        struct reverse_recursive_fold;
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Misc. traits

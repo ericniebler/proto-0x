@@ -43,7 +43,7 @@ namespace mini_lambda
       : proto::tags::def<placeholder<N>>
     {
         using proto::tags::def<placeholder>::operator=;
- 
+
         // So placeholder terminals can be pretty-printed with display_expr
         friend std::ostream & operator << (std::ostream & s, placeholder)
         {

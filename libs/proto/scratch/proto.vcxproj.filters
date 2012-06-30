@@ -96,6 +96,9 @@
     <ClInclude Include="..\..\..\boost\proto\transform\fold.hpp">
       <Filter>Proto Files\transform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\recursive_fold.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

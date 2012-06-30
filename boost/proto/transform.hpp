@@ -17,6 +17,7 @@
 #include <boost/proto/transform/fold.hpp>
 #include <boost/proto/transform/make.hpp>
 #include <boost/proto/transform/pass_through.hpp>
+#include <boost/proto/transform/recursive_fold.hpp>
 #include <boost/proto/transform/when.hpp>
 
 #endif

@@ -306,19 +306,19 @@ namespace boost
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // as_transform
-        template<typename T>
+        template<typename T, int>
         struct as_transform
           : decltype(detail::as_transform_<T>(1))
         {};
 
-        template<typename Ret, typename ...Args>
-        struct as_transform<Ret(*)(Args...)>
-          : as_transform<Ret(Args...)>
+        template<typename Ret, typename ...Args, int I>
+        struct as_transform<Ret(*)(Args...), I>
+          : as_transform<Ret(Args...), I>
         {};
 
-        template<typename Ret, typename ...Args>
-        struct as_transform<Ret(Args...)>
-          : transform<as_transform<Ret(Args...)>>
+        template<typename Ret, typename ...Args, int I>
+        struct as_transform<Ret(Args...), I>
+          : transform<as_transform<Ret(Args...), I>>
         {
             template<typename ...T, typename X = typename detail::make_1_<Ret, T...>::type>
             auto operator()(T &&... t) const
