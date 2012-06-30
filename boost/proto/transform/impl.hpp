@@ -25,7 +25,7 @@ namespace boost
             void operator[](struct not_a_valid_tag) const noexcept;
 
             template<typename T>
-            T && at(utility::any, T && t) const noexcept
+            T at(utility::any, T && t) const noexcept(noexcept(T(static_cast<T &&>(t))))
             {
                 return static_cast<T &&>(t);
             }

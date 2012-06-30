@@ -82,12 +82,32 @@ namespace boost
                 Expr<Tag, args<T...>, Domain>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
             )
 
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // detail::normalize_expr
+            template<typename This, typename Value, typename Domain>
+            auto normalize_expr(virtual_member<This, Value, Domain> && e)
+            BOOST_PROTO_AUTO_RETURN(
+                // Must build a real binary expression from virtual members before the left hand
+                // side (actually the member's enclosing object) dies and we lose it forever.
+                typename Domain::make_expr{}(
+                    tag::member()
+                  , proto::left(static_cast<virtual_member<This, Value, Domain> &&>(e))
+                  , proto::right(static_cast<virtual_member<This, Value, Domain> &&>(e))
+                )
+            )
+
+            template<typename T>
+            T && normalize_expr(T && t) noexcept
+            {
+                return static_cast<T &&>(t);
+            }
+
             template<typename T, typename Domain, bool IsExpr = is_expr<T>::value>
             struct as_expr
             {
                 inline constexpr auto operator()(T &&t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    child_storer(Domain(), t)(static_cast<T &&>(t))
+                    child_storer(Domain(), t)(detail::normalize_expr(static_cast<T &&>(t)))
                 )
             };
 

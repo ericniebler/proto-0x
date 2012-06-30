@@ -631,7 +631,7 @@ namespace boost
                 typename std::conditional<
                     static_cast<bool>(
                         std::remove_reference<
-                            decltype(as_transform<If>()(static_cast<Expr &&>(e)))
+                            decltype(as_transform<If>()(static_cast<Expr &&>(e), static_cast<Rest &&>(rest)...))
                         >::type::value
                     )
                   , as_transform<Then>

@@ -6,3 +6,8 @@ exe lambda
     :
         lambda.cpp
     ;
+
+exe virtual_member
+    :
+        virtual_member.cpp
+    ;

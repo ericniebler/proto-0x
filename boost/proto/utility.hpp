@@ -222,7 +222,8 @@ namespace boost
             struct identity
             {
                 template<typename T>
-                inline constexpr T && operator()(T &&t) const noexcept
+                inline constexpr T operator()(T &&t) const
+                    noexcept(noexcept(T(static_cast<T &&>(t))))
                 {
                     return static_cast<T &&>(t);
                 }

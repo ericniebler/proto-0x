@@ -1,11 +1,23 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// main.cpp
-//
+//[ VirtualMember
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+// This example demonstrates how to use BOOST_PROTO_EXTENDS_MEMBERS()
+// to add "virtual" data members to expressions within a domain. For
+// instance, with Phoenix you can create a lambda expression such as
+//
+//    if_(_1 > 0)[ std::cout << _2 ].else_[ std::cout << _3 ]
+//
+// In the above expression, "else_" is a so-called virtual data member
+// of the expression "if_(_1 > 0)[ std::cout << _2 ]". This example
+// shows how to implement the ".else_" syntax with Proto.
+//
+// ****WARNING****WARNING****WARNING****WARNING****WARNING****WARNING****
+// * The virtual data member feature is experimental and can change at  *
+// * any time. Use it at your own risk.                                 *
+// **********************************************************************
 
-#include <cstdio>
 #include <iostream>
 #include <type_traits>
 #include <boost/proto/proto.hpp>
@@ -16,6 +28,7 @@ using proto::_;
 
 namespace std
 {
+    // For debugging purposes only. Don't do this in production code.
     std::ostream & operator<<(std::ostream & s, std::ostream &)
     {
         return s << "std::cout";
@@ -230,14 +243,5 @@ int main()
     // domain have members named else_, while_, and catch_,
     // they all occupy the same byte in the expression.
     static_assert(sizeof(_1) == 3, "_1 should be only 3 bytes");
-
-    void done();
-    done();
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void done()
-{
-    std::printf("Press <return> to continue...");
-    std::fgetc(stdin);
-}
+//]

@@ -134,6 +134,9 @@
     <ClCompile Include="..\test\virtual_member.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\example\virtual_member.cpp">
+      <Filter>Example Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\test\Jamfile">
