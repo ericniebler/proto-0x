@@ -30,11 +30,12 @@ int main()
 {
     using fusion::cons;
     proto::terminal<int> i{42};
-    cons<int, cons<int, cons<int>>> j = proto::reverse_recursive_fold<
-        _
-      , fusion::nil()
-      , cons<proto::_value, proto::_state>(proto::_value, proto::_state)
-    >()(i + 1 + 2);
+    cons<int, cons<int, cons<int>>> j =
+        proto::_reverse_recursive_fold<
+            _
+          , fusion::nil()
+          , cons<proto::_value, proto::_state>(proto::_value, proto::_state)
+        >()(i + 1 + 2);
     fusion::for_each(j, display());
     std::cout << '\n';
 

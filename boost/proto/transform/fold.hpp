@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // fold.hpp
-// Contains definition of the fold<> and reverse_fold<> transforms.
+// Contains definition of the _fold<> and _reverse_fold<> transforms.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
@@ -28,24 +28,14 @@ namespace boost
             struct fold_impl_
             {
                 ////////////////////////////////////////////////////////////////////////////////////
-                struct proto_detail_fold_adl_
-                {};
-
-                ////////////////////////////////////////////////////////////////////////////////////
                 // fold_2_
                 template<typename Cur, typename End, typename State, typename ...Rest
+                  , typename Impl = fold_impl_<Fun>
                   , BOOST_PROTO_ENABLE_IF(!(fusion::result_of::equal_to<Cur, End>::value))>
-                friend auto fold_2_(
-                    proto_detail_fold_adl_
-                  , Cur const &cur
-                  , End const &end
-                  , State const &state
-                  , Rest &&...rest
-                )
+                static auto fold_2_(Cur const &cur, End const &end, State const &state, Rest &&...rest)
                 BOOST_PROTO_AUTO_RETURN(
-                    fold_2_(
-                        proto_detail_fold_adl_()
-                      , fusion::next(cur)
+                    Impl::fold_2_(
+                        fusion::next(cur)
                       , end
                       , as_transform<Fun>()(
                             fusion::deref(cur)
@@ -58,13 +48,7 @@ namespace boost
 
                 template<typename Cur, typename End, typename State, typename ...Rest
                   , BOOST_PROTO_ENABLE_IF((fusion::result_of::equal_to<Cur, End>::value))>
-                friend State fold_2_(
-                    proto_detail_fold_adl_
-                  , Cur const &
-                  , End const &
-                  , State const &state
-                  , Rest &&...
-                )
+                static State fold_2_(Cur const &, End const &, State const &state, Rest &&...)
                 {
                     return state;
                 }
@@ -72,16 +56,10 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // fold_1_
                 template<typename Sequence, typename State0, typename ...Rest>
-                friend auto fold_1_(
-                    proto_detail_fold_adl_
-                  , Sequence && seq
-                  , State0 const &state0
-                  , Rest &&... rest
-                )
+                static auto fold_1_(Sequence && seq, State0 const &state0, Rest &&... rest)
                 BOOST_PROTO_AUTO_RETURN(
-                    fold_2_(
-                        proto_detail_fold_adl_()
-                      , fusion::begin(static_cast<Sequence &&>(seq))
+                    fold_impl_<Fun>::fold_2_(
+                        fusion::begin(static_cast<Sequence &&>(seq))
                       , fusion::end(static_cast<Sequence &&>(seq))
                       , state0
                       , static_cast<Rest &&>(rest)...
@@ -91,18 +69,12 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // reverse_fold_2_
                 template<typename Cur, typename End, typename State, typename ...Rest
+                  , typename Impl = fold_impl_<Fun>
                   , BOOST_PROTO_ENABLE_IF(!(fusion::result_of::equal_to<Cur, End>::value))>
-                friend auto reverse_fold_2_(
-                    proto_detail_fold_adl_
-                  , Cur const &cur
-                  , End const &end
-                  , State const &state
-                  , Rest &&...rest
-                )
+                static auto reverse_fold_2_(Cur const &cur, End const &end, State const &state, Rest &&...rest)
                 BOOST_PROTO_AUTO_RETURN(
-                    reverse_fold_2_(
-                        proto_detail_fold_adl_()
-                      , cur
+                    Impl::reverse_fold_2_(
+                        cur
                       , fusion::prior(end)
                       , as_transform<Fun>()(
                             fusion::deref(fusion::prior(end))
@@ -115,13 +87,7 @@ namespace boost
 
                 template<typename Cur, typename End, typename State, typename ...Rest
                   , BOOST_PROTO_ENABLE_IF((fusion::result_of::equal_to<Cur, End>::value))>
-                friend State reverse_fold_2_(
-                    proto_detail_fold_adl_
-                  , Cur const &
-                  , End const &
-                  , State const &state
-                  , Rest &&...
-                )
+                static State reverse_fold_2_(Cur const &, End const &, State const &state, Rest &&...)
                 {
                     return state;
                 }
@@ -129,16 +95,10 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // reverse_fold_1_
                 template<typename Sequence, typename State0, typename ...Rest>
-                friend auto reverse_fold_1_(
-                    proto_detail_fold_adl_
-                  , Sequence && seq
-                  , State0 const &state0
-                  , Rest &&... rest
-                )
+                static auto reverse_fold_1_(Sequence && seq, State0 const &state0, Rest &&... rest)
                 BOOST_PROTO_AUTO_RETURN(
-                    reverse_fold_2_(
-                        proto_detail_fold_adl_()
-                      , fusion::begin(static_cast<Sequence &&>(seq))
+                    fold_impl_<Fun>::reverse_fold_2_(
+                        fusion::begin(static_cast<Sequence &&>(seq))
                       , fusion::end(static_cast<Sequence &&>(seq))
                       , state0
                       , static_cast<Rest &&>(rest)...
@@ -148,19 +108,18 @@ namespace boost
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        // fold
-        // \brief A PrimitiveTransform that invokes the <tt>fusion::fold\<\></tt>
+        // _fold
+        // \brief A PrimitiveTransform that invokes the <tt>fusion::_fold\<\></tt>
         // algorithm to accumulate
         template<typename Sequence, typename State0, typename Fun>
-        struct fold
-          : transform<fold<Sequence, State0, Fun>>
+        struct _fold
+          : transform<_fold<Sequence, State0, Fun>>
         {
             template<typename E>
             auto operator()(E && e) const
             BOOST_PROTO_AUTO_RETURN(
-                fold_1_(
-                    typename detail::fold_impl_<Fun>::proto_detail_fold_adl_()
-                  , as_transform<Sequence>()(static_cast<E &&>(e))
+                detail::fold_impl_<Fun>::fold_1_(
+                    as_transform<Sequence>()(static_cast<E &&>(e))
                   , as_transform<State0>()(static_cast<E &&>(e))
                 )
             )
@@ -168,9 +127,8 @@ namespace boost
             template<typename E, typename S, typename ...Rest>
             auto operator()(E && e, S && s, Rest &&... rest) const
             BOOST_PROTO_AUTO_RETURN(
-                fold_1_(
-                    typename detail::fold_impl_<Fun>::proto_detail_fold_adl_()
-                  , as_transform<Sequence>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                detail::fold_impl_<Fun>::fold_1_(
+                    as_transform<Sequence>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
                   , as_transform<State0>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
                   , static_cast<Rest &&>(rest)...
                 )
@@ -178,19 +136,18 @@ namespace boost
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        // reverse_fold
+        // _reverse_fold
         // A PrimitiveTransform that invokes the <tt>fusion::fold\<\></tt>
         // algorithm to accumulate
         template<typename Sequence, typename State0, typename Fun>
-        struct reverse_fold
-          : transform<reverse_fold<Sequence, State0, Fun>>
+        struct _reverse_fold
+          : transform<_reverse_fold<Sequence, State0, Fun>>
         {
             template<typename E>
             auto operator()(E && e) const
             BOOST_PROTO_AUTO_RETURN(
-                reverse_fold_1_(
-                    typename detail::fold_impl_<Fun>::proto_detail_fold_adl_()
-                  , as_transform<Sequence>()(static_cast<E &&>(e))
+                detail::fold_impl_<Fun>::reverse_fold_1_(
+                    as_transform<Sequence>()(static_cast<E &&>(e))
                   , as_transform<State0>()(static_cast<E &&>(e))
                 )
             )
@@ -198,9 +155,8 @@ namespace boost
             template<typename E, typename S, typename ...Rest>
             auto operator()(E && e, S && s, Rest &&... rest) const
             BOOST_PROTO_AUTO_RETURN(
-                reverse_fold_1_(
-                    typename detail::fold_impl_<Fun>::proto_detail_fold_adl_()
-                  , as_transform<Sequence>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                detail::fold_impl_<Fun>::reverse_fold_1_(
+                    as_transform<Sequence>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
                   , as_transform<State0>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
                   , static_cast<Rest &&>(rest)...
                 )

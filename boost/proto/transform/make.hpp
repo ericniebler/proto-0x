@@ -63,7 +63,7 @@ namespace boost
             template<typename R, typename ...Args>
             struct make_2_
             {
-                // Relies on the fact that as_transform<R> is protect<R> when R is not a transform:
+                // Relies on the fact that as_transform<R> is _protect<R> when R is not a transform:
                 typedef decltype(utility::by_val(as_transform<R>()(std::declval<Args>()...))) type;
                 typedef is_transform<R> applied;
             };
@@ -77,14 +77,14 @@ namespace boost
             {};
 
             template<typename R, typename ...Args>
-            struct make_2_<noinvoke<R>, Args...>
+            struct make_2_<_noinvoke<R>, Args...>
             {
                 typedef R type;
                 typedef std::false_type applied;
             };
 
             template<template<typename...> class R, typename ...A, typename ...Args>
-            struct make_2_<noinvoke<R<A...>>, Args...>
+            struct make_2_<_noinvoke<R<A...>>, Args...>
             {
                 typedef R<typename make_3_<A, Args...>::type...> type;
                 typedef utility::or_<typename make_3_<A, Args...>::applied...> applied;
@@ -108,14 +108,14 @@ namespace boost
             {};
 
             template<typename R, typename ...Args>
-            struct make_1_<noinvoke<R>, Args...>
+            struct make_1_<_noinvoke<R>, Args...>
             {
                 typedef R type;
                 typedef std::false_type applied;
             };
 
             template<template<typename...> class R, typename ...A, typename ...Args>
-            struct make_1_<noinvoke<R<A...>>, Args...>
+            struct make_1_<_noinvoke<R<A...>>, Args...>
             {
                 typedef R<typename make_3_<A, Args...>::type...> type;
                 typedef utility::or_<typename make_3_<A, Args...>::applied...> applied;

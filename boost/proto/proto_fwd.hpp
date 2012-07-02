@@ -363,26 +363,26 @@ namespace boost
         template<typename Grammar = detail::_eval>
         struct _eval;
 
-        template<typename T>
-        struct noinvoke;
-
-        template<typename T>
-        struct protect;
-
         template<typename Expr>
         struct _pass_through;
 
         template<typename Seq, typename State0, typename Fun>
-        struct fold;
+        struct _fold;
 
         template<typename Seq, typename State0, typename Fun>
-        struct recursive_fold;
+        struct _recursive_fold;
 
         template<typename Seq, typename State0, typename Fun>
-        struct reverse_fold;
+        struct _reverse_fold;
 
         template<typename Seq, typename State0, typename Fun>
-        struct reverse_recursive_fold;
+        struct _reverse_recursive_fold;
+
+        template<typename T>
+        struct _noinvoke;
+
+        template<typename T>
+        struct _protect;
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Misc. traits

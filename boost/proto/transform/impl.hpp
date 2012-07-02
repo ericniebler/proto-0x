@@ -76,28 +76,32 @@ namespace boost
 
         namespace detail
         {
-            struct proto_make_env_adl
-            {};
-
-            template<typename T>
-            inline T proto_make_env(proto_make_env_adl, T t)
+            struct make_env_impl_
             {
-                return t;
-            }
+                template<typename T>
+                static T make_env(T && t)
+                {
+                    static_assert(
+                        utility::is_base_of<environment_base, T>::value
+                      , "make_env used in non-environment context"
+                    );
+                    return t;
+                }
 
-            template<typename T, typename U, typename ...V>
-            inline auto proto_make_env(proto_make_env_adl, T t, U u, V... v)
-            BOOST_PROTO_AUTO_RETURN(
-                proto_make_env(proto_make_env_adl(), (t, u), v...)
-            )
+                template<typename T, typename U, typename ...V, typename Impl = make_env_impl_>
+                static auto make_env(T && t, U && u, V &&... v)
+                BOOST_PROTO_AUTO_RETURN(
+                    Impl::make_env((static_cast<T &&>(t), static_cast<U &&>(u)), static_cast<V &&>(v)...)
+                )
+            };
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // make_env
-        template<typename ...Tag, typename... Value>
-        inline auto make_env(environment<Tag, Value>... t)
+        template<typename ...T>
+        inline auto make_env(T &&... t)
         BOOST_PROTO_AUTO_RETURN(
-            detail::proto_make_env(detail::proto_make_env_adl(), t...)
+            detail::make_env_impl_::make_env(static_cast<T &&>(t)...)
         )
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,23 +163,23 @@ namespace boost
         ///
         /// If you actually wanted to default-construct an object of type
         /// <tt>Bar\<_\></tt>, you would have to protect the \c _ to prevent
-        /// it from being applied. You can use <tt>proto::protect\<\></tt>
+        /// it from being applied. You can use <tt>proto::_protect\<\></tt>
         /// as follows:
         ///
         /// \code
         /// // OK: replace anything with Bar<_>()
         /// struct Foo
-        ///   : proto::when<_, Bar<protect<_> >() >
+        ///   : proto::when<_, Bar<_protect<_> >() >
         /// {};
         /// \endcode
         template<typename T>
-        struct protect
-          : transform<protect<T>>
+        struct _protect
+          : transform<_protect<T>>
         {
             template<typename... Args>
             T operator()(Args &&...) const
             {
-                static_assert(std::is_same<T, void>::value, "don't call me at runtime!");
+                static_assert(utility::never<T>::value, "don't call _protect<T>::operator() at runtime!");
                 return T{};
             }
         };
@@ -195,14 +199,14 @@ namespace boost
         namespace detail
         {
             ////////////////////////////////////////////////////////////////////////////////////////
-            // na
-            struct na
-              : transform<na>
+            // _na
+            struct _na
+              : transform<_na>
             {
                 template<typename ...T>
-                na operator()(T &&...) const noexcept
+                _na operator()(T &&...) const noexcept
                 {
-                    return na{};
+                    return _na{};
                 }
             };
 
@@ -215,7 +219,7 @@ namespace boost
             }
 
             template<typename U>
-            inline U && select_value(na, U &&u) noexcept
+            inline U && select_value(_na, U &&u) noexcept
             {
                 return static_cast<U &&>(u);
             }
@@ -227,7 +231,7 @@ namespace boost
 
             template<std::size_t N, typename Transform, typename ...Args>
             struct invoke_transform_2_<N, Transform(Args...)>
-              : invoke_transform_2_<N - 1, Transform(Args..., na)>
+              : invoke_transform_2_<N - 1, Transform(Args..., _na)>
             {};
 
             template<typename Transform, typename ...Args>
@@ -301,7 +305,7 @@ namespace boost
             typename T::proto_transform_type as_transform_(int);
 
             template<typename T>
-            protect<T> as_transform_(...);
+            _protect<T> as_transform_(...);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////

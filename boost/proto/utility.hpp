@@ -63,6 +63,34 @@ namespace boost
             struct and_c<true, Head, Next, Tail...>
               : and_c<Next::value, Next, Tail...>
             {};
+
+            struct back_impl_
+            {
+                template<typename T0>
+                static auto back(T0 && t0)
+                BOOST_PROTO_AUTO_RETURN(
+                    static_cast<T0 &&>(t0)
+                )
+
+                template<typename T0, typename T1>
+                static auto back(T0 &&, T1 && t1)
+                BOOST_PROTO_AUTO_RETURN(
+                    static_cast<T1 &&>(t1)
+                )
+
+                template<typename T0, typename T1, typename T2>
+                static auto back(T0 &&, T1 &&, T2 && t2)
+                BOOST_PROTO_AUTO_RETURN(
+                    static_cast<T2 &&>(t2)
+                )
+
+                template<typename T0, typename T1, typename T2, typename ...Rest
+                  , typename Impl = back_impl_>
+                static auto back(T0 &&, T1 &&, T2 &&, Rest &&... rest)
+                BOOST_PROTO_AUTO_RETURN(
+                    Impl::back(static_cast<Rest &&>(rest)...)
+                )
+            };
         }
 
         namespace utility
@@ -140,28 +168,10 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // back - fetch the last element of a variadic template pack
-            template<typename T0>
-            auto back(T0 && t0)
+            template<typename ...T>
+            auto back(T &&... t)
             BOOST_PROTO_AUTO_RETURN(
-                static_cast<T0 &&>(t0)
-            )
-
-            template<typename T0, typename T1>
-            auto back(T0 &&, T1 && t1)
-            BOOST_PROTO_AUTO_RETURN(
-                static_cast<T1 &&>(t1)
-            )
-
-            template<typename T0, typename T1, typename T2>
-            auto back(T0 &&, T1 &&, T2 && t2)
-            BOOST_PROTO_AUTO_RETURN(
-                static_cast<T2 &&>(t2)
-            )
-
-            template<typename T0, typename T1, typename T2, typename ...Rest>
-            auto back(T0 &&, T1 &&, T2 &&, Rest &&... rest)
-            BOOST_PROTO_AUTO_RETURN(
-                utility::back(static_cast<Rest &&>(rest)...)
+                detail::back_impl_::back(static_cast<T &&>(t)...)
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////

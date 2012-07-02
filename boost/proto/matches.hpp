@@ -519,17 +519,17 @@ namespace boost
         ///
         /// When used as a transform, \c _ returns the current expression
         /// unchanged. For instance, in the following, \c _ is used with
-        /// the \c fold\<\> transform to fold the children of a node:
+        /// the \c _fold\<\> transform to _fold the children of a node:
         ///
         /// \code
         /// struct CountChildren
         ///   : or_<
         ///         // Terminals have no children
         ///         when<terminal<_>, mpl::int_<0>()>
-        ///         // Use fold<> to count the children of non-terminals
+        ///         // Use _fold<> to count the children of non-terminals
         ///       , otherwise<
-        ///             fold<
-        ///                 _ // <-- fold the current expression
+        ///             _fold<
+        ///                 _ // <-- _fold the current expression
         ///               , mpl::int_<0>()
         ///               , mpl::plus<_state, mpl::int_<1> >()
         ///             >
