@@ -195,7 +195,7 @@ namespace boost
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // make_expr_if (with domain) - refused to create expressions that are non-grammatical
+            // make_expr_if (with domain) - refuse to create expressions that are non-grammatical
             template<typename Domain, typename Tag, typename ...T>
             inline constexpr auto make_expr_if(Tag tag, T &&...t)
             BOOST_PROTO_AUTO_RETURN(

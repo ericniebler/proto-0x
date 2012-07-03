@@ -196,20 +196,20 @@ namespace boost
           : std::is_base_of<transform_base, T>
         {};
 
+        ////////////////////////////////////////////////////////////////////////////////////////
+        // _void
+        struct _void
+          : transform<_void>
+        {
+            template<typename ...T>
+            utility::void_type const &operator()(T &&...) const noexcept
+            {
+                return utility::void_;
+            }
+        };
+
         namespace detail
         {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // _na
-            struct _na
-              : transform<_na>
-            {
-                template<typename ...T>
-                _na operator()(T &&...) const noexcept
-                {
-                    return _na{};
-                }
-            };
-
             ////////////////////////////////////////////////////////////////////////////////////////
             // select_value
             template<typename T, typename U>
@@ -219,7 +219,7 @@ namespace boost
             }
 
             template<typename U>
-            inline U && select_value(_na, U &&u) noexcept
+            inline U && select_value(utility::void_type const &, U &&u) noexcept
             {
                 return static_cast<U &&>(u);
             }
@@ -231,7 +231,7 @@ namespace boost
 
             template<std::size_t N, typename Transform, typename ...Args>
             struct invoke_transform_2_<N, Transform(Args...)>
-              : invoke_transform_2_<N - 1, Transform(Args..., _na)>
+              : invoke_transform_2_<N - 1, Transform(Args..., _void)>
             {};
 
             template<typename Transform, typename ...Args>

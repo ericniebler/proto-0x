@@ -98,6 +98,7 @@ namespace boost
             #define MEMBERS(Z, N, D) typedef T ## N proto_child_type ## N; T ## N proto_child ## N;
             #define NOEXCEPT(Z, N, D) noexcept(T ## N(static_cast< U ## N && >( u ## N ))) &&
             #define EQUAL_TO(Z, N, D) static_cast<bool>(proto_child ## N == that. proto_child ## N) &&
+            #define INVOKE(Z, N, D) f(D.proto_child ## N);
 
             #define BOOST_PP_LOCAL_MACRO(N)                                                         \
             template<BOOST_PP_ENUM_PARAMS(N, typename T)>                                           \
@@ -131,6 +132,27 @@ namespace boost
             {                                                                                       \
                 typedef typename Args::BOOST_PP_CAT(proto_child_type, BOOST_PP_DEC(N)) type;        \
             };                                                                                      \
+                                                                                                    \
+            template<BOOST_PP_ENUM_PARAMS(N, typename T), typename F>                               \
+            inline F for_each(args<BOOST_PP_ENUM_PARAMS(N, T)> & a, F const & f)                    \
+            {                                                                                       \
+                BOOST_PP_REPEAT(N, INVOKE, a)                                                       \
+                return f;                                                                           \
+            }                                                                                       \
+                                                                                                    \
+            template<BOOST_PP_ENUM_PARAMS(N, typename T), typename F>                               \
+            inline F for_each(args<BOOST_PP_ENUM_PARAMS(N, T)> const & a, F const & f)              \
+            {                                                                                       \
+                BOOST_PP_REPEAT(N, INVOKE, a)                                                       \
+                return f;                                                                           \
+            }                                                                                       \
+                                                                                                    \
+            template<BOOST_PP_ENUM_PARAMS(N, typename T), typename F>                               \
+            inline F for_each(args<BOOST_PP_ENUM_PARAMS(N, T)> && a, F const & f)                   \
+            {                                                                                       \
+                BOOST_PP_REPEAT(N, INVOKE, (static_cast<args<BOOST_PP_ENUM_PARAMS(N, T)> &&>(a)))   \
+                return f;                                                                           \
+            }                                                                                       \
             /**/
 
             #define BOOST_PP_LOCAL_LIMITS (1, BOOST_PROTO_ARGS_UNROLL_MAX)
@@ -218,10 +240,32 @@ namespace boost
               : args_element<N - BOOST_PROTO_ARGS_UNROLL_MAX, typename Args::proto_args_tail_type>
             {};
 
+            template<typename ...T, typename F>
+            inline F for_each(args<T...> & a, F const & f)
+            {
+                BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, INVOKE, a)
+                return exprs::for_each(a.proto_args_tail, f);
+            }
+
+            template<typename ...T, typename F>
+            inline F for_each(args<T...> const & a, F const & f)
+            {
+                BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, INVOKE, a)
+                return exprs::for_each(a.proto_args_tail, f);
+            }
+
+            template<typename ...T, typename F>
+            inline F for_each(args<T...> && a, F const & f)
+            {
+                BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, INVOKE, a)
+                return exprs::for_each(static_cast<args<T...> &&>(a).proto_args_tail, f);
+            }
+
             #undef INIT
             #undef MEMBERS
             #undef NOEXCEPT
             #undef EQUAL_TO
+            #undef INVOKE
             #undef DISABLE_COPY_IF
 
             ////////////////////////////////////////////////////////////////////////////////////////

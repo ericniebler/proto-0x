@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-/// \file tags.hpp
+// tags.hpp
 /// Contains the tags for all the overloadable operators in C++
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost

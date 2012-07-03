@@ -17,27 +17,85 @@ namespace proto = boost::proto;
 namespace fusion = boost::fusion;
 using proto::_;
 
-struct display
+namespace detail
 {
-    template<typename T>
-    void operator()(T const &t) const
+    struct unpack_impl_
     {
-        std::cout << t << '\t';
-    }
+        template<typename F0, typename F1, typename ...Rest>
+        static auto unpack(proto::args<> a, F0 const & f0, F1 const & f1, Rest &&... rest)
+        BOOST_PROTO_AUTO_RETURN(
+            f0(static_cast<Rest &&>(rest)...)
+        )
+
+        #define M0(Z, N, DATA) f1(DATA.BOOST_PP_CAT(proto_child, N))
+
+#define BOOST_PP_LOCAL_MACRO(N)\
+        template<BOOST_PP_ENUM_PARAMS(N, typename T), typename F0, typename F1, typename ...Rest>                                       \
+        static auto unpack(proto::args<BOOST_PP_ENUM_PARAMS(N, T)> & a, F0 const & f0, F1 const & f1, Rest &&... rest)                  \
+        BOOST_PROTO_AUTO_RETURN(                                                                                                        \
+            f0(f1(static_cast<Rest &&>(rest))..., BOOST_PP_ENUM(N, M0, a))                                                              \
+        )                                                                                                                               \
+                                                                                                                                        \
+        template<BOOST_PP_ENUM_PARAMS(N, typename T), typename F0, typename F1, typename ...Rest>                                       \
+        static auto unpack(proto::args<BOOST_PP_ENUM_PARAMS(N, T)> const & a, F0 const & f0, F1 const & f1, Rest &&... rest)            \
+        BOOST_PROTO_AUTO_RETURN(                                                                                                        \
+            f0(f1(static_cast<Rest &&>(rest))..., BOOST_PP_ENUM(N, M0, a))                                                              \
+        )                                                                                                                               \
+                                                                                                                                        \
+        template<BOOST_PP_ENUM_PARAMS(N, typename T), typename F0, typename F1, typename ...Rest>                                       \
+        static auto unpack(proto::args<BOOST_PP_ENUM_PARAMS(N, T)> && a, F0 const & f0, F1 const & f1, Rest &&... rest)                 \
+        BOOST_PROTO_AUTO_RETURN(                                                                                                        \
+            f0(f1(static_cast<Rest &&>(rest))..., BOOST_PP_ENUM(N, M0, (static_cast<proto::args<BOOST_PP_ENUM_PARAMS(N, T)> &&>(a))))   \
+        )                                                                                                                               \
+        /**/
+
+        #define BOOST_PP_LOCAL_LIMITS (1, BOOST_PROTO_ARGS_UNROLL_MAX)
+        #include BOOST_PP_LOCAL_ITERATE()
+        #undef M0
+
+        template<typename ...T, typename F0, typename F1, typename ...Rest, typename Impl = unpack_impl_>
+        static auto unpack(proto::args<T...> & a, F0 const & f0, F1 const & f1, Rest &&... rest)
+        BOOST_PROTO_AUTO_RETURN(
+            Impl::unpack(a.proto_args_tail, f0, f1, BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, a.proto_child), static_cast<Rest &&>(rest)...)
+        )
+
+        template<typename ...T, typename F0, typename F1, typename ...Rest, typename Impl = unpack_impl_>
+        static auto unpack(proto::args<T...> const & a, F0 const & f0, F1 const & f1, Rest &&... rest)
+        BOOST_PROTO_AUTO_RETURN(
+            Impl::unpack(a.proto_args_tail, f0, f1, BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, a.proto_child), static_cast<Rest &&>(rest)...)
+        )
+
+        template<typename ...T, typename F0, typename F1, typename ...Rest, typename Impl = unpack_impl_>
+        static auto unpack(proto::args<T...> && a, F0 const & f0, F1 const & f1, Rest &&... rest)
+        BOOST_PROTO_AUTO_RETURN(
+            Impl::unpack(static_cast<proto::args<T...> &&>(a).proto_args_tail, f0, f1, BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, static_cast<proto::args<T...> &&>(a).proto_child), static_cast<Rest &&>(rest)...)
+        )
+    };
+}
+
+template<typename E, typename F0, typename F1>
+auto unpack(E && e, F0 const & f0, F1 const & f1)
+BOOST_PROTO_AUTO_RETURN(
+    detail::unpack_impl_::unpack(static_cast<E &&>(e), f0, f1)
+)
+
+struct ignore
+{
+    template<typename...T>
+    void operator()(T &&...) const
+    {}
 };
+
+//then<_map<_, and_<display_expr(_), _void>, ignore>
+
+// Really hard, but nice:
+// f0(tag_of<_>(), unpack(f1(child<from<0,2>>)))
 
 int main()
 {
-    using fusion::cons;
+    typedef proto::and_<proto::functional::display_expr(_), proto::_void> display_expr;
     proto::terminal<int> i{42};
-    cons<int, cons<int, cons<int>>> j =
-        proto::_reverse_recursive_fold<
-            _
-          , fusion::nil()
-          , cons<proto::_value, proto::_state>(proto::_value, proto::_state)
-        >()(i + 1 + 2);
-    fusion::for_each(j, display());
-    std::cout << '\n';
+    ::unpack(i(1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9), ignore(), display_expr());
 
     void done();
     done();

@@ -687,7 +687,7 @@ namespace boost
             template<typename ...Args>
             auto operator()(Args &&... args) const
             BOOST_PROTO_AUTO_RETURN(
-                utility::back(as_transform<Grammars>()(static_cast<Args &&>(args)...)...)
+                utility::back((as_transform<Grammars>()(static_cast<Args &&>(args)...), utility::void_)...)
             )
         };
 

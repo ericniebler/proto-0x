@@ -55,6 +55,7 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // fold_1_
+                // TODO: Optimize when Sequence == args<T...>
                 template<typename Sequence, typename State0, typename ...Rest>
                 static auto fold_1_(Sequence && seq, State0 const &state0, Rest &&... rest)
                 BOOST_PROTO_AUTO_RETURN(
@@ -94,6 +95,7 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // reverse_fold_1_
+                // TODO: Optimize when Sequence == args<T...>
                 template<typename Sequence, typename State0, typename ...Rest>
                 static auto reverse_fold_1_(Sequence && seq, State0 const &state0, Rest &&... rest)
                 BOOST_PROTO_AUTO_RETURN(

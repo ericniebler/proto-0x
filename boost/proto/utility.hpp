@@ -169,7 +169,7 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // back - fetch the last element of a variadic template pack
             template<typename ...T>
-            auto back(T &&... t)
+            inline auto back(T &&... t)
             BOOST_PROTO_AUTO_RETURN(
                 detail::back_impl_::back(static_cast<T &&>(t)...)
             )
@@ -350,6 +350,35 @@ namespace boost
             struct is_base_of<T &, U &>
               : std::is_base_of<T, U>
             {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // void_type
+            struct void_type
+            {
+                template<typename T>
+                friend T && operator,(T && t, void_type const &) noexcept
+                {
+                    return static_cast<T &&>(t);
+                }
+
+                template<typename T>
+                friend T && operator,(void_type const &, T && t) noexcept
+                {
+                    return static_cast<T &&>(t);
+                }
+
+                friend void_type const &operator,(void_type const &, void_type const &) noexcept
+                {
+                    return utility::static_const<void_type>::value;
+                }
+            };
+
+            namespace
+            {
+                constexpr void_type const &void_ = utility::static_const<void_type>::value;
+            }
+
+            BOOST_PROTO_IGNORE_UNUSED(void_);
         }
     }
 }

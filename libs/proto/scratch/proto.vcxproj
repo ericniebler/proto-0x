@@ -55,10 +55,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\boost\proto\args.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\core.hpp" />
     <ClInclude Include="..\..\..\boost\proto\debug.hpp" />
     <ClInclude Include="..\..\..\boost\proto\detail\common_domain.hpp" />
     <ClInclude Include="..\..\..\boost\proto\domain.hpp" />
     <ClInclude Include="..\..\..\boost\proto\expr.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\fusion.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\fusion\at.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\fusion\pop_back.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\fusion\pop_front.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\fusion\push_back.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\fusion\push_front.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\fusion\reverse.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\std.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\std\utility.hpp" />
     <ClInclude Include="..\..\..\boost\proto\fusion.hpp" />
     <ClInclude Include="..\..\..\boost\proto\make_expr.hpp" />
     <ClInclude Include="..\..\..\boost\proto\matches.hpp" />

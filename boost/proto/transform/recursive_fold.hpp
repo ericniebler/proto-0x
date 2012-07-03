@@ -79,7 +79,7 @@ namespace boost { namespace proto
         template<typename E, typename ...Rest>
         auto operator()(E && e, Rest &&... rest) const
         BOOST_PROTO_AUTO_RETURN(
-            _fold<
+            proto::_fold<
                 Sequence
               , State0
               , detail::_recursive_fold_<typename tag_of<E>::type, Fun>
@@ -129,7 +129,7 @@ namespace boost { namespace proto
         template<typename E, typename ...Rest>
         auto operator()(E && e, Rest &&... rest) const
         BOOST_PROTO_AUTO_RETURN(
-            _reverse_fold<
+            proto::_reverse_fold<
                 Sequence
               , State0
               , detail::_reverse_recursive_fold_<typename tag_of<E>::type, Fun>
