@@ -414,10 +414,10 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // constructors
                 constexpr basic_expr(Tag tag, Args args)
-                    noexcept(noexcept(
-                        static_cast<void>(Tag(static_cast<Tag &&>(tag)))
-                      , static_cast<void>(Args(static_cast<Args &&>(args)))
-                    ))
+                    noexcept(
+                        noexcept(Tag(static_cast<Tag &&>(tag))) &&
+                        noexcept(Args(static_cast<Args &&>(args)))
+                    )
                   : Tag(static_cast<Tag &&>(tag))
                   , Args(static_cast<Args &&>(args))
                 {}

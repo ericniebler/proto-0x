@@ -24,9 +24,9 @@ void test_as_transform()
     {
         int i = (proto::tag::data = 42)[proto::tag::data];
         BOOST_CHECK_EQUAL(i, 42);
-        auto env = (proto::tag::data = 42, proto::tag::locals = "hello", proto::tag::locals = "goodbye");
+        auto env = (proto::tag::data = 42, proto::tag::local = "hello", proto::tag::local = "goodbye");
         i = env[proto::tag::data];
-        char const *loc = env[proto::tag::locals];
+        char const *loc = env[proto::tag::local];
         BOOST_CHECK_EQUAL(std::string(loc), std::string("goodbye"));
         i = env.at(1,1); // lookup with a key that doesn't exist, return default
         BOOST_CHECK_EQUAL(i, 1);

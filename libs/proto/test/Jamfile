@@ -16,6 +16,7 @@ test-suite "proto"
         [ run as_transform.cpp ]
         [ compile bug2407.cpp ]
         [ run common_domain.cpp ]
+        [ run constrained_ops.cpp ]
         [ run display_expr.cpp ]
         [ run expr.cpp ]
         [ run flatten.cpp ]

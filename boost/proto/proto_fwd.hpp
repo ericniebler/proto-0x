@@ -206,8 +206,8 @@ namespace boost
                 struct proto_flat_view;
 
                 // Transform environment tags
-                typedef def<struct data_> _data;
-                typedef def<struct locals_> _locals;
+                struct data_;
+                struct local_;
             }
         }
 
@@ -237,6 +237,15 @@ namespace boost
             template<template<typename...> class Expr, typename Domain>
             struct make_custom_expr;
 
+            namespace functional
+            {
+                template<typename Domain>
+                struct make_expr;
+
+                template<typename Domain>
+                struct as_expr;
+            }
+
             namespace result_of
             {
                 template<typename Domain, typename Tag, typename ...T>
@@ -254,6 +263,22 @@ namespace boost
         using domains::default_domain;
         using domains::basic_default_domain;
         using domains::make_custom_expr;
+
+        namespace functional
+        {
+            struct make_expr;
+
+            struct as_expr;
+        }
+
+        namespace result_of
+        {
+            template<typename Tag, typename ...T>
+            struct make_expr;
+
+            template<typename T>
+            struct as_expr;
+        }
 
         namespace exprs
         {
@@ -323,7 +348,7 @@ namespace boost
         template<typename Tag = void>
         struct _env;
 
-        typedef _env<tag::_data> _data;
+        typedef _env<tag::data_> _data;
 
         struct _value;
 

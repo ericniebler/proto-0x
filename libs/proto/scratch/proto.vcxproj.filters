@@ -182,6 +182,9 @@
     <ClCompile Include="..\example\virtual_member.cpp">
       <Filter>Example Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\test\constrained_ops.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\test\Jamfile">

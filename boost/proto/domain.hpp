@@ -30,6 +30,20 @@ namespace boost
             // not_a_domain
             struct not_a_domain
             {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // detail::make_expr
+            template<template<typename, typename> class Expr, typename Domain, typename Tag, typename ...T>
+            inline constexpr auto make_custom_expr(Tag tag, T &&...t)
+            BOOST_PROTO_AUTO_RETURN(
+                Expr<Tag, args<T...>>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
+            )
+
+            template<template<typename, typename, typename> class Expr, typename Domain, typename Tag, typename ...T>
+            inline constexpr auto make_custom_expr(Tag tag, T &&...t)
+            BOOST_PROTO_AUTO_RETURN(
+                Expr<Tag, args<T...>, Domain>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
+            )
         }
 
         namespace domains
@@ -39,13 +53,21 @@ namespace boost
             template<template<typename...> class Expr, typename Domain>
             struct make_custom_expr
             {
-                template<typename Tag, typename ...T>
+                // If Tag does not represents a terminal, first pass the argument(s) through as_expr
+                template<typename Tag, typename ...T, BOOST_PROTO_ENABLE_IF(!Tag::proto_is_terminal::value)>
                 inline constexpr auto operator()(Tag tag, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    detail::make_expr<Expr, Domain>(
+                    detail::make_custom_expr<Expr, Domain>(
                         static_cast<Tag &&>(tag)
                       , proto::domains::as_expr<Domain>(static_cast<T &&>(t))...
                     )
+                )
+
+                // If Tag represents a terminal, don't pass the argument(s) through as_expr
+                template<typename Tag, typename T, BOOST_PROTO_ENABLE_IF(Tag::proto_is_terminal::value)>
+                inline constexpr auto operator()(Tag tag, T && t) const
+                BOOST_PROTO_AUTO_RETURN(
+                    detail::make_custom_expr<Expr, Domain>(static_cast<Tag &&>(tag), static_cast<T &&>(t))
                 )
             };
 

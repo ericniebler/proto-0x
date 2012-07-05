@@ -27,8 +27,8 @@ namespace boost
                 typedef IsTerminal  proto_is_terminal;
 
                 // So that tag objects of type (derived from) def can be used
-                // to create transform environments like (data=x, locals=y),
-                // where "data" and "locals" are tags.
+                // to create transform environments like (data=x, local=y),
+                // where "data" and "local" are tags.
                 template<typename V, BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<def, V>::value))>
                 environment<def, V> operator=(V && v) const
                 {
@@ -176,18 +176,34 @@ namespace boost
                 /// Tag type for the n-ary function call operator.
                 struct function : def<function> {};
 
+                /// Tag type for the data parameter in the transform environment
+                struct data_
+                  : def<data_>
+                {
+                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(data_);
+                    using def<data_>::operator=;
+                };
+
+                /// Tag type for the local parameter in the transform environment
+                struct local_
+                  : def<local_>
+                {
+                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(local_);
+                    using def<local_>::operator=;
+                };
+
                 namespace
                 {
                     ////////////////////////////////////////////////////////////////////////////////
                     // data
-                    constexpr _data const & data = utility::static_const<_data>::value;
+                    constexpr data_ const & data = utility::static_const<data_>::value;
 
                     ////////////////////////////////////////////////////////////////////////////////
-                    // locals
-                    constexpr _locals const & locals = utility::static_const<_locals>::value;
+                    // local
+                    constexpr local_ const & local = utility::static_const<local_>::value;
                 }
 
-                BOOST_PROTO_IGNORE_UNUSED(data, locals);
+                BOOST_PROTO_IGNORE_UNUSED(data, local);
             }
         } // namespace tags
 

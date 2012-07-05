@@ -46,26 +46,35 @@ namespace boost
                 (char *)static_cast<virtual_member<L, R, D> const *>(&a)
             )
 
-            #define BOOST_PP_LOCAL_MACRO(N)                                                         \
-            template<typename Args>                                                                 \
-            inline constexpr auto child_impl(Args &&that, std::integral_constant<std::size_t, N>)   \
-            BOOST_PROTO_AUTO_RETURN(                                                                \
-                /*extra parens are significant!*/                                                   \
-                (static_cast<Args &&>(that).BOOST_PP_CAT(proto_child, N))                           \
-            )                                                                                       \
-            /**/
+            struct child_impl_
+            {
+                #define BOOST_PP_LOCAL_MACRO(N)                                                     \
+                template<typename Args>                                                             \
+                static inline constexpr auto child(                                                 \
+                    Args &&that                                                                     \
+                  , std::integral_constant<std::size_t, N>                                          \
+                )                                                                                   \
+                BOOST_PROTO_AUTO_RETURN(                                                            \
+                    /*extra parens are significant!*/                                               \
+                    (static_cast<Args &&>(that).BOOST_PP_CAT(proto_child, N))                       \
+                )                                                                                   \
+                /**/
 
-            #define BOOST_PP_LOCAL_LIMITS (0, BOOST_PP_DEC(BOOST_PROTO_ARGS_UNROLL_MAX))
-            #include BOOST_PP_LOCAL_ITERATE()
+                #define BOOST_PP_LOCAL_LIMITS (0, BOOST_PP_DEC(BOOST_PROTO_ARGS_UNROLL_MAX))
+                #include BOOST_PP_LOCAL_ITERATE()
 
-            template<typename Args, std::size_t I>
-            inline constexpr auto child_impl(Args &&that, std::integral_constant<std::size_t, I>)
-            BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl(
-                    static_cast<Args &&>(that).proto_args_tail
-                  , std::integral_constant<std::size_t, I - BOOST_PROTO_ARGS_UNROLL_MAX>()
+                template<typename Args, std::size_t I, typename Impl = child_impl_>
+                static inline constexpr auto child(
+                    Args &&that
+                  , std::integral_constant<std::size_t, I>
                 )
-            )
+                BOOST_PROTO_AUTO_RETURN(
+                    Impl::child(
+                        static_cast<Args &&>(that).proto_args_tail
+                      , std::integral_constant<std::size_t, I - BOOST_PROTO_ARGS_UNROLL_MAX>()
+                    )
+                )
+            };
         }
 
         namespace exprs
@@ -273,19 +282,22 @@ namespace boost
             template<std::size_t I, typename ...T>
             inline constexpr auto child(args<T...> &a)
             BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl(a, std::integral_constant<std::size_t, I>())
+                detail::child_impl_::child(a, std::integral_constant<std::size_t, I>())
             )
 
             template<std::size_t I, typename ...T>
             inline constexpr auto child(args<T...> const &a)
             BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl(a, std::integral_constant<std::size_t, I>())
+                detail::child_impl_::child(a, std::integral_constant<std::size_t, I>())
             )
 
             template<std::size_t I, typename ...T>
             inline constexpr auto child(args<T...> &&a)
             BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl(static_cast<args<T...> &&>(a), std::integral_constant<std::size_t, I>())
+                detail::child_impl_::child(
+                    static_cast<args<T...> &&>(a)
+                  , std::integral_constant<std::size_t, I>()
+                )
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -316,19 +328,22 @@ namespace boost
             template<typename L, typename R>
             inline constexpr auto left(args<L, R> &a)
             BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl(a, std::integral_constant<std::size_t, 0>())
+                detail::child_impl_::child(a, std::integral_constant<std::size_t, 0>())
             )
 
             template<typename L, typename R>
             inline constexpr auto left(args<L, R> const &a)
             BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl(a, std::integral_constant<std::size_t, 0>())
+                detail::child_impl_::child(a, std::integral_constant<std::size_t, 0>())
             )
 
             template<typename L, typename R>
             inline constexpr auto left(args<L, R> &&a)
             BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl(static_cast<args<L, R> &&>(a), std::integral_constant<std::size_t, 0>())
+                detail::child_impl_::child(
+                    static_cast<args<L, R> &&>(a)
+                  , std::integral_constant<std::size_t, 0>()
+                )
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -359,19 +374,22 @@ namespace boost
             template<typename L, typename R>
             inline constexpr auto right(args<L, R> &a)
             BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl(a, std::integral_constant<std::size_t, 1>())
+                detail::child_impl_::child(a, std::integral_constant<std::size_t, 1>())
             )
 
             template<typename L, typename R>
             inline constexpr auto right(args<L, R> const &a)
             BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl(a, std::integral_constant<std::size_t, 1>())
+                detail::child_impl_::child(a, std::integral_constant<std::size_t, 1>())
             )
 
             template<typename L, typename R>
             inline constexpr auto right(args<L, R> &&a)
             BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl(static_cast<args<L, R> &&>(a), std::integral_constant<std::size_t, 1>())
+                detail::child_impl_::child(
+                    static_cast<args<L, R> &&>(a)
+                  , std::integral_constant<std::size_t, 1>()
+                )
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////
