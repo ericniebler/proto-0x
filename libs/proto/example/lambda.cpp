@@ -55,7 +55,7 @@ struct lambda_domain
   : proto::domain<lambda_domain>
 {
     struct make_expr
-      : proto::make_custom_expr<lambda_expr, lambda_domain>
+      : proto::make_custom_expr<lambda_expr>
     {};
 };
 

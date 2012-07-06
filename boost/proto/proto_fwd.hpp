@@ -234,7 +234,7 @@ namespace boost
 
             struct basic_default_domain;
 
-            template<template<typename...> class Expr, typename Domain>
+            template<template<typename...> class Expr, typename Domain = void>
             struct make_custom_expr;
 
             namespace functional
@@ -408,6 +408,8 @@ namespace boost
 
         template<typename T>
         struct _protect;
+
+        struct _deep_copy;
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Misc. traits
@@ -609,6 +611,11 @@ namespace boost
 
         template<typename ...A>
         using function = expr<tag::function, args<A...>>;
+
+        namespace functional
+        {
+            struct deep_copy;
+        }
     }
 }
 

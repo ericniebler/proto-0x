@@ -125,7 +125,7 @@ struct MyDomain
   : proto::domain<MyDomain>
 {
     struct make_expr
-      : proto::make_custom_expr<My, MyDomain>
+      : proto::make_custom_expr<My>
     {};
 };
 

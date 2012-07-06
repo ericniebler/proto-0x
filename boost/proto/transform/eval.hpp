@@ -30,7 +30,7 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // proto_get_pointer
             template<typename T>
-            auto proto_get_pointer(T & t, ...)
+            auto proto_get_pointer(T & t, long)
             BOOST_PROTO_AUTO_RETURN(
                 boost::addressof(t) // TODO replace with std::addressof
             )
@@ -266,7 +266,7 @@ namespace boost
                     (proto_get_pointer(as_transform<Grammar>()(
                         proto::child<1>(static_cast<E &&>(e))
                       , static_cast<T &&>(t)...
-                    ), 0) ->* pm)
+                    ), 1) ->* pm)
                 )
 
                 template<std::size_t ...I, typename Type, typename Class, typename ...Args, typename E, typename ...T>
@@ -275,7 +275,7 @@ namespace boost
                     (proto_get_pointer(as_transform<Grammar>()(
                         proto::child<1>(static_cast<E &&>(e))
                       , static_cast<T &&>(t)...
-                    ), 0) ->* pmf)(
+                    ), 1) ->* pmf)(
                         as_transform<Grammar>()(
                             proto::child<I>(static_cast<E &&>(e))
                           , static_cast<T &&>(t)...
@@ -320,7 +320,7 @@ namespace boost
                 template<typename ...A>
                 auto operator()(A &&... a) const
                 BOOST_PROTO_AUTO_RETURN(
-                    (proto_get_pointer(obj_, 0) ->* pmf_)(static_cast<A &&>(a)...)
+                    (proto_get_pointer(obj_, 1) ->* pmf_)(static_cast<A &&>(a)...)
                 )
             };
 
@@ -349,7 +349,7 @@ namespace boost
                     (proto_get_pointer(as_transform<Grammar>()(
                         proto::child<0>(static_cast<E &&>(e))
                       , static_cast<T &&>(t)...
-                    ), 0) ->* pm)
+                    ), 1) ->* pm)
                 )
 
                 template<typename Type, typename Class, typename ...Args, typename E, typename ...T>

@@ -722,8 +722,29 @@ namespace boost
             template<typename Expr, typename ...Rest>
             auto operator()(Expr && e, Rest &&... rest) const
             BOOST_PROTO_AUTO_RETURN(
-                typename Cases::template case_<
-                    decltype(as_transform<Transform>()(static_cast<Expr &&>(e)))
+                as_transform<
+                    typename Cases::template case_<
+                        decltype(as_transform<Transform>()(static_cast<Expr &&>(e)))
+                    >
+                >()(static_cast<Expr &&>(e), static_cast<Rest &&>(rest)...)
+            )
+        };
+
+        /// INTERNAL ONLY
+        // pure compile-time optimization
+        template<typename Cases>
+        struct switch_<Cases, tag_of<_>()>
+          : transform<switch_<Cases, proto::tag_of<proto::_>()>>
+        {
+            typedef switch_ proto_grammar_type;
+
+            template<typename Expr, typename ...Rest>
+            auto operator()(Expr && e, Rest &&... rest) const
+            BOOST_PROTO_AUTO_RETURN(
+                as_transform<
+                    typename Cases::template case_<
+                        typename proto::tag_of<Expr>::type
+                    >
                 >()(static_cast<Expr &&>(e), static_cast<Rest &&>(rest)...)
             )
         };

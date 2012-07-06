@@ -11,6 +11,7 @@
 #ifndef BOOST_PROTO_DOMAIN_HPP_INCLUDED
 #define BOOST_PROTO_DOMAIN_HPP_INCLUDED
 
+#include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/make_expr.hpp>
 #include <boost/proto/matches.hpp>
@@ -32,7 +33,33 @@ namespace boost
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // detail::make_expr
+            // make_expr_raw_
+            template<typename Domain>
+            struct make_expr_raw_
+            {
+                // If Tag does not represents a terminal, first pass the argument(s) through as_expr
+                template<typename Tag, typename ...T, BOOST_PROTO_ENABLE_IF(!Tag::proto_is_terminal::value)>
+                inline constexpr auto operator()(Tag tag, T &&... t) const
+                BOOST_PROTO_AUTO_RETURN(
+                    typename Domain::make_expr{}(
+                        static_cast<Tag &&>(tag)
+                      , proto::domains::as_expr<Domain>(static_cast<T &&>(t))...
+                    )
+                )
+
+                // If Tag represents a terminal, don't pass the argument(s) through as_expr
+                template<typename Tag, typename T, BOOST_PROTO_ENABLE_IF(Tag::proto_is_terminal::value)>
+                inline constexpr auto operator()(Tag tag, T && t) const
+                BOOST_PROTO_AUTO_RETURN(
+                    typename Domain::make_expr{}(
+                        static_cast<Tag &&>(tag)
+                      , typename Domain::store_value{}(static_cast<T &&>(t))
+                    )
+                )
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // detail::make_custom_expr
             template<template<typename, typename> class Expr, typename Domain, typename Tag, typename ...T>
             inline constexpr auto make_custom_expr(Tag tag, T &&...t)
             BOOST_PROTO_AUTO_RETURN(
@@ -44,30 +71,43 @@ namespace boost
             BOOST_PROTO_AUTO_RETURN(
                 Expr<Tag, args<T...>, Domain>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
             )
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // detail::template_arity
+            template<template<typename, typename> class T>
+            char (&template_arity())[2];
+
+            template<template<typename, typename, typename> class T>
+            char (&template_arity())[3];
         }
 
         namespace domains
         {
             ////////////////////////////////////////////////////////////////////////////////////////
             // make_custom_expr
-            template<template<typename...> class Expr, typename Domain>
+            template<template<typename...A> class Expr, typename Domain>
             struct make_custom_expr
             {
-                // If Tag does not represents a terminal, first pass the argument(s) through as_expr
-                template<typename Tag, typename ...T, BOOST_PROTO_ENABLE_IF(!Tag::proto_is_terminal::value)>
+                static constexpr std::size_t template_arity = sizeof(detail::template_arity<Expr>());
+
+                static_assert(
+                    template_arity == 2 || template_arity == 3
+                  , "expected template of arity 2 or 3"
+                );
+
+                static_assert(
+                    template_arity == 2 || !std::is_same<Domain, void>::value
+                  , "for custom expression types that accept a domain parameter, you must"
+                    " specify what the domain should be"
+                );
+
+                template<typename Tag, typename ...T>
                 inline constexpr auto operator()(Tag tag, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     detail::make_custom_expr<Expr, Domain>(
                         static_cast<Tag &&>(tag)
-                      , proto::domains::as_expr<Domain>(static_cast<T &&>(t))...
+                      , static_cast<T &&>(t)...
                     )
-                )
-
-                // If Tag represents a terminal, don't pass the argument(s) through as_expr
-                template<typename Tag, typename T, BOOST_PROTO_ENABLE_IF(Tag::proto_is_terminal::value)>
-                inline constexpr auto operator()(Tag tag, T && t) const
-                BOOST_PROTO_AUTO_RETURN(
-                    detail::make_custom_expr<Expr, Domain>(static_cast<Tag &&>(tag), static_cast<T &&>(t))
                 )
             };
 
@@ -92,10 +132,17 @@ namespace boost
                   : utility::identity
                 {};
 
-                // Define this in your derived domain class to control expressions are
+                // Define this in your derived domain class to control how expressions are
                 // assembled.
                 struct make_expr
                   : make_custom_expr<expr, Domain>
+                {};
+
+                // Define this in your derived domain class to /really/ control how expressions are
+                // assembled. But really, you shouldn't be messing with this. Mess with make_expr
+                // instead.
+                struct make_expr_raw
+                  : detail::make_expr_raw_<Domain>
                 {};
             };
 

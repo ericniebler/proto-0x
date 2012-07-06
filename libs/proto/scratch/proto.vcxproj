@@ -57,6 +57,7 @@
     <ClInclude Include="..\..\..\boost\proto\args.hpp" />
     <ClInclude Include="..\..\..\boost\proto\core.hpp" />
     <ClInclude Include="..\..\..\boost\proto\debug.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\deep_copy.hpp" />
     <ClInclude Include="..\..\..\boost\proto\detail\common_domain.hpp" />
     <ClInclude Include="..\..\..\boost\proto\domain.hpp" />
     <ClInclude Include="..\..\..\boost\proto\expr.hpp" />
@@ -117,6 +118,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\test\constrained_ops.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\test\deep_copy.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>

@@ -13,6 +13,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/args.hpp>
 #include <boost/proto/domain.hpp>
+#include <boost/proto/deep_copy.hpp>
 #include <boost/proto/expr.hpp>
 #include <boost/proto/fusion.hpp>
 #include <boost/proto/matches.hpp>

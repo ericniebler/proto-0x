@@ -65,7 +65,7 @@ namespace boost
             template<typename Domain, typename ...T>
             inline constexpr auto expr_maker(Domain const &, T const &...)
             BOOST_PROTO_AUTO_RETURN(
-                typename get_common_domain_impl<Domain, T...>::type::make_expr{}
+                typename get_common_domain_impl<Domain, T...>::type::make_expr_raw{}
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -77,8 +77,12 @@ namespace boost
                 // side (actually the member's enclosing object) dies and we lose it forever.
                 typename Domain::make_expr{}(
                     tag::member()
-                  , proto::child<0>(static_cast<virtual_member<This, Value, Domain> &&>(e))
-                  , proto::child<1>(static_cast<virtual_member<This, Value, Domain> &&>(e))
+                  , utility::by_val()(
+                        proto::child<0>(static_cast<virtual_member<This, Value, Domain> &&>(e))
+                    )
+                  , utility::by_val()(
+                        proto::child<1>(static_cast<virtual_member<This, Value, Domain> &&>(e))
+                    )
                 )
             )
 
@@ -87,7 +91,6 @@ namespace boost
             {
                 return static_cast<T &&>(t);
             }
-
         }
 
         namespace domains
@@ -166,7 +169,7 @@ namespace boost
         template<typename Tag, typename ...T>
         inline constexpr auto make_expr(Tag tag, T &&...t)
         BOOST_PROTO_AUTO_RETURN(
-            proto::domains::make_expr<default_domain>(
+            proto::domains::make_expr<deduce_domain>(
                 static_cast<Tag &&>(tag)
               , static_cast<T &&>(t)...
             )

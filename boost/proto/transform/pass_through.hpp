@@ -95,12 +95,16 @@ namespace boost
                 template<typename E, typename ...T>
                 auto operator()(E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    proto::domains::make_expr<decltype(e.proto_domain())>(
+                    typename decltype(e.proto_domain())::make_expr{}(
                         static_cast<E &&>(e).proto_tag()
-                      , utility::by_val(as_transform<Args>()(
-                            proto::child<Indices>(static_cast<E &&>(e))
-                          , static_cast<T &&>(t)...
-                        ))...
+                      , utility::by_val()(
+                            proto::domains::as_expr<decltype(e.proto_domain())>(
+                                as_transform<Args>()(
+                                    proto::child<Indices>(static_cast<E &&>(e))
+                                  , static_cast<T &&>(t)...
+                                )
+                            )
+                        )...
                     )
                 )
             };
@@ -118,7 +122,7 @@ namespace boost
                 template<typename E, typename ...T>
                 auto operator()(E && e, T &&...) const
                 BOOST_PROTO_AUTO_RETURN(
-                    utility::by_val(static_cast<E &&>(e))
+                    utility::by_val()(static_cast<E &&>(e))
                 )
             };
         }

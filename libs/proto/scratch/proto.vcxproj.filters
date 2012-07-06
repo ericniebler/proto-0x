@@ -141,6 +141,9 @@
     <ClInclude Include="..\..\..\boost\proto\core.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\deep_copy.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -183,6 +186,9 @@
       <Filter>Example Files</Filter>
     </ClCompile>
     <ClCompile Include="..\test\constrained_ops.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\deep_copy.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
   </ItemGroup>

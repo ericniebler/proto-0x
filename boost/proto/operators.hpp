@@ -116,7 +116,7 @@ namespace boost
             >
             inline constexpr auto expr_maker_if_2_()
             BOOST_PROTO_AUTO_RETURN(
-                typename Domain::make_expr{}
+                typename Domain::make_expr_raw{}
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////

@@ -44,7 +44,7 @@ struct my_domain:
     >
 {
     struct make_expr
-      : proto::make_custom_expr<extension, my_domain>
+      : proto::make_custom_expr<extension>
     {};
 };
 
@@ -60,7 +60,7 @@ struct my_lhs_domain:
     >
 {
     struct make_expr
-      : proto::make_custom_expr<lhs_extension, my_lhs_domain>
+      : proto::make_custom_expr<lhs_extension>
     {};
 };
 
@@ -76,7 +76,7 @@ struct my_rhs_domain:
     >
 {
     struct make_expr
-      : proto::make_custom_expr<rhs_extension, my_rhs_domain>
+      : proto::make_custom_expr<rhs_extension>
     {};
 };
 

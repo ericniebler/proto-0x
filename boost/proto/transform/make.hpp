@@ -54,7 +54,7 @@ namespace boost
             template<typename R, typename ...A, typename ...Args>
             struct make_3_<R(A...), Args...>
             {
-                typedef decltype(utility::by_val(as_transform<R(A...)>()(std::declval<Args>()...))) type;
+                typedef decltype(utility::by_val()(as_transform<R(A...)>()(std::declval<Args>()...))) type;
                 typedef std::true_type applied;
             };
 
@@ -64,7 +64,7 @@ namespace boost
             struct make_2_
             {
                 // Relies on the fact that as_transform<R> is _protect<R> when R is not a transform:
-                typedef decltype(utility::by_val(as_transform<R>()(std::declval<Args>()...))) type;
+                typedef decltype(utility::by_val()(as_transform<R>()(std::declval<Args>()...))) type;
                 typedef is_transform<R> applied;
             };
 

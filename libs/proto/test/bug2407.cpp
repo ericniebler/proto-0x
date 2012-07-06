@@ -26,7 +26,7 @@ struct d
   : proto::domain<d, g>
 {
     struct make_expr
-      : proto::make_custom_expr<e, d>
+      : proto::make_custom_expr<e>
     {};    
 };
 

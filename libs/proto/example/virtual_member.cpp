@@ -140,7 +140,7 @@ namespace mini_lambda
       : proto::domain<domain>
     {
         struct make_expr
-          : proto::make_custom_expr<expression, domain>
+          : proto::make_custom_expr<expression>
         {};
     };
 

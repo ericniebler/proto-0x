@@ -91,6 +91,26 @@ namespace boost
                     Impl::back(static_cast<Rest &&>(rest)...)
                 )
             };
+
+            template<typename T>
+            inline auto constexpr by_val_(T &t, int)
+                BOOST_PROTO_AUTO_RETURN(T(t))
+
+            template<typename T>
+            inline auto constexpr by_val_(T const &t, int)
+                BOOST_PROTO_AUTO_RETURN(T(t))
+
+            template<typename T>
+            inline auto constexpr by_val_(T &&t, int)
+                BOOST_PROTO_AUTO_RETURN(T(static_cast<T &&>(t)))
+
+            template<typename T>
+            inline auto constexpr by_val_(T &t, long)
+                BOOST_PROTO_AUTO_RETURN(t)
+
+            template<typename T>
+            inline auto constexpr by_val_(T const &t, long)
+                BOOST_PROTO_AUTO_RETURN(t)
         }
 
         namespace utility
@@ -240,6 +260,28 @@ namespace boost
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
+            // by_ref
+            struct by_ref
+            {
+                template<typename T>
+                inline constexpr T const & operator()(T &&t) const noexcept
+                {
+                    return t;
+                }
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // by_val
+            struct by_val
+            {
+                template<typename T>
+                inline constexpr auto operator()(T &&t) const
+                BOOST_PROTO_AUTO_RETURN(
+                    detail::by_val_(static_cast<T &&>(t), 1)
+                )
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
             // logical_and
             inline constexpr bool logical_and()
             {
@@ -320,14 +362,6 @@ namespace boost
 
             template<typename ...T>
             using pop_back = typename utility::detail::pop_back<utility::list<>, T...>::type;
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // by_val
-            template<typename T>
-            inline T by_val(T t)
-            {
-                return t;
-            }
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // is_base_of
