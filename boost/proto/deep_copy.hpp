@@ -33,12 +33,12 @@ namespace boost
                 struct case_<Tag, true>
                   : proto::transform<case_<Tag, true>>
                 {
-                    template<typename T>
-                    auto operator()(T && t) const
+                    template<typename E, typename... Rest>
+                    auto operator()(E && e, Rest &&...) const
                     BOOST_PROTO_AUTO_RETURN(
-                        typename decltype(t.proto_domain())::make_expr{}(
-                            static_cast<T &&>(t).proto_tag()
-                          , utility::by_val()(proto::value(static_cast<T &&>(t)))
+                        typename decltype(e.proto_domain())::make_expr{}(
+                            static_cast<E &&>(e).proto_tag()
+                          , utility::by_val()(proto::value(static_cast<E &&>(e)))
                         )
                     )
                 };

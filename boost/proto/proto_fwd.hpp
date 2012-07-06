@@ -68,6 +68,8 @@ namespace boost
 {
     namespace proto
     {
+        struct _;
+
         namespace utility
         {
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -140,6 +142,21 @@ namespace boost
             struct make_3_;
 
             struct _eval;
+
+            struct any_terminal;
+            struct any_non_terminal;
+
+            template<typename Tag>
+            struct nullary_tag { typedef Tag type; };
+
+            template<>
+            struct nullary_tag<proto::_> { typedef any_terminal type; };
+
+            template<typename Tag>
+            struct unary_tag { typedef Tag type; };
+
+            template<>
+            struct unary_tag<proto::_> { typedef any_non_terminal type; };
         }
 
         ///////////////////////////////////////////////////////////////////////////////
@@ -212,8 +229,6 @@ namespace boost
         }
 
         using namespace tags;
-
-        struct _;
 
         namespace domains
         {
@@ -463,10 +478,10 @@ namespace boost
         struct matches;
 
         template<typename Tag, typename T>
-        using nullary_expr = expr<Tag, args<T>>;
+        using nullary_expr = expr<typename detail::nullary_tag<Tag>::type, args<T>>;
 
         template<typename Tag, typename T>
-        using unary_expr = expr<Tag, args<T>>;
+        using unary_expr = expr<typename detail::unary_tag<Tag>::type, args<T>>;
 
         template<typename Tag, typename L, typename R>
         using binary_expr = expr<Tag, args<L, R>>;

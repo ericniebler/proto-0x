@@ -5,38 +5,39 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <utility>
 #include <iostream>
 #include <boost/utility/addressof.hpp>
 #include <boost/proto/core.hpp>
 #include "./unit_test.hpp"
 
-using namespace boost;
+namespace proto = boost::proto;
 
-//struct moveable
-//{
-//    moveable() = default;
-//    moveable(moveable const &) = delete;
-//    moveable(moveable &&) = default;
-//    moveable & operator=(moveable const &) = delete;
-//    moveable & operator=(moveable &&) = default;
-//};
-//
-//struct noncopyable
-//{
-//    noncopyable() = default;
-//    noncopyable(noncopyable const &) = delete;
-//    noncopyable(noncopyable &&) = delete;
-//    noncopyable & operator=(noncopyable const &) = delete;
-//    noncopyable & operator=(noncopyable &&) = delete;
-//};
-//
-//struct noncopyable2
-//{
-//    noncopyable2() = default;
-//private:
-//    noncopyable2(noncopyable2 const &);
-//    noncopyable2 & operator=(noncopyable2 const &);
-//};
+struct moveable
+{
+    moveable() = default;
+    moveable(moveable const &) = delete;
+    moveable(moveable &&) = default;
+    moveable & operator=(moveable const &) = delete;
+    moveable & operator=(moveable &&) = default;
+};
+
+struct noncopyable
+{
+    noncopyable() = default;
+    noncopyable(noncopyable const &) = delete;
+    noncopyable(noncopyable &&) = delete;
+    noncopyable & operator=(noncopyable const &) = delete;
+    noncopyable & operator=(noncopyable &&) = delete;
+};
+
+struct noncopyable2
+{
+    noncopyable2() = default;
+private:
+    noncopyable2(noncopyable2 const &);
+    noncopyable2 & operator=(noncopyable2 const &);
+};
 
 void foo() {}
 
@@ -107,9 +108,6 @@ using Plus = Expr<proto::tag::plus, proto::args<T, U>>;
 template<typename T, typename U>
 using ShiftLeft = Expr<proto::tag::shift_left, proto::args<T, U>>;
 
-template<typename T>
-struct undef;
-
 void test_custom_expr()
 {
     using namespace proto;
@@ -141,7 +139,43 @@ void test_custom_expr()
     BOOST_PROTO_IGNORE_UNUSED(r3);
 }
 
-using namespace unit_test;
+void test_moveable()
+{
+    using namespace proto;
+
+    terminal<moveable> t1 {};
+    terminal<moveable> r1 = deep_copy(std::move(t1));
+
+    terminal<moveable> t2 {};
+    plus<terminal<moveable>, terminal<int>> r2 = deep_copy(std::move(t2) + 24);
+    BOOST_PROTO_IGNORE_UNUSED(r1, r2);
+}
+
+void test_noncopyable()
+{
+    using namespace proto;
+
+    noncopyable i;
+    terminal<noncopyable &> t1 {i};
+    terminal<noncopyable &> r1 = deep_copy(t1);
+
+    plus<terminal<noncopyable &>, terminal<int>> r2 = deep_copy(t1 + 24);
+    BOOST_PROTO_IGNORE_UNUSED(r1, r2);
+}
+
+void test_noncopyable2()
+{
+    using namespace proto;
+
+    noncopyable2 i;
+    terminal<noncopyable2 &> t1 {i};
+    terminal<noncopyable2 &> r1 = deep_copy(t1);
+
+    plus<terminal<noncopyable2 &>, terminal<int>> r2 = deep_copy(t1 + 24);
+    BOOST_PROTO_IGNORE_UNUSED(r1, r2);
+}
+
+using namespace boost::unit_test;
 ///////////////////////////////////////////////////////////////////////////////
 // init_unit_test_suite
 //

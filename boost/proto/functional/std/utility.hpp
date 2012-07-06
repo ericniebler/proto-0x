@@ -22,11 +22,10 @@ namespace boost { namespace proto { namespace functional
     struct make_pair
     {
         template<typename First, typename Second>
-        std::pair<First, Second> operator()(First const &first, Second const &second) const
-            noexcept(noexcept(std::pair<First, Second>(first, second)))
-        {
-            return std::make_pair(first, second);
-        }
+        auto operator()(First &&first, Second &&second) const
+        BOOST_PROTO_AUTO_RETURN(
+            std::make_pair(std::forward<First>(first), std::forward<Second>(second))
+        )
     };
 
     /// \brief A PolymorphicFunctionObject type that returns

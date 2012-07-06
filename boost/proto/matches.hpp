@@ -48,6 +48,16 @@ namespace boost
               : std::true_type
             {};
 
+            template<typename Tag>
+            struct tag_matches<Tag, detail::any_terminal>
+              : std::integral_constant<bool, Tag::proto_is_terminal::value>
+            {};
+
+            template<typename Tag>
+            struct tag_matches<Tag, detail::any_non_terminal>
+              : std::integral_constant<bool, !Tag::proto_is_terminal::value>
+            {};
+
             ////////////////////////////////////////////////////////////////////////////////////////
             // array_matches
             template<typename T, typename U>
