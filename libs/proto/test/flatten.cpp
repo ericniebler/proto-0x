@@ -139,20 +139,19 @@ struct My
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(My);
 };
 
-template<typename T>
-using MyTerm = My<proto::tag::terminal, proto::args<T>>;
+using my = proto::custom<My>;
 
 void test_extension()
 {
-    MyTerm<char> a_ {'a'};
-    MyTerm<char> b_ {'b'};
-    MyTerm<char> c_ {'c'};
-    MyTerm<char> d_ {'d'};
-    MyTerm<char> e_ {'e'};
-    MyTerm<char> f_ {'f'};
-    MyTerm<char> g_ {'g'};
-    MyTerm<char> h_ {'h'};
-    MyTerm<char> i_ {'i'};
+    my::terminal<char> a_ {'a'};
+    my::terminal<char> b_ {'b'};
+    my::terminal<char> c_ {'c'};
+    my::terminal<char> d_ {'d'};
+    my::terminal<char> e_ {'e'};
+    my::terminal<char> f_ {'f'};
+    my::terminal<char> g_ {'g'};
+    my::terminal<char> h_ {'h'};
+    my::terminal<char> i_ {'i'};
 
     std::stringstream sout;
 

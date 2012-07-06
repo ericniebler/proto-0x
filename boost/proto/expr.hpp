@@ -599,7 +599,6 @@ namespace boost
         struct arity_of<Expr &>
           : Expr::proto_arity
         {};
-
     }
 }
 

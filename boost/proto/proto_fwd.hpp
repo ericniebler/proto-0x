@@ -627,6 +627,9 @@ namespace boost
         template<typename ...A>
         using function = expr<tag::function, args<A...>>;
 
+        template<template<typename...> class Expr, typename Domain = void>
+        struct custom;
+
         namespace functional
         {
             struct deep_copy;

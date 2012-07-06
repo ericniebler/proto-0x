@@ -99,40 +99,32 @@ struct Expr
     BOOST_PROTO_INHERIT_EXPR_CTORS(Expr, proto_basic_expr_type);
 };
 
-template<typename T>
-using Terminal = Expr<proto::tag::terminal, proto::args<T>>;
-
-template<typename T, typename U>
-using Plus = Expr<proto::tag::plus, proto::args<T, U>>;
-
-template<typename T, typename U>
-using ShiftLeft = Expr<proto::tag::shift_left, proto::args<T, U>>;
-
 void test_custom_expr()
 {
     using namespace proto;
+    using My = custom<Expr>;
 
     int i = 42;
-    Terminal<int &> t1 {i};
-    Terminal<int> r1 = deep_copy(t1);
+    My::terminal<int &> t1 {i};
+    My::terminal<int> r1 = deep_copy(t1);
     BOOST_CHECK_EQUAL(42, value(r1));
 
-    static_assert(std::is_same<Plus<Terminal<int &> &, Terminal<int const &>>, decltype(t1 + 24)>::value, "");
-    Plus<Terminal<int>, Terminal<int>> r2 = deep_copy(t1 + 24);
+    static_assert(std::is_same<My::plus<My::terminal<int &> &, My::terminal<int const &>>, decltype(t1 + 24)>::value, "");
+    My::plus<My::terminal<int>, My::terminal<int>> r2 = deep_copy(t1 + 24);
     BOOST_CHECK_EQUAL(42, value(left(r2)));
     BOOST_CHECK_EQUAL(24, value(right(r2)));
 
     char buf[16] = {'\0'};
-    Terminal<char (&)[16]> t3 {buf};
-    Terminal<char (&)[16]> r3 = deep_copy(t3);
+    My::terminal<char (&)[16]> t3 {buf};
+    My::terminal<char (&)[16]> r3 = deep_copy(t3);
 
-    Terminal<void(&)()> t4 {foo};
-    Plus<Terminal<void(&)()>, Terminal<int>> r4 = deep_copy(t4 + t1);
+    My::terminal<void(&)()> t4 {foo};
+    My::plus<My::terminal<void(&)()>, My::terminal<int>> r4 = deep_copy(t4 + t1);
     BOOST_CHECK_EQUAL(42, value(right(r4)));
     BOOST_CHECK_EQUAL(&foo, &value(left(r4)));
 
-    Terminal<std::ostream &> cout_ {std::cout};
-    ShiftLeft<Terminal<std::ostream &>, Terminal<int>> r5 = deep_copy(cout_ << t1);
+    My::terminal<std::ostream &> cout_ {std::cout};
+    My::shift_left<My::terminal<std::ostream &>, My::terminal<int>> r5 = deep_copy(cout_ << t1);
     BOOST_CHECK_EQUAL(42, value(right(r5)));
     BOOST_CHECK_EQUAL(boost::addressof(std::cout), boost::addressof(value(left(r5))));
 
@@ -185,6 +177,9 @@ test_suite* init_unit_test_suite( int argc, char* argv[] )
 
     test->add(BOOST_TEST_CASE(&test_expr));
     test->add(BOOST_TEST_CASE(&test_custom_expr));
+    test->add(BOOST_TEST_CASE(&test_moveable));
+    test->add(BOOST_TEST_CASE(&test_noncopyable));
+    test->add(BOOST_TEST_CASE(&test_noncopyable2));
 
     return test;
 }

@@ -44,20 +44,19 @@ struct MyExpr
     );
 };
 
-template<typename Value>
-using MyTerminal = MyExpr<proto::tag::terminal, proto::args<Value>>;
+using My = proto::custom<MyExpr>;
 
 void test_virtual_members()
 {
-    MyTerminal<int> xxx{42};
-    MyTerminal<int> & r = proto::child<0>(xxx.foo);
+    My::terminal<int> xxx{42};
+    My::terminal<int> & r = proto::child<0>(xxx.foo);
     proto::terminal<foo_tag> & e = proto::child<1>(xxx.foo);
 
     static_assert(std::is_lvalue_reference<decltype(proto::child<0>(xxx.foo))>::value, "");
-    static_assert(std::is_rvalue_reference<decltype(proto::child<0>(MyTerminal<int>().foo))>::value, "");
+    static_assert(std::is_rvalue_reference<decltype(proto::child<0>(My::terminal<int>().foo))>::value, "");
 
     static_assert(std::is_lvalue_reference<decltype(proto::child<1>(xxx.foo))>::value, "");
-    static_assert(std::is_rvalue_reference<decltype(proto::child<1>(MyTerminal<int>().foo))>::value, "");
+    static_assert(std::is_rvalue_reference<decltype(proto::child<1>(My::terminal<int>().foo))>::value, "");
 
     BOOST_CHECK_EQUAL(42, proto::value(xxx));
     BOOST_CHECK_EQUAL(42, proto::value(r));
@@ -71,7 +70,7 @@ void test_virtual_members()
     proto::assert_matches<G>(xxx.foo);
 
     // Check that the pass-through transform handles virtual members correctly.
-    MyExpr<proto::tag::member, proto::args<MyTerminal<int>, proto::terminal<foo_tag>>> tx = proto::as_transform<G>()(xxx.foo);
+    My::member<My::terminal<int>, proto::terminal<foo_tag>> tx = proto::as_transform<G>()(xxx.foo);
     BOOST_PROTO_IGNORE_UNUSED(tx);
 }
 

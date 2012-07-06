@@ -49,10 +49,8 @@ struct MyExpr
     using proto::expr_assign<MyExpr, MyDomain>::operator=;
 };
 
-template<typename T>
-using MyLiteral = MyExpr<proto::tag::terminal, proto::args<T>>;
-
-static_assert(std::is_trivial<MyLiteral<int>>::value, "not is trivial!");
+using My = proto::custom<MyExpr>;
+static_assert(std::is_trivial<My::terminal<int>>::value, "not is trivial!");
 
 void test_expr()
 {
@@ -99,7 +97,7 @@ void test_expr()
     //typedef int_ const cint_;
     //cint_(42)[p];
 
-    constexpr MyLiteral<int> iii_(42);
+    constexpr My::terminal<int> iii_(42);
     auto jjj_ = iii_[42];
 
     // Test proto_equal_to
