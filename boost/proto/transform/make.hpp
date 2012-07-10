@@ -26,7 +26,7 @@ namespace boost
             typename T::type nested_type_(int);
 
             template<typename T>
-            T nested_type_(...);
+            T nested_type_(long);
 
             template<typename T, bool Applied>
             struct nested_type
@@ -72,7 +72,7 @@ namespace boost
             struct make_2_<R<A...>, Args...>
               : nested_type<
                     R<typename make_3_<A, Args...>::type...>
-                  , utility::or_<typename make_3_<A, Args...>::applied...>::value
+                  , utility::logical_ops::or_(make_3_<A, Args...>::applied::value...)
                 >
             {};
 
@@ -103,7 +103,7 @@ namespace boost
             struct make_1_<R<A...>, Args...>
               : nested_type<
                     R<typename make_3_<A, Args...>::type...>
-                  , utility::or_<typename make_3_<A, Args...>::applied...>::value
+                  , utility::logical_ops::or_(make_3_<A, Args...>::applied::value...)
                 >
             {};
 
@@ -118,7 +118,12 @@ namespace boost
             struct make_1_<_noinvoke<R<A...>>, Args...>
             {
                 typedef R<typename make_3_<A, Args...>::type...> type;
-                typedef utility::or_<typename make_3_<A, Args...>::applied...> applied;
+                typedef
+                    std::integral_constant<
+                        bool
+                      , utility::logical_ops::or_(make_3_<A, Args...>::applied::value...)
+                    >
+                applied;
             };
         }
 

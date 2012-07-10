@@ -203,7 +203,7 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // is_vararg
-            template<typename ...T>
+            template<typename T>
             struct is_vararg
               : std::false_type
             {};
@@ -211,21 +211,6 @@ namespace boost
             template<typename Grammar>
             struct is_vararg<vararg<Grammar>>
               : std::true_type
-            {};
-
-            template<typename T0, typename Grammar>
-            struct is_vararg<T0, vararg<Grammar>>
-              : std::true_type
-            {};
-
-            template<typename T0, typename T1, typename Grammar>
-            struct is_vararg<T0, T1, vararg<Grammar>>
-              : std::true_type
-            {};
-
-            template<typename T0, typename T1, typename T2, typename ...Rest>
-            struct is_vararg<T0, T1, T2, Rest...>
-              : is_vararg<Rest...>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -318,7 +303,7 @@ namespace boost
             >
               : utility::and_<
                     tag_matches<Tag0, Tag1>
-                  , is_vararg<Args1...>
+                  , is_vararg<typename utility::result_of::back<Args1...>::type>
                   , vararg_matches<args<Args0...>, Args1...>
                 >
             {

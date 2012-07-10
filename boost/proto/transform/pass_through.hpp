@@ -80,10 +80,10 @@ namespace boost
             struct pass_through_1_
               : std::conditional<
                     (N >= M)
-                  , pass_through_4_<N, M, Ints, typename utility::back_type<Args...>::type, Args...>
+                  , pass_through_4_<N, M, Ints, typename utility::result_of::back<Args...>::type, Args...>
                   , utility::lazy_conditional<
                         (N == M - 1)
-                      , pass_through_2_<N, Ints, typename utility::back_type<Args...>::type, Args...>
+                      , pass_through_2_<N, Ints, typename utility::result_of::back<Args...>::type, Args...>
                       , pass_through_fail_<N, M>
                     >
                 >::type
