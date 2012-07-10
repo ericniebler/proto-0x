@@ -15,6 +15,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/make_expr.hpp>
 #include <boost/proto/matches.hpp>
+#include <boost/proto/transform/impl.hpp>
 
 namespace boost
 {
@@ -186,6 +187,18 @@ namespace boost
         struct domain_of<Expr &>
         {
             typedef typename Expr::proto_domain_type type;
+        };
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // _domain_of
+        struct _domain_of
+          : proto::transform<_domain_of>
+        {
+            template<typename E, typename ...Rest>
+            auto operator()(E && e, Rest &&...) const
+            BOOST_PROTO_AUTO_RETURN(
+                static_cast<E &&>(e).proto_domain()
+            )
         };
     }
 }

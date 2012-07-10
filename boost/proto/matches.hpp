@@ -728,8 +728,8 @@ namespace boost
         /// INTERNAL ONLY
         // pure compile-time optimization
         template<typename Cases>
-        struct switch_<Cases, tag_of<_>()>
-          : transform<switch_<Cases, proto::tag_of<proto::_>()>>
+        struct switch_<Cases, _tag_of>
+          : transform<switch_<Cases, _tag_of>>
         {
             typedef switch_ proto_grammar_type;
 

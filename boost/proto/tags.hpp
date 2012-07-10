@@ -220,6 +220,19 @@ namespace boost
         {
             typedef typename Expr::proto_tag_type type;
         };
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // _tag_of
+        struct _tag_of
+          : proto::transform<_tag_of>
+        {
+            template<typename E, typename ...Rest>
+            auto operator()(E && e, Rest &&...) const
+            BOOST_PROTO_AUTO_RETURN(
+                static_cast<E &&>(e).proto_tag()
+            )
+        };
+
     } // namespace proto
 } // namespace boost
 

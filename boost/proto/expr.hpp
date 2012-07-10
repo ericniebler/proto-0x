@@ -16,6 +16,7 @@
 #include <boost/proto/domain.hpp>
 #include <boost/proto/tags.hpp>
 #include <boost/proto/utility.hpp>
+#include <boost/proto/transform/impl.hpp>
 
 namespace boost
 {
@@ -599,6 +600,18 @@ namespace boost
         struct arity_of<Expr &>
           : Expr::proto_arity
         {};
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // _arity_of
+        struct _arity_of
+          : proto::transform<_arity_of>
+        {
+            template<typename E, typename ...Rest>
+            typename arity_of<E>::type operator()(E && e, Rest &&...) const noexcept
+            {
+                return typename arity_of<E>::type();
+            };
+        };
     }
 }
 

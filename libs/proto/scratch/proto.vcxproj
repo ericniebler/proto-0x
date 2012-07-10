@@ -89,6 +89,7 @@
     <ClInclude Include="..\..\..\boost\proto\transform\make.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\pass_through.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\recursive_fold.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\transform\unpack.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\when.hpp" />
     <ClInclude Include="..\..\..\boost\proto\utility.hpp" />
     <ClInclude Include="..\..\..\boost\proto\virtual_member.hpp" />

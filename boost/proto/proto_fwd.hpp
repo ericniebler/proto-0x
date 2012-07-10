@@ -406,6 +406,9 @@ namespace boost
         template<typename Expr>
         struct _pass_through;
 
+        template<typename Fun>
+        struct _unpack;
+
         template<typename Seq, typename State0, typename Fun>
         struct _fold;
 
@@ -425,6 +428,12 @@ namespace boost
         struct _protect;
 
         struct _deep_copy;
+
+        struct _tag_of;
+
+        struct _arity_of;
+
+        struct _domain_of;
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Misc. traits
@@ -471,7 +480,7 @@ namespace boost
         template<typename If, typename Then = _, typename Else = not_<_>>
         struct if_;
 
-        template<typename Cases, typename Transform = tag_of<_>()>
+        template<typename Cases, typename Transform = _tag_of>
         struct switch_;
 
         template<typename Expr, typename Grammar>
