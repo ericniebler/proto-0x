@@ -12,7 +12,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/matches.hpp>
 #include <boost/proto/make_expr.hpp>
-#include <boost/proto/transform/impl.hpp>
+#include <boost/proto/transform/base.hpp>
 #include <boost/proto/transform/when.hpp>
 #include <boost/proto/transform/pass_through.hpp>
 

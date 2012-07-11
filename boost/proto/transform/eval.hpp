@@ -18,7 +18,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/args.hpp>
 #include <boost/proto/matches.hpp>
-#include <boost/proto/transform/impl.hpp>
+#include <boost/proto/transform/base.hpp>
 #include <boost/proto/transform/when.hpp>
 
 namespace boost

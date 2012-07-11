@@ -385,12 +385,6 @@ namespace boost
         template<typename Transform>
         using otherwise = when<_, Transform>;
 
-        template<typename CallableTransform, int = 0>
-        struct call;
-
-        template<typename ObjectTransform>
-        struct make;
-
         template<typename T, T Value>
         struct _constant;
 
@@ -426,6 +420,8 @@ namespace boost
 
         template<typename T>
         struct _protect;
+
+        struct _void;
 
         struct _deep_copy;
 

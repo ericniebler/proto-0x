@@ -15,7 +15,7 @@ namespace proto = boost::proto;
 namespace fusion = boost::fusion;
 using proto::_;
 
-struct eval_helper
+struct eval_expr
 {
     template<typename E0, typename E1>
     auto operator()(proto::tag::plus, E0 && e0, E1 && e1) const
@@ -35,7 +35,7 @@ struct eval_helper
 struct eval
   : proto::or_<
         proto::when<proto::terminal<_>, proto::_value>
-      , proto::otherwise<proto::_unpack<eval_helper(proto::_tag_of, eval(_)...)>>
+      , proto::otherwise<proto::_unpack<eval_expr(proto::_tag_of, eval(_)...)>>
     >
 {};
 
@@ -55,6 +55,8 @@ int main()
     proto::_unpack<ignore(disp(_)...)>()(i);
 
     std::cout << eval()(i * 2 + 1) << std::endl;
+
+    //std::ostream & sout = proto::when<_, proto::_env<proto::_data>(proto::_value)>()(i, 0, proto::tag::data = disp());
 
     void done();
     done();

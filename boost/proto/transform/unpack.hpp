@@ -11,7 +11,7 @@
 
 #include <utility>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/transform/impl.hpp>
+#include <boost/proto/transform/base.hpp>
 #include <boost/proto/utility.hpp>
 
 namespace boost
@@ -77,11 +77,6 @@ namespace boost
             };
 
             template<std::size_t ...I, typename R, typename ...As>
-            struct expand_pattern_1_<utility::indices<I...>, R(*)(As...)>
-              : expand_pattern_1_<utility::indices<I...>, R(As...)>
-            {};
-
-            template<std::size_t ...I, typename R, typename ...As>
             struct expand_pattern_1_<utility::indices<I...>, R(As..., ...)>
               : build_result<
                     R
@@ -91,6 +86,16 @@ namespace boost
                       , typename utility::result_of::back<As...>::type
                     >::type...
                 >
+            {};
+
+            template<std::size_t ...I, typename R, typename ...As>
+            struct expand_pattern_1_<utility::indices<I...>, R(*)(As...)>
+              : expand_pattern_1_<utility::indices<I...>, R(As...)>
+            {};
+
+            template<std::size_t ...I, typename R, typename ...As>
+            struct expand_pattern_1_<utility::indices<I...>, R(*)(As..., ...)>
+              : expand_pattern_1_<utility::indices<I...>, R(As..., ...)>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////////

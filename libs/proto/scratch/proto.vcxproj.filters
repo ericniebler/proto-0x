@@ -63,9 +63,6 @@
     <ClInclude Include="..\..\..\boost\proto\transform\arg.hpp">
       <Filter>Proto Files\transform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\impl.hpp">
-      <Filter>Proto Files\transform</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\transform.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
@@ -79,12 +76,6 @@
       <Filter>Proto Files\transform</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\transform\pass_through.hpp">
-      <Filter>Proto Files\transform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\make.hpp">
-      <Filter>Proto Files\transform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\call.hpp">
       <Filter>Proto Files\transform</Filter>
     </ClInclude>
     <ClInclude Include="..\test\unit_test.hpp">
@@ -148,6 +139,12 @@
       <Filter>Proto Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\transform\unpack.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\env.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\base.hpp">
       <Filter>Proto Files\transform</Filter>
     </ClInclude>
   </ItemGroup>

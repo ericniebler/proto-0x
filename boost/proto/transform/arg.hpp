@@ -10,7 +10,7 @@
 #define BOOST_PROTO_TRANSFORM_ARG_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/transform/impl.hpp>
+#include <boost/proto/transform/base.hpp>
 
 namespace boost
 {
@@ -37,30 +37,6 @@ namespace boost
             auto operator()(E &&, S && s, Rest &&...) const
             BOOST_PROTO_AUTO_RETURN(
                 static_cast<S &&>(s)
-            )
-        };
-
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // _env
-        template<typename Tag>
-        struct _env
-          : transform<_env<Tag>>
-        {
-            template<typename E, typename S, typename Env, typename ...Rest>
-            auto operator()(E &&, S &&, Env && env, Rest &&...) const
-            BOOST_PROTO_AUTO_RETURN(
-                static_cast<Env &&>(env)[Tag()]
-            )
-        };
-
-        template<>
-        struct _env<void>
-          : transform<_env<void>>
-        {
-            template<typename E, typename S, typename Env, typename ...Rest>
-            auto operator()(E &&, S &&, Env && env, Rest &&...) const
-            BOOST_PROTO_AUTO_RETURN(
-                static_cast<Env &&>(env)
             )
         };
     }

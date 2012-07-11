@@ -16,7 +16,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/args.hpp>
 #include <boost/proto/make_expr.hpp>
-#include <boost/proto/transform/impl.hpp>
+#include <boost/proto/transform/base.hpp>
 
 namespace boost
 {

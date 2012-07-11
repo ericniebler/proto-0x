@@ -16,7 +16,7 @@
 #include <boost/fusion/include/prior.hpp>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/fusion.hpp>
-#include <boost/proto/transform/impl.hpp>
+#include <boost/proto/transform/base.hpp>
 
 namespace boost
 {

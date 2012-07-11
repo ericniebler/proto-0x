@@ -27,7 +27,7 @@ struct d
 {
     struct make_expr
       : proto::make_custom_expr<e>
-    {};    
+    {};
 };
 
 template<class T, class A>

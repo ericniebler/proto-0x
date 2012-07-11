@@ -81,12 +81,11 @@
     <ClInclude Include="..\..\..\boost\proto\tags.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\arg.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\call.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\transform\base.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\constant.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\transform\env.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\eval.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\fold.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\impl.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\make.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\pass_through.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\recursive_fold.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\unpack.hpp" />

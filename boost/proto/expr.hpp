@@ -16,7 +16,7 @@
 #include <boost/proto/domain.hpp>
 #include <boost/proto/tags.hpp>
 #include <boost/proto/utility.hpp>
-#include <boost/proto/transform/impl.hpp>
+#include <boost/proto/transform/base.hpp>
 
 namespace boost
 {

@@ -20,7 +20,7 @@ struct S
 
     void foo()
     {}
-    
+
     int bar(int i)
     {
         return i;

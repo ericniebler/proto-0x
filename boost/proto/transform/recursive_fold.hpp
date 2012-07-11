@@ -14,7 +14,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/matches.hpp>
 #include <boost/proto/transform/fold.hpp>
-#include <boost/proto/transform/impl.hpp>
+#include <boost/proto/transform/base.hpp>
 
 namespace boost { namespace proto
 {
