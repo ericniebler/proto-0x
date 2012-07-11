@@ -138,9 +138,6 @@
     <ClInclude Include="..\..\..\boost\proto\custom.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\unpack.hpp">
-      <Filter>Proto Files\transform</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\transform\env.hpp">
       <Filter>Proto Files\transform</Filter>
     </ClInclude>

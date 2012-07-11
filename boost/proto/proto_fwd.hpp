@@ -400,8 +400,8 @@ namespace boost
         template<typename Expr>
         struct _pass_through;
 
-        template<typename Fun>
-        struct _unpack;
+        //template<typename Fun>
+        //struct _unpack;
 
         template<typename Seq, typename State0, typename Fun>
         struct _fold;
@@ -430,6 +430,8 @@ namespace boost
         struct _arity_of;
 
         struct _domain_of;
+
+        struct pack;
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Misc. traits

@@ -12,6 +12,7 @@
 #include <utility>
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
+#include <boost/proto/args.hpp>
 #include <boost/proto/utility.hpp>
 
 namespace boost
@@ -214,6 +215,119 @@ namespace boost
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
+            // build_result_
+            template<typename R, typename List, typename... Rest>
+            struct build_result_;
+
+            template<typename R, typename ...As, typename... Rest>
+            struct build_result_<R, utility::list<As...>, Rest...>
+            {
+                typedef R type(As..., Rest...);
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // expand_pattern_2_
+            template<std::size_t I, typename PrimitiveTransform>
+            struct expand_pattern_2_
+            {
+                typedef PrimitiveTransform type;
+                typedef std::false_type applied;
+            };
+
+            template<std::size_t I, typename T>
+            struct expand_pattern_2_<I, pack(T)>
+            {
+                typedef proto::_child<I> type(T);
+                typedef std::true_type applied;
+            };
+
+            template<typename T>
+            struct expand_pattern_2_<(std::size_t)-1, pack(T)>
+            {
+                typedef proto::_value type(T);
+                typedef std::true_type applied;
+            };
+
+            /// INTERNAL ONLY pure optimization
+            template<std::size_t I>
+            struct expand_pattern_2_<I, pack(_)>
+            {
+                typedef proto::_child<I> type;
+                typedef std::true_type applied;
+            };
+
+            /// INTERNAL ONLY pure optimization
+            template<>
+            struct expand_pattern_2_<(std::size_t)-1, pack(_)>
+            {
+                typedef proto::_value type;
+                typedef std::true_type applied;
+            };
+
+            template<std::size_t I, typename R, typename ...As>
+            struct expand_pattern_2_<I, R(As...)>
+            {
+                typedef R type(typename expand_pattern_2_<I, As>::type...);
+                typedef
+                    std::integral_constant<
+                        bool
+                      , utility::logical_ops::or_(expand_pattern_2_<I, As>::applied::value...)
+                    >
+                applied;
+            };
+
+            template<std::size_t I, typename R, typename ...As>
+            struct expand_pattern_2_<I, R(*)(As...)>
+              : expand_pattern_2_<I, R(As...)>
+            {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // expand_pattern_1_
+            template<typename Indices, typename PrimitiveTransform>
+            struct expand_pattern_1_
+            {
+                typedef PrimitiveTransform type;
+            };
+
+            template<std::size_t ...I, typename R, typename ...As>
+            struct expand_pattern_1_<utility::indices<I...>, R(As...)>
+            {
+                typedef R type(typename expand_pattern_1_<utility::indices<I...>, As>::type...);
+            };
+
+            template<std::size_t ...I, typename R, typename ...As>
+            struct expand_pattern_1_<utility::indices<I...>, R(As......)>
+              : build_result_<
+                    R
+                  , utility::pop_back<As...>
+                  , typename expand_pattern_2_<
+                        I
+                      , typename utility::result_of::back<As...>::type
+                    >::type...
+                >
+            {
+                static_assert(
+                    utility::logical_ops::or_(
+                        expand_pattern_2_<
+                            I
+                          , typename utility::result_of::back<As...>::type
+                        >::applied::value...
+                    )
+                  , "No pack expression found in pack expansion. See boost::proto::pack."
+                );
+            };
+
+            template<std::size_t ...I, typename R, typename ...As>
+            struct expand_pattern_1_<utility::indices<I...>, R(*)(As...)>
+              : expand_pattern_1_<utility::indices<I...>, R(As...)>
+            {};
+
+            template<std::size_t ...I, typename R, typename ...As>
+            struct expand_pattern_1_<utility::indices<I...>, R(*)(As......)>
+              : expand_pattern_1_<utility::indices<I...>, R(As......)>
+            {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
             // as_transform_
             template<typename T>
             typename T::proto_transform_type as_transform_(int);
@@ -326,6 +440,12 @@ namespace boost
         {};
 
         template<typename Ret, typename ...Args, int I>
+        struct as_transform<Ret(*)(Args......), I>
+          : as_transform<Ret(Args......), I>
+        {};
+
+        // Handle regular trasforms, be they primitive, callable or object
+        template<typename Ret, typename ...Args, int I>
         struct as_transform<Ret(Args...), I>
           : transform<as_transform<Ret(Args...), I>>
         {
@@ -333,6 +453,27 @@ namespace boost
             auto operator()(T &&... t) const
             BOOST_PROTO_AUTO_RETURN(
                 detail::call_1_<is_transform<X>::value, X(Args...)>()(static_cast<T &&>(t)...)
+            )
+        };
+
+        // Handle transforms with pack expansions
+        template<typename Ret, typename ...Args, int I>
+        struct as_transform<Ret(Args......), I>
+          : transform<as_transform<Ret(Args......), I>>
+        {
+            template<typename E, typename ...Rest>
+            auto operator()(E && e, Rest &&... rest) const
+            BOOST_PROTO_AUTO_RETURN(
+                as_transform<
+                    typename detail::expand_pattern_1_<
+                        typename std::conditional<
+                            proto::is_terminal<E>::value
+                          , utility::indices<(std::size_t)-1>
+                          , utility::make_indices<0, proto::arity_of<E>::value>
+                        >::type
+                      , Ret(Args......)
+                    >::type
+                >()(static_cast<E &&>(e), static_cast<Rest &&>(rest)...)
             )
         };
     }
