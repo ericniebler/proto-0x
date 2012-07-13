@@ -24,5 +24,6 @@ test-suite "proto"
         [ run make.cpp ]
         [ run matches.cpp ]
         [ run mem_fun.cpp ]
+        [ run pack_expansion.cpp ]
         [ run virtual_member.cpp ]
     ;
