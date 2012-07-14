@@ -38,7 +38,7 @@ namespace boost
             template<typename T>
             auto proto_get_pointer(T && t, int)
             BOOST_PROTO_AUTO_RETURN(
-                get_pointer(t)
+                get_pointer(static_cast<T &&>(t))
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -399,7 +399,7 @@ namespace boost
         // _eval
         template<typename Grammar>
         struct _eval
-          : switch_<detail::_eval_cases<Grammar> >
+          : switch_<detail::_eval_cases<Grammar>>
         {};
 
         namespace detail

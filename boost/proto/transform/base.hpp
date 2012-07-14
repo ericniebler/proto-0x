@@ -231,49 +231,24 @@ namespace boost
             struct expand_pattern_2_
             {
                 typedef PrimitiveTransform type;
-                typedef std::false_type applied;
             };
 
             template<std::size_t I, typename T>
             struct expand_pattern_2_<I, pack(T)>
             {
                 typedef proto::_child<I> type(T);
-                typedef std::true_type applied;
             };
 
             template<typename T>
             struct expand_pattern_2_<(std::size_t)-1, pack(T)>
             {
                 typedef proto::_value type(T);
-                typedef std::true_type applied;
-            };
-
-            /// INTERNAL ONLY pure optimization
-            template<std::size_t I>
-            struct expand_pattern_2_<I, pack(_)>
-            {
-                typedef proto::_child<I> type;
-                typedef std::true_type applied;
-            };
-
-            /// INTERNAL ONLY pure optimization
-            template<>
-            struct expand_pattern_2_<(std::size_t)-1, pack(_)>
-            {
-                typedef proto::_value type;
-                typedef std::true_type applied;
             };
 
             template<std::size_t I, typename R, typename ...As>
             struct expand_pattern_2_<I, R(As...)>
             {
                 typedef R type(typename expand_pattern_2_<I, As>::type...);
-                typedef
-                    std::integral_constant<
-                        bool
-                      , utility::logical_ops::or_(expand_pattern_2_<I, As>::applied::value...)
-                    >
-                applied;
             };
 
             template<std::size_t I, typename R, typename ...As>
@@ -284,16 +259,7 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // expand_pattern_1_
             template<typename Indices, typename PrimitiveTransform>
-            struct expand_pattern_1_
-            {
-                typedef PrimitiveTransform type;
-            };
-
-            template<std::size_t ...I, typename R, typename ...As>
-            struct expand_pattern_1_<utility::indices<I...>, R(As...)>
-            {
-                typedef R type(typename expand_pattern_1_<utility::indices<I...>, As>::type...);
-            };
+            struct expand_pattern_1_;
 
             template<std::size_t ...I, typename R, typename ...As>
             struct expand_pattern_1_<utility::indices<I...>, R(As......)>
@@ -305,27 +271,74 @@ namespace boost
                       , typename utility::result_of::back<As...>::type
                     >::type...
                 >
+            {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // collect_pack_transforms_
+            template<typename UnpackingPattern, typename Transforms = void()>
+            struct collect_pack_transforms_
+            {
+                typedef Transforms type;
+            };
+
+            template<typename Ret, typename Head, typename ...Tail, typename Transforms>
+            struct collect_pack_transforms_<Ret(Head, Tail...), Transforms>
+              : collect_pack_transforms_<
+                    Ret(Tail...)
+                  , typename collect_pack_transforms_<Head, Transforms>::type
+                >
+            {};
+
+            template<typename Ret, typename Head, typename ...Tail, typename Transforms>
+            struct collect_pack_transforms_<Ret(*)(Head, Tail...), Transforms>
+              : collect_pack_transforms_<Ret(Head, Tail...), Transforms>
+            {};
+
+            template<typename Transform, typename ...Transforms>
+            struct collect_pack_transforms_<pack(Transform), void(Transforms...)>
+            {
+                typedef void type(as_transform<Transform>, Transforms...);
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // compute_indices_2_
+            template<typename Arity>
+            using compute_indices_2_ =
+                typename std::conditional<
+                    Arity::value == 0
+                  , utility::indices<(std::size_t)-1>
+                  , utility::make_indices<0, Arity::value>
+                >::type;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // compute_indices_1_
+            template<typename Transforms, typename ...Args>
+            struct compute_indices_1_
             {
                 static_assert(
-                    utility::logical_ops::or_(
-                        expand_pattern_2_<
-                            I
-                          , typename utility::result_of::back<As...>::type
-                        >::applied::value...
-                    )
-                  , "No pack expression found in pack expansion. See boost::proto::pack."
+                    utility::never<Transforms>::value
+                  , "No pack expression found in unpacking pattern. See boost::proto::pack."
                 );
             };
 
-            template<std::size_t ...I, typename R, typename ...As>
-            struct expand_pattern_1_<utility::indices<I...>, R(*)(As...)>
-              : expand_pattern_1_<utility::indices<I...>, R(As...)>
-            {};
+            template<typename Head, typename...Tail, typename ...Args>
+            struct compute_indices_1_<void(Head, Tail...), Args...>
+            {
+                typedef arity_of<decltype(Head()(std::declval<Args>()...))> arity;
+                typedef typename compute_indices_1_<void(Tail...), Args...>::arity tail_arity;
+                static_assert(
+                    arity::value == tail_arity::value
+                  , "Two pack expressions in unpacking pattern have different arities"
+                );
+                typedef compute_indices_2_<arity> type;
+            };
 
-            template<std::size_t ...I, typename R, typename ...As>
-            struct expand_pattern_1_<utility::indices<I...>, R(*)(As......)>
-              : expand_pattern_1_<utility::indices<I...>, R(As......)>
-            {};
+            template<typename Head, typename ...Args>
+            struct compute_indices_1_<void(Head), Args...>
+            {
+                typedef arity_of<decltype(Head()(std::declval<Args>()...))> arity;
+                typedef compute_indices_2_<arity> type;
+            };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // as_transform_
@@ -457,23 +470,25 @@ namespace boost
         };
 
         // Handle transforms with pack expansions
-        template<typename Ret, typename ...Args, int I>
-        struct as_transform<Ret(Args......), I>
-          : transform<as_transform<Ret(Args......), I>>
+        template<typename Ret, typename ...Tfxs, int I>
+        struct as_transform<Ret(Tfxs......), I>
+          : transform<as_transform<Ret(Tfxs......), I>>
         {
-            template<typename E, typename ...Rest>
-            auto operator()(E && e, Rest &&... rest) const
+            typedef
+                typename detail::collect_pack_transforms_<
+                    typename utility::result_of::back<Tfxs...>::type
+                >::type
+            transforms_type;
+
+            template<typename ...Args>
+            auto operator()(Args &&... args) const
             BOOST_PROTO_AUTO_RETURN(
                 as_transform<
                     typename detail::expand_pattern_1_<
-                        typename std::conditional<
-                            proto::is_terminal<E>::value
-                          , utility::indices<(std::size_t)-1>
-                          , utility::make_indices<0, proto::arity_of<E>::value>
-                        >::type
-                      , Ret(Args......)
+                        typename detail::compute_indices_1_<transforms_type, Args...>::type
+                      , Ret(Tfxs......)
                     >::type
-                >()(static_cast<E &&>(e), static_cast<Rest &&>(rest)...)
+                >()(static_cast<Args &&>(args)...)
             )
         };
     }

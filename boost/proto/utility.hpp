@@ -185,11 +185,10 @@ namespace boost
             struct identity
             {
                 template<typename T>
-                inline constexpr T operator()(T &&t) const
-                    noexcept(noexcept(T(static_cast<T &&>(t))))
-                {
-                    return static_cast<T &&>(t);
-                }
+                inline constexpr auto operator()(T &&t) const
+                BOOST_PROTO_AUTO_RETURN(
+                    T(static_cast<T &&>(t))
+                )
             };
         }
 

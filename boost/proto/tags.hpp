@@ -221,6 +221,12 @@ namespace boost
             typedef typename Expr::proto_tag_type type;
         };
 
+        template<typename Expr>
+        struct tag_of<Expr &&>
+        {
+            typedef typename Expr::proto_tag_type type;
+        };
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         // _tag_of
         struct _tag_of

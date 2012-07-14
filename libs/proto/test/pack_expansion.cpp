@@ -5,6 +5,7 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <sstream>
 #include <boost/proto/proto.hpp>
 #include <boost/typeof/typeof.hpp>
 #include "./unit_test.hpp"
@@ -38,7 +39,9 @@ struct eval
 void test_call_pack()
 {
     proto::terminal<int> i {42};
-    int res = eval()(i + 2);
+    int res = eval()(i);
+    BOOST_CHECK_EQUAL(res, 42);
+    res = eval()(i + 2);
     BOOST_CHECK_EQUAL(res, 44);
     res = eval()(i * 2);
     BOOST_CHECK_EQUAL(res, 84);
@@ -61,6 +64,45 @@ void test_make_pack()
     BOOST_CHECK_EQUAL(p.second, 43);
 }
 
+// Test expanding multiple packs in parallel
+struct accept_pairs
+{
+    void disp(std::ostream &) const {}
+
+    template<typename Head, typename ...Tail>
+    void disp(std::ostream & sout, Head h, Tail ...t) const
+    {
+        sout << '(' << h.first << ',' << h.second << ')';
+        disp(sout, t...);
+    }
+
+    template<typename ...Firsts, typename ...Seconds>
+    void operator()(std::ostream & sout, std::pair<Firsts, Seconds>... pairs) const
+    {
+        disp(sout, pairs...);
+    }
+};
+
+struct do_accept_pairs
+  : proto::otherwise<
+        accept_pairs(
+            proto::_data
+          , proto::functional::make_pair(
+                proto::_value(proto::pack(proto::_child<0>))
+              , proto::_value(proto::pack(proto::_child<1>))
+            )...
+        )
+    >
+{};
+
+void test_multiple_packs()
+{
+    proto::terminal<int> i{42};
+    std::ostringstream sout;
+    do_accept_pairs()( i(1,2) + i("hello","world"), 0, proto::tag::data = sout);
+    BOOST_CHECK_EQUAL( sout.str(), std::string("(42,42)(1,hello)(2,world)") );
+}
+
 using namespace boost::unit_test;
 ///////////////////////////////////////////////////////////////////////////////
 // init_unit_test_suite
@@ -71,6 +113,7 @@ test_suite* init_unit_test_suite( int argc, char* argv[] )
 
     test->add(BOOST_TEST_CASE(&test_call_pack));
     test->add(BOOST_TEST_CASE(&test_make_pack));
+    test->add(BOOST_TEST_CASE(&test_multiple_packs));
 
     return test;
 }

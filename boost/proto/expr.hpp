@@ -577,6 +577,11 @@ namespace boost
           : std::is_base_of<expr_base, T>
         {};
 
+        template<typename T>
+        struct is_expr<T &&>
+          : std::is_base_of<expr_base, T>
+        {};
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         // is_terminal
         template<typename Expr>
@@ -589,6 +594,11 @@ namespace boost
           : Expr::proto_is_terminal
         {};
 
+        template<typename Expr>
+        struct is_terminal<Expr &&>
+          : Expr::proto_is_terminal
+        {};
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         // arity_of
         template<typename Expr>
@@ -598,6 +608,11 @@ namespace boost
 
         template<typename Expr>
         struct arity_of<Expr &>
+          : Expr::proto_arity
+        {};
+
+        template<typename Expr>
+        struct arity_of<Expr &&>
           : Expr::proto_arity
         {};
 

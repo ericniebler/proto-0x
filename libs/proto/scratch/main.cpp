@@ -8,8 +8,10 @@
 #include <utility>
 #include <iostream>
 #include <type_traits>
+#include <sstream>
 #include <boost/proto/proto.hpp>
 #include <boost/proto/debug.hpp>
+#include <boost/proto/functional/std/utility.hpp>
 
 namespace proto = boost::proto;
 namespace fusion = boost::fusion;
@@ -41,13 +43,49 @@ struct eval
 
 struct disp
 {
-    std::ostream & operator()(int i) const { return std::cout /*<< ch_ */ << i << std::endl; }
+    std::ostream & operator()(int i) const { return std::cout << i << std::endl; }
 };
 
 struct ignore
 {
     void operator()(std::ostream &) const {}
 };
+
+/*
+Bartosz:
+   eval_( []() { return 10; } + 20 );
+   eval_( []() { return "Hello "; } + "World!");
+*/
+
+struct accept_pairs
+{
+    void disp(std::ostream &) const {}
+    template<typename Head, typename ...Tail>
+
+    void disp(std::ostream & sout, Head h, Tail ...t) const
+    {
+        sout << '(' << h.first << ',' << h.second << ')';
+        disp(sout, t...);
+    }
+
+    template<typename ...Firsts, typename ...Seconds>
+    void operator()(std::ostream & sout, std::pair<Firsts, Seconds>... pairs) const
+    {
+        disp(sout, pairs...);
+    }
+};
+
+struct do_accept_pairs
+  : proto::otherwise<
+        accept_pairs(
+            proto::_data
+          , proto::functional::make_pair(
+                proto::_value(proto::pack(proto::_child<0>))
+              , proto::_value(proto::pack(proto::_child<1>))
+            )...
+        )
+    >
+{};
 
 int main()
 {
@@ -56,13 +94,17 @@ int main()
 
     std::cout << eval()(i * 2 + 1) << std::endl;
 
+    std::ostringstream sout;
+    do_accept_pairs()( i(1,2) + i("hello","world"), 0, proto::tag::data = sout);
+    std::cout << sout.str() << std::endl;
+
     void done();
     done();
 }
 
 void done()
 {
-    std::cout << "Press <RETURN> to continue...";
     char ch = 0;
-    std::cin.get(ch);
+    std::cout << "Press <CTRL> + D to quit...";
+    while(std::cin.get(ch));
 }

@@ -189,6 +189,12 @@ namespace boost
             typedef typename Expr::proto_domain_type type;
         };
 
+        template<typename Expr>
+        struct domain_of<Expr &&>
+        {
+            typedef typename Expr::proto_domain_type type;
+        };
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         // _domain_of
         struct _domain_of
