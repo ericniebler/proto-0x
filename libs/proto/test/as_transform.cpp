@@ -57,6 +57,33 @@ void test_as_transform()
     proto::as_transform<proto::function<int_, int_, int_>>()(p(p, p));
 }
 
+template<typename T>
+struct S
+{};
+
+// To defeat an optimization within Proto, to better exercise the proper handling
+// of nested transforms with different numbers of arguments.
+struct _my_expr
+  : proto::transform<_my_expr>
+{
+    template<typename E, typename ...Rest>
+    auto operator()(E && e, Rest &&...) const
+    BOOST_PROTO_AUTO_RETURN(
+        static_cast<E &&>(e)
+    )
+};
+
+void test_as_transform_2()
+{
+    proto::terminal<int> i{42};
+    S<int> s0 = proto::as_transform<S<proto::_state>()>()(i, 42);
+    S<int> s1 = proto::as_transform<S<proto::_state()>()>()(i, 42);
+    S<int> s2 = proto::as_transform<S<proto::_state(_my_expr)>()>()(i, 42);
+    S<int> s3 = proto::as_transform<S<proto::_state(_my_expr, proto::_state)>()>()(i, 42, proto::tag::data = 55);
+    S<int> s4 = proto::as_transform<S<proto::_state(_my_expr, proto::_state, proto::_env<>)>()>()(i, 42, proto::tag::data = 55);
+    BOOST_PROTO_IGNORE_UNUSED(s0, s1, s2, s3, s4);
+}
+
 using namespace boost::unit_test;
 ///////////////////////////////////////////////////////////////////////////////
 // init_unit_test_suite
@@ -66,6 +93,7 @@ test_suite* init_unit_test_suite( int argc, char* argv[] )
     test_suite *test = BOOST_TEST_SUITE("basic tests for the transformation infrastructure");
 
     test->add(BOOST_TEST_CASE(&test_as_transform));
+    test->add(BOOST_TEST_CASE(&test_as_transform_2));
 
     return test;
 }

@@ -147,7 +147,7 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // call_2_
-            template<typename Transform, typename ...Results>
+            template<bool NoPad, typename Transform, typename ...Results>
             struct call_2_
             {
                 template<typename ...Ts>
@@ -155,9 +155,24 @@ namespace boost
                 BOOST_PROTO_AUTO_RETURN(
                     Transform()(static_cast<Results &&>(results)..., static_cast<Ts &&>(ts)...)
                 )
+            };
 
-                template<typename ...Ts, BOOST_PROTO_ENABLE_IF(sizeof...(Ts) <= sizeof...(Results))>
-                auto operator()(Results &&... results, Ts &&... ts) const
+            // TODO: Remove this specialization when http://llvm.org/bugs/show_bug.cgi?id=13386 is fixed.
+            template<typename Transform>
+            struct call_2_<false, Transform>
+            {
+                template<typename ...Ts>
+                auto operator()(Ts &&... ts) const
+                BOOST_PROTO_AUTO_RETURN(
+                    Transform()(static_cast<Ts &&>(ts)...)
+                )
+            };
+
+            template<typename Transform, typename ...Results>
+            struct call_2_<true, Transform, Results...>
+            {
+                template<typename ...Ts>
+                auto operator()(Results &&... results, Ts &&...) const
                 BOOST_PROTO_AUTO_RETURN(
                     Transform()(static_cast<Results &&>(results)...)
                 )
@@ -177,7 +192,8 @@ namespace boost
                 auto operator()(T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     call_2_<
-                        Transform
+                        (sizeof...(T) <= sizeof...(Args))
+                      , Transform
                       , decltype(as_transform<Args>()(static_cast<T &&>(t)...))...
                     >()(as_transform<Args>()(static_cast<T &&>(t)...)..., static_cast<T &&>(t)...)
                 )
@@ -192,6 +208,12 @@ namespace boost
             /// INTERNAL ONLY : Compile-time optimization for a common case:
             template<typename Transform>
             struct call_1_<true, Transform(_)>
+              : Transform
+            {};
+
+            /// INTERNAL ONLY : Compile-time optimization for a common case:
+            template<typename Transform>
+            struct call_1_<true, Transform(proto::_expr)>
               : Transform
             {};
 
