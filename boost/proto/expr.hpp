@@ -11,6 +11,7 @@
 
 #include <utility>
 #include <boost/mpl/bool.hpp>
+#include <boost/mpl/integral_c_fwd.hpp>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/args.hpp>
 #include <boost/proto/domain.hpp>
@@ -25,13 +26,21 @@ namespace boost
         namespace detail
         {
             ////////////////////////////////////////////////////////////////////////////////////////
+            // is_terminal_
+            template<typename Tag>
+            typename Tag::proto_is_terminal is_terminal_(int);
+
+            template<typename Tag>
+            std::false_type is_terminal_(long);
+
+            ////////////////////////////////////////////////////////////////////////////////////////
             // are_equality_comparible
             template<typename L, typename R
               , BOOST_PROTO_ENABLE_IF_VALID_EXPR(std::declval<L>().proto_equal_to(std::declval<R>()))>
             std::true_type are_equality_comparible_(int);
 
             template<typename L, typename R>
-            std::false_type are_equality_comparible_(...);
+            std::false_type are_equality_comparible_(long);
 
             template<typename L, typename R>
             struct are_equality_comparible
@@ -389,7 +398,7 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // Check constraints
                 static_assert(
-                    !Tag::proto_is_terminal::value || Args::proto_size::value <= 1
+                    !decltype(detail::is_terminal_<Tag>(1))::value || Args::proto_size::value <= 1
                   , "terminals can have only 1 value"
                 );
 
@@ -406,7 +415,7 @@ namespace boost
                 typedef
                     std::integral_constant<
                         std::size_t
-                      , Tag::proto_is_terminal::value ? 0 : Args::proto_size::value
+                      , decltype(detail::is_terminal_<Tag>(1))::value ? 0 : Args::proto_size::value
                     >
                 proto_arity;
 
@@ -570,51 +579,78 @@ namespace boost
         template<typename T>
         struct is_expr
           : std::is_base_of<expr_base, T>
-        {};
+        {
+            typedef is_expr type;
+            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+        };
 
         template<typename T>
         struct is_expr<T &>
           : std::is_base_of<expr_base, T>
-        {};
+        {
+            typedef is_expr type;
+            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+        };
 
         template<typename T>
         struct is_expr<T &&>
           : std::is_base_of<expr_base, T>
-        {};
+        {
+            typedef is_expr type;
+            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+        };
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // is_terminal
         template<typename Expr>
         struct is_terminal
           : Expr::proto_is_terminal
-        {};
+        {
+            typedef is_terminal type;
+            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+        };
 
         template<typename Expr>
         struct is_terminal<Expr &>
           : Expr::proto_is_terminal
-        {};
+        {
+            typedef is_terminal type;
+            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+        };
 
         template<typename Expr>
         struct is_terminal<Expr &&>
           : Expr::proto_is_terminal
-        {};
+        {
+            typedef is_terminal type;
+            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+        };
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // arity_of
         template<typename Expr>
         struct arity_of
           : Expr::proto_arity
-        {};
+        {
+            typedef arity_of type;
+            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+        };
 
         template<typename Expr>
         struct arity_of<Expr &>
           : Expr::proto_arity
-        {};
+        {
+            typedef arity_of type;
+            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+        };
 
         template<typename Expr>
         struct arity_of<Expr &&>
           : Expr::proto_arity
-        {};
+        {
+            typedef arity_of type;
+            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+        };
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // _arity_of
@@ -622,9 +658,9 @@ namespace boost
           : proto::transform<_arity_of>
         {
             template<typename E, typename ...Rest>
-            typename arity_of<E>::type operator()(E && e, Rest &&...) const noexcept
+            arity_of<E> operator()(E && e, Rest &&...) const noexcept
             {
-                return typename arity_of<E>::type();
+                return arity_of<E>();
             };
         };
     }

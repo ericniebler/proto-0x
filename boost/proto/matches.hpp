@@ -620,18 +620,18 @@ namespace boost
         {
             typedef if_ proto_grammar_type;
 
-            template<typename Expr, typename ...Rest>
-            auto operator()(Expr && e, Rest &&... rest) const
+            template<typename ...Args>
+            auto operator()(Args &&... args) const
             BOOST_PROTO_AUTO_RETURN(
                 typename std::conditional<
                     static_cast<bool>(
                         std::remove_reference<
-                            decltype(as_transform<If>()(static_cast<Expr &&>(e), static_cast<Rest &&>(rest)...))
+                            decltype(as_transform<If>()(static_cast<Args &&>(args)...))
                         >::type::value
                     )
                   , as_transform<Then>
                   , as_transform<Else>
-                >::type()(static_cast<Expr &&>(e), static_cast<Rest &&>(rest)...)
+                >::type()(static_cast<Args &&>(args)...)
             )
         };
 
@@ -682,7 +682,9 @@ namespace boost
             template<typename ...Args>
             auto operator()(Args &&... args) const
             BOOST_PROTO_AUTO_RETURN(
-                utility::back((as_transform<Grammars>()(static_cast<Args &&>(args)...), utility::void_)...)
+                utility::back(
+                    (as_transform<Grammars>()(static_cast<Args &&>(args)...), utility::void_)...
+                )
             )
         };
 
@@ -714,14 +716,14 @@ namespace boost
         {
             typedef switch_ proto_grammar_type;
 
-            template<typename Expr, typename ...Rest>
-            auto operator()(Expr && e, Rest &&... rest) const
+            template<typename ...Args>
+            auto operator()(Args &&... args) const
             BOOST_PROTO_AUTO_RETURN(
                 as_transform<
                     typename Cases::template case_<
-                        decltype(as_transform<Transform>()(static_cast<Expr &&>(e)))
+                        decltype(as_transform<Transform>()(static_cast<Args &&>(args)...))
                     >
-                >()(static_cast<Expr &&>(e), static_cast<Rest &&>(rest)...)
+                >()(static_cast<Args &&>(args)...)
             )
         };
 

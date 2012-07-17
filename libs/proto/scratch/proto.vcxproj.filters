@@ -194,6 +194,12 @@
     <ClCompile Include="..\test\pack_expansion.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\test\noinvoke.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\protect.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\test\Jamfile">

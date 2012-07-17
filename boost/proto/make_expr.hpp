@@ -27,7 +27,7 @@ namespace boost
             typename T::proto_domain_type get_domain(int);
 
             template<typename T>
-            default_domain get_domain(...);
+            default_domain get_domain(long);
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // get_domain

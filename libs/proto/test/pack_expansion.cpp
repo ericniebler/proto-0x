@@ -64,8 +64,7 @@ void test_make_pack()
     BOOST_CHECK_EQUAL(p.second, 43);
 }
 
-// Test expanding multiple packs in parallel
-struct accept_pairs
+struct do_accept_pairs
 {
     void disp(std::ostream &) const {}
 
@@ -83,12 +82,35 @@ struct accept_pairs
     }
 };
 
-struct do_accept_pairs
+struct front
+{
+    template<typename Head, typename ...Tail>
+    Head && operator()(Head && h, Tail &&...) const
+    {
+        return static_cast<Head &&>(h);
+    }
+};
+
+// Test expanding multiple packs in parallel
+struct accept_pairs
   : proto::otherwise<
-        accept_pairs(
+        do_accept_pairs(
             proto::_data
           , proto::functional::make_pair(
                 proto::_value(proto::pack(proto::_child<0>))
+              , proto::_value(proto::pack(proto::_child<1>))
+            )...
+        )
+    >
+{};
+
+// Test expanding multiple packs in parallel *and* a nested pack expansion.
+struct accept_pairs_2
+  : proto::otherwise<
+        do_accept_pairs(
+            proto::_data
+          , proto::functional::make_pair(
+                proto::_value(proto::pack(front(proto::pack(_)...)))
               , proto::_value(proto::pack(proto::_child<1>))
             )...
         )
@@ -99,8 +121,12 @@ void test_multiple_packs()
 {
     proto::terminal<int> i{42};
     std::ostringstream sout;
-    do_accept_pairs()( i(1,2) + i("hello","world"), 0, proto::tag::data = sout);
+    accept_pairs()( i(1,2) + i("hello","world"), 0, proto::tag::data = sout);
     BOOST_CHECK_EQUAL( sout.str(), std::string("(42,42)(1,hello)(2,world)") );
+
+    sout.str("");
+    accept_pairs_2()(i(1,2) + i("this","that"), 0, proto::tag::data = sout);
+    BOOST_CHECK_EQUAL( sout.str(), std::string("(42,42)(1,this)(2,that)") );
 }
 
 using namespace boost::unit_test;

@@ -400,9 +400,6 @@ namespace boost
         template<typename Expr>
         struct _pass_through;
 
-        //template<typename Fun>
-        //struct _unpack;
-
         template<typename Seq, typename State0, typename Fun>
         struct _fold;
 
@@ -418,7 +415,7 @@ namespace boost
         template<typename T>
         struct _noinvoke;
 
-        template<typename T>
+        template<typename T, int I = 0>
         struct _protect;
 
         struct _void;

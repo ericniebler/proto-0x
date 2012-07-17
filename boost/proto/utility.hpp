@@ -401,21 +401,12 @@ namespace boost
         {
             template<int I, typename T>
             using list_of = typename detail::list_of_<I, T, list<>>::type;
-        }
 
-        namespace detail
-        {
             template<typename First, typename Second>
-            struct first_
-            {
-                typedef First type;
-            };
-        }
+            using first = First;
 
-        namespace utility
-        {
             template<typename First, typename Second>
-            using first = typename detail::first_<First, Second>::type;
+            using second = Second;
 
             template<typename T>
             struct rvalue_reference_wrapper
@@ -438,11 +429,8 @@ namespace boost
             struct get_nth_<utility::list<Vs...>>
             {
                 template<typename T, typename ...Us>
-                static constexpr utility::rvalue_reference_wrapper<T> eval(
-                    utility::first<utility::any, utility::list<Vs>>...
-                  , T && t
-                  , Us &&...
-                ) noexcept
+                static constexpr auto eval(utility::first<utility::any, Vs>..., T && t, Us &&...) noexcept
+                    -> utility::rvalue_reference_wrapper<T>
                 {
                     return static_cast<T &&>(t);
                 }

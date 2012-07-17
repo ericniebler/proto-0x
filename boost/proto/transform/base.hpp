@@ -42,6 +42,22 @@ namespace boost
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
+            // make_4_
+            template<bool IsTransform, typename R, typename ...Args>
+            struct make_4_
+            {
+                typedef decltype(utility::by_val()(as_transform<R>()(std::declval<Args>()...))) type;
+                typedef std::true_type applied;
+            };
+
+            template<typename R, typename ...Args>
+            struct make_4_<false, R, Args...>
+            {
+                typedef R type;
+                typedef std::false_type applied;
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
             // make_3_
             template<typename R, typename ...Args>
             struct make_3_
@@ -61,11 +77,8 @@ namespace boost
             // make_2_
             template<typename R, typename ...Args>
             struct make_2_
-            {
-                // Relies on the fact that as_transform<R> is _protect<R> when R is not a transform:
-                typedef decltype(utility::by_val()(as_transform<R>()(std::declval<Args>()...))) type;
-                typedef is_transform<R> applied;
-            };
+              : make_4_<is_transform<R>::value, R, Args...>
+            {};
 
             template<template<typename...> class R, typename ...A, typename ...Args>
             struct make_2_<R<A...>, Args...>
@@ -74,6 +87,13 @@ namespace boost
                   , utility::logical_ops::or_(make_3_<A, Args...>::applied::value...)
                 >
             {};
+
+            template<typename R, typename ...Args>
+            struct make_2_<_protect<R>, Args...>
+            {
+                typedef _protect<R> type;
+                typedef std::false_type applied;
+            };
 
             template<typename R, typename ...Args>
             struct make_2_<_noinvoke<R>, Args...>
@@ -107,22 +127,21 @@ namespace boost
             {};
 
             template<typename R, typename ...Args>
+            struct make_1_<_protect<R>, Args...>
+            {
+                typedef _protect<R> type;
+            };
+
+            template<typename R, typename ...Args>
             struct make_1_<_noinvoke<R>, Args...>
             {
                 typedef R type;
-                typedef std::false_type applied;
             };
 
             template<template<typename...> class R, typename ...A, typename ...Args>
             struct make_1_<_noinvoke<R<A...>>, Args...>
             {
                 typedef R<typename make_3_<A, Args...>::type...> type;
-                typedef
-                    std::integral_constant<
-                        bool
-                      , utility::logical_ops::or_(make_3_<A, Args...>::applied::value...)
-                    >
-                applied;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -191,6 +210,18 @@ namespace boost
                     >()(static_cast<T &&>(t)...)
                 )
             };
+
+            /// INTERNAL ONLY : Compile-time optimization for a common case:
+            template<typename Transform>
+            struct call_1_<true, Transform()>
+              : Transform::proto_transform_type
+            {};
+
+            /// INTERNAL ONLY : Compile-time optimization for a common case:
+            template<typename Transform>
+            struct call_1_<true, Transform(_)>
+              : Transform::proto_transform_type
+            {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // Handle callables and object constructions.
@@ -281,6 +312,8 @@ namespace boost
                 typedef Transforms type;
             };
 
+            // Note: Do *NOT* recurse into vararg functions. Those are nested pack transforms,
+            // which should not be considered together with this one.
             template<typename Ret, typename Head, typename ...Tail, typename Transforms>
             struct collect_pack_transforms_<Ret(Head, Tail...), Transforms>
               : collect_pack_transforms_<
@@ -297,18 +330,24 @@ namespace boost
             template<typename Transform, typename ...Transforms>
             struct collect_pack_transforms_<pack(Transform), void(Transforms...)>
             {
-                typedef void type(as_transform<Transform>, Transforms...);
+                typedef void type(Transforms..., as_transform<Transform>);
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // compute_indices_2_
-            template<typename Arity>
-            using compute_indices_2_ =
-                typename std::conditional<
-                    Arity::value == 0
+            template<std::size_t Arity0, std::size_t Arity1 = Arity0>
+            struct compute_indices_2_
+              : std::conditional<
+                    Arity0 == 0
                   , utility::indices<(std::size_t)-1>
-                  , utility::make_indices<0, Arity::value>
-                >::type;
+                  , utility::make_indices<0, Arity0>
+                >
+            {
+                static_assert(
+                    Arity0 == Arity1
+                  , "Two pack expressions in unpacking pattern have different arities"
+                );
+            };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // compute_indices_1_
@@ -317,7 +356,9 @@ namespace boost
             {
                 static_assert(
                     utility::never<Transforms>::value
-                  , "No pack expression found in unpacking pattern. See boost::proto::pack."
+                  , "No pack expression found in unpacking pattern. Use proto::pack(<transform>) "
+                    "to designate a transform that returns the expression you want to unpack; "
+                    "e.g., proto::pack(_) unpacks the current expression."
                 );
             };
 
@@ -325,28 +366,16 @@ namespace boost
             struct compute_indices_1_<void(Head, Tail...), Args...>
             {
                 typedef arity_of<decltype(Head()(std::declval<Args>()...))> arity;
-                typedef typename compute_indices_1_<void(Tail...), Args...>::arity tail_arity;
-                static_assert(
-                    arity::value == tail_arity::value
-                  , "Two pack expressions in unpacking pattern have different arities"
-                );
-                typedef compute_indices_2_<arity> type;
+                typedef compute_indices_1_<void(Tail...), Args...> tail;
+                typedef typename compute_indices_2_<arity::value, tail::arity::value>::type type;
             };
 
             template<typename Head, typename ...Args>
             struct compute_indices_1_<void(Head), Args...>
             {
                 typedef arity_of<decltype(Head()(std::declval<Args>()...))> arity;
-                typedef compute_indices_2_<arity> type;
+                typedef typename compute_indices_2_<arity::value>::type type;
             };
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // as_transform_
-            template<typename T>
-            typename T::proto_transform_type as_transform_(int);
-
-            template<typename T>
-            _protect<T> as_transform_(...);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -385,7 +414,7 @@ namespace boost
         /// transforms, Proto will unhelpfully find all nested transforms
         /// and apply them, even if you don't want them to be applied. Consider
         /// the following transform, which will replace the \c _ in
-        /// <tt>Bar<_>()</tt> with <tt>proto::terminal\<int\>::type</tt>:
+        /// <tt>Bar<_>()</tt> with <tt>proto::terminal\<int\></tt>:
         ///
         /// \code
         /// template<typename T>
@@ -396,7 +425,7 @@ namespace boost
         ///   : proto::when<_, Bar<_>() >
         /// {};
         ///
-        /// proto::terminal<int>::type i = {0};
+        /// proto::terminal<int> i {0};
         ///
         /// int main()
         /// {
@@ -405,27 +434,27 @@ namespace boost
         /// }
         /// \endcode
         ///
-        /// If you actually wanted to default-construct an object of type
-        /// <tt>Bar\<_\></tt>, you would have to protect the \c _ to prevent
-        /// it from being applied. You can use <tt>proto::_protect\<\></tt>
-        /// as follows:
+        /// If you were actually trying to pass the \c _ transform to \c Bar
+        /// you can use \c proto::_protect:
         ///
         /// \code
-        /// // OK: replace anything with Bar<_>()
+        /// // OK: replace anything with Bar<_protect<_> >()
         /// struct Foo
         ///   : proto::when<_, Bar<_protect<_> >() >
         /// {};
         /// \endcode
-        template<typename T>
+        ///
+        /// <tt>_protect\<X\></tt> behaves just like <tt>as_transform\<X\></tt>
+        /// when used as a transform.
+        template<typename T, int I>
         struct _protect
-          : transform<_protect<T>>
+          : transform<_protect<T, I>>
         {
-            template<typename... Args>
-            T operator()(Args &&...) const
-            {
-                static_assert(utility::never<T>::value, "don't call _protect<T>::operator() at runtime!");
-                return T{};
-            }
+            template<typename...As>
+            auto operator()(As &&... as) const
+            BOOST_PROTO_AUTO_RETURN(
+                as_transform<T>()(static_cast<As &&>(as)...)
+            )
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////
@@ -444,7 +473,12 @@ namespace boost
         // as_transform
         template<typename T, int>
         struct as_transform
-          : decltype(detail::as_transform_<T>(1))
+          : T::proto_transform_type
+        {};
+
+        template<typename T, int I>
+        struct as_transform<as_transform<T>, I>
+          : as_transform<T>
         {};
 
         template<typename Ret, typename ...Args, int I>
@@ -457,7 +491,7 @@ namespace boost
           : as_transform<Ret(Args......), I>
         {};
 
-        // Handle regular trasforms, be they primitive, callable or object
+        // Handle callable or object transforms
         template<typename Ret, typename ...Args, int I>
         struct as_transform<Ret(Args...), I>
           : transform<as_transform<Ret(Args...), I>>
