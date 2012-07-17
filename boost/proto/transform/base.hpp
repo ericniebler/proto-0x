@@ -11,6 +11,7 @@
 
 #include <utility>
 #include <type_traits>
+#include <boost/mpl/identity.hpp>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/args.hpp>
 #include <boost/proto/utility.hpp>
@@ -46,7 +47,7 @@ namespace boost
             template<bool IsTransform, typename R, typename ...Args>
             struct make_4_
             {
-                typedef decltype(utility::by_val()(as_transform<R>()(std::declval<Args>()...))) type;
+                typedef decltype(utility::by_val()(R()(std::declval<Args>()...))) type;
                 typedef std::true_type applied;
             };
 
@@ -88,10 +89,10 @@ namespace boost
                 >
             {};
 
-            template<typename R, typename ...Args>
-            struct make_2_<_protect<R>, Args...>
+            template<typename R, int I, typename ...Args>
+            struct make_2_<_protect<R, I>, Args...>
             {
-                typedef _protect<R> type;
+                typedef _protect<R, I> type;
                 typedef std::false_type applied;
             };
 
@@ -126,10 +127,10 @@ namespace boost
                 >
             {};
 
-            template<typename R, typename ...Args>
-            struct make_1_<_protect<R>, Args...>
+            template<typename R, int I, typename ...Args>
+            struct make_1_<_protect<R, I>, Args...>
             {
-                typedef _protect<R> type;
+                typedef _protect<R, I> type;
             };
 
             template<typename R, typename ...Args>
@@ -145,49 +146,20 @@ namespace boost
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // select_
-            template<typename T, typename U>
-            inline T && select_(T &&t, U &&) noexcept
-            {
-                return static_cast<T &&>(t);
-            }
-
-            template<typename U>
-            inline U && select_(utility::void_type const &, U &&u) noexcept
-            {
-                return static_cast<U &&>(u);
-            }
-
-            ////////////////////////////////////////////////////////////////////////////////////////
             // call_2_
-            template<std::size_t N, typename Sig>
-            struct call_2_;
-
-            template<std::size_t N, typename Transform, typename ...Args>
-            struct call_2_<N, Transform(Args...)>
-              : call_2_<N - 1, Transform(Args..., _void)>
-            {};
-
-            template<typename Transform, typename ...Args>
-            struct call_2_<0, Transform(Args...)>
+            template<typename Transform, typename ...Results>
+            struct call_2_
             {
-                template<typename ...T, BOOST_PROTO_ENABLE_IF(sizeof...(T) == sizeof...(Args))>
-                auto operator()(T &&... t) const
+                template<typename ...Ts>
+                auto operator()(Results &&... results, utility::first<utility::any, Results>..., Ts &&... ts) const
                 BOOST_PROTO_AUTO_RETURN(
-                    typename Transform::proto_transform_type()(
-                        detail::select_(
-                            as_transform<Args>()(static_cast<T &&>(t)...)
-                          , static_cast<T &&>(t)
-                        )...
-                    )
+                    Transform()(static_cast<Results &&>(results)..., static_cast<Ts &&>(ts)...)
                 )
 
-                template<typename ...T, BOOST_PROTO_ENABLE_IF(sizeof...(T) < sizeof...(Args))>
-                auto operator()(T &&... t) const
+                template<typename ...Ts, BOOST_PROTO_ENABLE_IF(sizeof...(Ts) <= sizeof...(Results))>
+                auto operator()(Results &&... results, Ts &&... ts) const
                 BOOST_PROTO_AUTO_RETURN(
-                    typename Transform::proto_transform_type()(
-                        as_transform<Args>()(static_cast<T &&>(t)...)...
-                    )
+                    Transform()(static_cast<Results &&>(results)...)
                 )
             };
 
@@ -205,22 +177,22 @@ namespace boost
                 auto operator()(T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     call_2_<
-                        (sizeof...(T) > sizeof...(Args) ? sizeof...(T) - sizeof...(Args) : 0)
-                      , Transform(Args...)
-                    >()(static_cast<T &&>(t)...)
+                        Transform
+                      , decltype(as_transform<Args>()(static_cast<T &&>(t)...))...
+                    >()(as_transform<Args>()(static_cast<T &&>(t)...)..., static_cast<T &&>(t)...)
                 )
             };
 
             /// INTERNAL ONLY : Compile-time optimization for a common case:
             template<typename Transform>
             struct call_1_<true, Transform()>
-              : Transform::proto_transform_type
+              : Transform
             {};
 
             /// INTERNAL ONLY : Compile-time optimization for a common case:
             template<typename Transform>
             struct call_1_<true, Transform(_)>
-              : Transform::proto_transform_type
+              : Transform
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////

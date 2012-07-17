@@ -359,48 +359,55 @@ namespace boost
         namespace detail
         {
             template<std::size_t I, typename T, typename List>
-            struct list_of_;
+            struct append_;
 
             template<typename T, typename ...Ts>
-            struct list_of_<0, T, utility::list<Ts...>>
+            struct append_<0, T, utility::list<Ts...>>
             {
                 typedef utility::list<Ts...> type;
             };
 
             template<typename T, typename ...Ts>
-            struct list_of_<1, T, utility::list<Ts...>>
+            struct append_<1, T, utility::list<Ts...>>
             {
                 typedef utility::list<Ts..., T> type;
             };
 
             template<typename T, typename ...Ts>
-            struct list_of_<2, T, utility::list<Ts...>>
+            struct append_<2, T, utility::list<Ts...>>
             {
                 typedef utility::list<Ts..., T, T> type;
             };
 
             template<typename T, typename ...Ts>
-            struct list_of_<3, T, utility::list<Ts...>>
+            struct append_<3, T, utility::list<Ts...>>
             {
                 typedef utility::list<Ts..., T, T, T> type;
             };
 
             template<typename T, typename ...Ts>
-            struct list_of_<4, T, utility::list<Ts...>>
+            struct append_<4, T, utility::list<Ts...>>
             {
                 typedef utility::list<Ts..., T, T, T, T> type;
             };
 
             template<std::size_t I, typename T, typename ...Ts>
-            struct list_of_<I, T, utility::list<Ts...>>
-              : list_of_<I-5, T, utility::list<Ts..., T, T, T, T, T>>
+            struct append_<I, T, utility::list<Ts...>>
+              : append_<I-5, T, utility::list<Ts..., T, T, T, T, T>>
             {};
         }
 
         namespace utility
         {
-            template<int I, typename T>
-            using list_of = typename detail::list_of_<I, T, list<>>::type;
+            template<std::size_t I, typename T>
+            struct list_of
+              : detail::append_<I, T, list<>>
+            {};
+
+            template<std::size_t I, typename T, typename List>
+            struct append
+              : detail::append_<I, T, List>
+            {};
 
             template<typename First, typename Second>
             using first = First;
@@ -443,14 +450,14 @@ namespace boost
             {
                 template<std::size_t N, typename ...Ts>
                 struct get_nth
-                  : decltype(detail::get_nth_<list_of<N, void>>::eval(std::declval<Ts>()...))
+                  : decltype(detail::get_nth_<typename list_of<N, void>::type>::eval(std::declval<Ts>()...))
                 {};
             }
 
             template<std::size_t N, typename ...Ts>
             constexpr typename result_of::get_nth<N, Ts...>::type && get_nth(Ts &&... ts) noexcept
             {
-                return detail::get_nth_<list_of<N, void>>::eval(static_cast<Ts &&>(ts)...).value;
+                return detail::get_nth_<typename list_of<N, void>::type>::eval(static_cast<Ts &&>(ts)...).value;
             }
 
             namespace result_of
