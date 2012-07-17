@@ -356,6 +356,9 @@ namespace boost
         template<typename Transform>
         struct transform;
 
+        template<typename T, int I = 0>
+        struct _protect;
+
         struct _expr;
 
         struct _state;
@@ -379,8 +382,14 @@ namespace boost
         template<typename T, int = 0>
         struct as_transform;
 
+        namespace unprotected
+        {
+            template<typename Grammar, typename Transform = Grammar>
+            struct when;
+        }
+
         template<typename Grammar, typename Transform = Grammar>
-        struct when;
+        using when = _protect<unprotected::when<Grammar, Transform>>;
 
         template<typename Transform>
         using otherwise = when<_, Transform>;
@@ -394,29 +403,44 @@ namespace boost
         template<std::size_t N>
         using _size_t = _constant<std::size_t, N>;
 
-        template<typename Grammar = detail::_eval>
-        struct _eval;
-
         template<typename Expr>
         struct _pass_through;
 
-        template<typename Seq, typename State0, typename Fun>
-        struct _fold;
+        namespace unprotected
+        {
+            template<typename Grammar = detail::_eval>
+            struct _eval;
+
+            template<typename Seq, typename State0, typename Fun>
+            struct _fold;
+
+            template<typename Seq, typename State0, typename Fun>
+            struct _recursive_fold;
+
+            template<typename Seq, typename State0, typename Fun>
+            struct _reverse_fold;
+
+            template<typename Seq, typename State0, typename Fun>
+            struct _reverse_recursive_fold;
+        }
+
+        template<typename Grammar = detail::_eval>
+        using _eval = _protect<unprotected::_eval<Grammar>>;
 
         template<typename Seq, typename State0, typename Fun>
-        struct _recursive_fold;
+        using _fold = _protect<unprotected::_fold<Seq, State0, Fun>>;
 
         template<typename Seq, typename State0, typename Fun>
-        struct _reverse_fold;
+        using _recursive_fold = _protect<unprotected::_recursive_fold<Seq, State0, Fun>>;
 
         template<typename Seq, typename State0, typename Fun>
-        struct _reverse_recursive_fold;
+        using _reverse_fold = _protect<unprotected::_reverse_fold<Seq, State0, Fun>>;
 
+        template<typename Seq, typename State0, typename Fun>
+        using _reverse_recursive_fold = _protect<unprotected::_reverse_recursive_fold<Seq, State0, Fun>>;
+        
         template<typename T>
         struct _noinvoke;
-
-        template<typename T, int I = 0>
-        struct _protect;
 
         struct _void;
 
@@ -466,21 +490,37 @@ namespace boost
         template<typename... Grammar>
         struct or_;
 
-        template<typename... Grammar>
-        struct and_;
-
         template<typename Grammar>
         struct not_;
 
+        // These are grammar elements that can accept transforms as template
+        // parameters, and so need to be protected from inadvertant substitution.
+        namespace unprotected
+        {
+            template<typename... Grammar>
+            struct and_;
+
+            template<typename If, typename Then = _, typename Else = not_<_>>
+            struct if_;
+
+            template<typename Cases, typename Transform = _tag_of>
+            struct switch_;
+        }
+
+        template<typename... Grammar>
+        using and_ = _protect<unprotected::and_<Grammar...>>;
+
         template<typename If, typename Then = _, typename Else = not_<_>>
-        struct if_;
+        using if_ = _protect<unprotected::if_<If, Then, Else>>;
 
         template<typename Cases, typename Transform = _tag_of>
-        struct switch_;
+        using switch_ = _protect<unprotected::switch_<Cases, Transform>>;
 
         template<typename Expr, typename Grammar>
         struct matches;
 
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // Handy expression template aliases
         template<typename Tag, typename T>
         using nullary_expr = expr<typename detail::nullary_tag<Tag>::type, args<T>>;
 

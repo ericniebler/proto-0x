@@ -448,14 +448,28 @@ namespace boost
         /// when used as a transform.
         template<typename T, int I>
         struct _protect
-          : transform<_protect<T, I>>
-        {
-            template<typename...As>
-            auto operator()(As &&... as) const
-            BOOST_PROTO_AUTO_RETURN(
-                as_transform<T>()(static_cast<As &&>(as)...)
-            )
-        };
+          : T
+        {};
+
+        template<typename R, typename...Args, int I>
+        struct _protect<R(Args...), I>
+          : as_transform<R(Args...)>
+        {};
+
+        template<typename R, typename...Args, int I>
+        struct _protect<R(*)(Args...), I>
+          : as_transform<R(Args...)>
+        {};
+
+        template<typename R, typename...Args, int I>
+        struct _protect<R(Args......), I>
+          : as_transform<R(Args......)>
+        {};
+
+        template<typename R, typename...Args, int I>
+        struct _protect<R(*)(Args......), I>
+          : as_transform<R(Args......)>
+        {};
 
         ////////////////////////////////////////////////////////////////////////////////////////
         // _void

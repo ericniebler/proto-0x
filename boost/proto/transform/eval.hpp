@@ -395,19 +395,22 @@ namespace boost
             };
         }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // _eval
-        template<typename Grammar>
-        struct _eval
-          : switch_<detail::_eval_cases<Grammar>>
-        {};
+        namespace unprotected
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            // _eval
+            template<typename Grammar>
+            struct _eval
+              : switch_<detail::_eval_cases<Grammar>>
+            {};
+        }
 
         namespace detail
         {
             // Loopy indirection that allows proto::_eval<> to be
             // used without specifying a Grammar argument.
             struct _eval
-              : proto::_eval<>
+              : proto::unprotected::_eval<>
             {};
         }
     }

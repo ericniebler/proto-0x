@@ -27,11 +27,6 @@ namespace boost
             struct matches_;
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // get_basic_expr
-            template<typename Expr>
-            typename Expr::proto_basic_expr_type get_basic_expr(Expr const &);
-
-            ////////////////////////////////////////////////////////////////////////////////////////
             // tag_matches
             template<typename Tag0, typename Tag1>
             struct tag_matches
@@ -247,7 +242,7 @@ namespace boost
             struct matches_
               : matches_<
                     Expr
-                  , decltype(detail::get_basic_expr(std::declval<BasicExpr>()))
+                  , typename std::remove_reference<BasicExpr>::type::proto_basic_expr_type
                   , typename Grammar::proto_grammar_type
                 >
             {
@@ -376,12 +371,12 @@ namespace boost
                 typedef proto::or_<Grammars...> proto_grammar_type;
             };
 
-            // Handle proto::and_
+            // Handle proto::unprotected::and_
             template<typename Expr, typename BasicExpr, typename ...Grammars>
-            struct matches_<Expr, BasicExpr, proto::and_<Grammars...>, void>
+            struct matches_<Expr, BasicExpr, proto::unprotected::and_<Grammars...>, void>
               : utility::and_<matches_<Expr, BasicExpr, Grammars>...>
             {
-                typedef proto::and_<Grammars...> proto_grammar_type;
+                typedef proto::unprotected::and_<Grammars...> proto_grammar_type;
             };
 
             // Handle proto::not_
@@ -392,9 +387,9 @@ namespace boost
                 typedef proto::not_<Grammar> proto_grammar_type;
             };
 
-            // Handle proto::if_
+            // Handle proto::unprotected::if_
             template<typename Expr, typename BasicExpr, typename If, typename Then, typename Else>
-            struct matches_<Expr, BasicExpr, proto::if_<If, Then, Else>, void>
+            struct matches_<Expr, BasicExpr, proto::unprotected::if_<If, Then, Else>, void>
               : std::conditional<
                     static_cast<bool>(
                         std::remove_reference<
@@ -405,12 +400,12 @@ namespace boost
                   , matches_<Expr, BasicExpr, Else>
                 >::type
             {
-                typedef proto::if_<If, Then, Else> proto_grammar_type;
+                typedef proto::unprotected::if_<If, Then, Else> proto_grammar_type;
             };
 
-            // Handle proto::switch_
+            // Handle proto::unprotected::switch_
             template<typename Expr, typename BasicExpr, typename Cases, typename Transform>
-            struct matches_<Expr, BasicExpr, proto::switch_<Cases, Transform>, void>
+            struct matches_<Expr, BasicExpr, proto::unprotected::switch_<Cases, Transform>, void>
               : matches_<
                     Expr
                   , BasicExpr
@@ -419,7 +414,7 @@ namespace boost
                     >::proto_grammar_type
                 >
             {
-                typedef proto::switch_<Cases, Transform> proto_grammar_type;
+                typedef proto::unprotected::switch_<Cases, Transform> proto_grammar_type;
             };
         }
 
@@ -564,76 +559,162 @@ namespace boost
             )
         };
 
-        /// \brief Used to select one grammar or another based on the result
-        /// of a compile-time Boolean. When used as a transform, \c if_\<\>
-        /// selects between two transforms based on a compile-time Boolean.
-        ///
-        /// When <tt>if_\<If,Then,Else\></tt> is used as a grammar, \c If
-        /// must be a Proto transform and \c Then and \c Else must be grammars.
-        /// An expression type \c E matches <tt>if_\<If,Then,Else\></tt> if
-        /// <tt>std::result_of\<when\<_,If\>(E)\>::type::value</tt>
-        /// is \c true and \c E matches \c U; or, if
-        /// <tt>std::result_of\<when\<_,If\>(E)\>::type::value</tt>
-        /// is \c false and \c E matches \c V.
-        ///
-        /// The template parameter \c Then defaults to \c _
-        /// and \c Else defaults to \c not\<_\>, so an expression type \c E
-        /// will match <tt>if_\<If\></tt> if and only if
-        /// <tt>std::result_of\<when\<_,If\>(E)\>::type::value</tt>
-        /// is \c true.
-        ///
-        /// \code
-        /// // A grammar that only matches integral terminals,
-        /// // using is_integral<> from Boost.Type_traits.
-        /// struct IsIntegral
-        ///   : and_<
-        ///         terminal<_>
-        ///       , if_< is_integral<_value>() >
-        ///     >
-        /// {};
-        /// \endcode
-        ///
-        /// When <tt>if_\<If,Then,Else\></tt> is used as a transform, \c If,
-        /// \c Then and \c Else must be Proto transforms. When applying
-        /// the transform to an expression \c E, state \c S and data \c V,
-        /// if <tt>boost::result_of\<when\<_,If\>(E,S,V)\>::type::value</tt>
-        /// is \c true then the \c Then transform is applied; otherwise
-        /// the \c Else transform is applied.
-        ///
-        /// \code
-        /// // Match a terminal. If the terminal is integral, return
-        /// // mpl::true_; otherwise, return mpl::false_.
-        /// struct IsIntegral2
-        ///   : when<
-        ///         terminal<_>
-        ///       , if_<
-        ///             is_integral<_value>()
-        ///           , std::true_type()
-        ///           , std::false_type()
-        ///         >
-        ///     >
-        /// {};
-        /// \endcode
-        template<typename If, typename Then /* = _*/, typename Else /*= not_<_>*/>
-        struct if_
-          : transform<if_<If, Then, Else>>
+        namespace unprotected
         {
-            typedef if_ proto_grammar_type;
+            /// \brief For matching all of a set of grammars. When used as a
+            /// transform, \c and_\<\> applies the transforms associated with
+            /// the each grammar in the set, and returns the result of the last.
+            ///
+            /// An expression type \c E matches <tt>and_\<B0,B1,...Bn\></tt> if \c E
+            /// matches all \c Bx for \c x in <tt>[0,n)</tt>.
+            ///
+            /// When applying <tt>and_\<B0,B1,...Bn\></tt> as a transform with an
+            /// expression \c e, state \c s and data \c d, it is
+            /// equivalent to <tt>(B0()(e, s, d),B1()(e, s, d),...Bn()(e, s, d))</tt>.
+            template<typename... Grammars>
+            struct and_
+              : transform<and_<Grammars...>>
+            {
+                typedef and_ proto_grammar_type;
 
-            template<typename ...Args>
-            auto operator()(Args &&... args) const
-            BOOST_PROTO_AUTO_RETURN(
-                typename std::conditional<
-                    static_cast<bool>(
-                        std::remove_reference<
-                            decltype(as_transform<If>()(static_cast<Args &&>(args)...))
-                        >::type::value
+                template<typename ...Args>
+                auto operator()(Args &&... args) const
+                BOOST_PROTO_AUTO_RETURN(
+                    utility::back(
+                        (as_transform<Grammars>()(static_cast<Args &&>(args)...), utility::void_)...
                     )
-                  , as_transform<Then>
-                  , as_transform<Else>
-                >::type()(static_cast<Args &&>(args)...)
-            )
-        };
+                )
+            };
+
+            /// \brief Used to select one grammar or another based on the result
+            /// of a compile-time Boolean. When used as a transform, \c if_\<\>
+            /// selects between two transforms based on a compile-time Boolean.
+            ///
+            /// When <tt>if_\<If,Then,Else\></tt> is used as a grammar, \c If
+            /// must be a Proto transform and \c Then and \c Else must be grammars.
+            /// An expression type \c E matches <tt>if_\<If,Then,Else\></tt> if
+            /// <tt>std::result_of\<when\<_,If\>(E)\>::type::value</tt>
+            /// is \c true and \c E matches \c U; or, if
+            /// <tt>std::result_of\<when\<_,If\>(E)\>::type::value</tt>
+            /// is \c false and \c E matches \c V.
+            ///
+            /// The template parameter \c Then defaults to \c _
+            /// and \c Else defaults to \c not\<_\>, so an expression type \c E
+            /// will match <tt>if_\<If\></tt> if and only if
+            /// <tt>std::result_of\<when\<_,If\>(E)\>::type::value</tt>
+            /// is \c true.
+            ///
+            /// \code
+            /// // A grammar that only matches integral terminals,
+            /// // using is_integral<> from Boost.Type_traits.
+            /// struct IsIntegral
+            ///   : and_<
+            ///         terminal<_>
+            ///       , if_< is_integral<_value>() >
+            ///     >
+            /// {};
+            /// \endcode
+            ///
+            /// When <tt>if_\<If,Then,Else\></tt> is used as a transform, \c If,
+            /// \c Then and \c Else must be Proto transforms. When applying
+            /// the transform to an expression \c E, state \c S and data \c V,
+            /// if <tt>boost::result_of\<when\<_,If\>(E,S,V)\>::type::value</tt>
+            /// is \c true then the \c Then transform is applied; otherwise
+            /// the \c Else transform is applied.
+            ///
+            /// \code
+            /// // Match a terminal. If the terminal is integral, return
+            /// // mpl::true_; otherwise, return mpl::false_.
+            /// struct IsIntegral2
+            ///   : when<
+            ///         terminal<_>
+            ///       , if_<
+            ///             is_integral<_value>()
+            ///           , std::true_type()
+            ///           , std::false_type()
+            ///         >
+            ///     >
+            /// {};
+            /// \endcode
+            template<typename If, typename Then /* = _*/, typename Else /*= not_<_>*/>
+            struct if_
+              : transform<if_<If, Then, Else>>
+            {
+                typedef if_ proto_grammar_type;
+
+                template<typename ...Args>
+                auto operator()(Args &&... args) const
+                BOOST_PROTO_AUTO_RETURN(
+                    typename std::conditional<
+                        static_cast<bool>(
+                            std::remove_reference<
+                                decltype(as_transform<If>()(static_cast<Args &&>(args)...))
+                            >::type::value
+                        )
+                      , as_transform<Then>
+                      , as_transform<Else>
+                    >::type()(static_cast<Args &&>(args)...)
+                )
+            };
+
+            /// \brief For matching one of a set of alternate grammars, which
+            /// are looked up based on some property of an expression. The
+            /// property on which to dispatch is specified by the \c Transform
+            /// template parameter, which defaults to <tt>tag_of\<_\>()</tt>.
+            /// That is, when the \c Trannsform is not specified, the alternate
+            /// grammar is looked up using the tag type of the current expression.
+            ///
+            /// When used as a transform, \c switch_\<\> applies the transform
+            /// associated with the grammar that matches the expression.
+            ///
+            /// \note \c switch_\<\> is functionally identical to \c or_\<\> but
+            /// is often more efficient. It does a fast, O(1) lookup using the
+            /// result of the specified transform to find a sub-grammar that may
+            /// potentially match the expression.
+            ///
+            /// An expression type \c E matches <tt>switch_\<C,T\></tt> if \c E
+            /// matches <tt>C::case_\<std::result_of\<T(E)\>::type\></tt>.
+            ///
+            /// When applying <tt>switch_\<C,T\></tt> as a transform with an
+            /// expression \c e of type \c E, state \c s of type \S and data
+            /// \c d of type \c D, it is equivalent to
+            /// <tt>C::case_\<std::result_of\<T(E,S,D)\>::type\>()(e, s, d)</tt>.
+            template<typename Cases, typename Transform>
+            struct switch_
+              : transform<switch_<Cases, Transform>>
+            {
+                typedef switch_ proto_grammar_type;
+
+                template<typename ...Args>
+                auto operator()(Args &&... args) const
+                BOOST_PROTO_AUTO_RETURN(
+                    as_transform<
+                        typename Cases::template case_<
+                            decltype(as_transform<Transform>()(static_cast<Args &&>(args)...))
+                        >
+                    >()(static_cast<Args &&>(args)...)
+                )
+            };
+
+            /// INTERNAL ONLY
+            // pure compile-time optimization
+            template<typename Cases>
+            struct switch_<Cases, _tag_of>
+              : transform<switch_<Cases, _tag_of>>
+            {
+                typedef switch_ proto_grammar_type;
+
+                template<typename Expr, typename ...Rest>
+                auto operator()(Expr && e, Rest &&... rest) const
+                BOOST_PROTO_AUTO_RETURN(
+                    as_transform<
+                        typename Cases::template case_<
+                            typename proto::tag_of<Expr>::type
+                        >
+                    >()(static_cast<Expr &&>(e), static_cast<Rest &&>(rest)...)
+                )
+            };
+        }
 
         /// \brief For matching one of a set of alternate grammars. Alternates
         /// tried in order to avoid ambiguity. When used as a transform, \c or_\<\>
@@ -660,89 +741,6 @@ namespace boost
                     static_cast<Expr &&>(e)
                   , static_cast<Rest &&>(rest)...
                 )
-            )
-        };
-
-        /// \brief For matching all of a set of grammars. When used as a
-        /// transform, \c and_\<\> applies the transforms associated with
-        /// the each grammar in the set, and returns the result of the last.
-        ///
-        /// An expression type \c E matches <tt>and_\<B0,B1,...Bn\></tt> if \c E
-        /// matches all \c Bx for \c x in <tt>[0,n)</tt>.
-        ///
-        /// When applying <tt>and_\<B0,B1,...Bn\></tt> as a transform with an
-        /// expression \c e, state \c s and data \c d, it is
-        /// equivalent to <tt>(B0()(e, s, d),B1()(e, s, d),...Bn()(e, s, d))</tt>.
-        template<typename... Grammars>
-        struct and_
-          : transform<and_<Grammars...>>
-        {
-            typedef and_ proto_grammar_type;
-
-            template<typename ...Args>
-            auto operator()(Args &&... args) const
-            BOOST_PROTO_AUTO_RETURN(
-                utility::back(
-                    (as_transform<Grammars>()(static_cast<Args &&>(args)...), utility::void_)...
-                )
-            )
-        };
-
-        /// \brief For matching one of a set of alternate grammars, which
-        /// are looked up based on some property of an expression. The
-        /// property on which to dispatch is specified by the \c Transform
-        /// template parameter, which defaults to <tt>tag_of\<_\>()</tt>.
-        /// That is, when the \c Trannsform is not specified, the alternate
-        /// grammar is looked up using the tag type of the current expression.
-        ///
-        /// When used as a transform, \c switch_\<\> applies the transform
-        /// associated with the grammar that matches the expression.
-        ///
-        /// \note \c switch_\<\> is functionally identical to \c or_\<\> but
-        /// is often more efficient. It does a fast, O(1) lookup using the
-        /// result of the specified transform to find a sub-grammar that may
-        /// potentially match the expression.
-        ///
-        /// An expression type \c E matches <tt>switch_\<C,T\></tt> if \c E
-        /// matches <tt>C::case_\<std::result_of\<T(E)\>::type\></tt>.
-        ///
-        /// When applying <tt>switch_\<C,T\></tt> as a transform with an
-        /// expression \c e of type \c E, state \c s of type \S and data
-        /// \c d of type \c D, it is equivalent to
-        /// <tt>C::case_\<std::result_of\<T(E,S,D)\>::type\>()(e, s, d)</tt>.
-        template<typename Cases, typename Transform>
-        struct switch_
-          : transform<switch_<Cases, Transform>>
-        {
-            typedef switch_ proto_grammar_type;
-
-            template<typename ...Args>
-            auto operator()(Args &&... args) const
-            BOOST_PROTO_AUTO_RETURN(
-                as_transform<
-                    typename Cases::template case_<
-                        decltype(as_transform<Transform>()(static_cast<Args &&>(args)...))
-                    >
-                >()(static_cast<Args &&>(args)...)
-            )
-        };
-
-        /// INTERNAL ONLY
-        // pure compile-time optimization
-        template<typename Cases>
-        struct switch_<Cases, _tag_of>
-          : transform<switch_<Cases, _tag_of>>
-        {
-            typedef switch_ proto_grammar_type;
-
-            template<typename Expr, typename ...Rest>
-            auto operator()(Expr && e, Rest &&... rest) const
-            BOOST_PROTO_AUTO_RETURN(
-                as_transform<
-                    typename Cases::template case_<
-                        typename proto::tag_of<Expr>::type
-                    >
-                >()(static_cast<Expr &&>(e), static_cast<Rest &&>(rest)...)
             )
         };
 

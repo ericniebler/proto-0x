@@ -16,20 +16,23 @@ namespace boost
 {
     namespace proto
     {
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // when
-        template<typename Grammar, typename Transform>
-        struct when
-          : transform<when<Grammar, Transform>>
+        namespace unprotected
         {
-            typedef Grammar proto_grammar_type;
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            // when
+            template<typename Grammar, typename Transform>
+            struct when
+              : transform<when<Grammar, Transform>>
+            {
+                typedef Grammar proto_grammar_type;
 
-            template<typename ...T>
-            auto operator()(T &&... t) const
-            BOOST_PROTO_AUTO_RETURN(
-                as_transform<Transform>()(static_cast<T &&>(t)...)
-            )
-        };
+                template<typename ...T>
+                auto operator()(T &&... t) const
+                BOOST_PROTO_AUTO_RETURN(
+                    as_transform<Transform>()(static_cast<T &&>(t)...)
+                )
+            };
+        }
     }
 }
 

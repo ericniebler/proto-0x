@@ -109,61 +109,64 @@ namespace boost
             };
         }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // _fold
-        // \brief A PrimitiveTransform that invokes the <tt>fusion::_fold\<\></tt>
-        // algorithm to accumulate
-        template<typename Sequence, typename State0, typename Fun>
-        struct _fold
-          : transform<_fold<Sequence, State0, Fun>>
+        namespace unprotected
         {
-            template<typename E>
-            auto operator()(E && e) const
-            BOOST_PROTO_AUTO_RETURN(
-                detail::fold_impl_<Fun>::fold_1_(
-                    as_transform<Sequence>()(static_cast<E &&>(e))
-                  , as_transform<State0>()(static_cast<E &&>(e))
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // _fold
+            // \brief A PrimitiveTransform that invokes the <tt>fusion::_fold\<\></tt>
+            // algorithm to accumulate
+            template<typename Sequence, typename State0, typename Fun>
+            struct _fold
+              : transform<_fold<Sequence, State0, Fun>>
+            {
+                template<typename E>
+                auto operator()(E && e) const
+                BOOST_PROTO_AUTO_RETURN(
+                    detail::fold_impl_<Fun>::fold_1_(
+                        as_transform<Sequence>()(static_cast<E &&>(e))
+                      , as_transform<State0>()(static_cast<E &&>(e))
+                    )
                 )
-            )
 
-            template<typename E, typename S, typename ...Rest>
-            auto operator()(E && e, S && s, Rest &&... rest) const
-            BOOST_PROTO_AUTO_RETURN(
-                detail::fold_impl_<Fun>::fold_1_(
-                    as_transform<Sequence>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
-                  , as_transform<State0>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
-                  , static_cast<Rest &&>(rest)...
+                template<typename E, typename S, typename ...Rest>
+                auto operator()(E && e, S && s, Rest &&... rest) const
+                BOOST_PROTO_AUTO_RETURN(
+                    detail::fold_impl_<Fun>::fold_1_(
+                        as_transform<Sequence>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                      , as_transform<State0>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                      , static_cast<Rest &&>(rest)...
+                    )
                 )
-            )
-        };
+            };
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // _reverse_fold
-        // A PrimitiveTransform that invokes the <tt>fusion::fold\<\></tt>
-        // algorithm to accumulate
-        template<typename Sequence, typename State0, typename Fun>
-        struct _reverse_fold
-          : transform<_reverse_fold<Sequence, State0, Fun>>
-        {
-            template<typename E>
-            auto operator()(E && e) const
-            BOOST_PROTO_AUTO_RETURN(
-                detail::fold_impl_<Fun>::reverse_fold_1_(
-                    as_transform<Sequence>()(static_cast<E &&>(e))
-                  , as_transform<State0>()(static_cast<E &&>(e))
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // _reverse_fold
+            // A PrimitiveTransform that invokes the <tt>fusion::fold\<\></tt>
+            // algorithm to accumulate
+            template<typename Sequence, typename State0, typename Fun>
+            struct _reverse_fold
+              : transform<_reverse_fold<Sequence, State0, Fun>>
+            {
+                template<typename E>
+                auto operator()(E && e) const
+                BOOST_PROTO_AUTO_RETURN(
+                    detail::fold_impl_<Fun>::reverse_fold_1_(
+                        as_transform<Sequence>()(static_cast<E &&>(e))
+                      , as_transform<State0>()(static_cast<E &&>(e))
+                    )
                 )
-            )
 
-            template<typename E, typename S, typename ...Rest>
-            auto operator()(E && e, S && s, Rest &&... rest) const
-            BOOST_PROTO_AUTO_RETURN(
-                detail::fold_impl_<Fun>::reverse_fold_1_(
-                    as_transform<Sequence>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
-                  , as_transform<State0>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
-                  , static_cast<Rest &&>(rest)...
+                template<typename E, typename S, typename ...Rest>
+                auto operator()(E && e, S && s, Rest &&... rest) const
+                BOOST_PROTO_AUTO_RETURN(
+                    detail::fold_impl_<Fun>::reverse_fold_1_(
+                        as_transform<Sequence>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                      , as_transform<State0>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                      , static_cast<Rest &&>(rest)...
+                    )
                 )
-            )
-        };
+            };
+        }
     }
 }
 
