@@ -1,23 +1,15 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// main.cpp
+///////////////////////////////////////////////////////////////////////////////
+// bind.cpp
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <iostream>
 #include <boost/proto/proto.hpp>
-#include <boost/proto/debug.hpp>
+#include "./unit_test.hpp"
 
-namespace mpl = boost::mpl;
 namespace proto = boost::proto;
-namespace fusion = boost::fusion;
 using proto::_;
-
-// BUGBUG what should happen when terminal<int> is used as a "transform", as
-// in terminal<int>(_value). A: That shouldn't be a pass-through, right? Or
-// should it?
-//static_assert(!proto::is_transform<proto::terminal<int>>::value, "");
 
 template<int I>
 struct fN
@@ -34,7 +26,7 @@ namespace
 }
 
 struct eval_unpack
-  : proto::as_transform<
+  : proto::when<
         proto::bind(
             proto::_env<fN<0>>
           , proto::bind(proto::_env<fN<1>>, proto::pack(_))...
@@ -76,21 +68,25 @@ struct sum
     }
 };
 
-int main()
+void test_bind()
 {
     proto::terminal<int> i{0};
 
     // 0^2 + 1^2 + 2^2 + 3^2 = 0+1+4+9 = 14
-    int sum_of_squares = unpack(i(1,2,3), sum(), proto::when<_, square(proto::_value)>());
-    std::cout << sum_of_squares << std::endl;
-
-    void done();
-    done();
+    proto::as_transform<square(proto::_value)> square_;
+    int sum_of_squares = unpack(i(1,2,3), sum(), square_);
+    BOOST_CHECK_EQUAL(sum_of_squares, 14);
 }
 
-void done()
+using namespace boost::unit_test;
+///////////////////////////////////////////////////////////////////////////////
+// init_unit_test_suite
+//
+test_suite* init_unit_test_suite( int argc, char* argv[] )
 {
-    char ch = 0;
-    std::cout << "Press <CTRL> + D to quit...";
-    while(std::cin.get(ch));
+    test_suite *test = BOOST_TEST_SUITE("tests for proto::bind");
+
+    test->add(BOOST_TEST_CASE(&test_bind));
+
+    return test;
 }

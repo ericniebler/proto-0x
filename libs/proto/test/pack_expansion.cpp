@@ -135,7 +135,7 @@ using namespace boost::unit_test;
 //
 test_suite* init_unit_test_suite( int argc, char* argv[] )
 {
-    test_suite *test = BOOST_TEST_SUITE("test immediate evaluation of proto parse trees");
+    test_suite *test = BOOST_TEST_SUITE("test for proto::pack, pack expansion, and unpack patterns");
 
     test->add(BOOST_TEST_CASE(&test_call_pack));
     test->add(BOOST_TEST_CASE(&test_make_pack));
