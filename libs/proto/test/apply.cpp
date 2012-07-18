@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// bind.cpp
+// apply.cpp
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
@@ -27,9 +27,9 @@ namespace
 
 struct eval_unpack
   : proto::as_transform<
-        proto::bind(
+        proto::apply(
             proto::_env<fN<0>>
-          , proto::bind(proto::_env<fN<1>>, proto::pack(_))...
+          , proto::apply(proto::_env<fN<1>>, proto::pack(_))...
         )
     >
 {};
@@ -68,7 +68,7 @@ struct sum
     }
 };
 
-void test_bind()
+void test_apply()
 {
     proto::terminal<int> i{0};
 
@@ -84,9 +84,9 @@ using namespace boost::unit_test;
 //
 test_suite* init_unit_test_suite( int argc, char* argv[] )
 {
-    test_suite *test = BOOST_TEST_SUITE("tests for proto::bind");
+    test_suite *test = BOOST_TEST_SUITE("tests for proto::apply");
 
-    test->add(BOOST_TEST_CASE(&test_bind));
+    test->add(BOOST_TEST_CASE(&test_apply));
 
     return test;
 }

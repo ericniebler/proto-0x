@@ -13,8 +13,8 @@ project
 
 test-suite "proto"
     :
+        [ run apply.cpp ]
         [ run as_transform.cpp ]
-        [ run bind.cpp ]
         [ compile bug2407.cpp ]
         [ run common_domain.cpp ]
         [ run constrained_ops.cpp ]

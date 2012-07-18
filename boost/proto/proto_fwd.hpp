@@ -454,6 +454,13 @@ namespace boost
 
         struct pack;
 
+        namespace functional
+        {
+            struct apply;
+        }
+
+        using functional::apply;
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Misc. traits
         template<typename T>

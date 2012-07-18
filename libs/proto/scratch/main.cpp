@@ -35,9 +35,9 @@ namespace
 
 struct eval_unpack
   : proto::as_transform<
-        proto::bind(
+        proto::apply(
             proto::_env<fN<0>>
-          , proto::bind(proto::_env<fN<1>>, proto::pack(_))...
+          , proto::apply(proto::_env<fN<1>>, proto::pack(_))...
         )
     >
 {};

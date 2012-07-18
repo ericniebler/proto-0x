@@ -157,17 +157,6 @@ namespace boost
                 )
             };
 
-            // TODO: Remove this specialization when http://llvm.org/bugs/show_bug.cgi?id=13386 is fixed.
-            template<typename Transform>
-            struct call_2_<false, Transform>
-            {
-                template<typename ...Ts>
-                auto operator()(Ts &&... ts) const
-                BOOST_PROTO_AUTO_RETURN(
-                    Transform()(static_cast<Ts &&>(ts)...)
-                )
-            };
-
             template<typename Transform, typename ...Results>
             struct call_2_<true, Transform, Results...>
             {
