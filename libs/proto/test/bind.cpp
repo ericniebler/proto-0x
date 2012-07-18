@@ -26,7 +26,7 @@ namespace
 }
 
 struct eval_unpack
-  : proto::when<
+  : proto::as_transform<
         proto::bind(
             proto::_env<fN<0>>
           , proto::bind(proto::_env<fN<1>>, proto::pack(_))...
