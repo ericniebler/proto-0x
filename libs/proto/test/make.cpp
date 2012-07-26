@@ -16,6 +16,20 @@ using proto::_;
 namespace test_make
 {
     template<typename T>
+    struct careful;
+};
+
+namespace boost { namespace proto
+{
+    template<typename T>
+    struct is_transform<test_make::careful<T>>
+      : mpl::false_
+    {};
+}}
+
+namespace test_make
+{
+    template<typename T>
     struct type2type {};
 
     template<typename T>

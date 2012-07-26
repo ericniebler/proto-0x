@@ -28,8 +28,8 @@ namespace
 struct eval_unpack
   : proto::as_transform<
         proto::apply(
-            proto::_env<fN<0>>
-          , proto::apply(proto::_env<fN<1>>, proto::pack(_))...
+            proto::_env_var<fN<0>>
+          , proto::apply(proto::_env_var<fN<1>>, proto::pack(_))...
         )
     >
 {};

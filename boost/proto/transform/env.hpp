@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 // env.hpp
-// Helpers for producing and consuming tranform environment variables.
+// Helpers for producing and consuming tranform env variables.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
@@ -11,66 +11,88 @@
 
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/transform/base.hpp>
+#include <boost/proto/utility.hpp>
 
 namespace boost
 {
     namespace proto
     {
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // evironment_base
-        struct environment_base
+        namespace envs
         {
-            void operator[](struct not_a_valid_tag) const noexcept;
+            struct key_not_found
+            {};
 
-            template<typename T>
-            T at(utility::any, T && t) const noexcept(noexcept(T(static_cast<T &&>(t))))
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            // empty_env
+            struct empty_env
             {
-                return static_cast<T &&>(t);
-            }
-        };
+                key_not_found operator[](utility::any) const noexcept
+                {
+                    return key_not_found();
+                }
+
+                template<typename T>
+                T at(utility::any, T && t) const noexcept(noexcept(T(static_cast<T &&>(t))))
+                {
+                    return static_cast<T &&>(t);
+                }
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            // env
+            // A transform env is a slot-based storage mechanism, accessible by Key.
+            template<typename Key, typename Value, typename Env /*= empty_env*/>
+            struct env
+              : private Env
+            {
+                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(env);
+
+                Value value_;
+
+                template<typename V, typename B = Env
+                  , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<env, V>::value))>
+                explicit env(V && v, B && b = B())
+                  : Env(static_cast<B &&>(b))
+                  , value_(static_cast<V &&>(v))
+                {}
+
+                // For key-Envd lookups not intended to fail
+                using Env::operator[];
+                auto operator[](Key) const
+                BOOST_PROTO_AUTO_RETURN(
+                    (static_cast<env const &>(*this).value_)
+                )
+
+                // For key-Envd lookups that can fail, use the default if key not found.
+                using Env::at;
+                template<typename T>
+                auto at(Key, T &&) const
+                BOOST_PROTO_AUTO_RETURN(
+                    (static_cast<env const &>(*this).value_)
+                )
+
+                template<typename T, typename V>
+                friend env<T, V, env> operator,(env tail, env<T, V> head)
+                {
+                    return env<T, V, env>{
+                        static_cast<env<T, V> &&>(head).value_
+                      , static_cast<env &&>(tail)
+                    };
+                }
+            };
+        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        // evironment
-        // A transform environment is a slot-based storage mechanism, accessible by tag.
-        template<typename Tag, typename Value, typename Base /*= environment_base*/>
-        struct environment
-          : Base
-        {
-            BOOST_PROTO_REGULAR_TRIVIAL_CLASS(environment);
+        // is_env
+        template<typename T>
+        struct is_env
+          : std::is_base_of<empty_env, T>
+        {};
 
-            Value value_;
-
-            template<typename V, typename B = Base
-              , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<environment, V>::value))>
-            explicit environment(V && v, B && b = B())
-              : Base(static_cast<B &&>(b))
-              , value_(static_cast<V &&>(v))
-            {}
-
-            // For key-based lookups not intended to fail
-            using Base::operator[];
-            auto operator[](Tag) const
-            BOOST_PROTO_AUTO_RETURN(
-                (static_cast<environment const &>(*this).value_)
-            )
-
-            // For key-based lookups that can fail, use the default if key not found.
-            using Base::at;
-            template<typename T>
-            auto at(Tag, T &&) const
-            BOOST_PROTO_AUTO_RETURN(
-                (static_cast<environment const &>(*this).value_)
-            )
-
-            template<typename T, typename V>
-            friend environment<T, V, environment> operator,(environment tail, environment<T, V> head)
-            {
-                return environment<T, V, environment>{
-                    static_cast<environment<T, V> &&>(head).value_
-                  , static_cast<environment &&>(tail)
-                };
-            }
-        };
+        template<typename T>
+        struct is_env<T &>
+          : std::is_base_of<empty_env, T>
+        {};
 
         namespace detail
         {
@@ -79,10 +101,7 @@ namespace boost
                 template<typename T>
                 static T make_env(T && t)
                 {
-                    static_assert(
-                        utility::is_base_of<environment_base, T>::value
-                      , "make_env used in non-environment context"
-                    );
+                    static_assert(is_env<T>::value, "make_env used in non-env context");
                     return t;
                 }
 
@@ -103,21 +122,22 @@ namespace boost
         )
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        // _env
-        template<typename Tag>
-        struct _env
-          : transform<_env<Tag>>
+        // _env_var
+        template<typename Key>
+        struct _env_var
+          : transform<_env_var<Key>>
         {
             template<typename E, typename S, typename Env, typename ...Rest>
             auto operator()(E &&, S &&, Env && env, Rest &&...) const
             BOOST_PROTO_AUTO_RETURN(
-                static_cast<Env &&>(env)[Tag()]
+                static_cast<Env &&>(env)[Key()]
             )
         };
 
-        template<>
-        struct _env<void>
-          : transform<_env<void>>
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // _env
+        struct _env
+          : transform<_env>
         {
             template<typename E, typename S, typename Env, typename ...Rest>
             auto operator()(E &&, S &&, Env && env, Rest &&...) const

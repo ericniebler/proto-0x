@@ -28,15 +28,22 @@ namespace boost
             template<typename T>
             T nested_type_(long);
 
-            template<typename T, bool Applied>
-            struct nested_type
+            template<typename T, bool Applied, bool IsTransform, typename ...Args>
+            struct invoke_
+            {
+                typedef decltype(utility::by_val()(T()(std::declval<Args>()...))) type;
+                typedef std::true_type applied;
+            };
+
+            template<typename T, typename ...Args>
+            struct invoke_<T, true, false, Args...>
             {
                 typedef decltype(detail::nested_type_<T>(1)) type;
                 typedef std::true_type applied;
             };
 
-            template<typename T>
-            struct nested_type<T, false>
+            template<typename T, typename ...Args>
+            struct invoke_<T, false, false, Args...>
             {
                 typedef T type;
                 typedef std::false_type applied;
@@ -83,9 +90,11 @@ namespace boost
 
             template<template<typename...> class R, typename ...A, typename ...Args>
             struct make_2_<R<A...>, Args...>
-              : nested_type<
+              : invoke_<
                     R<typename make_3_<A, Args...>::type...>
                   , utility::logical_ops::or_(make_3_<A, Args...>::applied::value...)
+                  , is_transform<R<typename make_3_<A, Args...>::type...>>::value
+                  , Args...
                 >
             {};
 
@@ -97,14 +106,14 @@ namespace boost
             };
 
             template<typename R, typename ...Args>
-            struct make_2_<_noinvoke<R>, Args...>
+            struct make_2_<noinvoke<R>, Args...>
             {
                 typedef R type;
                 typedef std::false_type applied;
             };
 
             template<template<typename...> class R, typename ...A, typename ...Args>
-            struct make_2_<_noinvoke<R<A...>>, Args...>
+            struct make_2_<noinvoke<R<A...>>, Args...>
             {
                 typedef R<typename make_3_<A, Args...>::type...> type;
                 typedef utility::or_<typename make_3_<A, Args...>::applied...> applied;
@@ -121,9 +130,12 @@ namespace boost
 
             template<template<typename...> class R, typename ...A, typename ...Args>
             struct make_1_<R<A...>, Args...>
-              : nested_type<
+              : invoke_<
                     R<typename make_3_<A, Args...>::type...>
                   , utility::logical_ops::or_(make_3_<A, Args...>::applied::value...)
+                  , is_transform<R<typename make_3_<A, Args...>::type...>>::value
+                        && utility::logical_ops::or_(make_3_<A, Args...>::applied::value...)
+                  , Args...
                 >
             {};
 
@@ -134,13 +146,13 @@ namespace boost
             };
 
             template<typename R, typename ...Args>
-            struct make_1_<_noinvoke<R>, Args...>
+            struct make_1_<noinvoke<R>, Args...>
             {
                 typedef R type;
             };
 
             template<template<typename...> class R, typename ...A, typename ...Args>
-            struct make_1_<_noinvoke<R<A...>>, Args...>
+            struct make_1_<noinvoke<R<A...>>, Args...>
             {
                 typedef R<typename make_3_<A, Args...>::type...> type;
             };

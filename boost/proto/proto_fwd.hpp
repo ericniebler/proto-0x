@@ -223,8 +223,8 @@ namespace boost
                 struct proto_flat_view;
 
                 // Transform environment tags
-                struct data_;
-                struct local_;
+                struct data_type;
+                struct local_type;
             }
         }
 
@@ -346,10 +346,19 @@ namespace boost
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // stuff for transforms here
-        struct environment_base;
+        namespace envs
+        {
+            struct key_not_found;
 
-        template<typename Tag, typename Value, typename Base = environment_base>
-        struct environment;
+            struct empty_env;
+
+            template<typename Tag, typename Value, typename Base = empty_env>
+            struct env;
+        }
+
+        using envs::key_not_found;
+        using envs::empty_env;
+        using envs::env;
 
         struct transform_base;
 
@@ -363,10 +372,12 @@ namespace boost
 
         struct _state;
 
-        template<typename Tag = void>
+        template<typename Tag>
+        struct _env_var;
+
         struct _env;
 
-        typedef _env<tag::data_> _data;
+        typedef _env_var<tag::data_type> _data;
 
         struct _value;
 
@@ -440,7 +451,7 @@ namespace boost
         using _reverse_recursive_fold = _protect<unprotected::_reverse_recursive_fold<Seq, State0, Fun>>;
         
         template<typename T>
-        struct _noinvoke;
+        struct noinvoke;
 
         struct _void;
 

@@ -14,7 +14,7 @@ using proto::_;
 struct Test
   : proto::when<
         _
-      , proto::_noinvoke<
+      , proto::noinvoke<
             // This remove_pointer invocation is bloked by noinvoke
             std::remove_pointer<
                 // This add_pointer invocation is *not* blocked by noinvoke
@@ -30,7 +30,7 @@ struct Test2
         // This add_pointer gets invoked because a substitution takes place
         // within it.
       , std::add_pointer<
-            proto::_noinvoke<
+            proto::noinvoke<
                 // This remove_pointer invocation is bloked by noinvoke
                 std::remove_pointer<
                     // This add_pointer invocation is *not* blocked by noinvoke
@@ -54,7 +54,7 @@ struct Test3
         // within it.
       , select2nd<
             void
-          , proto::_noinvoke<
+          , proto::noinvoke<
                 // This remove_pointer invocation is bloked by noinvoke
                 select2nd<
                     void
@@ -111,7 +111,7 @@ using namespace boost::unit_test;
 //
 test_suite* init_unit_test_suite( int argc, char* argv[] )
 {
-    test_suite *test = BOOST_TEST_SUITE("test proto::_noinvoke");
+    test_suite *test = BOOST_TEST_SUITE("test proto::noinvoke");
 
     test->add(BOOST_TEST_CASE(&test_noinvoke));
 

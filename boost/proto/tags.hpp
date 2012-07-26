@@ -30,9 +30,9 @@ namespace boost
                 // to create transform environments like (data=x, local=y),
                 // where "data" and "local" are tags.
                 template<typename V, BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<def, V>::value))>
-                environment<def, V> operator=(V && v) const
+                env<def, V> operator=(V && v) const
                 {
-                    return environment<def, V>{static_cast<V &&>(v)};
+                    return env<def, V>{static_cast<V &&>(v)};
                 }
             };
 
@@ -177,30 +177,30 @@ namespace boost
                 struct function : def<function> {};
 
                 /// Tag type for the data parameter in the transform environment
-                struct data_
-                  : def<data_>
+                struct data_type
+                  : def<data_type>
                 {
-                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(data_);
-                    using def<data_>::operator=;
+                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(data_type);
+                    using def<data_type>::operator=;
                 };
 
-                /// Tag type for the local parameter in the transform environment
-                struct local_
-                  : def<local_>
+                /// Tag type for the local parameter in the transform env
+                struct local_type
+                  : def<local_type>
                 {
-                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(local_);
-                    using def<local_>::operator=;
+                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(local_type);
+                    using def<local_type>::operator=;
                 };
 
                 namespace
                 {
                     ////////////////////////////////////////////////////////////////////////////////
                     // data
-                    constexpr data_ const & data = utility::static_const<data_>::value;
+                    constexpr data_type const & data = utility::static_const<data_type>::value;
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // local
-                    constexpr local_ const & local = utility::static_const<local_>::value;
+                    constexpr local_type const & local = utility::static_const<local_type>::value;
                 }
 
                 BOOST_PROTO_IGNORE_UNUSED(data, local);

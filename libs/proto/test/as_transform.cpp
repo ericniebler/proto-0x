@@ -80,7 +80,7 @@ void test_as_transform_2()
     S<int> s1 = proto::as_transform<S<proto::_state()>()>()(i, 42);
     S<int> s2 = proto::as_transform<S<proto::_state(_my_expr)>()>()(i, 42);
     S<int> s3 = proto::as_transform<S<proto::_state(_my_expr, proto::_state)>()>()(i, 42, proto::tag::data = 55);
-    S<int> s4 = proto::as_transform<S<proto::_state(_my_expr, proto::_state, proto::_env<>)>()>()(i, 42, proto::tag::data = 55);
+    S<int> s4 = proto::as_transform<S<proto::_state(_my_expr, proto::_state, proto::_env)>()>()(i, 42, proto::tag::data = 55);
     BOOST_PROTO_IGNORE_UNUSED(s0, s1, s2, s3, s4);
 }
 
