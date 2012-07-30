@@ -49,7 +49,10 @@ namespace boost
                 template<typename E, typename ...T>
                 utility::any operator()(E && e, T &&...) const noexcept
                 {
-                    static_assert(utility::never<E>::value, "proto::_eval doesn't know how to evaluate this expression!");
+                    static_assert(
+                        utility::never<E>::value
+                      , "proto::_eval doesn't know how to evaluate this expression!"
+                    );
                     return utility::any();
                 }
             };
@@ -395,22 +398,19 @@ namespace boost
             };
         }
 
-        namespace unprotected
-        {
-            ////////////////////////////////////////////////////////////////////////////////////////////
-            // _eval
-            template<typename Grammar>
-            struct _eval
-              : switch_<detail::_eval_cases<Grammar>>
-            {};
-        }
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // _eval
+        template<typename Grammar>
+        struct _eval
+          : switch_<detail::_eval_cases<Grammar>>
+        {};
 
         namespace detail
         {
             // Loopy indirection that allows proto::_eval<> to be
             // used without specifying a Grammar argument.
             struct _eval
-              : proto::unprotected::_eval<>
+              : proto::_eval<>
             {};
         }
     }

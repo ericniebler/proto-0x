@@ -11,7 +11,6 @@
 #define BOOST_PROTO_CORE_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/apply.hpp>
 #include <boost/proto/args.hpp>
 #include <boost/proto/custom.hpp>
 #include <boost/proto/domain.hpp>

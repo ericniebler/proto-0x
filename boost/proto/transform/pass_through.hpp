@@ -79,10 +79,10 @@ namespace boost
             template<std::size_t N, std::size_t M, typename Ints, typename ...Args>
             struct pass_through_1_
               : std::conditional<
-                    (N >= M)
+                    (N >= M) // for when the vararg matches 1 or more elements
                   , pass_through_4_<N, M, Ints, typename utility::result_of::back<Args...>::type, Args...>
                   , utility::lazy_conditional<
-                        (N == M - 1)
+                        (N == M - 1) // for when the vararg matches 0 elements
                       , pass_through_2_<N, Ints, typename utility::result_of::back<Args...>::type, Args...>
                       , pass_through_fail_<N, M>
                     >

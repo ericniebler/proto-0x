@@ -132,15 +132,6 @@ namespace boost
             struct not_a_grammar;
             struct not_a_domain;
 
-            template<typename R, typename ...Args>
-            struct make_1_;
-
-            template<typename R, typename ...Args>
-            struct make_2_;
-
-            template<typename R, typename ...Args>
-            struct make_3_;
-
             struct _eval;
 
             struct any_terminal;
@@ -393,14 +384,8 @@ namespace boost
         template<typename T, int = 0>
         struct as_transform;
 
-        namespace unprotected
-        {
-            template<typename Grammar, typename Transform = Grammar>
-            struct when;
-        }
-
         template<typename Grammar, typename Transform = Grammar>
-        using when = _protect<unprotected::when<Grammar, Transform>>;
+        struct when;
 
         template<typename Transform>
         using otherwise = when<_, Transform>;
@@ -417,38 +402,20 @@ namespace boost
         template<typename Expr>
         struct _pass_through;
 
-        namespace unprotected
-        {
-            template<typename Grammar = detail::_eval>
-            struct _eval;
-
-            template<typename Seq, typename State0, typename Fun>
-            struct _fold;
-
-            template<typename Seq, typename State0, typename Fun>
-            struct _recursive_fold;
-
-            template<typename Seq, typename State0, typename Fun>
-            struct _reverse_fold;
-
-            template<typename Seq, typename State0, typename Fun>
-            struct _reverse_recursive_fold;
-        }
-
         template<typename Grammar = detail::_eval>
-        using _eval = _protect<unprotected::_eval<Grammar>>;
+        struct _eval;
 
         template<typename Seq, typename State0, typename Fun>
-        using _fold = _protect<unprotected::_fold<Seq, State0, Fun>>;
+        struct _fold;
 
         template<typename Seq, typename State0, typename Fun>
-        using _recursive_fold = _protect<unprotected::_recursive_fold<Seq, State0, Fun>>;
+        struct _recursive_fold;
 
         template<typename Seq, typename State0, typename Fun>
-        using _reverse_fold = _protect<unprotected::_reverse_fold<Seq, State0, Fun>>;
+        struct _reverse_fold;
 
         template<typename Seq, typename State0, typename Fun>
-        using _reverse_recursive_fold = _protect<unprotected::_reverse_recursive_fold<Seq, State0, Fun>>;
+        struct _reverse_recursive_fold;
         
         template<typename T>
         struct noinvoke;
@@ -465,12 +432,9 @@ namespace boost
 
         struct pack;
 
-        namespace functional
-        {
-            struct apply;
-        }
+        struct apply;
 
-        using functional::apply;
+        struct construct;
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Misc. traits
@@ -511,28 +475,14 @@ namespace boost
         template<typename Grammar>
         struct not_;
 
-        // These are grammar elements that can accept transforms as template
-        // parameters, and so need to be protected from inadvertant substitution.
-        namespace unprotected
-        {
-            template<typename... Grammar>
-            struct and_;
-
-            template<typename If, typename Then = _, typename Else = not_<_>>
-            struct if_;
-
-            template<typename Cases, typename Transform = _tag_of>
-            struct switch_;
-        }
-
         template<typename... Grammar>
-        using and_ = _protect<unprotected::and_<Grammar...>>;
+        struct and_;
 
         template<typename If, typename Then = _, typename Else = not_<_>>
-        using if_ = _protect<unprotected::if_<If, Then, Else>>;
+        struct if_;
 
         template<typename Cases, typename Transform = _tag_of>
-        using switch_ = _protect<unprotected::switch_<Cases, Transform>>;
+        struct switch_;
 
         template<typename Expr, typename Grammar>
         struct matches;

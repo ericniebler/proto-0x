@@ -14,13 +14,15 @@ using proto::_;
 struct Test
   : proto::when<
         _
-      , proto::noinvoke<
-            // This remove_pointer invocation is bloked by noinvoke
-            std::remove_pointer<
-                // This add_pointer invocation is *not* blocked by noinvoke
-                std::add_pointer<_>
-            >
-        >()
+      , proto::construct(
+            proto::noinvoke<
+                // This remove_pointer invocation is bloked by noinvoke
+                std::remove_pointer<
+                    // This add_pointer invocation is *not* blocked by noinvoke
+                    std::add_pointer<_>
+                >
+            >()
+        )
     >
 {};
 
@@ -29,15 +31,17 @@ struct Test2
         _
         // This add_pointer gets invoked because a substitution takes place
         // within it.
-      , std::add_pointer<
-            proto::noinvoke<
-                // This remove_pointer invocation is bloked by noinvoke
-                std::remove_pointer<
-                    // This add_pointer invocation is *not* blocked by noinvoke
-                    std::add_pointer<_>
+      , proto::construct(
+            std::add_pointer<
+                proto::noinvoke<
+                    // This remove_pointer invocation is bloked by noinvoke
+                    std::remove_pointer<
+                        // This add_pointer invocation is *not* blocked by noinvoke
+                        std::add_pointer<_>
+                    >
                 >
-            >
-        >()
+            >()
+        )
     >
 {};
 
@@ -52,17 +56,19 @@ struct Test3
         _
         // This add_pointer gets invoked because a substitution takes place
         // within it.
-      , select2nd<
-            void
-          , proto::noinvoke<
-                // This remove_pointer invocation is bloked by noinvoke
-                select2nd<
-                    void
-                    // This add_pointer invocation is *not* blocked by noinvoke
-                  , std::add_pointer<_>
+      , proto::construct(
+            select2nd<
+                void
+              , proto::noinvoke<
+                    // This remove_pointer invocation is bloked by noinvoke
+                    select2nd<
+                        void
+                        // This add_pointer invocation is *not* blocked by noinvoke
+                      , std::add_pointer<_>
+                    >
                 >
-            >
-        >()
+            >()
+        )
     >
 {};
 

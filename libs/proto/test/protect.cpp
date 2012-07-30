@@ -25,24 +25,28 @@ struct Test
   : proto::as_transform<proto::_protect<_>()>
 {};
 
+struct Test0
+  : proto::as_transform<proto::construct(proto::_protect<_>())>
+{};
+
 struct Test1
-  : proto::as_transform<identity<proto::_protect<_>>()>
+  : proto::as_transform<proto::construct(identity<proto::_protect<_>>())>
 {};
 
 struct Test2
-  : proto::as_transform<S<proto::_protect<_>>()>
+  : proto::as_transform<proto::construct(S<proto::_protect<_>>())>
 {};
 
 struct Test3
-  : proto::as_transform<identity<proto::_protect<identity<_>()>>()>
+  : proto::as_transform<proto::construct(identity<proto::_protect<identity<_>()>>())>
 {};
 
 struct Test4
-  : proto::as_transform<S<proto::_protect<S<_>()>>()>
+  : proto::as_transform<proto::construct(S<proto::_protect<S<_>()>>())>
 {};
 
 struct Test5
-  : proto::as_transform<identity<proto::_protect<identity<identity<_>>()>>()>
+  : proto::as_transform<proto::construct(identity<proto::_protect<identity<identity<_>>()>>())>
 {};
 
 void test_protect()
@@ -50,13 +54,14 @@ void test_protect()
     proto::terminal<int> i {42};
 
     proto::terminal<int> & t = Test()(i);
+    proto::_protect<_> t0 = Test0()(i);
     identity<proto::_protect<_>> t1 = Test1()(i);
     S<proto::_protect<_>> t2 = Test2()(i);
     identity<proto::_protect<identity<_>()>> t3 = Test3()(i);
     S<proto::_protect<S<_>()>> t4 = Test4()(i);
     identity<proto::_protect<identity<identity<_>>()>> t5 = Test5()(i);
 
-    BOOST_PROTO_IGNORE_UNUSED(t, t1, t2, t3, t4, t5);
+    BOOST_PROTO_IGNORE_UNUSED(t, t0, t1, t2, t3, t4, t5);
 }
 
 using namespace boost::unit_test;

@@ -13,7 +13,6 @@
 #include <type_traits>
 #include <boost/mpl/identity.hpp>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/args.hpp>
 #include <boost/proto/utility.hpp>
 
 namespace boost
@@ -22,221 +21,59 @@ namespace boost
     {
         namespace detail
         {
-            template<typename T>
-            typename T::type nested_type_(int);
-
-            template<typename T>
-            T nested_type_(long);
-
-            template<typename T, bool Applied, bool IsTransform, typename ...Args>
-            struct invoke_
-            {
-                typedef decltype(utility::by_val()(T()(std::declval<Args>()...))) type;
-                typedef std::true_type applied;
-            };
-
-            template<typename T, typename ...Args>
-            struct invoke_<T, true, false, Args...>
-            {
-                typedef decltype(detail::nested_type_<T>(1)) type;
-                typedef std::true_type applied;
-            };
-
-            template<typename T, typename ...Args>
-            struct invoke_<T, false, false, Args...>
-            {
-                typedef T type;
-                typedef std::false_type applied;
-            };
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // make_4_
-            template<bool IsTransform, typename R, typename ...Args>
-            struct make_4_
-            {
-                typedef decltype(utility::by_val()(R()(std::declval<Args>()...))) type;
-                typedef std::true_type applied;
-            };
-
-            template<typename R, typename ...Args>
-            struct make_4_<false, R, Args...>
-            {
-                typedef R type;
-                typedef std::false_type applied;
-            };
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // make_3_
-            template<typename R, typename ...Args>
-            struct make_3_
-              : make_2_<R, Args...>
-            {
-                static_assert(!std::is_pointer<R>::value, "ptr to function?");
-            };
-
-            template<typename R, typename ...A, typename ...Args>
-            struct make_3_<R(A...), Args...>
-            {
-                typedef decltype(utility::by_val()(as_transform<R(A...)>()(std::declval<Args>()...))) type;
-                typedef std::true_type applied;
-            };
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // make_2_
-            template<typename R, typename ...Args>
-            struct make_2_
-              : make_4_<is_transform<R>::value, R, Args...>
-            {};
-
-            template<template<typename...> class R, typename ...A, typename ...Args>
-            struct make_2_<R<A...>, Args...>
-              : invoke_<
-                    R<typename make_3_<A, Args...>::type...>
-                  , utility::logical_ops::or_(make_3_<A, Args...>::applied::value...)
-                  , is_transform<R<typename make_3_<A, Args...>::type...>>::value
-                  , Args...
-                >
-            {};
-
-            template<typename R, int I, typename ...Args>
-            struct make_2_<_protect<R, I>, Args...>
-            {
-                typedef _protect<R, I> type;
-                typedef std::false_type applied;
-            };
-
-            template<typename R, typename ...Args>
-            struct make_2_<noinvoke<R>, Args...>
-            {
-                typedef R type;
-                typedef std::false_type applied;
-            };
-
-            template<template<typename...> class R, typename ...A, typename ...Args>
-            struct make_2_<noinvoke<R<A...>>, Args...>
-            {
-                typedef R<typename make_3_<A, Args...>::type...> type;
-                typedef utility::or_<typename make_3_<A, Args...>::applied...> applied;
-            };
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // make_1_
-            template<typename R, typename ...Args>
-            struct make_1_
-            {
-                typedef R type;
-                typedef std::false_type applied;
-            };
-
-            template<template<typename...> class R, typename ...A, typename ...Args>
-            struct make_1_<R<A...>, Args...>
-              : invoke_<
-                    R<typename make_3_<A, Args...>::type...>
-                  , utility::logical_ops::or_(make_3_<A, Args...>::applied::value...)
-                  , is_transform<R<typename make_3_<A, Args...>::type...>>::value
-                        && utility::logical_ops::or_(make_3_<A, Args...>::applied::value...)
-                  , Args...
-                >
-            {};
-
-            template<typename R, int I, typename ...Args>
-            struct make_1_<_protect<R, I>, Args...>
-            {
-                typedef _protect<R, I> type;
-            };
-
-            template<typename R, typename ...Args>
-            struct make_1_<noinvoke<R>, Args...>
-            {
-                typedef R type;
-            };
-
-            template<template<typename...> class R, typename ...A, typename ...Args>
-            struct make_1_<noinvoke<R<A...>>, Args...>
-            {
-                typedef R<typename make_3_<A, Args...>::type...> type;
-            };
-
             ////////////////////////////////////////////////////////////////////////////////////////
             // call_2_
-            template<bool NoPad, typename Transform, typename ...Results>
+            template<bool NoPad, typename ...Results>
             struct call_2_
             {
-                template<typename ...Ts>
-                auto operator()(Results &&... results, utility::first<utility::any, Results>..., Ts &&... ts) const
+                template<typename Transform, typename ...Ts>
+                auto operator()(Transform &&tfx, Results &&... results, utility::first<utility::any, Results>..., Ts &&... ts) const
                 BOOST_PROTO_AUTO_RETURN(
-                    Transform()(static_cast<Results &&>(results)..., static_cast<Ts &&>(ts)...)
+                    static_cast<Transform &&>(tfx)(static_cast<Results &&>(results)..., static_cast<Ts &&>(ts)...)
                 )
             };
 
-            template<typename Transform, typename ...Results>
-            struct call_2_<true, Transform, Results...>
+            template<typename ...Results>
+            struct call_2_<true, Results...>
             {
-                template<typename ...Ts>
-                auto operator()(Results &&... results, Ts &&...) const
+                template<typename Transform, typename ...Ts>
+                auto operator()(Transform &&tfx, Results &&... results, Ts &&...) const
                 BOOST_PROTO_AUTO_RETURN(
-                    Transform()(static_cast<Results &&>(results)...)
+                    static_cast<Transform &&>(tfx)(static_cast<Results &&>(results)...)
                 )
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // call_1_
-            template<bool IsTransform, typename Sig>
+            template<bool IsTransform, typename ...Args>
             struct call_1_;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // Handle transforms.
-            template<typename Transform, typename ...Args>
-            struct call_1_<true, Transform(Args...)>
+            template<typename ...Args>
+            struct call_1_<true, Args...>
             {
-                template<typename ...T>
-                auto operator()(T &&... t) const
+                template<typename Transform, typename ...T>
+                auto operator()(Transform &&tfx, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     call_2_<
                         (sizeof...(T) <= sizeof...(Args))
-                      , Transform
                       , decltype(as_transform<Args>()(static_cast<T &&>(t)...))...
-                    >()(as_transform<Args>()(static_cast<T &&>(t)...)..., static_cast<T &&>(t)...)
+                    >()(static_cast<Transform &&>(tfx), as_transform<Args>()(static_cast<T &&>(t)...)..., static_cast<T &&>(t)...)
                 )
             };
 
-            /// INTERNAL ONLY : Compile-time optimization for a common case:
-            template<typename Transform>
-            struct call_1_<true, Transform()>
-              : Transform
-            {};
-
-            /// INTERNAL ONLY : Compile-time optimization for a common case:
-            template<typename Transform>
-            struct call_1_<true, Transform(_)>
-              : Transform
-            {};
-
-            /// INTERNAL ONLY : Compile-time optimization for a common case:
-            template<typename Transform>
-            struct call_1_<true, Transform(proto::_expr)>
-              : Transform
-            {};
-
             ////////////////////////////////////////////////////////////////////////////////////////
             // Handle callables and object constructions.
-            template<typename CallOrObj, typename ...Args>
-            struct call_1_<false, CallOrObj(Args...)>
+            template<typename ...Args>
+            struct call_1_<false, Args...>
             {
                 ////////////////////////////////////////////////////////////////////////////////////
                 // Handle callables
-                template<typename ...T, typename C = CallOrObj>
-                auto operator()(T &&... t) const
+                template<typename Fun, typename ...T>
+                auto operator()(Fun &&fun, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    C{}(as_transform<Args>()(static_cast<T &&>(t)...)...)
-                )
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // Handle objects
-                template<typename ...T, typename C = CallOrObj>
-                auto operator()(T &&... t) const
-                BOOST_PROTO_AUTO_RETURN(
-                    C{as_transform<Args>()(static_cast<T &&>(t)...)...}
+                    static_cast<Fun &&>(fun)(as_transform<Args>()(static_cast<T &&>(t)...)...)
                 )
             };
 
@@ -400,72 +237,6 @@ namespace boost
           : std::is_base_of<transform_base, T>
         {};
 
-        /// \brief A PrimitiveTransform which prevents another PrimitiveTransform
-        /// from being applied in an \c ObjectTransform.
-        ///
-        /// When building higher order transforms with <tt>make\<\></tt> or
-        /// <tt>lazy\<\></tt>, you sometimes would like to build types that
-        /// are parameterized with Proto transforms. In such lambda-style
-        /// transforms, Proto will unhelpfully find all nested transforms
-        /// and apply them, even if you don't want them to be applied. Consider
-        /// the following transform, which will replace the \c _ in
-        /// <tt>Bar<_>()</tt> with <tt>proto::terminal\<int\></tt>:
-        ///
-        /// \code
-        /// template<typename T>
-        /// struct Bar
-        /// {};
-        ///
-        /// struct Foo
-        ///   : proto::when<_, Bar<_>() >
-        /// {};
-        ///
-        /// proto::terminal<int> i {0};
-        ///
-        /// int main()
-        /// {
-        ///     Foo()(i);
-        ///     std::cout << typeid(Foo()(i)).name() << std::endl;
-        /// }
-        /// \endcode
-        ///
-        /// If you were actually trying to pass the \c _ transform to \c Bar
-        /// you can use \c proto::_protect:
-        ///
-        /// \code
-        /// // OK: replace anything with Bar<_protect<_> >()
-        /// struct Foo
-        ///   : proto::when<_, Bar<_protect<_> >() >
-        /// {};
-        /// \endcode
-        ///
-        /// <tt>_protect\<X\></tt> behaves just like <tt>as_transform\<X\></tt>
-        /// when used as a transform.
-        template<typename T, int I>
-        struct _protect
-          : T
-        {};
-
-        template<typename R, typename...Args, int I>
-        struct _protect<R(Args...), I>
-          : as_transform<R(Args...)>
-        {};
-
-        template<typename R, typename...Args, int I>
-        struct _protect<R(*)(Args...), I>
-          : as_transform<R(Args...)>
-        {};
-
-        template<typename R, typename...Args, int I>
-        struct _protect<R(Args......), I>
-          : as_transform<R(Args......)>
-        {};
-
-        template<typename R, typename...Args, int I>
-        struct _protect<R(*)(Args......), I>
-          : as_transform<R(Args......)>
-        {};
-
         ////////////////////////////////////////////////////////////////////////////////////////
         // _void
         struct _void
@@ -500,15 +271,15 @@ namespace boost
           : as_transform<Ret(Args......), I>
         {};
 
-        // Handle callable or object transforms
+        // Handle callable transforms
         template<typename Ret, typename ...Args, int I>
         struct as_transform<Ret(Args...), I>
           : transform<as_transform<Ret(Args...), I>>
         {
-            template<typename ...T, typename X = typename detail::make_1_<Ret, T...>::type>
+            template<typename ...T, typename X = Ret>
             auto operator()(T &&... t) const
             BOOST_PROTO_AUTO_RETURN(
-                detail::call_1_<is_transform<X>::value, X(Args...)>()(static_cast<T &&>(t)...)
+                detail::call_1_<is_transform<X>::value, Args...>()(X(), static_cast<T &&>(t)...)
             )
         };
 

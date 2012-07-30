@@ -32,7 +32,7 @@ struct do_eval
 struct eval
   : proto::or_<
         proto::when<proto::terminal<_>, proto::_value>
-      , proto::otherwise<do_eval(proto::tag_of<_>(), eval(proto::pack(_))...)>
+      , proto::otherwise<do_eval(proto::construct(proto::tag_of<_>()), eval(proto::pack(_))...)>
     >
 {};
 
@@ -52,7 +52,7 @@ void test_call_pack()
 struct make_pair
   : proto::when<
         proto::binary_expr<_, proto::terminal<int>, proto::terminal<int> >
-      , std::pair<int, int>(proto::_value(proto::pack(_))...)
+      , proto::construct(std::pair<int, int>(proto::_value(proto::pack(_))...))
     >
 {};
 

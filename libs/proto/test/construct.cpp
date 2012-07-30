@@ -16,20 +16,6 @@ using proto::_;
 namespace test_make
 {
     template<typename T>
-    struct careful;
-};
-
-namespace boost { namespace proto
-{
-    template<typename T>
-    struct is_transform<test_make::careful<T>>
-      : mpl::false_
-    {};
-}}
-
-namespace test_make
-{
-    template<typename T>
     struct type2type {};
 
     template<typename T>
@@ -47,7 +33,7 @@ namespace test_make
 
     // Test that when no substitution is done, we don't instantiate templates
     struct MakeTest1
-      : proto::when<_, type2type< careful<int> >() >
+      : proto::when<_, proto::construct( type2type< careful<int> >() ) >
     {};
 
     void make_test1()
@@ -60,7 +46,7 @@ namespace test_make
     // Test that when substitution is done, and there is no nested ::type
     // typedef, the result is the wrapper
     struct MakeTest2
-      : proto::when<_, wrapper< proto::_value >() >
+      : proto::when<_, proto::construct( wrapper< proto::_value >() ) >
     {};
 
     void make_test2()
@@ -73,7 +59,7 @@ namespace test_make
     // Test that when substitution is done, and there is no nested ::type
     // typedef, the result is the wrapper
     struct MakeTest3
-      : proto::when<_, wrapper< proto::_value >(proto::_value) >
+      : proto::when<_, proto::construct( wrapper< proto::_value >(proto::_value) ) >
     {};
 
     void make_test3()
@@ -86,7 +72,7 @@ namespace test_make
     // Test that when substitution is done, and there is a nested ::type
     // typedef, the result is that type.
     struct MakeTest4
-      : proto::when<_, mpl::identity< proto::_value >(proto::_value) >
+      : proto::when<_, proto::construct( mpl::identity< proto::_value >(proto::_value) ) >
     {};
 
     void make_test4()
@@ -97,7 +83,7 @@ namespace test_make
     }
 
     struct MakeTest5
-      : proto::when<_, wrapper< proto::_state(_, proto::_state) >(proto::_state(_)) >
+      : proto::when<_, proto::construct( wrapper< proto::_state(_, proto::_state) >(proto::_state(_)) ) >
     {};
 
     void make_test5()
@@ -109,7 +95,7 @@ namespace test_make
 
     using proto::utility::identity;
     struct MakeTest6
-      : proto::when<_, wrapper< identity(proto::_state) >(proto::_state(_)) >
+      : proto::when<_, proto::construct( wrapper< identity(proto::_state) >(proto::_state(_)) ) >
     {};
 
     void make_test6()
@@ -120,7 +106,7 @@ namespace test_make
     }
 
     struct MakeTest7
-      : proto::when<_, wrapper< int(proto::_state) >(proto::_state(_)) >
+      : proto::when<_, proto::construct( wrapper< proto::construct( int(proto::_state) ) >(proto::_state(_)) ) >
     {};
 
     void make_test7()
@@ -140,7 +126,7 @@ namespace test_make
     };
 
     struct MakeTest8
-      : proto::when<_, wrapper< tfx(_, _) >(_) >
+      : proto::when<_, proto::construct( wrapper< tfx(_, _) >(_) ) >
     {};
 
     void make_test8()

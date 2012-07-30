@@ -147,6 +147,12 @@
     <ClInclude Include="..\..\..\boost\proto\apply.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\construct.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\protect.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

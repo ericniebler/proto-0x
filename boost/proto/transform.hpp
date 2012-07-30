@@ -10,8 +10,10 @@
 #define BOOST_PROTO_TRANSFORM_HPP_INCLUDED
 
 #include <boost/proto/transform/base.hpp>
+#include <boost/proto/transform/apply.hpp>
 #include <boost/proto/transform/arg.hpp>
 #include <boost/proto/transform/constant.hpp>
+#include <boost/proto/transform/construct.hpp>
 #include <boost/proto/transform/env.hpp>
 #include <boost/proto/transform/eval.hpp>
 #include <boost/proto/transform/fold.hpp>

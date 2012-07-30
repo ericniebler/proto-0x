@@ -82,7 +82,7 @@ namespace mini_lambda
             // vector containing the arguments to the lambda expression.
             proto::when<
                 proto::terminal<placeholder<_> >
-              , proto::_env_var<proto::_value>()
+              , proto::apply(proto::construct(proto::_env_var<proto::_value>()))
             >
             // When evaluating if/then/else expressions of the form
             // "if_( E0 )[ E1 ].else_[ E2 ]", pass E0, E1 and E2 to

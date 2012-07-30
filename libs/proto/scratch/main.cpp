@@ -8,6 +8,7 @@
 #include <iostream>
 #include <boost/proto/proto.hpp>
 #include <boost/proto/debug.hpp>
+#include <boost/mpl/identity.hpp>
 
 namespace mpl = boost::mpl;
 namespace proto = boost::proto;
@@ -36,8 +37,8 @@ namespace
 struct eval_unpack
   : proto::as_transform<
         proto::apply(
-            proto::_env<fN<0>>
-          , proto::apply(proto::_env<fN<1>>, proto::pack(_))...
+            proto::_env_var<fN<0>>
+          , proto::apply(proto::_env_var<fN<1>>, proto::pack(_))...
         )
     >
 {};
@@ -74,6 +75,13 @@ struct sum
     {
         return t + (*this)(u...);
     }
+};
+
+template<typename T> struct undef;
+
+struct S
+{
+    void operator()(int) const { std::cout << "hello world!\n"; }
 };
 
 int main()
