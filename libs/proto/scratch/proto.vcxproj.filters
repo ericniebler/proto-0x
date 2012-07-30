@@ -153,13 +153,13 @@
     <ClInclude Include="..\..\..\boost\proto\transform\protect.hpp">
       <Filter>Proto Files\transform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\apply.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\make.cpp">
-      <Filter>Test Files</Filter>
     </ClCompile>
     <ClCompile Include="..\test\matches.cpp">
       <Filter>Test Files</Filter>
@@ -210,6 +210,9 @@
       <Filter>Test Files</Filter>
     </ClCompile>
     <ClCompile Include="..\test\apply.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\construct.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
   </ItemGroup>
