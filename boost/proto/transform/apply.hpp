@@ -10,26 +10,36 @@
 #ifndef BOOST_PROTO_TRANSFORM_APPLY_HPP_INCLUDED
 #define BOOST_PROTO_TRANSFORM_APPLY_HPP_INCLUDED
 
+#include <utility>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/transform/base.hpp>
+#include <boost/proto/transform/call.hpp>
 
 namespace boost
 {
     namespace proto
     {
+        namespace detail
+        {
+            template<typename Fun, typename ...Tfxs>
+            struct _apply
+              : transform<_apply<Fun, Tfxs...>>
+            {
+                template<typename ...Args>
+                auto operator()(Args &&... args) const
+                BOOST_PROTO_AUTO_RETURN(
+                    detail::call_1_<Tfxs...>()(
+                        as_transform<Fun>()(static_cast<Args &&>(args)...)
+                      , static_cast<Args &&>(args)...
+                    )
+                )
+            };
+        }
+
         template<typename Fun, typename ...Tfxs, int I>
         struct as_transform<apply(Fun, Tfxs...), I>
-          : transform<as_transform<apply(Fun, Tfxs...), I>>
-        {
-            template<typename ...Args, typename X = decltype(as_transform<Fun>()(std::declval<Args>()...))>
-            auto operator()(Args &&... args) const
-            BOOST_PROTO_AUTO_RETURN(
-                detail::call_1_<is_transform<X>::value, Tfxs...>()(
-                    as_transform<Fun>()(static_cast<Args &&>(args)...)
-                  , static_cast<Args &&>(args)...
-                )
-            )
-        };
+          : detail::_apply<Fun, Tfxs...>
+        {};
     }
 }
 

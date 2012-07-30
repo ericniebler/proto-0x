@@ -11,7 +11,6 @@
 
 #include <utility>
 #include <type_traits>
-#include <boost/mpl/identity.hpp>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/transform/base.hpp>
 #include <boost/proto/transform/protect.hpp>
@@ -35,16 +34,16 @@ namespace boost
             T nested_type_(long);
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // invoke_
+            // invoke_if_
             template<typename T, bool Applied>
-            struct invoke_
+            struct invoke_if_
             {
                 typedef decltype(detail::nested_type_<T>(1)) type;
                 typedef std::true_type applied;
             };
 
             template<typename T>
-            struct invoke_<T, false>
+            struct invoke_if_<T, false>
             {
                 typedef T type;
                 typedef std::false_type applied;
@@ -91,7 +90,7 @@ namespace boost
 
             template<template<typename...> class R, typename ...A, typename ...Args>
             struct make_1_<R<A...>, Args...>
-              : invoke_<
+              : invoke_if_<
                     R<typename make_2_<A, Args...>::type...>
                   , utility::logical_ops::or_(make_2_<A, Args...>::applied::value...)
                 >
@@ -118,6 +117,8 @@ namespace boost
                 typedef utility::or_<typename make_2_<A, Args...>::applied...> applied;
             };
 
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // construct_
             template<typename Type>
             struct construct_
             {
@@ -127,30 +128,51 @@ namespace boost
                     Type{static_cast<Args &&>(args)...}
                 )
             };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // _construct
+            template<typename Type, typename ...Tfxs>
+            struct _construct
+              : transform<_construct<Type, Tfxs...>>
+            {
+                template<
+                    typename ...Args
+                  , typename X = typename detail::make_1_<Type, Args...>::type
+                >
+                auto operator()(Args &&... args) const
+                BOOST_PROTO_AUTO_RETURN(
+                    as_transform<detail::construct_<X>(Tfxs...)>()(static_cast<Args &&>(args)...)
+                )
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // _construct_unpack
+            template<typename Type, typename ...Tfxs>
+            struct _construct_unpack
+              : transform<_construct_unpack<Type, Tfxs...>>
+            {
+                template<
+                    typename ...Args
+                  , typename X = typename detail::make_1_<Type, Args...>::type
+                >
+                auto operator()(Args &&... args) const
+                BOOST_PROTO_AUTO_RETURN(
+                    as_transform<detail::construct_<X>(Tfxs......)>()(static_cast<Args &&>(args)...)
+                )
+            };
         }
 
-        // Usage: construct(wrap<proto::_value>(proto::_value))
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // as_transform
         template<typename Type, typename ...Tfxs, int I>
         struct as_transform<construct(Type(*)(Tfxs...)), I>
-          : transform<as_transform<construct(Type(*)(Tfxs...)), I>>
-        {
-            template<typename ...Args, typename X = typename detail::make_1_<Type, Args...>::type>
-            auto operator()(Args &&... args) const
-            BOOST_PROTO_AUTO_RETURN(
-                as_transform<detail::construct_<X>(Tfxs...)>()(static_cast<Args &&>(args)...)
-            )
-        };
+          : detail::_construct<Type, Tfxs...>
+        {};
 
         template<typename Type, typename ...Tfxs, int I>
         struct as_transform<construct(Type(*)(Tfxs......)), I>
-          : transform<as_transform<construct(Type(*)(Tfxs......)), I>>
-        {
-            template<typename ...Args, typename X = typename detail::make_1_<Type, Args...>::type>
-            auto operator()(Args &&... args) const
-            BOOST_PROTO_AUTO_RETURN(
-                as_transform<detail::construct_<X>(Tfxs......)>()(static_cast<Args &&>(args)...)
-            )
-        };
+          : detail::_construct_unpack<Type, Tfxs...>
+        {};
     }
 }
 

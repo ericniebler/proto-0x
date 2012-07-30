@@ -52,7 +52,7 @@ namespace boost
         /// \code
         /// // OK: replace anything with Bar<_protect<_> >()
         /// struct Foo
-        ///   : proto::when<_, Bar<_protect<_> >() >
+        ///   : proto::when<_, proto::construct( Bar<_protect<_> >() ) >
         /// {};
         /// \endcode
         ///

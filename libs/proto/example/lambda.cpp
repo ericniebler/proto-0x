@@ -18,6 +18,7 @@ template<typename T>
 struct placeholder
   : proto::tags::def<placeholder<T>>
 {
+    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(placeholder);
     using proto::tags::def<placeholder<T>>::operator=;
 
     // So placeholder terminals can be pretty-printed with display_expr

@@ -420,8 +420,6 @@ namespace boost
         template<typename T>
         struct noinvoke;
 
-        struct _void;
-
         struct _deep_copy;
 
         struct _tag_of;
