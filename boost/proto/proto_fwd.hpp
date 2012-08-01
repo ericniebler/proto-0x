@@ -391,13 +391,13 @@ namespace boost
         using otherwise = when<_, Transform>;
 
         template<typename T, T Value>
-        struct _constant;
+        struct _integral_constant;
 
         template<int I>
-        using _int = _constant<int, I>;
+        using _int = _integral_constant<int, I>;
 
         template<std::size_t N>
-        using _size_t = _constant<std::size_t, N>;
+        using _size_t = _integral_constant<std::size_t, N>;
 
         template<typename Expr>
         struct _pass_through;

@@ -54,6 +54,7 @@
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\boost\proto\algorithm\algorithm.hpp" />
     <ClInclude Include="..\..\..\boost\proto\apply.hpp" />
     <ClInclude Include="..\..\..\boost\proto\args.hpp" />
     <ClInclude Include="..\..\..\boost\proto\core.hpp" />
@@ -85,11 +86,11 @@
     <ClInclude Include="..\..\..\boost\proto\transform\arg.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\base.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\call.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\constant.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\construct.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\env.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\eval.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\fold.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\transform\integral_constant.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\pass_through.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\protect.hpp" />
     <ClInclude Include="..\..\..\boost\proto\transform\recursive_fold.hpp" />

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// constant.hpp
+// integral_constant.hpp
 // A simple transform that returns a constant
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
@@ -18,8 +18,8 @@ namespace boost
     namespace proto
     {
         template<typename T, T Value>
-        struct _constant
-          : transform<_constant<T, Value>>
+        struct _integral_constant
+          : transform<_integral_constant<T, Value>>
         {
             template<typename ...Args>
             T operator()(Args &&...) const noexcept(noexcept(T(std::declval<T>())))
@@ -27,6 +27,9 @@ namespace boost
                 return Value;
             }
         };
+
+        typedef _integral_constant<bool, true> _true;
+        typedef _integral_constant<bool, false> _false;
     }
 }
 

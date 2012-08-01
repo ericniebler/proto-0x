@@ -10,7 +10,6 @@
 #ifndef BOOST_PROTO_TRANSFORM_APPLY_HPP_INCLUDED
 #define BOOST_PROTO_TRANSFORM_APPLY_HPP_INCLUDED
 
-#include <utility>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/transform/base.hpp>
 #include <boost/proto/transform/call.hpp>

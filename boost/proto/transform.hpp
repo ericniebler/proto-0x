@@ -13,11 +13,11 @@
 #include <boost/proto/transform/apply.hpp>
 #include <boost/proto/transform/arg.hpp>
 #include <boost/proto/transform/call.hpp>
-#include <boost/proto/transform/constant.hpp>
 #include <boost/proto/transform/construct.hpp>
 #include <boost/proto/transform/env.hpp>
 #include <boost/proto/transform/eval.hpp>
 #include <boost/proto/transform/fold.hpp>
+#include <boost/proto/transform/integral_constant.hpp>
 #include <boost/proto/transform/pass_through.hpp>
 #include <boost/proto/transform/recursive_fold.hpp>
 #include <boost/proto/transform/unpack.hpp>

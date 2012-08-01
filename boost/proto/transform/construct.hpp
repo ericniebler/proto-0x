@@ -114,7 +114,12 @@ namespace boost
             struct make_1_<noinvoke<R<A...>>, Args...>
             {
                 typedef R<typename make_2_<A, Args...>::type...> type;
-                typedef utility::or_<typename make_2_<A, Args...>::applied...> applied;
+                typedef
+                    std::integral_constant<
+                        bool
+                      , utility::logical_ops::or_(make_2_<A, Args...>::applied::value...)
+                    >
+                applied;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////

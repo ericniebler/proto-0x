@@ -326,34 +326,101 @@ namespace boost
             template<typename List, typename ...T>
             struct pop_back_;
 
-            template<typename ...List, typename T0>
-            struct pop_back_<utility::list<List...>, T0>
+            template<template<typename...> class List, typename ...As, typename T0>
+            struct pop_back_<List<As...>, T0>
             {
-                typedef utility::list<List...> type;
+                typedef List<As...> type;
             };
 
-            template<typename ...List, typename T0, typename T1>
-            struct pop_back_<utility::list<List...>, T0, T1>
+            template<template<typename...> class List, typename ...As, typename T0, typename T1>
+            struct pop_back_<List<As...>, T0, T1>
             {
-                typedef utility::list<List..., T0> type;
+                typedef List<As..., T0> type;
             };
 
-            template<typename ...List, typename T0, typename T1, typename T2>
-            struct pop_back_<utility::list<List...>, T0, T1, T2>
+            template<template<typename...> class List, typename ...As, typename T0, typename T1, typename T2>
+            struct pop_back_<List<As...>, T0, T1, T2>
             {
-                typedef utility::list<List..., T0, T1> type;
+                typedef List<As..., T0, T1> type;
             };
 
-            template<typename ...List, typename T0, typename T1, typename T2, typename... Tail>
-            struct pop_back_<utility::list<List...>, T0, T1, T2, Tail...>
-              : pop_back_<utility::list<List..., T0, T1, T2>, Tail...>
+            template<template<typename...> class List, typename ...As, typename T0, typename T1, typename T2, typename... Tail>
+            struct pop_back_<List<As...>, T0, T1, T2, Tail...>
+              : pop_back_<List<As..., T0, T1, T2>, Tail...>
+            {};
+
+            template<typename Ret, typename ...As, typename T0>
+            struct pop_back_<Ret(As...), T0>
+            {
+                typedef Ret type(As...);
+            };
+
+            template<typename Ret, typename ...As, typename T0, typename T1>
+            struct pop_back_<Ret(As...), T0, T1>
+            {
+                typedef Ret type(As..., T0);
+            };
+
+            template<typename Ret, typename ...As, typename T0, typename T1, typename T2>
+            struct pop_back_<Ret(As...), T0, T1, T2>
+            {
+                typedef Ret type(As..., T0, T1);
+            };
+
+            template<typename Ret, typename ...As, typename T0, typename T1, typename T2, typename... Tail>
+            struct pop_back_<Ret(As...), T0, T1, T2, Tail...>
+              : pop_back_<Ret(As..., T0, T1, T2), Tail...>
             {};
         }
 
         namespace utility
         {
-            template<typename ...T>
-            using pop_back = typename detail::pop_back_<list<>, T...>::type;
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // pop_back
+            template<typename List>
+            struct pop_back;
+            
+            template<template<typename...> class List, typename...As>
+            struct pop_back<List<As...>>
+              : detail::pop_back_<List<>, As...>
+            {};
+            
+            template<typename Ret, typename...As>
+            struct pop_back<Ret(As...)>
+              : detail::pop_back_<Ret(), As...>
+            {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // concat
+            template<typename List0, typename List1>
+            struct concat;
+
+            template<
+                template<typename...> class T0, typename ...List
+              , template<typename...> class T1, typename ...Rest
+            >
+            struct concat<T0<List...>, T1<Rest...>>
+            {
+                typedef T0<List..., Rest...> type;
+            };
+
+            template<typename Ret0, typename ...List, template<typename...> class T1, typename ...Rest>
+            struct concat<Ret0(List...), T1<Rest...>>
+            {
+                typedef Ret0 type(List..., Rest...);
+            };
+
+            template<template<typename...> class T0, typename ...List, typename Ret1, typename ...Rest>
+            struct concat<T0<List...>, Ret1(Rest...)>
+            {
+                typedef T0<List..., Rest...> type;
+            };
+
+            template<typename Ret0, typename ...List, typename Ret1, typename ...Rest>
+            struct concat<Ret0(List...), Ret1(Rest...)>
+            {
+                typedef Ret0 type(List..., Rest...);
+            };
         }
 
         namespace detail
@@ -399,9 +466,9 @@ namespace boost
 
         namespace utility
         {
-            template<std::size_t I, typename T>
+            template<std::size_t I, typename T, typename List = list<>>
             struct list_of
-              : detail::append_<I, T, list<>>
+              : detail::append_<I, T, List>
             {};
 
             template<std::size_t I, typename T, typename List>

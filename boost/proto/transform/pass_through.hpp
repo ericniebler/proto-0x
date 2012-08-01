@@ -71,7 +71,7 @@ namespace boost
 
             template<std::size_t N, typename Ints, typename T, typename ...Args>
             struct pass_through_2_<N, Ints, proto::vararg<T>, Args...>
-              : pass_through_3_<N, Ints, utility::pop_back<Args...>>
+              : pass_through_3_<N, Ints, typename utility::pop_back<utility::list<Args...>>::type>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////

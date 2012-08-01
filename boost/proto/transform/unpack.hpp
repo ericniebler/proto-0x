@@ -40,16 +40,16 @@ namespace boost
                 typedef PrimitiveTransform type;
             };
 
-            template<std::size_t I, typename T>
-            struct expand_pattern_2_<I, pack(T)>
+            template<std::size_t I, typename Tfx>
+            struct expand_pattern_2_<I, pack(Tfx)>
             {
-                typedef proto::_child<I> type(T);
+                typedef proto::_child<I> type(Tfx);
             };
 
-            template<typename T>
-            struct expand_pattern_2_<(std::size_t)-1, pack(T)>
+            template<typename Tfx>
+            struct expand_pattern_2_<(std::size_t)-1, pack(Tfx)>
             {
-                typedef proto::_value type(T);
+                typedef proto::_value type(Tfx);
             };
 
             template<std::size_t I, typename Ret, typename ...Tfxs>
@@ -70,13 +70,14 @@ namespace boost
 
             template<std::size_t ...I, typename Ret, typename ...Tfxs>
             struct expand_pattern_1_<utility::indices<I...>, Ret(Tfxs......)>
-              : build_result_<
-                    Ret
-                  , utility::pop_back<Tfxs...>
-                  , typename expand_pattern_2_<
-                        I
-                      , typename utility::result_of::back<Tfxs...>::type
-                    >::type...
+              : utility::concat<
+                    typename utility::pop_back<Ret(Tfxs...)>::type
+                  , void(
+                        typename expand_pattern_2_<
+                            I
+                          , typename utility::result_of::back<Tfxs...>::type
+                        >::type...
+                    )
                 >
             {};
 

@@ -627,9 +627,9 @@ namespace boost
         ///   : when<
         ///         terminal<_>
         ///       , if_<
-        ///             is_integral<_value>()
-        ///           , std::true_type()
-        ///           , std::false_type()
+        ///             proto::construct(is_integral<_value>())
+        ///           , proto::construct(std::true_type())
+        ///           , proto::construct(std::false_type())
         ///         >
         ///     >
         /// {};

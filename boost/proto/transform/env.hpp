@@ -56,14 +56,14 @@ namespace boost
                   , value_(static_cast<V &&>(v))
                 {}
 
-                // For key-Envd lookups not intended to fail
+                // For key-based lookups not intended to fail
                 using Env::operator[];
                 auto operator[](Key) const
                 BOOST_PROTO_AUTO_RETURN(
                     (static_cast<env const &>(*this).value_)
                 )
 
-                // For key-Envd lookups that can fail, use the default if key not found.
+                // For key-based lookups that can fail, use the default if key not found.
                 using Env::at;
                 template<typename T>
                 auto at(Key, T &&) const
@@ -91,6 +91,11 @@ namespace boost
 
         template<typename T>
         struct is_env<T &>
+          : std::is_base_of<empty_env, T>
+        {};
+
+        template<typename T>
+        struct is_env<T &&>
           : std::is_base_of<empty_env, T>
         {};
 

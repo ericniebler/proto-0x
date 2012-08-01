@@ -24,10 +24,10 @@ namespace boost
         {
             typedef Grammar proto_grammar_type;
 
-            template<typename ...T>
-            auto operator()(T &&... t) const
+            template<typename ...Args>
+            auto operator()(Args &&... args) const
             BOOST_PROTO_AUTO_RETURN(
-                as_transform<Transform>()(static_cast<T &&>(t)...)
+                as_transform<Transform>()(static_cast<Args &&>(args)...)
             )
         };
     }

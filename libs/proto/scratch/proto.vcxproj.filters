@@ -28,6 +28,9 @@
     <Filter Include="Proto Files\functional\fusion">
       <UniqueIdentifier>{eb5bff9f-3017-48e3-87c1-273b04df0e62}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Proto Files\algorithm">
+      <UniqueIdentifier>{f77ea383-31b2-4165-8416-0a620ae72dd7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\boost\proto\expr.hpp">
@@ -70,9 +73,6 @@
       <Filter>Proto Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\transform\when.hpp">
-      <Filter>Proto Files\transform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\constant.hpp">
       <Filter>Proto Files\transform</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\transform\pass_through.hpp">
@@ -161,6 +161,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\transform\call.hpp">
       <Filter>Proto Files\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\transform\integral_constant.hpp">
+      <Filter>Proto Files\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\algorithm\algorithm.hpp">
+      <Filter>Proto Files\algorithm</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
