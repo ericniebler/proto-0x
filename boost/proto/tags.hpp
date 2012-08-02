@@ -18,178 +18,182 @@ namespace boost
     {
         namespace tags
         {
+            struct tag_base
+            {};
+
             template<typename Tag, typename IsTerminal>
-            struct def
+            struct basic_tag
+              : tag_base
             {
-                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(def);
+                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(basic_tag);
 
                 typedef Tag         proto_tag;
                 typedef IsTerminal  proto_is_terminal;
 
-                // So that tag objects of type (derived from) def can be used
-                // to create transform environments like (data=x, local=y),
+                // So that tag objects of type (derived from) basic_tag can be used
+                // to create basic_action environments like (data=x, local=y),
                 // where "data" and "local" are tags.
-                template<typename V, BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<def, V>::value))>
-                env<def, V> operator=(V && v) const
+                template<typename V, BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<basic_tag, V>::value))>
+                env<basic_tag, V> operator=(V && v) const
                 {
-                    return env<def, V>{static_cast<V &&>(v)};
+                    return env<basic_tag, V>{static_cast<V &&>(v)};
                 }
             };
 
             namespace tag
             {
                 /// Tag type for terminals; aka, leaves in the expression tree.
-                struct terminal : def<terminal, std::true_type> {};
+                struct terminal : basic_tag<terminal, std::true_type> {};
 
                 /// Tag type for the unary + operator.
-                struct unary_plus : def<unary_plus> {};
+                struct unary_plus : basic_tag<unary_plus> {};
 
                 /// Tag type for the unary - operator.
-                struct negate : def<negate> {};
+                struct negate : basic_tag<negate> {};
 
                 /// Tag type for the unary * operator.
-                struct dereference : def<dereference> {};
+                struct dereference : basic_tag<dereference> {};
 
                 /// Tag type for the unary ~ operator.
-                struct complement : def<complement> {};
+                struct complement : basic_tag<complement> {};
 
                 /// Tag type for the unary & operator.
-                struct address_of : def<address_of> {};
+                struct address_of : basic_tag<address_of> {};
 
                 /// Tag type for the unary ! operator.
-                struct logical_not : def<logical_not> {};
+                struct logical_not : basic_tag<logical_not> {};
 
                 /// Tag type for the unary prefix ++ operator.
-                struct pre_inc : def<pre_inc> {};
+                struct pre_inc : basic_tag<pre_inc> {};
 
                 /// Tag type for the unary prefix -- operator.
-                struct pre_dec : def<pre_dec> {};
+                struct pre_dec : basic_tag<pre_dec> {};
 
                 /// Tag type for the unary postfix ++ operator.
-                struct post_inc : def<post_inc> {};
+                struct post_inc : basic_tag<post_inc> {};
 
                 /// Tag type for the unary postfix -- operator.
-                struct post_dec : def<post_dec> {};
+                struct post_dec : basic_tag<post_dec> {};
 
                 /// Tag type for the binary \<\< operator.
-                struct shift_left : def<shift_left> {};
+                struct shift_left : basic_tag<shift_left> {};
 
                 /// Tag type for the binary \>\> operator.
-                struct shift_right : def<shift_right> {};
+                struct shift_right : basic_tag<shift_right> {};
 
                 /// Tag type for the binary * operator.
-                struct multiplies : def<multiplies> {};
+                struct multiplies : basic_tag<multiplies> {};
 
                 /// Tag type for the binary / operator.
-                struct divides : def<divides> {};
+                struct divides : basic_tag<divides> {};
 
                 /// Tag type for the binary % operator.
-                struct modulus : def<modulus> {};
+                struct modulus : basic_tag<modulus> {};
 
                 /// Tag type for the binary + operator.
-                struct plus : def<plus> {};
+                struct plus : basic_tag<plus> {};
 
                 /// Tag type for the binary - operator.
-                struct minus : def<minus> {};
+                struct minus : basic_tag<minus> {};
 
                 /// Tag type for the binary \< operator.
-                struct less : def<less> {};
+                struct less : basic_tag<less> {};
 
                 /// Tag type for the binary \> operator.
-                struct greater : def<greater> {};
+                struct greater : basic_tag<greater> {};
 
                 /// Tag type for the binary \<= operator.
-                struct less_equal : def<less_equal> {};
+                struct less_equal : basic_tag<less_equal> {};
 
                 /// Tag type for the binary \>= operator.
-                struct greater_equal : def<greater_equal> {};
+                struct greater_equal : basic_tag<greater_equal> {};
 
                 /// Tag type for the binary == operator.
-                struct equal_to : def<equal_to> {};
+                struct equal_to : basic_tag<equal_to> {};
 
                 /// Tag type for the binary != operator.
-                struct not_equal_to : def<not_equal_to> {};
+                struct not_equal_to : basic_tag<not_equal_to> {};
 
                 /// Tag type for the binary || operator.
-                struct logical_or : def<logical_or> {};
+                struct logical_or : basic_tag<logical_or> {};
 
                 /// Tag type for the binary && operator.
-                struct logical_and : def<logical_and> {};
+                struct logical_and : basic_tag<logical_and> {};
 
                 /// Tag type for the binary & operator.
-                struct bitwise_and : def<bitwise_and> {};
+                struct bitwise_and : basic_tag<bitwise_and> {};
 
                 /// Tag type for the binary | operator.
-                struct bitwise_or : def<bitwise_or> {};
+                struct bitwise_or : basic_tag<bitwise_or> {};
 
                 /// Tag type for the binary ^ operator.
-                struct bitwise_xor : def<bitwise_xor> {};
+                struct bitwise_xor : basic_tag<bitwise_xor> {};
 
                 /// Tag type for the binary , operator.
-                struct comma : def<comma> {};
+                struct comma : basic_tag<comma> {};
 
                 /// Tag type for the binary ->* operator.
-                struct mem_ptr : def<mem_ptr> {};
+                struct mem_ptr : basic_tag<mem_ptr> {};
 
                 /// Tag type for the binary = operator.
-                struct assign : def<assign> {};
+                struct assign : basic_tag<assign> {};
 
                 /// Tag type for the binary \<\<= operator.
-                struct shift_left_assign : def<shift_left_assign> {};
+                struct shift_left_assign : basic_tag<shift_left_assign> {};
 
                 /// Tag type for the binary \>\>= operator.
-                struct shift_right_assign : def<shift_right_assign> {};
+                struct shift_right_assign : basic_tag<shift_right_assign> {};
 
                 /// Tag type for the binary *= operator.
-                struct multiplies_assign : def<multiplies_assign> {};
+                struct multiplies_assign : basic_tag<multiplies_assign> {};
 
                 /// Tag type for the binary /= operator.
-                struct divides_assign : def<divides_assign> {};
+                struct divides_assign : basic_tag<divides_assign> {};
 
                 /// Tag type for the binary %= operator.
-                struct modulus_assign : def<modulus_assign> {};
+                struct modulus_assign : basic_tag<modulus_assign> {};
 
                 /// Tag type for the binary += operator.
-                struct plus_assign : def<plus_assign> {};
+                struct plus_assign : basic_tag<plus_assign> {};
 
                 /// Tag type for the binary -= operator.
-                struct minus_assign : def<minus_assign> {};
+                struct minus_assign : basic_tag<minus_assign> {};
 
                 /// Tag type for the binary &= operator.
-                struct bitwise_and_assign : def<bitwise_and_assign> {};
+                struct bitwise_and_assign : basic_tag<bitwise_and_assign> {};
 
                 /// Tag type for the binary |= operator.
-                struct bitwise_or_assign : def<bitwise_or_assign> {};
+                struct bitwise_or_assign : basic_tag<bitwise_or_assign> {};
 
                 /// Tag type for the binary ^= operator.
-                struct bitwise_xor_assign : def<bitwise_xor_assign> {};
+                struct bitwise_xor_assign : basic_tag<bitwise_xor_assign> {};
 
                 /// Tag type for the binary subscript operator.
-                struct subscript : def<subscript> {};
+                struct subscript : basic_tag<subscript> {};
 
                 /// Tag type for the binary virtual data members.
-                struct member : def<member> {};
+                struct member : basic_tag<member> {};
 
                 /// Tag type for the ternary ?: conditional operator.
-                struct if_else_ : def<if_else_> {};
+                struct if_else_ : basic_tag<if_else_> {};
 
                 /// Tag type for the n-ary function call operator.
-                struct function : def<function> {};
+                struct function : basic_tag<function> {};
 
-                /// Tag type for the data parameter in the transform environment
+                /// Tag type for the data parameter in the basic_action environment
                 struct data_type
-                  : def<data_type>
+                  : basic_tag<data_type>
                 {
                     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(data_type);
-                    using def<data_type>::operator=;
+                    using basic_tag<data_type>::operator=;
                 };
 
-                /// Tag type for the local parameter in the transform env
+                /// Tag type for the local parameter in the basic_action env
                 struct local_type
-                  : def<local_type>
+                  : basic_tag<local_type>
                 {
                     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(local_type);
-                    using def<local_type>::operator=;
+                    using basic_tag<local_type>::operator=;
                 };
 
                 namespace
@@ -204,6 +208,11 @@ namespace boost
                 }
 
                 BOOST_PROTO_IGNORE_UNUSED(data, local);
+
+                struct nullary_expr {};
+                struct unary_expr {};
+                struct binary_expr {};
+                struct nary_expr {};
             }
         } // namespace tags
 
@@ -228,9 +237,26 @@ namespace boost
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////////
+        // is_tag
+        template<typename T>
+        struct is_tag
+          : std::is_base_of<tag_base, T>
+        {};
+
+        template<typename T>
+        struct is_tag<T &>
+          : std::is_base_of<tag_base, T>
+        {};
+
+        template<typename T>
+        struct is_tag<T &&>
+          : std::is_base_of<tag_base, T>
+        {};
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
         // _tag_of
         struct _tag_of
-          : proto::transform<_tag_of>
+          : proto::basic_action<_tag_of>
         {
             template<typename E, typename ...Rest>
             auto operator()(E && e, Rest &&...) const

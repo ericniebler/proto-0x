@@ -97,13 +97,13 @@ namespace boost
             // as_basic_expr
             template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(is_expr<T>::value)>
             auto as_basic_expr(T &&t) ->
-                decltype(typename Domain::store_child{}(t));
+                decltype(typename Domain::store_child()(t));
 
             template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(!is_expr<T>::value)>
             auto as_basic_expr(T &&t) ->
                 basic_expr<
                     tag::terminal
-                  , args<decltype(typename Domain::store_value{}(t))>
+                  , args<decltype(typename Domain::store_value()(t))>
                   , Domain
                 >;
 
@@ -116,7 +116,7 @@ namespace boost
             >
             inline constexpr auto expr_maker_if_2_()
             BOOST_PROTO_AUTO_RETURN(
-                typename Domain::make_expr_raw{}
+                typename Domain::make_expr_raw()
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////

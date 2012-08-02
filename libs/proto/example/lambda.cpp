@@ -16,10 +16,10 @@ using proto::_;
 
 template<typename T>
 struct placeholder
-  : proto::tags::def<placeholder<T>>
+  : proto::tags::basic_tag<placeholder<T>>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(placeholder);
-    using proto::tags::def<placeholder<T>>::operator=;
+    using proto::tags::basic_tag<placeholder<T>>::operator=;
 
     // So placeholder terminals can be pretty-printed with display_expr
     friend std::ostream & operator << (std::ostream & s, placeholder<T>)
@@ -32,10 +32,18 @@ template<std::size_t I>
 using placeholder_c = placeholder<std::integral_constant<std::size_t, I>>;
 
 struct lambda_eval
-  : proto::or_<
-        proto::when< proto::terminal<placeholder<_>>,   proto::apply(proto::construct(proto::_env_var<proto::_value>()))>
-      , proto::when< proto::terminal<_>,                proto::_value>
-      , proto::when< _,                                 proto::_eval<lambda_eval>>
+  : proto::grammar<
+        proto::algorithms::match(
+            proto::case_( proto::tag::terminal(placeholder<_>),
+                proto::apply(proto::construct(proto::_env_var<proto::_value>()))
+            )
+          , proto::case_( proto::tag::terminal(_),
+                proto::_value
+            )
+          , proto::case_( _,
+                proto::_eval<lambda_eval>
+            )
+        )
     >
 {};
 

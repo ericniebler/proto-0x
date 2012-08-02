@@ -16,9 +16,11 @@ template<class T, class A>
 struct e;
 
 struct g
-  : proto::or_<
-        proto::terminal<int>
-      , proto::plus<g,g>
+  : proto::grammar<
+        proto::or_(
+            proto::tag::terminal(int)
+          , proto::tag::plus(g, g)
+        )
     >
 {};
 

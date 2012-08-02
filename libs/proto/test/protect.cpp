@@ -22,31 +22,31 @@ struct identity
 };
 
 struct Test
-  : proto::as_transform<proto::_protect<_>()>
+  : proto::action<proto::_protect<_>()>
 {};
 
 struct Test0
-  : proto::as_transform<proto::construct(proto::_protect<_>())>
+  : proto::action<proto::construct(proto::_protect<_>())>
 {};
 
 struct Test1
-  : proto::as_transform<proto::construct(identity<proto::_protect<_>>())>
+  : proto::action<proto::construct(identity<proto::_protect<_>>())>
 {};
 
 struct Test2
-  : proto::as_transform<proto::construct(S<proto::_protect<_>>())>
+  : proto::action<proto::construct(S<proto::_protect<_>>())>
 {};
 
 struct Test3
-  : proto::as_transform<proto::construct(identity<proto::_protect<identity<_>()>>())>
+  : proto::action<proto::construct(identity<proto::_protect<identity<_>()>>())>
 {};
 
 struct Test4
-  : proto::as_transform<proto::construct(S<proto::_protect<S<_>()>>())>
+  : proto::action<proto::construct(S<proto::_protect<S<_>()>>())>
 {};
 
 struct Test5
-  : proto::as_transform<proto::construct(identity<proto::_protect<identity<identity<_>>()>>())>
+  : proto::action<proto::construct(identity<proto::_protect<identity<identity<_>>()>>())>
 {};
 
 void test_protect()

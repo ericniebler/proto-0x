@@ -11,17 +11,17 @@
 #include <type_traits>
 #include <boost/proto/proto.hpp>
 #include <boost/proto/debug.hpp>
-#include <boost/proto/algorithm/algorithm.hpp>
+#include <boost/proto/action/action.hpp>
 
 namespace proto = boost::proto;
 using proto::_;
 
 template<typename T>
 struct placeholder
-  : proto::tags::def<placeholder<T>>
+  : proto::tags::basic_tag<placeholder<T>>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(placeholder);
-    using proto::tags::def<placeholder<T>>::operator=;
+    using proto::tags::basic_tag<placeholder<T>>::operator=;
 
     // So placeholder terminals can be pretty-printed with display_expr
     friend std::ostream & operator << (std::ostream & s, placeholder<T>)
@@ -39,38 +39,38 @@ namespace algo
     using proto::construct;
     using namespace proto::algorithms;
 
-    struct lambda_eval
-      : proto::algorithm<
-            match(
-                case_(terminal(placeholder<_>),
-                    apply(construct(proto::_env_var<proto::_value>()))
-                )
-              , case_(terminal(_),
-                    proto::_value
-                )
-              , case_(nary_expr(_, lambda_eval...),
-                    proto::_eval<lambda_eval>
-                )
-            )
-        >
-    {};
-
-    //// This also works
     //struct lambda_eval
-    //  : proto::algorithm<
-    //        if_(matches(terminal(placeholder<_>))
-    //          , then_(
+    //  : proto::grammar<
+    //        match(
+    //            case_(terminal(placeholder<_>),
     //                apply(construct(proto::_env_var<proto::_value>()))
     //            )
-    //          , else_(
-    //                if_(matches(terminal(_))
-    //                  , then_(proto::_value)
-    //                  , else_(proto::_eval<lambda_eval>)
-    //                )
+    //          , case_(terminal(_),
+    //                proto::_value
+    //            )
+    //          , case_(nary_expr(_, lambda_eval...),
+    //                proto::_eval<lambda_eval>
     //            )
     //        )
     //    >
     //{};
+
+    // This also works
+    struct lambda_eval
+      : proto::action<
+            proto::if_(matches(terminal(placeholder<_>))
+              , then(
+                    apply(construct(proto::_env_var<proto::_value>()))
+                )
+              , else_(
+                    proto::if_(matches(terminal(_))
+                      , then(proto::_value)
+                      , else_(proto::_eval<lambda_eval>)
+                    )
+                )
+            )
+        >
+    {};
 
     template<std::size_t ...I, typename E, typename ...T>
     inline auto lambda_eval_(proto::utility::indices<I...>, E && e, T &&... t)
@@ -83,11 +83,11 @@ namespace algo
     )
 }
 
-// NOTE: can probably implement proto::matches by testing whether an algorithm SFINAE's
-// out it's operator() for a given expression. BUT! This doesn't work if the algorithm
+// NOTE: can probably implement proto::matches by testing whether an action SFINAE's
+// out it's operator() for a given expression. BUT! This doesn't work if the action
 // makes use of the state or data parameters. There should be a way to separate the
 // "grammar-ish" parts from the "actions-ish" part. Or do we even need grammars? Can't
-// they just be a special case of an algorithm that returns true_type or false_type?
+// they just be a special case of an action that returns true_type or false_type?
 
 template<typename Tag, typename Args>
 struct lambda_expr;
@@ -137,6 +137,18 @@ namespace
 
 BOOST_PROTO_IGNORE_UNUSED(_1, _2, _3);
 
+/***
+How about this:
+    proto::expr<proto::terminal(int)>
+    proto::grammar<proto::terminal(int)>
+    proto::action<proto::terminal(int)>
+
+But I still like:
+    proto::terminal<int> x(42);
+
+Can I have both?
+//*/
+
 int main()
 {
     std::cout << "*** \n";
@@ -157,7 +169,7 @@ int main()
 
     // Test for vararg expression patterns
     using namespace proto::algorithms;
-    proto::algorithm<matches(nary_expr(_, terminal(_)...))> depth_one;
+    proto::action<matches(nary_expr(_, terminal(_)...))> depth_one;
 
     #define DEPTH_ONE(x) std::cout << "Q: Is '" #x "' a tree of depth one? " << \
                                       "A: " << std::boolalpha << depth_one(x).value << std::endl;

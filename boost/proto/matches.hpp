@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+
 // matches.hpp
 // Contains the definition of the matches\<\> Boolean metafunction and the
 // facilities for building Proto grammars.
@@ -12,8 +12,11 @@
 
 #include <cstddef>
 #include <type_traits>
-#include <boost/mpl/print.hpp>
 #include <boost/proto/proto_fwd.hpp>
+#include <boost/proto/utility.hpp>
+#include <boost/proto/tags.hpp>
+#include <boost/proto/action/base.hpp>
+#include <boost/proto/action/action.hpp>
 
 namespace boost
 {
@@ -21,6 +24,13 @@ namespace boost
     {
         namespace detail
         {
+            template<typename Expr, typename Grammar>
+            struct matches_wrap
+              : matches<Expr, Grammar>
+            {
+                typedef Grammar proto_grammar_type;
+            };
+
             ////////////////////////////////////////////////////////////////////////////////////////
             // matches_
             template<typename Expr, typename BasicExpr, typename Grammar, typename EnableIf = void>
@@ -112,7 +122,7 @@ namespace boost
               : utility::and_<lambda_matches<Expr0, Grammar0>...>
             {};
 
-            // How terminal_matches<> handles references and cv-qualifiers.
+            // How value_matches_<> handles references and cv-qualifiers.
             // The cv and ref matter *only* if the grammar has a top-level ref.
             //
             // Expr       |   Grammar    |  Matches?
@@ -143,9 +153,9 @@ namespace boost
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // terminal_matches
+            // value_matches_
             template<typename T, typename U>
-            struct terminal_matches
+            struct value_matches_
               : utility::and_<
                     is_cv_ref_compatible<T, U>
                     // TODO: instantiate fewer templates here. Make this lazy?
@@ -157,84 +167,104 @@ namespace boost
             {};
 
             template<typename T, std::size_t M>
-            struct terminal_matches<T(&)[M], T(&)[proto::N]>
+            struct value_matches_<T(&)[M], T(&)[proto::N]>
               : std::true_type
             {};
 
             template<typename T, std::size_t M>
-            struct terminal_matches<T(&)[M], T *>
+            struct value_matches_<T(&)[M], T *>
               : std::true_type
             {};
 
             template<typename T>
-            struct terminal_matches<T, T>
+            struct value_matches_<T, T>
               : std::true_type
             {};
 
             template<typename T>
-            struct terminal_matches<T &, T>
+            struct value_matches_<T &, T>
               : std::true_type
             {};
 
             template<typename T>
-            struct terminal_matches<T const &, T>
+            struct value_matches_<T const &, T>
               : std::true_type
             {};
 
             template<typename T>
-            struct terminal_matches<T, proto::_>
+            struct value_matches_<T, proto::_>
               : std::true_type
             {};
 
             template<typename T>
-            struct terminal_matches<T, exact<T> >
+            struct value_matches_<T, exact<T> >
               : std::true_type
             {};
 
             template<typename T, typename U>
-            struct terminal_matches<T, convertible_to<U> >
+            struct value_matches_<T, convertible_to<U> >
               : std::is_convertible<T, U>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // is_vararg
-            template<typename T>
-            struct is_vararg
-              : std::false_type
-            {};
-
-            template<typename Grammar>
-            struct is_vararg<vararg<Grammar>>
-              : std::true_type
-            {};
-
-            ////////////////////////////////////////////////////////////////////////////////////////
             // vararg_matches
-            template<typename Args0, typename ...Args1>
+            template<typename Args0, typename Args1>
             struct vararg_matches
               : std::false_type
             {};
 
             template<typename Head0, typename ...Tail0, typename Head1, typename ...Tail1>
-            struct vararg_matches<args<Head0, Tail0...>, Head1, Tail1...>
+            struct vararg_matches<void(Head0, Tail0...), void(Head1, Tail1...)>
               : utility::and_<
-                    matches_<Head0, Head0, Head1>
-                  , vararg_matches<args<Tail0...>, Tail1...>
+                    matches_wrap<Head0, Head1>
+                  , vararg_matches<void(Tail0...), void(Tail1...)>
                 >
             {};
 
             template<typename Head0, typename ...Tail0, typename Grammar>
-            struct vararg_matches<args<Head0, Tail0...>, vararg<Grammar>>
+            struct vararg_matches<void(Head0, Tail0...), void(Grammar)>
               : utility::and_<
-                    matches_<Head0, Head0, Grammar>
-                  , matches_<Tail0, Tail0, Grammar>...
+                    matches_wrap<Head0, Grammar>
+                  , matches_wrap<Tail0, Grammar>...
                 >
             {};
 
             template<typename Grammar>
-            struct vararg_matches<args<>, vararg<Grammar>>
+            struct vararg_matches<void(), void(Grammar)>
               : std::true_type
             {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // grammar_of_
+            template<typename T>
+            struct grammar_of_
+            {
+                typedef typename T::proto_grammar_type type;
+            };
+
+            template<typename Tag, typename...Grams>
+            struct grammar_of_<Tag(Grams...)>
+            {
+                typedef Tag (*type)(Grams...);
+            };
+
+            template<typename Tag, typename...Grams>
+            struct grammar_of_<Tag(*)(Grams...)>
+            {
+                typedef Tag (*type)(Grams...);
+            };
+
+            template<typename Tag, typename...Grams>
+            struct grammar_of_<Tag(Grams......)>
+            {
+                typedef Tag (*type)(Grams......);
+            };
+
+            template<typename Tag, typename...Grams>
+            struct grammar_of_<Tag(*)(Grams......)>
+            {
+                typedef Tag (*type)(Grams......);
+            };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // matches_
@@ -243,10 +273,10 @@ namespace boost
               : matches_<
                     Expr
                   , typename std::remove_reference<BasicExpr>::type::proto_basic_expr_type
-                  , typename Grammar::proto_grammar_type
+                  , typename grammar_of_<Grammar>::type
                 >
             {
-                typedef Grammar proto_grammar_type;
+                //typedef Grammar proto_grammar_type;
             };
 
             template<typename Expr, typename BasicExpr, typename Grammar>
@@ -254,18 +284,72 @@ namespace boost
               : matches_<Expr, BasicExpr, Grammar>
             {};
 
-            // Handle (probably-)non-variadic non-terminal matches
+            template<typename Expr, typename BasicExpr, typename Tag, typename ...Args>
+            struct matches_<Expr, BasicExpr, Tag(Args...), void>
+              : matches_<Expr, BasicExpr, Tag(*)(Args...)>
+            {};
+
+            template<typename Expr, typename BasicExpr, typename Tag, typename ...Args>
+            struct matches_<Expr, BasicExpr, Tag(Args......), void>
+              : matches_<Expr, BasicExpr, Tag(*)(Args......)>
+            {};
+
+            // Handle non-variadic non-terminal matches
             template<
                 typename Expr
               , template<typename...> class Expr0
-              , template<typename...> class Expr1
               , typename Tag0, typename ...Args0, typename ...Rest0
-              , typename Tag1, typename ...Args1, typename ...Rest1
+              , typename Tag1, typename ...Args1
             >
             struct matches_<
                 Expr
               , Expr0<Tag0, args<Args0...>, Rest0...>
-              , Expr1<Tag1, args<Args1...>, Rest1...>
+              , Tag1(*)(Args1...)
+              , typename std::enable_if<
+                    is_tag<Tag1>::value &&
+                    !Tag0::proto_is_terminal::value &&
+                    sizeof...(Args0) == sizeof...(Args1)
+                >::type
+            >
+              : utility::and_<
+                    tag_matches<Tag0, Tag1>
+                  , matches_wrap<Args0, Args1>...
+                >
+            {
+                //typedef Tag1(*proto_grammar_type)(Args1...);
+            };
+
+            template<
+                typename Expr
+              , template<typename...> class Expr0
+              , typename Tag0, typename ...Args0, typename ...Rest0
+              , typename Tag1, typename ...Args1
+            >
+            struct matches_<
+                Expr
+              , Expr0<Tag0, args<Args0...>, Rest0...>
+              , Tag1(*)(Args1...)
+              , typename std::enable_if<
+                    is_tag<Tag1>::value &&
+                    !Tag0::proto_is_terminal::value &&
+                    sizeof...(Args0) != sizeof...(Args1)
+                >::type
+            >
+              : std::false_type
+            {
+                //typedef Tag1(*proto_grammar_type)(Args1...);
+            };
+
+            template<
+                typename Expr
+              , template<typename...> class Expr0
+              , typename Tag0, typename ...Args0, typename ...Rest0
+              , typename Tag1, typename ...Args1
+            >
+            struct matches_<
+                Expr
+              , Expr0<Tag0, args<Args0...>, Rest0...>
+              , tag::nary_expr(*)(Tag1, Args1...)
               , typename std::enable_if<
                     !Tag0::proto_is_terminal::value &&
                     sizeof...(Args0) == sizeof...(Args1)
@@ -273,58 +357,141 @@ namespace boost
             >
               : utility::and_<
                     tag_matches<Tag0, Tag1>
-                  , matches_<Args0, Args0, Args1>...
+                  , matches_wrap<Args0, Args1>...
                 >
             {
-                typedef Expr1<Tag1, args<Args1...>, Rest1...> proto_grammar_type;
+                //typedef tag::nary_expr(*proto_grammar_type)(Tag1, Args1...);
             };
 
-            // Handle (most definitely) variadic non-terminal matches
+            // Handle variadic non-terminal matches
             template<
                 typename Expr
               , template<typename...> class Expr0
-              , template<typename...> class Expr1
               , typename Tag0, typename ...Args0, typename ...Rest0
-              , typename Tag1, typename ...Args1, typename ...Rest1
+              , typename Tag1, typename ...Args1
             >
             struct matches_<
                 Expr
               , Expr0<Tag0, args<Args0...>, Rest0...>
-              , Expr1<Tag1, args<Args1...>, Rest1...>
+              , Tag1(*)(Args1......)
               , typename std::enable_if<
-                    !Tag0::proto_is_terminal::value &&
-                    sizeof...(Args0) != sizeof...(Args1)
+                    is_tag<Tag1>::value &&
+                    !Tag0::proto_is_terminal::value
                 >::type
             >
               : utility::and_<
                     tag_matches<Tag0, Tag1>
-                  , is_vararg<typename utility::result_of::back<Args1...>::type>
-                  , vararg_matches<args<Args0...>, Args1...>
+                  , vararg_matches<void(Args0...), void(Args1...)>
                 >
             {
-                typedef Expr1<Tag1, args<Args1...>, Rest1...> proto_grammar_type;
+                //typedef Tag1(*proto_grammar_type)(Args1......);
+            };
+
+            template<
+                typename Expr
+              , template<typename...> class Expr0
+              , typename Tag0, typename ...Args0, typename ...Rest0
+              , typename Tag1, typename ...Args1
+            >
+            struct matches_<
+                Expr
+              , Expr0<Tag0, args<Args0...>, Rest0...>
+              , tag::nary_expr(*)(Tag1, Args1......)
+              , typename std::enable_if<!Tag0::proto_is_terminal::value>::type
+            >
+              : utility::and_<
+                    tag_matches<Tag0, Tag1>
+                  , vararg_matches<void(Args0...), void(Args1...)>
+                >
+            {
+                //typedef tag::nary_expr(*proto_grammar_type)(Tag1, Args1......);
             };
 
             // Handle terminal matches.
             template<
                 typename Expr
               , template<typename...> class Expr0
-              , template<typename...> class Expr1
               , typename Tag0, typename Value0, typename ...Rest0
-              , typename Tag1, typename Value1, typename ...Rest1
+              , typename Tag1, typename Value1
             >
             struct matches_<
                 Expr
               , Expr0<Tag0, args<Value0>, Rest0...>
-              , Expr1<Tag1, args<Value1>, Rest1...>
-              , typename std::enable_if<Tag0::proto_is_terminal::value>::type
+              , Tag1(*)(Value1)
+              , typename std::enable_if<
+                    is_tag<Tag1>::value &&
+                    Tag0::proto_is_terminal::value
+                >::type
             >
               : utility::and_<
                     tag_matches<Tag0, Tag1>
-                  , terminal_matches<Value0, Value1>
+                  , value_matches_<Value0, Value1>
                 >
             {
-                typedef Expr1<Tag1, args<Value1>, Rest1...> proto_grammar_type;
+                //typedef Tag1(*proto_grammar_type)(Value1);
+            };
+
+            template<
+                typename Expr
+              , template<typename...> class Expr0
+              , typename Tag0, typename Value0, typename ...Rest0
+              , typename Tag1, typename Value1
+            >
+            struct matches_<
+                Expr
+              , Expr0<Tag0, args<Value0>, Rest0...>
+              , tag::nullary_expr(*)(Tag1, Value1)
+              , void
+            >
+              : utility::and_<
+                    tag_matches<Tag0, Tag1>
+                  , value_matches_<Value0, Value1>
+                >
+            {
+                //typedef tag::nullary_expr(*proto_grammar_type)(Tag1, Value1);
+            };
+
+            template<
+                typename Expr
+              , template<typename...> class Expr0
+              , typename Tag0, typename Child0, typename ...Args0, typename ...Rest0
+              , typename Tag1, typename Child1
+            >
+            struct matches_<
+                Expr
+              , Expr0<Tag0, args<Child0, Args0...>, Rest0...>
+              , tag::unary_expr(*)(Tag1, Child1)
+              , void
+            >
+              : utility::and_<
+                    std::integral_constant<bool, 0 == sizeof...(Args0)>
+                  , tag_matches<Tag0, Tag1>
+                  , matches_wrap<Child0, Child1>
+                >
+            {
+                //typedef tag::unary_expr(*proto_grammar_type)(Tag1, Child1);
+            };
+
+            template<
+                typename Expr
+              , template<typename...> class Expr0
+              , typename Tag0, typename Left0, typename Right0, typename ...Args0, typename ...Rest0
+              , typename Tag1, typename Left1, typename Right1
+            >
+            struct matches_<
+                Expr
+              , Expr0<Tag0, args<Left0, Right0, Args0...>, Rest0...>
+              , tag::binary_expr(*)(Tag1, Left1, Right1)
+              , void
+            >
+              : utility::and_<
+                    std::integral_constant<bool, 0 == sizeof...(Args0)>
+                  , tag_matches<Tag0, Tag1>
+                  , matches_wrap<Left0, Left1>
+                  , matches_wrap<Right0, Right1>
+                >
+            {
+                //typedef tag::binary_expr(*proto_grammar_type)(Tag1, Left1, Right1);
             };
 
             // Cover the case where a terminal is matched against a non-terminal
@@ -332,19 +499,21 @@ namespace boost
             template<
                 typename Expr
               , template<typename...> class Expr0
-              , template<typename...> class Expr1
               , typename Tag0, typename ...Args0, typename ...Rest0
-              , typename Tag1, typename ...Args1, typename ...Rest1
+              , typename Tag1, typename ...Args1
             >
             struct matches_<
                 Expr
               , Expr0<Tag0, args<Args0...>, Rest0...>
-              , Expr1<Tag1, args<Args1...>, Rest1...>
-              , typename std::enable_if<Tag0::proto_is_terminal::value>::type
+              , Tag1(*)(Args1...)
+              , typename std::enable_if<
+                    is_tag<Tag1>::value &&
+                    Tag0::proto_is_terminal::value
+                >::type
             >
               : std::false_type
             {
-                typedef Expr1<Tag1, args<Args1...>, Rest1...> proto_grammar_type;
+                //typedef Tag1(*proto_grammar_type)(Args1...);
             };
 
             // Handle wildcard matches
@@ -352,71 +521,124 @@ namespace boost
             struct matches_<Expr, BasicExpr, proto::_, void>
               : std::true_type
             {
-                typedef proto::_ proto_grammar_type;
-            };
-
-            // Necessary for full variadic non-terminal match support
-            template<typename Expr, typename BasicExpr, typename Grammar>
-            struct matches_<Expr, BasicExpr, proto::vararg<Grammar>, void>
-              : matches_<Expr, BasicExpr, Grammar>
-            {
-                typedef proto::vararg<Grammar> proto_grammar_type;
+                //typedef proto::_ proto_grammar_type;
             };
 
             // Handle proto::or_
             template<typename Expr, typename BasicExpr, typename ...Grammars>
-            struct matches_<Expr, BasicExpr, proto::or_<Grammars...>, void>
-              : utility::or_<matches_<Expr, BasicExpr, Grammars>...>
+            struct matches_<Expr, BasicExpr, proto::or_(*)(Grammars...), void>
+              : utility::or_<matches_wrap<Expr, Grammars>...>
             {
-                typedef proto::or_<Grammars...> proto_grammar_type;
+                //typedef proto::or_(*proto_grammar_type)(Grammars...);
             };
 
             // Handle proto::and_
             template<typename Expr, typename BasicExpr, typename ...Grammars>
-            struct matches_<Expr, BasicExpr, proto::and_<Grammars...>, void>
-              : utility::and_<matches_<Expr, BasicExpr, Grammars>...>
+            struct matches_<Expr, BasicExpr, proto::and_(*)(Grammars...), void>
+              : utility::and_<matches_wrap<Expr, Grammars>...>
             {
-                typedef proto::and_<Grammars...> proto_grammar_type;
+                //typedef proto::and_(*proto_grammar_type)(Grammars...);
             };
 
             // Handle proto::not_
             template<typename Expr, typename BasicExpr, typename Grammar>
-            struct matches_<Expr, BasicExpr, proto::not_<Grammar>, void>
-              : std::integral_constant<bool, !matches_<Expr, BasicExpr, Grammar>::value>
+            struct matches_<Expr, BasicExpr, proto::not_(*)(Grammar), void>
+              : std::integral_constant<bool, !matches_wrap<Expr, Grammar>::value>
             {
-                typedef proto::not_<Grammar> proto_grammar_type;
+                //typedef proto::not_(*proto_grammar_type)(Grammar);
             };
+
+            #define BOOL_TFX(If, Expr)                                                              \
+                static_cast<bool>(                                                                  \
+                    std::remove_reference<                                                          \
+                        decltype(proto::action<If>()(std::declval<Expr>()))                   \
+                    >::type::value                                                                  \
+                )                                                                                   \
+            /**/
 
             // Handle proto::if_
-            template<typename Expr, typename BasicExpr, typename If, typename Then, typename Else>
-            struct matches_<Expr, BasicExpr, proto::if_<If, Then, Else>, void>
-              : std::conditional<
-                    static_cast<bool>(
-                        std::remove_reference<
-                            decltype(as_transform<If>()(std::declval<Expr>()))
-                        >::type::value
-                    )
-                  , matches_<Expr, BasicExpr, Then>
-                  , matches_<Expr, BasicExpr, Else>
-                >::type
+            template<typename Expr, typename BasicExpr, typename If>
+            struct matches_<Expr, BasicExpr, proto::if_(*)(If), void>
+              : std::integral_constant<bool, BOOL_TFX(If, Expr)>
             {
-                typedef proto::if_<If, Then, Else> proto_grammar_type;
+                //typedef proto::if_(*proto_grammar_type)(If);
             };
 
+            template<typename Expr, typename BasicExpr, typename If, typename Then>
+            struct matches_<Expr, BasicExpr, proto::if_(*)(If, Then), void>
+              : std::conditional<
+                    BOOL_TFX(If, Expr)
+                  , matches_wrap<Expr, Then>
+                  , std::false_type
+                >::type
+            {
+                //typedef proto::if_(*proto_grammar_type)(If, Then);
+            };
+
+            template<typename Expr, typename BasicExpr, typename If, typename Then, typename Else>
+            struct matches_<Expr, BasicExpr, proto::if_(*)(If, Then, Else), void>
+              : std::conditional<
+                    BOOL_TFX(If, Expr)
+                  , matches_wrap<Expr, Then>
+                  , matches_wrap<Expr, Else>
+                >::type
+            {
+                //typedef proto::if_(*proto_grammar_type)(If, Then, Else);
+            };
+
+            #undef BOOL_TFX
+
             // Handle proto::switch_
-            template<typename Expr, typename BasicExpr, typename Cases, typename Transform>
-            struct matches_<Expr, BasicExpr, proto::switch_<Cases, Transform>, void>
+            template<typename Expr, typename BasicExpr, typename Cases>
+            struct matches_<Expr, BasicExpr, proto::switch_(*)(Cases), void>
               : matches_<
                     Expr
                   , BasicExpr
-                  , typename Cases::template case_<
-                        decltype(as_transform<Transform>()(std::declval<Expr>()))
-                    >::proto_grammar_type
+                  , typename grammar_of_<
+                        typename Cases::template case_<typename tag_of<Expr>::type>
+                    >::type
                 >
             {
-                typedef proto::switch_<Cases, Transform> proto_grammar_type;
+                //typedef proto::switch_(*proto_grammar_type)(Cases);
+            };
+
+            template<typename Expr, typename BasicExpr, typename Cases, typename Action>
+            struct matches_<Expr, BasicExpr, proto::switch_(*)(Cases, Action), void>
+              : matches_<
+                    Expr
+                  , BasicExpr
+                  , typename grammar_of_<
+                        typename Cases::template case_<
+                            decltype(action<Action>()(std::declval<Expr>()))
+                        >
+                    >::type
+                >
+            {
+                //typedef proto::switch_(*proto_grammar_type)(Cases, Action);
+            };
+
+            template<typename Expr, typename BasicExpr, typename ...Rules>
+            struct matches_<Expr, BasicExpr, proto::algorithms::match(*)(Rules...), void>
+              : utility::or_<matches_wrap<Expr, Rules>...>
+            {
+                //typedef proto::algorithms::match(*proto_grammar_type)(Rules...);
+            };
+
+            template<typename Expr, typename BasicExpr, typename Grammar, typename ...Actions>
+            struct matches_<Expr, BasicExpr, proto::case_(*)(Grammar, Actions...), void>
+              : matches_wrap<Expr, Grammar>
+            {
+                //typedef proto::algorithms::case_(*proto_grammar_type)(Grammar, Actions...);
             };
         }
+
+        struct or_ {};
+        struct not_ {};
+        struct and_ {};
+        struct if_ {};
+        struct switch_ {};
+        struct case_ {};
+        struct match {};
 
         /// \brief A Boolean metafunction that evaluates whether a given
         /// expression type matches a grammar.
@@ -481,13 +703,13 @@ namespace boost
         ///     <tt>T\<A0,A1,...An\></tt> and for each \c x in
         ///     <tt>[0,n)</tt>, \c Ax and \c Bx are types
         ///     such that \c Ax lambda-matches \c Bx
-        template<typename Expr, typename Grammar>
+        template<typename Expr, typename Grammar, typename Enable>
         struct matches
           : detail::matches_<Expr, Expr, Grammar>
         {};
 
         /// \brief A wildcard grammar element that matches any expression,
-        /// and a transform that returns the current expression unchanged.
+        /// and a basic_action that returns the current expression unchanged.
         ///
         /// The wildcard type, \c _, is a grammar element such that
         /// <tt>matches\<E,_\>::value</tt> is \c true for any expression
@@ -507,9 +729,9 @@ namespace boost
         /// ));
         /// \endcode
         ///
-        /// When used as a transform, \c _ returns the current expression
+        /// When used as a basic_action, \c _ returns the current expression
         /// unchanged. For instance, in the following, \c _ is used with
-        /// the \c _fold\<\> transform to _fold the children of a node:
+        /// the \c _fold\<\> basic_action to _fold the children of a node:
         ///
         /// \code
         /// struct CountChildren
@@ -528,9 +750,9 @@ namespace boost
         /// {};
         /// \endcode
         struct _
-          : transform<_>
+          : basic_action<_>
         {
-            typedef _ proto_grammar_type;
+            //typedef _ proto_grammar_type;
 
             template<typename Expr, typename ...Rest>
             auto operator()(Expr && e, Rest &&...) const
@@ -540,56 +762,54 @@ namespace boost
         };
 
         /// \brief Inverts the set of expressions matched by a grammar. When
-        /// used as a transform, \c not_\<\> returns the current expression
+        /// used as a basic_action, \c not_\<\> returns the current expression
         /// unchanged.
         ///
         /// If an expression type \c E does not match a grammar \c G, then
         /// \c E \e does match <tt>not_\<G\></tt>. For example,
-        /// <tt>not_\<terminal\<_\> \></tt> will match any non-terminal.
-        template<typename Grammar>
-        struct not_
-          : transform<not_<Grammar>>
-        {
-            typedef not_ proto_grammar_type;
-
-            template<typename Expr, typename ...Rest>
-            auto operator()(Expr && e, Rest &&...) const
-            BOOST_PROTO_AUTO_RETURN(
-                static_cast<Expr &&>(e)
-            )
-        };
+        /// <tt>not_\<terminal\<_\> \></tt> will match any non-terminal. 
+        template<typename Grammar, int I>
+        struct action<not_(Grammar), I>
+          : _
+        {};
 
         /// \brief For matching all of a set of grammars. When used as a
-        /// transform, \c and_\<\> applies the transforms associated with
+        /// basic_action, \c and_\<\> applies the actions associated with
         /// the each grammar in the set, and returns the result of the last.
         ///
         /// An expression type \c E matches <tt>and_\<B0,B1,...Bn\></tt> if \c E
         /// matches all \c Bx for \c x in <tt>[0,n)</tt>.
         ///
-        /// When applying <tt>and_\<B0,B1,...Bn\></tt> as a transform with an
+        /// When applying <tt>and_\<B0,B1,...Bn\></tt> as a basic_action with an
         /// expression \c e, state \c s and data \c d, it is
         /// equivalent to <tt>(B0()(e, s, d),B1()(e, s, d),...Bn()(e, s, d))</tt>.
-        template<typename... Grammars>
-        struct and_
-          : transform<and_<Grammars...>>
+        namespace detail
         {
-            typedef and_ proto_grammar_type;
-
-            template<typename ...Args>
-            auto operator()(Args &&... args) const
-            BOOST_PROTO_AUTO_RETURN(
-                utility::back(
-                    (as_transform<Grammars>()(static_cast<Args &&>(args)...), utility::void_)...
+            template<typename... Actions>
+            struct _and_
+              : basic_action<_and_<Actions...>>
+            {
+                template<typename ...Args>
+                auto operator()(Args &&... args) const
+                BOOST_PROTO_AUTO_RETURN(
+                    utility::back(
+                        (action<Actions>()(static_cast<Args &&>(args)...), utility::void_)...
+                    )
                 )
-            )
-        };
+            };
+        }
+
+        template<typename... Actions, int I>
+        struct action<and_(Actions...), I>
+          : detail::_and_<Actions...>
+        {};
 
         /// \brief Used to select one grammar or another based on the result
-        /// of a compile-time Boolean. When used as a transform, \c if_\<\>
-        /// selects between two transforms based on a compile-time Boolean.
+        /// of a compile-time Boolean. When used as a basic_action, \c if_\<\>
+        /// selects between two actions based on a compile-time Boolean.
         ///
         /// When <tt>if_\<If,Then,Else\></tt> is used as a grammar, \c If
-        /// must be a Proto transform and \c Then and \c Else must be grammars.
+        /// must be a Proto basic_action and \c Then and \c Else must be grammars.
         /// An expression type \c E matches <tt>if_\<If,Then,Else\></tt> if
         /// <tt>std::result_of\<when\<_,If\>(E)\>::type::value</tt>
         /// is \c true and \c E matches \c U; or, if
@@ -613,12 +833,12 @@ namespace boost
         /// {};
         /// \endcode
         ///
-        /// When <tt>if_\<If,Then,Else\></tt> is used as a transform, \c If,
-        /// \c Then and \c Else must be Proto transforms. When applying
-        /// the transform to an expression \c E, state \c S and data \c V,
+        /// When <tt>if_\<If,Then,Else\></tt> is used as a basic_action, \c If,
+        /// \c Then and \c Else must be Proto actions. When applying
+        /// the basic_action to an expression \c E, state \c S and data \c V,
         /// if <tt>boost::result_of\<when\<_,If\>(E,S,V)\>::type::value</tt>
-        /// is \c true then the \c Then transform is applied; otherwise
-        /// the \c Else transform is applied.
+        /// is \c true then the \c Then basic_action is applied; otherwise
+        /// the \c Else basic_action is applied.
         ///
         /// \code
         /// // Match a terminal. If the terminal is integral, return
@@ -634,112 +854,162 @@ namespace boost
         ///     >
         /// {};
         /// \endcode
-        template<typename If, typename Then /* = _*/, typename Else /*= not_<_>*/>
-        struct if_
-          : transform<if_<If, Then, Else>>
+        namespace detail
         {
-            typedef if_ proto_grammar_type;
+            struct _void_
+              : basic_action<_void_>
+            {
+                template<typename ...Args>
+                void operator()(Args &&...) const noexcept
+                {}
+            };
 
-            template<typename ...Args>
-            auto operator()(Args &&... args) const
-            BOOST_PROTO_AUTO_RETURN(
-                typename std::conditional<
-                    static_cast<bool>(
-                        std::remove_reference<
-                            decltype(as_transform<If>()(static_cast<Args &&>(args)...))
-                        >::type::value
-                    )
-                  , as_transform<Then>
-                  , as_transform<Else>
-                >::type()(static_cast<Args &&>(args)...)
-            )
-        };
+            template<typename If, typename Then, typename Else = _void_>
+            struct _if_
+              : basic_action<_if_<If, Then, Else>>
+            {
+                template<typename ...Args>
+                auto operator()(Args &&... args) const
+                BOOST_PROTO_AUTO_RETURN(
+                    typename std::conditional<
+                        static_cast<bool>(
+                            std::remove_reference<
+                                decltype(action<If>()(static_cast<Args &&>(args)...))
+                            >::type::value
+                        )
+                      , action<Then>
+                      , action<Else>
+                    >::type()(static_cast<Args &&>(args)...)
+                )
+            };
+        }
+
+        template<typename If, typename Then, int I>
+        struct action<if_(If, Then), I>
+          : detail::_if_<If, Then>
+        {};
+
+        template<typename If, typename Then, typename Else, int I>
+        struct action<if_(If, Then, Else), I>
+          : detail::_if_<If, Then, Else>
+        {};
 
         /// \brief For matching one of a set of alternate grammars, which
         /// are looked up based on some property of an expression. The
-        /// property on which to dispatch is specified by the \c Transform
+        /// property on which to dispatch is specified by the \c Action
         /// template parameter, which defaults to <tt>tag_of\<_\>()</tt>.
         /// That is, when the \c Trannsform is not specified, the alternate
         /// grammar is looked up using the tag type of the current expression.
         ///
-        /// When used as a transform, \c switch_\<\> applies the transform
+        /// When used as a basic_action, \c switch_\<\> applies the basic_action
         /// associated with the grammar that matches the expression.
         ///
         /// \note \c switch_\<\> is functionally identical to \c or_\<\> but
         /// is often more efficient. It does a fast, O(1) lookup using the
-        /// result of the specified transform to find a sub-grammar that may
+        /// result of the specified basic_action to find a sub-grammar that may
         /// potentially match the expression.
         ///
         /// An expression type \c E matches <tt>switch_\<C,T\></tt> if \c E
         /// matches <tt>C::case_\<std::result_of\<T(E)\>::type\></tt>.
         ///
-        /// When applying <tt>switch_\<C,T\></tt> as a transform with an
+        /// When applying <tt>switch_\<C,T\></tt> as a basic_action with an
         /// expression \c e of type \c E, state \c s of type \S and data
         /// \c d of type \c D, it is equivalent to
         /// <tt>C::case_\<std::result_of\<T(E,S,D)\>::type\>()(e, s, d)</tt>.
-        template<typename Cases, typename Transform>
-        struct switch_
-          : transform<switch_<Cases, Transform>>
+        namespace detail
         {
-            typedef switch_ proto_grammar_type;
+            template<typename Cases, typename Action>
+            struct _switch_
+              : basic_action<_switch_<Cases, Action>>
+            {
+                template<typename ...Args>
+                auto operator()(Args &&... args) const
+                BOOST_PROTO_AUTO_RETURN(
+                    action<
+                        typename Cases::template case_<
+                            decltype(action<Action>()(static_cast<Args &&>(args)...))
+                        >
+                    >()(static_cast<Args &&>(args)...)
+                )
+            };
 
-            template<typename ...Args>
-            auto operator()(Args &&... args) const
-            BOOST_PROTO_AUTO_RETURN(
-                as_transform<
-                    typename Cases::template case_<
-                        decltype(as_transform<Transform>()(static_cast<Args &&>(args)...))
-                    >
-                >()(static_cast<Args &&>(args)...)
-            )
-        };
+            /// INTERNAL ONLY
+            // pure compile-time optimization
+            template<typename Cases>
+            struct _switch_<Cases, _tag_of>
+              : basic_action<_switch_<Cases, _tag_of>>
+            {
+                template<typename Expr, typename ...Rest>
+                auto operator()(Expr && e, Rest &&... rest) const
+                BOOST_PROTO_AUTO_RETURN(
+                    action<
+                        typename Cases::template case_<
+                            typename proto::tag_of<Expr>::type
+                        >
+                    >()(static_cast<Expr &&>(e), static_cast<Rest &&>(rest)...)
+                )
+            };
+        }
 
-        /// INTERNAL ONLY
-        // pure compile-time optimization
-        template<typename Cases>
-        struct switch_<Cases, _tag_of>
-          : transform<switch_<Cases, _tag_of>>
-        {
-            typedef switch_ proto_grammar_type;
+        template<typename Cases, int I>
+        struct action<switch_(Cases), I>
+          : detail::_switch_<Cases, _tag_of>
+        {};
 
-            template<typename Expr, typename ...Rest>
-            auto operator()(Expr && e, Rest &&... rest) const
-            BOOST_PROTO_AUTO_RETURN(
-                as_transform<
-                    typename Cases::template case_<
-                        typename proto::tag_of<Expr>::type
-                    >
-                >()(static_cast<Expr &&>(e), static_cast<Rest &&>(rest)...)
-            )
-        };
+        template<typename Cases, typename Action, int I>
+        struct action<switch_(Cases, Action), I>
+          : detail::_switch_<Cases, Action>
+        {};
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // case_
+        template<typename Grammar, typename ...Algo, int I>
+        struct action<case_(Grammar, Algo...), I>
+          : detail::_and_<Algo...>
+        {};
+
+        template<typename Grammar, typename Algo, int I>
+        struct action<case_(Grammar, Algo), I>
+          : action<Algo>
+        {};
 
         /// \brief For matching one of a set of alternate grammars. Alternates
-        /// tried in order to avoid ambiguity. When used as a transform, \c or_\<\>
-        /// applies the transform associated with the first grammar that matches
+        /// tried in order to avoid ambiguity. When used as a basic_action, \c or_\<\>
+        /// applies the basic_action associated with the first grammar that matches
         /// the expression.
         ///
         /// An expression type \c E matches <tt>or_\<B0,B1,...Bn\></tt> if \c E
         /// matches any \c Bx for \c x in <tt>[0,n)</tt>.
         ///
-        /// When applying <tt>or_\<B0,B1,...Bn\></tt> as a transform with an
+        /// When applying <tt>or_\<B0,B1,...Bn\></tt> as a basic_action with an
         /// expression \c e of type \c E, state \c s and data \c d, it is
         /// equivalent to <tt>Bx()(e, s, d)</tt>, where \c x is the lowest
         /// number such that <tt>matches\<E,Bx\>::value</tt> is \c true.
-        template<typename... Grammars>
-        struct or_
-          : transform<or_<Grammars...>>
+        namespace detail
         {
-            typedef or_ proto_grammar_type;
-
-            template<typename Expr, typename ...Rest>
-            auto operator()(Expr && e, Rest &&... rest) const
-            BOOST_PROTO_AUTO_RETURN(
-                as_transform<typename matches<Expr, or_>::which::proto_grammar_type>()(
-                    static_cast<Expr &&>(e)
-                  , static_cast<Rest &&>(rest)...
+            template<typename... Grammars>
+            struct _or_
+              : basic_action<_or_<Grammars...>>
+            {
+                template<typename Expr, typename ...Rest>
+                auto operator()(Expr && e, Rest &&... rest) const
+                BOOST_PROTO_AUTO_RETURN(
+                    action<
+                        typename grammar_of_<
+                            typename matches<Expr, proto::or_(*)(Grammars...)>::which
+                        >::type
+                    >()(
+                        static_cast<Expr &&>(e)
+                      , static_cast<Rest &&>(rest)...
+                    )
                 )
-            )
-        };
+            };
+        }
+
+        template<typename...Actions, int I>
+        struct action<or_(Actions...), I>
+          : detail::_or_<Actions...>
+        {};
 
         /// \brief For forcing exact matches of terminal types.
         ///
@@ -788,14 +1058,14 @@ namespace boost
         /// {};
         /// \endcode
         ///
-        /// When used as a transform, <tt>vararg\<G\></tt> applies
-        /// <tt>G</tt>'s transform.
-        template<typename Grammar>
-        struct vararg
-          : Grammar
-        {
-            typedef vararg proto_grammar_type;
-        };
+        /// When used as a basic_action, <tt>vararg\<G\></tt> applies
+        /// <tt>G</tt>'s basic_action.
+        //template<typename Grammar>
+        //struct vararg
+        //  : Grammar
+        //{
+        //    typedef vararg proto_grammar_type;
+        //};
     }
 }
 

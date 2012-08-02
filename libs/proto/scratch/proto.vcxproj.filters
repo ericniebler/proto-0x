@@ -10,9 +10,6 @@
     <Filter Include="Proto Files\detail">
       <UniqueIdentifier>{8028ed3e-04d4-43ac-bcc1-f2f6bbb70ce0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Proto Files\transform">
-      <UniqueIdentifier>{347c023b-5a32-47a5-85ae-fda3411029bb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Test Files">
       <UniqueIdentifier>{8146d17b-12da-4536-955c-5b5659f9033c}</UniqueIdentifier>
     </Filter>
@@ -28,8 +25,11 @@
     <Filter Include="Proto Files\functional\fusion">
       <UniqueIdentifier>{eb5bff9f-3017-48e3-87c1-273b04df0e62}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Proto Files\algorithm">
-      <UniqueIdentifier>{f77ea383-31b2-4165-8416-0a620ae72dd7}</UniqueIdentifier>
+    <Filter Include="Proto Files\grammar">
+      <UniqueIdentifier>{fa686832-862a-411e-aba9-19a89b2b8f3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Proto Files\action">
+      <UniqueIdentifier>{1617621d-4ce9-4de2-b204-9d89fb132868}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,26 +63,11 @@
     <ClInclude Include="..\..\..\boost\proto\matches.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\arg.hpp">
-      <Filter>Proto Files\transform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform.hpp">
-      <Filter>Proto Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\utility.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\when.hpp">
-      <Filter>Proto Files\transform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\pass_through.hpp">
-      <Filter>Proto Files\transform</Filter>
-    </ClInclude>
     <ClInclude Include="..\test\unit_test.hpp">
       <Filter>Test Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\eval.hpp">
-      <Filter>Proto Files\transform</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\debug.hpp">
       <Filter>Proto Files</Filter>
@@ -92,12 +77,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\virtual_member.hpp">
       <Filter>Proto Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\fold.hpp">
-      <Filter>Proto Files\transform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\recursive_fold.hpp">
-      <Filter>Proto Files\transform</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\functional.hpp">
       <Filter>Proto Files</Filter>
@@ -138,35 +117,59 @@
     <ClInclude Include="..\..\..\boost\proto\custom.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\env.hpp">
-      <Filter>Proto Files\transform</Filter>
+    <ClInclude Include="..\..\..\boost\proto\grammar\grammar.hpp">
+      <Filter>Proto Files\grammar</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\base.hpp">
-      <Filter>Proto Files\transform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\apply.hpp">
+    <ClInclude Include="..\..\..\boost\proto\grammar.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\construct.hpp">
-      <Filter>Proto Files\transform</Filter>
+    <ClInclude Include="..\..\..\boost\proto\action\apply.hpp">
+      <Filter>Proto Files\action</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\protect.hpp">
-      <Filter>Proto Files\transform</Filter>
+    <ClInclude Include="..\..\..\boost\proto\action\arg.hpp">
+      <Filter>Proto Files\action</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\apply.hpp">
-      <Filter>Proto Files\transform</Filter>
+    <ClInclude Include="..\..\..\boost\proto\action\base.hpp">
+      <Filter>Proto Files\action</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\unpack.hpp">
-      <Filter>Proto Files\transform</Filter>
+    <ClInclude Include="..\..\..\boost\proto\action\call.hpp">
+      <Filter>Proto Files\action</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\call.hpp">
-      <Filter>Proto Files\transform</Filter>
+    <ClInclude Include="..\..\..\boost\proto\action\construct.hpp">
+      <Filter>Proto Files\action</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\transform\integral_constant.hpp">
-      <Filter>Proto Files\transform</Filter>
+    <ClInclude Include="..\..\..\boost\proto\action\env.hpp">
+      <Filter>Proto Files\action</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\algorithm\algorithm.hpp">
-      <Filter>Proto Files\algorithm</Filter>
+    <ClInclude Include="..\..\..\boost\proto\action\eval.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\fold.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\integral_constant.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\pass_through.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\protect.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\recursive_fold.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\unpack.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\when.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\action.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action.hpp">
+      <Filter>Proto Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

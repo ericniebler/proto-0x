@@ -13,10 +13,10 @@ using proto::_;
 
 template<int I>
 struct fN
-  : proto::tags::def<fN<I>>
+  : proto::tags::basic_tag<fN<I>>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(fN);
-    using proto::tags::def<fN>::operator=;
+    using proto::tags::basic_tag<fN>::operator=;
 };
 
 namespace
@@ -26,7 +26,7 @@ namespace
 }
 
 struct eval_unpack
-  : proto::as_transform<
+  : proto::action<
         proto::apply(
             proto::_env_var<fN<0>>
           , proto::apply(proto::_env_var<fN<1>>, proto::pack(_))...
@@ -73,7 +73,7 @@ void test_apply()
     proto::terminal<int> i{0};
 
     // 0^2 + 1^2 + 2^2 + 3^2 = 0+1+4+9 = 14
-    proto::as_transform<square(proto::_value)> square_;
+    proto::action<square(proto::_value)> square_;
     int sum_of_squares = unpack(i(1,2,3), sum(), square_);
     BOOST_CHECK_EQUAL(sum_of_squares, 14);
 }

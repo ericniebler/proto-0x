@@ -16,11 +16,11 @@
 namespace boost { namespace proto { namespace functional
 {
     /// \brief A PolymorphicFunctionObject type that invokes the
-    /// \c fusion::reverse() algorithm on its argument.
+    /// \c fusion::reverse() action on its argument.
     ///
     /// A PolymorphicFunctionObject type that invokes the
-    /// \c fusion::reverse() algorithm on its argument. This is
-    /// useful for defining a CallableTransform like \c reverse(_)
+    /// \c fusion::reverse() action on its argument. This is
+    /// useful for defining a CallableAction like \c reverse(_)
     /// which reverses the order of the children of a Proto
     /// expression node.
     struct reverse

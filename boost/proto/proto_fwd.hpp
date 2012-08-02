@@ -155,7 +155,7 @@ namespace boost
         namespace tags
         {
             template<typename Tag, typename IsTerminal = std::false_type>
-            struct def;
+            struct basic_tag;
 
             namespace tag
             {
@@ -208,12 +208,17 @@ namespace boost
                 struct if_else_;
                 struct function;
 
+                struct nullary_expr;
+                struct unary_expr;
+                struct binary_expr;
+                struct nary_expr;
+
                 // Fusion tags
                 struct proto_expr;
                 struct proto_expr_iterator;
                 struct proto_flat_view;
 
-                // Transform environment tags
+                // Action environment tags
                 struct data_type;
                 struct local_type;
             }
@@ -336,7 +341,7 @@ namespace boost
             >;
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        // stuff for transforms here
+        // stuff for actions here
         namespace envs
         {
             struct key_not_found;
@@ -351,10 +356,10 @@ namespace boost
         using envs::empty_env;
         using envs::env;
 
-        struct transform_base;
+        struct action_base;
 
-        template<typename Transform>
-        struct transform;
+        template<typename Action>
+        struct basic_action;
 
         template<typename T, int I = 0>
         struct _protect;
@@ -379,16 +384,16 @@ namespace boost
         typedef _child<1> _right;
 
         template<typename T>
-        struct is_transform;
+        struct is_action;
 
         template<typename T, int = 0>
-        struct as_transform;
+        struct action;
 
-        template<typename Grammar, typename Transform = Grammar>
+        template<typename Grammar, typename Action = Grammar>
         struct when;
 
-        template<typename Transform>
-        using otherwise = when<_, Transform>;
+        template<typename Action>
+        using otherwise = when<_, Action>;
 
         template<typename T, T Value>
         struct _integral_constant;
@@ -398,9 +403,6 @@ namespace boost
 
         template<std::size_t N>
         using _size_t = _integral_constant<std::size_t, N>;
-
-        template<typename Expr>
-        struct _pass_through;
 
         template<typename Grammar = detail::_eval>
         struct _eval;
@@ -454,6 +456,9 @@ namespace boost
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Stuff for grammar building
         template<typename T>
+        struct fuzzy;
+
+        template<typename T>
         struct exact;
 
         template<typename T>
@@ -467,23 +472,33 @@ namespace boost
         //constexpr int N = (std::numeric_limits<int>::max() >> 10);
         constexpr int N = (INT_MAX >> 10);
 
-        template<typename... Grammar>
         struct or_;
+        struct not_;
+        struct and_;
+        struct if_;
+        struct switch_;
+        struct case_;
+        struct match;
+        struct pass_through;
 
         template<typename Grammar>
-        struct not_;
+        struct grammar;
 
-        template<typename... Grammar>
-        struct and_;
-
-        template<typename If, typename Then = _, typename Else = not_<_>>
-        struct if_;
-
-        template<typename Cases, typename Transform = _tag_of>
-        struct switch_;
-
-        template<typename Expr, typename Grammar>
+        template<typename Expr, typename Grammar, typename Enable = void>
         struct matches;
+
+        namespace algorithms
+        {
+            struct block;
+            struct matches;
+            struct match;
+            using proto::case_;
+
+            typedef block then;
+            typedef block else_;
+
+            using namespace proto::tags::tag;
+        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Handy expression template aliases

@@ -47,25 +47,25 @@ namespace boost
             template<typename Domain, typename ...T>
             inline constexpr auto get_common_domain(Domain const &, T const &...)
             BOOST_PROTO_AUTO_RETURN(
-                typename get_common_domain_impl<Domain, T...>::type{}
+                typename get_common_domain_impl<Domain, T...>::type()
             )
 
             template<typename Domain, typename ...T>
             inline constexpr auto value_storer(Domain const &, T const &...)
             BOOST_PROTO_AUTO_RETURN(
-                typename get_common_domain_impl<Domain, T...>::type::store_value{}
+                typename get_common_domain_impl<Domain, T...>::type::store_value()
             )
 
             template<typename Domain, typename ...T>
             inline constexpr auto child_storer(Domain const &, T const &...)
             BOOST_PROTO_AUTO_RETURN(
-                typename get_common_domain_impl<Domain, T...>::type::store_child{}
+                typename get_common_domain_impl<Domain, T...>::type::store_child()
             )
 
             template<typename Domain, typename ...T>
             inline constexpr auto expr_maker(Domain const &, T const &...)
             BOOST_PROTO_AUTO_RETURN(
-                typename get_common_domain_impl<Domain, T...>::type::make_expr_raw{}
+                typename get_common_domain_impl<Domain, T...>::type::make_expr_raw()
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ namespace boost
             BOOST_PROTO_AUTO_RETURN(
                 // Must build a real binary expression from virtual members before the left hand
                 // side (actually the member's enclosing object) dies and we lose it forever.
-                typename Domain::make_expr{}(
+                typename Domain::make_expr()(
                     tag::member()
                   , utility::by_val()(
                         proto::child<0>(static_cast<virtual_member<This, Value, Domain> &&>(e))

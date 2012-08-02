@@ -15,10 +15,10 @@
 namespace boost { namespace proto { namespace functional
 {
     /// \brief A PolymorphicFunctionObject type that invokes the
-    /// \c fusion::push_front() algorithm on its argument.
+    /// \c fusion::push_front() action on its argument.
     ///
     /// A PolymorphicFunctionObject type that invokes the
-    /// \c fusion::push_front() algorithm on its argument.
+    /// \c fusion::push_front() action on its argument.
     struct push_front
     {
         template<typename Seq, typename T>

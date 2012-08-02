@@ -6,11 +6,11 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_TRANSFORM_ENV_HPP_INCLUDED
-#define BOOST_PROTO_TRANSFORM_ENV_HPP_INCLUDED
+#ifndef BOOST_PROTO_ACTION_ENV_HPP_INCLUDED
+#define BOOST_PROTO_ACTION_ENV_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/transform/base.hpp>
+#include <boost/proto/action/base.hpp>
 #include <boost/proto/utility.hpp>
 
 namespace boost
@@ -40,7 +40,7 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////////
             // env
-            // A transform env is a slot-based storage mechanism, accessible by Key.
+            // A basic_action env is a slot-based storage mechanism, accessible by Key.
             template<typename Key, typename Value, typename Env /*= empty_env*/>
             struct env
               : private Env
@@ -130,7 +130,7 @@ namespace boost
         // _env_var
         template<typename Key>
         struct _env_var
-          : transform<_env_var<Key>>
+          : basic_action<_env_var<Key>>
         {
             template<typename E, typename S, typename Env, typename ...Rest>
             auto operator()(E &&, S &&, Env && env, Rest &&...) const
@@ -142,7 +142,7 @@ namespace boost
         ////////////////////////////////////////////////////////////////////////////////////////////
         // _env
         struct _env
-          : transform<_env>
+          : basic_action<_env>
         {
             template<typename E, typename S, typename Env, typename ...Rest>
             auto operator()(E &&, S &&, Env && env, Rest &&...) const

@@ -19,14 +19,14 @@
 namespace boost { namespace proto { namespace functional
 {
     /// \brief A PolymorphicFunctionObject type that invokes the
-    /// \c fusion::pop_front() algorithm on its argument.
+    /// \c fusion::pop_front() action on its argument.
     ///
     /// A PolymorphicFunctionObject type that invokes the
-    /// \c fusion::pop_front() algorithm on its argument. This is
-    /// useful for defining a CallableTransform like \c pop_front(_)
+    /// \c fusion::pop_front() action on its argument. This is
+    /// useful for defining a CallableAction like \c pop_front(_)
     /// which removes the first child from a Proto expression node.
-    /// Such a transform might be used as the first argument to the
-    /// \c proto::fold\<\> transform; that is, fold all but
+    /// Such a basic_action might be used as the first argument to the
+    /// \c proto::fold\<\> basic_action; that is, fold all but
     /// the first child.
     struct pop_front
     {

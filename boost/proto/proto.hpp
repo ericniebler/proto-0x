@@ -11,6 +11,6 @@
 
 #include <boost/proto/core.hpp>
 #include <boost/proto/functional.hpp>
-#include <boost/proto/transform.hpp>
+#include <boost/proto/action.hpp>
 
 #endif

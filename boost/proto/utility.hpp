@@ -491,6 +491,11 @@ namespace boost
                 constexpr rvalue_reference_wrapper(T && t) noexcept
                   : value(static_cast<T &&>(t))
                 {}
+
+                T && get() const
+                {
+                    return static_cast<T &&>(value);
+                }
             };
         }
 
@@ -522,10 +527,10 @@ namespace boost
             }
 
             template<std::size_t N, typename ...Ts>
-            constexpr typename result_of::get_nth<N, Ts...>::type && get_nth(Ts &&... ts) noexcept
-            {
-                return detail::get_nth_<typename list_of<N, void>::type>::eval(static_cast<Ts &&>(ts)...).value;
-            }
+            inline constexpr typename result_of::get_nth<N, Ts...>::type get_nth(Ts &&... ts)
+            BOOST_PROTO_RETURN(
+                detail::get_nth_<typename list_of<N, void>::type>::eval(static_cast<Ts &&>(ts)...).get()
+            )
 
             namespace result_of
             {

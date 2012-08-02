@@ -66,11 +66,11 @@ void test_virtual_members()
     BOOST_CHECK_EQUAL(boost::addressof(xxx.foo.proto_args().proto_child1), boost::addressof(e));
 
     // Check that member expressions match their grammars
-    struct G : proto::member<proto::terminal<int>, proto::terminal<foo_tag>> {};
+    struct G : proto::grammar<proto::tag::member(proto::tag::terminal(int), proto::tag::terminal(foo_tag))> {};
     proto::assert_matches<G>(xxx.foo);
 
-    // Check that the pass-through transform handles virtual members correctly.
-    My::member<My::terminal<int>, proto::terminal<foo_tag>> tx = proto::as_transform<G>()(xxx.foo);
+    // Check that the pass-through basic_action handles virtual members correctly.
+    My::member<My::terminal<int>, proto::terminal<foo_tag>> tx = proto::action<G>()(xxx.foo);
     BOOST_PROTO_IGNORE_UNUSED(tx);
 }
 

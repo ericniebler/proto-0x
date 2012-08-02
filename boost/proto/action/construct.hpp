@@ -1,19 +1,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 // construct.hpp
-// Helpers for building Proto transforms.
+// Helpers for building Proto actions.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_TRANSFORM_CONSTRUCT_HPP_INCLUDED
-#define BOOST_PROTO_TRANSFORM_CONSTRUCT_HPP_INCLUDED
+#ifndef BOOST_PROTO_ACTION_CONSTRUCT_HPP_INCLUDED
+#define BOOST_PROTO_ACTION_CONSTRUCT_HPP_INCLUDED
 
 #include <utility>
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/transform/base.hpp>
-#include <boost/proto/transform/protect.hpp>
+#include <boost/proto/action/base.hpp>
+#include <boost/proto/action/protect.hpp>
+#include <boost/proto/action/action.hpp>
 #include <boost/proto/utility.hpp>
 
 namespace boost
@@ -51,7 +52,7 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // make_3_
-            template<bool IsTransform, typename R, typename ...Args>
+            template<bool IsAction, typename R, typename ...Args>
             struct make_3_
             {
                 typedef decltype(utility::by_val()(R()(std::declval<Args>()...))) type;
@@ -77,7 +78,7 @@ namespace boost
             template<typename R, typename ...A, typename ...Args>
             struct make_2_<R(A...), Args...>
             {
-                typedef decltype(utility::by_val()(as_transform<R(A...)>()(std::declval<Args>()...))) type;
+                typedef decltype(utility::by_val()(action<R(A...)>()(std::declval<Args>()...))) type;
                 typedef std::true_type applied;
             };
 
@@ -85,7 +86,7 @@ namespace boost
             // make_1_
             template<typename R, typename ...Args>
             struct make_1_
-              : make_3_<is_transform<R>::value, R, Args...>
+              : make_3_<is_action<R>::value, R, Args...>
             {};
 
             template<template<typename...> class R, typename ...A, typename ...Args>
@@ -136,9 +137,9 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // _construct
-            template<typename Type, typename ...Tfxs>
+            template<typename Type, typename ...Actions>
             struct _construct
-              : transform<_construct<Type, Tfxs...>>
+              : basic_action<_construct<Type, Actions...>>
             {
                 template<
                     typename ...Args
@@ -146,15 +147,15 @@ namespace boost
                 >
                 auto operator()(Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    as_transform<detail::construct_<X>(Tfxs...)>()(static_cast<Args &&>(args)...)
+                    action<detail::construct_<X>(Actions...)>()(static_cast<Args &&>(args)...)
                 )
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // _construct_unpack
-            template<typename Type, typename ...Tfxs>
+            template<typename Type, typename ...Actions>
             struct _construct_unpack
-              : transform<_construct_unpack<Type, Tfxs...>>
+              : basic_action<_construct_unpack<Type, Actions...>>
             {
                 template<
                     typename ...Args
@@ -162,21 +163,21 @@ namespace boost
                 >
                 auto operator()(Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    as_transform<detail::construct_<X>(Tfxs......)>()(static_cast<Args &&>(args)...)
+                    action<detail::construct_<X>(Actions......)>()(static_cast<Args &&>(args)...)
                 )
             };
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        // as_transform
-        template<typename Type, typename ...Tfxs, int I>
-        struct as_transform<construct(Type(*)(Tfxs...)), I>
-          : detail::_construct<Type, Tfxs...>
+        // action
+        template<typename Type, typename ...Actions, int I>
+        struct action<construct(Type(*)(Actions...)), I>
+          : detail::_construct<Type, Actions...>
         {};
 
-        template<typename Type, typename ...Tfxs, int I>
-        struct as_transform<construct(Type(*)(Tfxs......)), I>
-          : detail::_construct_unpack<Type, Tfxs...>
+        template<typename Type, typename ...Actions, int I>
+        struct action<construct(Type(*)(Actions......)), I>
+          : detail::_construct_unpack<Type, Actions...>
         {};
     }
 }

@@ -12,9 +12,10 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/matches.hpp>
 #include <boost/proto/make_expr.hpp>
-#include <boost/proto/transform/base.hpp>
-#include <boost/proto/transform/when.hpp>
-#include <boost/proto/transform/pass_through.hpp>
+#include <boost/proto/action/base.hpp>
+#include <boost/proto/action/when.hpp>
+#include <boost/proto/action/pass_through.hpp>
+#include <boost/proto/action/action.hpp>
 
 namespace boost
 {
@@ -26,17 +27,17 @@ namespace boost
             {
                 template<typename Tag, bool IsTerminal = Tag::proto_is_terminal::value>
                 struct case_
-                  : proto::nary_expr<Tag, proto::vararg<proto::_deep_copy>>
+                  : proto::action<proto::pass_through(proto::_deep_copy...)>
                 {};
 
                 template<typename Tag>
                 struct case_<Tag, true>
-                  : proto::transform<case_<Tag, true>>
+                  : proto::basic_action<case_<Tag, true>>
                 {
                     template<typename E, typename... Rest>
                     auto operator()(E && e, Rest &&...) const
                     BOOST_PROTO_AUTO_RETURN(
-                        typename decltype(e.proto_domain())::make_expr{}(
+                        typename decltype(e.proto_domain())::make_expr()(
                             static_cast<E &&>(e).proto_tag()
                           , utility::by_val()(proto::value(static_cast<E &&>(e)))
                         )
@@ -47,10 +48,10 @@ namespace boost
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // _deep_copy
-        // A PrimitiveTransform that replaces all nodes stored by reference with
+        // A BasicAction that replaces all nodes stored by reference with
         // nodes stored by value.
         struct _deep_copy
-          : proto::switch_<detail::_deep_copy_cases>
+          : action<switch_(detail::_deep_copy_cases)>
         {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,20 +1,21 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // recursive_fold.hpp
-// Contains definition of the _recursive_fold<> and _reverse_recursive_fold<> transforms.
+// Contains definition of the _recursive_fold<> and _reverse_recursive_fold<> actions.
 //
 //  Copyright 2008 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_TRANSFORM_RECURSIVE_FOLD_HPP_INCLUDED
-#define BOOST_PROTO_TRANSFORM_RECURSIVE_FOLD_HPP_INCLUDED
+#ifndef BOOST_PROTO_ACTION_RECURSIVE_FOLD_HPP_INCLUDED
+#define BOOST_PROTO_ACTION_RECURSIVE_FOLD_HPP_INCLUDED
 
 #include <utility>
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/matches.hpp>
-#include <boost/proto/transform/fold.hpp>
-#include <boost/proto/transform/base.hpp>
+#include <boost/proto/action/fold.hpp>
+#include <boost/proto/action/base.hpp>
+#include <boost/proto/action/action.hpp>
 
 namespace boost
 {
@@ -24,7 +25,7 @@ namespace boost
         {
             template<typename Tag>
             struct _has_tag
-              : transform<_has_tag<Tag>>
+              : basic_action<_has_tag<Tag>>
             {
                 template<typename E, typename ...Rest>
                 std::integral_constant<bool, std::is_same<typename E::proto_tag_type, Tag>::value>
@@ -33,17 +34,21 @@ namespace boost
 
             template<typename Tag, typename Fun>
             struct _recursive_fold_
-              : if_<_has_tag<Tag>, _fold<_, _state, _recursive_fold_<Tag, Fun>>, Fun>
+              : action<
+                    if_(_has_tag<Tag>, _fold<_, _state, _recursive_fold_<Tag, Fun>>, Fun)
+                >
             {};
 
             template<typename Tag, typename Fun>
             struct _reverse_recursive_fold_
-              : if_<_has_tag<Tag>, _reverse_fold<_, _state, _reverse_recursive_fold_<Tag, Fun>>, Fun>
+              : action<
+                    if_(_has_tag<Tag>, _reverse_fold<_, _state, _reverse_recursive_fold_<Tag, Fun>>, Fun)
+                >
             {};
         }
 
-        /// \brief A PrimitiveTransform that recursively applies the
-        /// <tt>_fold\<\></tt> transform to sub-trees that all share a common
+        /// \brief A BasicAction that recursively applies the
+        /// <tt>_fold\<\></tt> basic_action to sub-trees that all share a common
         /// tag type.
         ///
         /// <tt>_recursive_fold\<\></tt> is useful for flattening trees into lists;
@@ -62,7 +67,7 @@ namespace boost
         ///         is_same<tag_of<_>, Tag>()
         ///         // ... recurse, otherwise ...
         ///       , _fold<_, _state, recurse_if_<Tag, Fun>>
-        ///         // ... apply the Fun transform.
+        ///         // ... apply the Fun basic_action.
         ///       , Fun
         ///     >
         /// {};
@@ -76,7 +81,7 @@ namespace boost
         /// child nodes that share a tag type with the parent node.
         template<typename Sequence, typename State0, typename Fun>
         struct _recursive_fold
-          : transform<_recursive_fold<Sequence, State0, Fun>>
+          : basic_action<_recursive_fold<Sequence, State0, Fun>>
         {
             template<typename E, typename ...Rest>
             auto operator()(E && e, Rest &&... rest) const
@@ -92,8 +97,8 @@ namespace boost
             )
         };
 
-        /// \brief A PrimitiveTransform that recursively applies the
-        /// <tt>_reverse_fold\<\></tt> transform to sub-trees that all share
+        /// \brief A BasicAction that recursively applies the
+        /// <tt>_reverse_fold\<\></tt> basic_action to sub-trees that all share
         /// a common tag type.
         ///
         /// <tt>_reverse_recursive_fold\<\></tt> is useful for flattening trees into
@@ -112,7 +117,7 @@ namespace boost
         ///         is_same<tag_of<_>, Tag>()
         ///         // ... recurse, otherwise ...
         ///       , _reverse_fold<_, _state, recurse_if_<Tag, Fun>>
-        ///         // ... apply the Fun transform.
+        ///         // ... apply the Fun basic_action.
         ///       , Fun
         ///     >
         /// {};
@@ -126,7 +131,7 @@ namespace boost
         /// child nodes that share a tag type with the parent node.
         template<typename Sequence, typename State0, typename Fun>
         struct _reverse_recursive_fold
-          : transform<_reverse_recursive_fold<Sequence, State0, Fun>>
+          : basic_action<_reverse_recursive_fold<Sequence, State0, Fun>>
         {
             template<typename E, typename ...Rest>
             auto operator()(E && e, Rest &&... rest) const

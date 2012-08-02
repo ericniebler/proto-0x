@@ -1,18 +1,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 // unpack.hpp
-// Make as_transform work with unpacking patterns.
+// Make action work with unpacking patterns.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_TRANSFORM_UNPACK_HPP_INCLUDED
-#define BOOST_PROTO_TRANSFORM_UNPACK_HPP_INCLUDED
+#ifndef BOOST_PROTO_ACTION_UNPACK_HPP_INCLUDED
+#define BOOST_PROTO_ACTION_UNPACK_HPP_INCLUDED
 
 #include <cstddef>
 #include <utility>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/transform/base.hpp>
+#include <boost/proto/action/base.hpp>
+#include <boost/proto/action/action.hpp>
 #include <boost/proto/utility.hpp>
 
 namespace boost
@@ -26,88 +27,88 @@ namespace boost
             template<typename Ret, typename List, typename... Rest>
             struct build_result_;
 
-            template<typename Ret, typename ...Tfxs, typename... Rest>
-            struct build_result_<Ret, utility::list<Tfxs...>, Rest...>
+            template<typename Ret, typename ...Actions, typename... Rest>
+            struct build_result_<Ret, utility::list<Actions...>, Rest...>
             {
-                typedef Ret type(Tfxs..., Rest...);
+                typedef Ret type(Actions..., Rest...);
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // expand_pattern_2_
-            template<std::size_t I, typename PrimitiveTransform>
+            template<std::size_t I, typename BasicAction>
             struct expand_pattern_2_
             {
-                typedef PrimitiveTransform type;
+                typedef BasicAction type;
             };
 
-            template<std::size_t I, typename Tfx>
-            struct expand_pattern_2_<I, pack(Tfx)>
+            template<std::size_t I, typename Action>
+            struct expand_pattern_2_<I, pack(Action)>
             {
-                typedef proto::_child<I> type(Tfx);
+                typedef proto::_child<I> type(Action);
             };
 
-            template<typename Tfx>
-            struct expand_pattern_2_<(std::size_t)-1, pack(Tfx)>
+            template<typename Action>
+            struct expand_pattern_2_<(std::size_t)-1, pack(Action)>
             {
-                typedef proto::_value type(Tfx);
+                typedef proto::_value type(Action);
             };
 
-            template<std::size_t I, typename Ret, typename ...Tfxs>
-            struct expand_pattern_2_<I, Ret(Tfxs...)>
+            template<std::size_t I, typename Ret, typename ...Actions>
+            struct expand_pattern_2_<I, Ret(Actions...)>
             {
-                typedef Ret type(typename expand_pattern_2_<I, Tfxs>::type...);
+                typedef Ret type(typename expand_pattern_2_<I, Actions>::type...);
             };
 
-            template<std::size_t I, typename Ret, typename ...Tfxs>
-            struct expand_pattern_2_<I, Ret(*)(Tfxs...)>
-              : expand_pattern_2_<I, Ret(Tfxs...)>
+            template<std::size_t I, typename Ret, typename ...Actions>
+            struct expand_pattern_2_<I, Ret(*)(Actions...)>
+              : expand_pattern_2_<I, Ret(Actions...)>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // expand_pattern_1_
-            template<typename Indices, typename PrimitiveTransform>
+            template<typename Indices, typename BasicAction>
             struct expand_pattern_1_;
 
-            template<std::size_t ...I, typename Ret, typename ...Tfxs>
-            struct expand_pattern_1_<utility::indices<I...>, Ret(Tfxs......)>
+            template<std::size_t ...I, typename Ret, typename ...Actions>
+            struct expand_pattern_1_<utility::indices<I...>, Ret(Actions......)>
               : utility::concat<
-                    typename utility::pop_back<Ret(Tfxs...)>::type
+                    typename utility::pop_back<Ret(Actions...)>::type
                   , void(
                         typename expand_pattern_2_<
                             I
-                          , typename utility::result_of::back<Tfxs...>::type
+                          , typename utility::result_of::back<Actions...>::type
                         >::type...
                     )
                 >
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // collect_pack_transforms_
-            template<typename UnpackingPattern, typename Transforms = void()>
-            struct collect_pack_transforms_
+            // collect_pack_actions_
+            template<typename UnpackingPattern, typename Actions = void()>
+            struct collect_pack_actions_
             {
-                typedef Transforms type;
+                typedef Actions type;
             };
 
-            // Note: Do *NOT* recurse into vararg functions. Those are nested pack transforms,
+            // Note: Do *NOT* recurse into vararg functions. Those are nested pack actions,
             // which should not be considered together with this one.
-            template<typename Ret, typename Head, typename ...Tail, typename Transforms>
-            struct collect_pack_transforms_<Ret(Head, Tail...), Transforms>
-              : collect_pack_transforms_<
+            template<typename Ret, typename Head, typename ...Tail, typename Actions>
+            struct collect_pack_actions_<Ret(Head, Tail...), Actions>
+              : collect_pack_actions_<
                     Ret(Tail...)
-                  , typename collect_pack_transforms_<Head, Transforms>::type
+                  , typename collect_pack_actions_<Head, Actions>::type
                 >
             {};
 
-            template<typename Ret, typename Head, typename ...Tail, typename Transforms>
-            struct collect_pack_transforms_<Ret(*)(Head, Tail...), Transforms>
-              : collect_pack_transforms_<Ret(Head, Tail...), Transforms>
+            template<typename Ret, typename Head, typename ...Tail, typename Actions>
+            struct collect_pack_actions_<Ret(*)(Head, Tail...), Actions>
+              : collect_pack_actions_<Ret(Head, Tail...), Actions>
             {};
 
-            template<typename Tfx, typename ...Transforms>
-            struct collect_pack_transforms_<pack(Tfx), void(Transforms...)>
+            template<typename Action, typename ...Actions>
+            struct collect_pack_actions_<pack(Action), void(Actions...)>
             {
-                typedef void type(Transforms..., as_transform<Tfx>);
+                typedef void type(Actions..., action<Action>);
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -128,13 +129,13 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // compute_indices_1_
-            template<typename Transforms, typename ...Args>
+            template<typename Actions, typename ...Args>
             struct compute_indices_1_
             {
                 static_assert(
-                    utility::never<Transforms>::value
-                  , "No pack expression found in unpacking pattern. Use proto::pack(<transform>) "
-                    "to designate a transform that returns the expression you want to unpack; "
+                    utility::never<Actions>::value
+                  , "No pack expression found in unpacking pattern. Use proto::pack(<basic_action>) "
+                    "to designate a basic_action that returns the expression you want to unpack; "
                     "e.g., proto::pack(_) unpacks the current expression."
                 );
             };
@@ -156,23 +157,23 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // _unpack
-            template<typename Ret, typename ...Tfxs>
+            template<typename Ret, typename ...Actions>
             struct _unpack
-              : transform<_unpack<Ret, Tfxs...>>
+              : basic_action<_unpack<Ret, Actions...>>
             {
                 typedef
-                    typename collect_pack_transforms_<
-                        typename utility::result_of::back<Tfxs...>::type
+                    typename collect_pack_actions_<
+                        typename utility::result_of::back<Actions...>::type
                     >::type
-                transforms_type;
+                actions_type;
 
                 template<typename ...Args>
                 auto operator()(Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    as_transform<
+                    action<
                         typename expand_pattern_1_<
-                            typename compute_indices_1_<transforms_type, Args...>::type
-                          , Ret(Tfxs......)
+                            typename compute_indices_1_<actions_type, Args...>::type
+                          , Ret(Actions......)
                         >::type
                     >()(static_cast<Args &&>(args)...)
                 )
@@ -180,15 +181,15 @@ namespace boost
         }
 
         // Usage: construct(wrap<proto::_value>(proto::_value))
-        template<typename Ret, typename ...Tfxs, int I>
-        struct as_transform<Ret(*)(Tfxs......), I>
-          : as_transform<Ret(Tfxs......), I>
+        template<typename Ret, typename ...Actions, int I>
+        struct action<Ret(*)(Actions......), I>
+          : action<Ret(Actions......), I>
         {};
 
-        // Handle transforms with pack expansions
-        template<typename Ret, typename ...Tfxs, int I>
-        struct as_transform<Ret(Tfxs......), I>
-          : detail::_unpack<Ret, Tfxs...>
+        // Handle actions with pack expansions
+        template<typename Ret, typename ...Actions, int I>
+        struct action<Ret(Actions......), I>
+          : detail::_unpack<Ret, Actions...>
         {};
     }
 }

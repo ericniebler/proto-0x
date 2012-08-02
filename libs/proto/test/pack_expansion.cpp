@@ -30,9 +30,15 @@ struct do_eval
 };
 
 struct eval
-  : proto::or_<
-        proto::when<proto::terminal<_>, proto::_value>
-      , proto::otherwise<do_eval(proto::construct(proto::tag_of<_>()), eval(proto::pack(_))...)>
+  : proto::grammar<
+        proto::algorithms::match(
+            proto::case_(proto::tag::terminal(_),
+                proto::_value
+            )
+          , proto::case_(_,
+                do_eval(proto::construct(proto::tag_of<_>()), eval(proto::pack(_))...)
+            )
+        )
     >
 {};
 
@@ -50,10 +56,7 @@ void test_call_pack()
 }
 
 struct make_pair
-  : proto::when<
-        proto::binary_expr<_, proto::terminal<int>, proto::terminal<int> >
-      , proto::construct(std::pair<int, int>(proto::_value(proto::pack(_))...))
-    >
+  : proto::action<proto::construct(std::pair<int, int>(proto::_value(proto::pack(_))...))>
 {};
 
 void test_make_pack()
@@ -93,7 +96,7 @@ struct front
 
 // Test expanding multiple packs in parallel
 struct accept_pairs
-  : proto::otherwise<
+  : proto::action<
         do_accept_pairs(
             proto::_data
           , proto::functional::make_pair(
@@ -106,7 +109,7 @@ struct accept_pairs
 
 // Test expanding multiple packs in parallel *and* a nested pack expansion.
 struct accept_pairs_2
-  : proto::otherwise<
+  : proto::action<
         do_accept_pairs(
             proto::_data
           , proto::functional::make_pair(

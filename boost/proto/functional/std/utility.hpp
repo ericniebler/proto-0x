@@ -15,10 +15,10 @@
 namespace boost { namespace proto { namespace functional
 {
     /// \brief A PolymorphicFunctionObject type that invokes the
-    /// \c std::make_pair() algorithm on its arguments.
+    /// \c std::make_pair() action on its arguments.
     ///
     /// A PolymorphicFunctionObject type that invokes the
-    /// \c std::make_pair() algorithm on its arguments.
+    /// \c std::make_pair() action on its arguments.
     struct make_pair
     {
         template<typename First, typename Second>

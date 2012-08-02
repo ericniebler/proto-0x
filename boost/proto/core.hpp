@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // core.hpp
-// Includes the core of Proto. Not included are the contexts, transforms and
+// Includes the core of Proto. Not included are the contexts, actions and
 // debugging utilities.
 //
 //  Copyright 2008 Eric Niebler. Distributed under the Boost
@@ -17,6 +17,7 @@
 #include <boost/proto/deep_copy.hpp>
 #include <boost/proto/expr.hpp>
 #include <boost/proto/fusion.hpp>
+#include <boost/proto/grammar.hpp>
 #include <boost/proto/matches.hpp>
 #include <boost/proto/operators.hpp>
 #include <boost/proto/tags.hpp>

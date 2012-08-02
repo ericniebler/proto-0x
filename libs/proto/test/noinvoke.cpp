@@ -12,9 +12,8 @@ namespace proto=boost::proto;
 using proto::_;
 
 struct Test
-  : proto::when<
-        _
-      , proto::construct(
+  : proto::action<
+        proto::construct(
             proto::noinvoke<
                 // This remove_pointer invocation is bloked by noinvoke
                 std::remove_pointer<
@@ -27,11 +26,10 @@ struct Test
 {};
 
 struct Test2
-  : proto::when<
-        _
+  : proto::action<
         // This add_pointer gets invoked because a substitution takes place
         // within it.
-      , proto::construct(
+        proto::construct(
             std::add_pointer<
                 proto::noinvoke<
                     // This remove_pointer invocation is bloked by noinvoke
@@ -52,11 +50,10 @@ struct select2nd
 };
 
 struct Test3
-  : proto::when<
-        _
+  : proto::action<
         // This add_pointer gets invoked because a substitution takes place
         // within it.
-      , proto::construct(
+        proto::construct(
             select2nd<
                 void
               , proto::noinvoke<

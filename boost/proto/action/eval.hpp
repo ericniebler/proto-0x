@@ -6,8 +6,8 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_TRANSFORM_EVAL_HPP_INCLUDED
-#define BOOST_PROTO_TRANSFORM_EVAL_HPP_INCLUDED
+#ifndef BOOST_PROTO_ACTION_EVAL_HPP_INCLUDED
+#define BOOST_PROTO_ACTION_EVAL_HPP_INCLUDED
 
 //#include <memory> for std::addressof
 #include <utility>
@@ -18,8 +18,9 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/args.hpp>
 #include <boost/proto/matches.hpp>
-#include <boost/proto/transform/base.hpp>
-#include <boost/proto/transform/when.hpp>
+#include <boost/proto/action/base.hpp>
+#include <boost/proto/action/when.hpp>
+#include <boost/proto/action/action.hpp>
 
 namespace boost
 {
@@ -44,7 +45,7 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // _eval_unknown
             struct _eval_unknown
-              : transform<_eval_unknown>
+              : basic_action<_eval_unknown>
             {
                 template<typename E, typename ...T>
                 utility::any operator()(E && e, T &&...) const noexcept
@@ -61,23 +62,23 @@ namespace boost
             // _eval_case
             template<typename Grammar, typename Tag>
             struct _eval_case
-              : when<not_<_>, _eval_unknown>
+              : when<not_(_), _eval_unknown>
             {};
 
             template<typename Grammar>
             struct _eval_case<Grammar, tag::terminal>
-              : when<terminal<_>, _value>
+              : when<tag::terminal(_), _value>
             {};
 
             #define BOOST_PROTO_UNARY_EVAL(OP, TAG)                                                 \
             template<typename Grammar>                                                              \
             struct BOOST_PP_CAT(_eval_, TAG)                                                        \
-              : transform<BOOST_PP_CAT(_eval_, TAG)<Grammar>>                                       \
+              : basic_action<BOOST_PP_CAT(_eval_, TAG)<Grammar>>                                       \
             {                                                                                       \
                 template<typename E, typename ...T>                                                 \
                 auto operator()(E && e, T &&... t) const                                            \
                 BOOST_PROTO_AUTO_RETURN(                                                            \
-                    OP as_transform<Grammar>()(                                                     \
+                    OP action<Grammar>()(                                                     \
                         proto::child<0>(static_cast<E &&>(e))                                       \
                       , static_cast<T &&>(t)...                                                     \
                     )                                                                               \
@@ -86,23 +87,23 @@ namespace boost
                                                                                                     \
             template<typename Grammar>                                                              \
             struct _eval_case<Grammar, tag::TAG>                                                    \
-              : when<unary_expr<tag::TAG, Grammar>, BOOST_PP_CAT(_eval_, TAG)<Grammar>>             \
+              : when<tag::unary_expr(tag::TAG, Grammar), BOOST_PP_CAT(_eval_, TAG)<Grammar>>        \
             {};                                                                                     \
             /**/
 
             #define BOOST_PROTO_BINARY_EVAL(OP, TAG)                                                \
             template<typename Grammar>                                                              \
             struct BOOST_PP_CAT(_eval_, TAG)                                                        \
-              : transform<BOOST_PP_CAT(_eval_, TAG)<Grammar>>                                       \
+              : basic_action<BOOST_PP_CAT(_eval_, TAG)<Grammar>>                                       \
             {                                                                                       \
                 template<typename E, typename ...T>                                                 \
                 auto operator()(E && e, T &&... t) const                                            \
                 BOOST_PROTO_AUTO_RETURN(                                                            \
-                    as_transform<Grammar>()(                                                        \
+                    action<Grammar>()(                                                        \
                         proto::child<0>(static_cast<E &&>(e))                                       \
                       , static_cast<T &&>(t)...                                                     \
                     ) OP                                                                            \
-                    as_transform<Grammar>()(                                                        \
+                    action<Grammar>()(                                                        \
                         proto::child<1>(static_cast<E &&>(e))                                       \
                       , static_cast<T &&>(t)...                                                     \
                     )                                                                               \
@@ -111,7 +112,10 @@ namespace boost
                                                                                                     \
             template<typename Grammar>                                                              \
             struct _eval_case<Grammar, tag::TAG>                                                    \
-              : when<binary_expr<tag::TAG, Grammar, Grammar>, BOOST_PP_CAT(_eval_, TAG)<Grammar>>   \
+              : when<                                                                               \
+                    tag::binary_expr(tag::TAG, Grammar, Grammar)                                    \
+                  , BOOST_PP_CAT(_eval_, TAG)<Grammar>                                              \
+                >                                                                                   \
             {};                                                                                     \
             /**/
 
@@ -161,12 +165,12 @@ namespace boost
 
             template<typename Grammar>
             struct _eval_post_inc
-              : transform<_eval_post_inc<Grammar>>
+              : basic_action<_eval_post_inc<Grammar>>
             {
                 template<typename E, typename ...T>
                 auto operator()(E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    as_transform<Grammar>()(
+                    action<Grammar>()(
                         proto::child<0>(static_cast<E &&>(e))
                       , static_cast<T &&>(t)...
                     ) ++
@@ -175,17 +179,17 @@ namespace boost
 
             template<typename Grammar>
             struct _eval_case<Grammar, tag::post_inc>
-              : when<unary_expr<tag::post_inc, Grammar>, _eval_post_inc<Grammar>>
+              : when<tag::post_inc(Grammar), _eval_post_inc<Grammar>>
             {};
 
             template<typename Grammar>
             struct _eval_post_dec
-              : transform<_eval_post_dec<Grammar>>
+              : basic_action<_eval_post_dec<Grammar>>
             {
                 template<typename E, typename ...T>
                 auto operator()(E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    as_transform<Grammar>()(
+                    action<Grammar>()(
                         proto::child<0>(static_cast<E &&>(e))
                       , static_cast<T &&>(t)...
                     ) --
@@ -194,21 +198,21 @@ namespace boost
 
             template<typename Grammar>
             struct _eval_case<Grammar, tag::post_dec>
-              : when<unary_expr<tag::post_dec, Grammar>, _eval_post_dec<Grammar>>
+              : when<tag::post_dec(Grammar), _eval_post_dec<Grammar>>
             {};
 
             template<typename Grammar>
             struct _eval_subscript
-              : transform<_eval_subscript<Grammar>>
+              : basic_action<_eval_subscript<Grammar>>
             {
                 template<typename E, typename ...T>
                 auto operator()(E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    as_transform<Grammar>()(
+                    action<Grammar>()(
                         proto::child<0>(static_cast<E &&>(e))
                       , static_cast<T &&>(t)...
                     ) [
-                        as_transform<Grammar>()(
+                        action<Grammar>()(
                             proto::child<1>(static_cast<E &&>(e))
                           , static_cast<T &&>(t)...
                         )
@@ -218,25 +222,25 @@ namespace boost
 
             template<typename Grammar>
             struct _eval_case<Grammar, tag::subscript>
-              : when<binary_expr<tag::subscript, Grammar, Grammar>, _eval_subscript<Grammar>>
+              : when<tag::subscript(Grammar, Grammar), _eval_subscript<Grammar>>
             {};
 
             template<typename Grammar>
             struct _eval_if_else_
-              : transform<_eval_if_else_<Grammar>>
+              : basic_action<_eval_if_else_<Grammar>>
             {
                 template<typename E, typename ...T>
                 auto operator()(E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    as_transform<Grammar>()(
+                    action<Grammar>()(
                         proto::child<0>(static_cast<E &&>(e))
                       , static_cast<T &&>(t)...
                     )
-                  ? as_transform<Grammar>()(
+                  ? action<Grammar>()(
                         proto::child<1>(static_cast<E &&>(e))
                       , static_cast<T &&>(t)...
                     )
-                  : as_transform<Grammar>()(
+                  : action<Grammar>()(
                         proto::child<2>(static_cast<E &&>(e))
                       , static_cast<T &&>(t)...
                     )
@@ -245,18 +249,18 @@ namespace boost
 
             template<typename Grammar>
             struct _eval_case<Grammar, tag::if_else_>
-              : when<nary_expr<tag::if_else_, Grammar, Grammar, Grammar>, _eval_if_else_<Grammar>>
+              : when<tag::if_else_(Grammar, Grammar, Grammar), _eval_if_else_<Grammar>>
             {};
 
             template<typename Grammar>
             struct _eval_function
-              : transform<_eval_function<Grammar>>
+              : basic_action<_eval_function<Grammar>>
             {
                 template<std::size_t...I, typename Fun, typename E, typename ...T>
                 auto impl_(utility::indices<I...>, Fun && fun, E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     static_cast<Fun &&>(fun)(
-                        as_transform<Grammar>()(
+                        action<Grammar>()(
                             proto::child<I>(static_cast<E &&>(e))
                           , static_cast<T &&>(t)...
                         )...
@@ -266,7 +270,7 @@ namespace boost
                 template<typename Type, typename Class, typename E, typename ...T>
                 auto impl_(utility::indices<1>, Type Class::*pm, E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    (proto_get_pointer(as_transform<Grammar>()(
+                    (proto_get_pointer(action<Grammar>()(
                         proto::child<1>(static_cast<E &&>(e))
                       , static_cast<T &&>(t)...
                     ), 1) ->* pm)
@@ -275,11 +279,11 @@ namespace boost
                 template<std::size_t ...I, typename Type, typename Class, typename ...Args, typename E, typename ...T>
                 auto impl_(utility::indices<1, I...>, Type (Class::*pmf)(Args...), E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    (proto_get_pointer(as_transform<Grammar>()(
+                    (proto_get_pointer(action<Grammar>()(
                         proto::child<1>(static_cast<E &&>(e))
                       , static_cast<T &&>(t)...
                     ), 1) ->* pmf)(
-                        as_transform<Grammar>()(
+                        action<Grammar>()(
                             proto::child<I>(static_cast<E &&>(e))
                           , static_cast<T &&>(t)...
                         )...
@@ -291,7 +295,7 @@ namespace boost
                 BOOST_PROTO_AUTO_RETURN(
                     this->impl_(
                         utility::make_indices<1, arity_of<E>::value>()
-                      , as_transform<Grammar>()(
+                      , action<Grammar>()(
                             proto::child<0>(static_cast<E &&>(e))
                           , static_cast<T &&>(t)...
                         )
@@ -303,7 +307,7 @@ namespace boost
 
             template<typename Grammar>
             struct _eval_case<Grammar, tag::function>
-              : when<nary_expr<tag::function, vararg<Grammar>>, _eval_function<Grammar>>
+              : when<tag::function(Grammar...), _eval_function<Grammar>>
             {};
 
             template<typename T, typename PMF>
@@ -335,12 +339,12 @@ namespace boost
 
             template<typename Grammar>
             struct _eval_mem_ptr
-              : transform<_eval_mem_ptr<Grammar>>
+              : basic_action<_eval_mem_ptr<Grammar>>
             {
                 template<typename Right, typename E, typename ...T>
                 auto impl_(Right && r, E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    as_transform<Grammar>()(
+                    action<Grammar>()(
                         proto::child<0>(static_cast<E &&>(e))
                       , static_cast<T &&>(t)...
                     ) ->* static_cast<Right &&>(r)
@@ -349,7 +353,7 @@ namespace boost
                 template<typename Type, typename Class, typename E, typename ...T>
                 auto impl_(Type Class::*pm, E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    (proto_get_pointer(as_transform<Grammar>()(
+                    (proto_get_pointer(action<Grammar>()(
                         proto::child<0>(static_cast<E &&>(e))
                       , static_cast<T &&>(t)...
                     ), 1) ->* pm)
@@ -359,7 +363,7 @@ namespace boost
                 auto impl_(Type (Class::*pmf)(Args...), E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     detail::as_memfun(
-                        as_transform<Grammar>()(
+                        action<Grammar>()(
                             proto::child<0>(static_cast<E &&>(e))
                           , static_cast<T &&>(t)...
                         )
@@ -371,7 +375,7 @@ namespace boost
                 auto operator()(E && e, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     this->impl_(
-                        as_transform<Grammar>()(
+                        action<Grammar>()(
                             proto::child<1>(static_cast<E &&>(e))
                           , static_cast<T &&>(t)...
                         )
@@ -383,7 +387,7 @@ namespace boost
 
             template<typename Grammar>
             struct _eval_case<Grammar, tag::mem_ptr>
-              : when<binary_expr<tag::mem_ptr, Grammar, Grammar>, _eval_mem_ptr<Grammar>>
+              : when<tag::mem_ptr(Grammar, Grammar), _eval_mem_ptr<Grammar>>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -402,7 +406,7 @@ namespace boost
         // _eval
         template<typename Grammar>
         struct _eval
-          : switch_<detail::_eval_cases<Grammar>>
+          : action<switch_(detail::_eval_cases<Grammar>)>
         {};
 
         namespace detail

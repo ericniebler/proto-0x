@@ -19,17 +19,16 @@ struct MyIntWrap : int_ {};
 
 void test_matches()
 {
-    static_assert(proto::matches<int_, int_>::value, "");
-    static_assert(proto::matches<MyIntWrap, int_>::value, "");
-    static_assert(proto::matches<MyIntWrap &, int_>::value, "");
-    static_assert(proto::matches<MyIntWrap &, MyIntWrap>::value, "");
-    static_assert(!proto::matches<int_, proto::unary_plus<_>>::value, "");
-    static_assert(!proto::matches<int_, string_>::value, "");
-    static_assert(proto::matches<proto::function<int_, int_, int_>, proto::function<proto::vararg<int_>>>::value, "");
-    static_assert(proto::matches<proto::function<int_>, proto::function<int_, proto::vararg<string_>>>::value, "");
-    static_assert(proto::matches<proto::function<int_>, proto::function<proto::vararg<int_>>>::value, "");
-    static_assert(!proto::matches<proto::function<int_, int_, string_>, proto::function<proto::vararg<int_>>>::value, "");
-    static_assert(!proto::matches<int_, proto::function<int_, int_>>::value, "");
+    static_assert(proto::matches<int_, proto::tag::terminal(int)>::value, "");
+    static_assert(proto::matches<MyIntWrap, proto::tag::terminal(int)>::value, "");
+    static_assert(proto::matches<MyIntWrap &, proto::tag::terminal(int)>::value, "");
+    static_assert(!proto::matches<int_, proto::tag::unary_plus(_)>::value, "");
+    static_assert(!proto::matches<int_, proto::tag::terminal(std::string)>::value, "");
+    static_assert(proto::matches<proto::function<int_, int_, int_>, proto::tag::function(proto::tag::terminal(int)...)>::value, "");
+    static_assert(proto::matches<proto::function<int_>, proto::tag::function(proto::tag::terminal(int), proto::tag::terminal(std::string)...)>::value, "");
+    static_assert(proto::matches<proto::function<int_>, proto::tag::function(proto::tag::terminal(int)...)>::value, "");
+    static_assert(!proto::matches<proto::function<int_, int_, string_>, proto::tag::function(proto::tag::terminal(int)...)>::value, "");
+    static_assert(!proto::matches<int_, proto::tag::function(proto::tag::terminal(int), proto::tag::terminal(int))>::value, "");
 }
 
 using namespace boost::unit_test;

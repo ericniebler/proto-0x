@@ -18,10 +18,10 @@
 namespace boost { namespace proto { namespace functional
 {
     /// \brief A PolymorphicFunctionObject type that invokes the
-    /// \c fusion::pop_back() algorithm on its argument.
+    /// \c fusion::pop_back() action on its argument.
     ///
     /// A PolymorphicFunctionObject type that invokes the
-    /// \c fusion::pop_back() algorithm on its argument.
+    /// \c fusion::pop_back() action on its argument.
     struct pop_back
     {
         template<typename Seq>

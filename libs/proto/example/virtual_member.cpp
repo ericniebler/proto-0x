@@ -40,9 +40,9 @@ namespace mini_lambda
     // An MPL IntegralConstant
     template<class N>
     struct placeholder
-      : proto::tags::def<placeholder<N>>
+      : proto::tags::basic_tag<placeholder<N>>
     {
-        using proto::tags::def<placeholder>::operator=;
+        using proto::tags::basic_tag<placeholder>::operator=;
 
         // So placeholder terminals can be pretty-printed with display_expr
         friend std::ostream & operator << (std::ostream & s, placeholder)
@@ -73,46 +73,48 @@ namespace mini_lambda
     template<class Tag, class Args>
     struct expression;
 
-    // The grammar for mini-lambda expressions with transforms for
+    // The grammar for mini-lambda expressions with actions for
     // evaluating the lambda expression.
     struct grammar
-      : proto::or_<
-            // When evaluating a placeholder, use the placeholder
-            // to index into the "data" parameter, which is a fusion
-            // vector containing the arguments to the lambda expression.
-            proto::when<
-                proto::terminal<placeholder<_> >
-              , proto::apply(proto::construct(proto::_env_var<proto::_value>()))
-            >
-            // When evaluating if/then/else expressions of the form
-            // "if_( E0 )[ E1 ].else_[ E2 ]", pass E0, E1 and E2 to
-            // eval_if_else along with the "data" parameter. Note the
-            // use of proto::member<> to match binary expressions like
-            // "X.Y" where "Y" is a virtual data member.
-          , proto::when<
-                proto::subscript<
-                    proto::member<
-                        proto::subscript<
-                            proto::function<
-                                proto::terminal<keyword::if_>
-                              , grammar
-                            >
-                          , grammar
-                        >
-                      , proto::terminal<keyword::else_>
-                    >
-                  , grammar
-                >
-              , eval_if_else(
-                    proto::_right(proto::_left(proto::_left(proto::_left)))
-                  , proto::_right(proto::_left(proto::_left))
-                  , proto::_right
-                  , proto::_env
+      : proto::grammar<
+            proto::algorithms::match(
+                // When evaluating a placeholder, use the placeholder
+                // to index into the "data" parameter, which is a fusion
+                // vector containing the arguments to the lambda expression.
+                proto::case_(
+                    proto::tag::terminal(placeholder<_>)
+                  , proto::apply(proto::construct(proto::_env_var<proto::_value>()))
                 )
-            >
-          , proto::otherwise<
-                proto::_eval<grammar>
-            >
+                // When evaluating if/then/else expressions of the form
+                // "if_( E0 )[ E1 ].else_[ E2 ]", pass E0, E1 and E2 to
+                // eval_if_else along with the "data" parameter. Note the
+                // use of proto::member<> to match binary expressions like
+                // "X.Y" where "Y" is a virtual data member.
+              , proto::case_(
+                    proto::tag::subscript(
+                        proto::tag::member(
+                            proto::tag::subscript(
+                                proto::tag::function(
+                                    proto::tag::terminal(keyword::if_)
+                                  , grammar
+                                )
+                              , grammar
+                            )
+                          , proto::tag::terminal(keyword::else_)
+                        )
+                      , grammar
+                    )
+                  , eval_if_else(
+                        proto::_right(proto::_left(proto::_left(proto::_left)))
+                      , proto::_right(proto::_left(proto::_left))
+                      , proto::_right
+                      , proto::_env
+                    )
+                )
+              , proto::case_( _,
+                    proto::_eval<grammar>
+                )
+            )
         >
     {};
 
@@ -242,6 +244,6 @@ int main()
     // Even though all expressions in the mini-lambda
     // domain have members named else_, while_, and catch_,
     // they all occupy the same byte in the expression.
-    static_assert(sizeof(_1) == 3, "_1 should be only 3 bytes");
+    static_assert(sizeof(_1) == 4, "_1 should be only 4 bytes");
 }
 //]

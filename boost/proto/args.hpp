@@ -25,7 +25,7 @@
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/utility.hpp>
-#include <boost/proto/transform/base.hpp>
+#include <boost/proto/action/base.hpp>
 
 // Must be greater than or equal to 1. (1 means don't do loop unrolling.)
 #ifndef BOOST_PROTO_ARGS_UNROLL_MAX
@@ -457,7 +457,7 @@ namespace boost
         // _child
         template<std::size_t N>
         struct _child
-          : transform<_child<N>>
+          : basic_action<_child<N>>
         {
             template<typename E, typename ...Rest>
             auto operator()(E && e, Rest &&...) const
@@ -469,7 +469,7 @@ namespace boost
         ////////////////////////////////////////////////////////////////////////////////////////////
         // _value
         struct _value
-          : transform<_value>
+          : basic_action<_value>
         {
             template<typename E, typename ...Rest>
             auto operator()(E && e, Rest &&...) const

@@ -54,8 +54,22 @@
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\boost\proto\algorithm\algorithm.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\apply.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\action.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\apply.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\arg.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\base.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\call.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\construct.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\env.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\eval.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\fold.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\integral_constant.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\pass_through.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\protect.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\recursive_fold.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\unpack.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\when.hpp" />
     <ClInclude Include="..\..\..\boost\proto\args.hpp" />
     <ClInclude Include="..\..\..\boost\proto\core.hpp" />
     <ClInclude Include="..\..\..\boost\proto\custom.hpp" />
@@ -75,27 +89,14 @@
     <ClInclude Include="..\..\..\boost\proto\functional\std.hpp" />
     <ClInclude Include="..\..\..\boost\proto\functional\std\utility.hpp" />
     <ClInclude Include="..\..\..\boost\proto\fusion.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\grammar.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\grammar\grammar.hpp" />
     <ClInclude Include="..\..\..\boost\proto\make_expr.hpp" />
     <ClInclude Include="..\..\..\boost\proto\matches.hpp" />
     <ClInclude Include="..\..\..\boost\proto\operators.hpp" />
     <ClInclude Include="..\..\..\boost\proto\proto.hpp" />
     <ClInclude Include="..\..\..\boost\proto\proto_fwd.hpp" />
     <ClInclude Include="..\..\..\boost\proto\tags.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\apply.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\arg.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\base.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\call.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\construct.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\env.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\eval.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\fold.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\integral_constant.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\pass_through.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\protect.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\recursive_fold.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\unpack.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\transform\when.hpp" />
     <ClInclude Include="..\..\..\boost\proto\utility.hpp" />
     <ClInclude Include="..\..\..\boost\proto\virtual_member.hpp" />
     <ClInclude Include="..\test\unit_test.hpp">

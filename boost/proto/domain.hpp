@@ -15,7 +15,8 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/make_expr.hpp>
 #include <boost/proto/matches.hpp>
-#include <boost/proto/transform/base.hpp>
+#include <boost/proto/action/base.hpp>
+#include <boost/proto/grammar/grammar.hpp>
 
 namespace boost
 {
@@ -42,7 +43,7 @@ namespace boost
                 template<typename Tag, typename ...T, BOOST_PROTO_ENABLE_IF(!Tag::proto_is_terminal::value)>
                 inline constexpr auto operator()(Tag tag, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    typename Domain::make_expr{}(
+                    typename Domain::make_expr()(
                         static_cast<Tag &&>(tag)
                       , proto::domains::as_expr<Domain>(static_cast<T &&>(t))...
                     )
@@ -52,9 +53,9 @@ namespace boost
                 template<typename Tag, typename T, BOOST_PROTO_ENABLE_IF(Tag::proto_is_terminal::value)>
                 inline constexpr auto operator()(Tag tag, T && t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    typename Domain::make_expr{}(
+                    typename Domain::make_expr()(
                         static_cast<Tag &&>(tag)
-                      , typename Domain::store_value{}(static_cast<T &&>(t))
+                      , typename Domain::store_value()(static_cast<T &&>(t))
                     )
                 )
             };
@@ -150,7 +151,7 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // default_grammar
             struct default_grammar
-              : not_<address_of<_>>
+              : grammar<not_(tag::address_of(_))>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -198,7 +199,7 @@ namespace boost
         ////////////////////////////////////////////////////////////////////////////////////////////
         // _domain_of
         struct _domain_of
-          : proto::transform<_domain_of>
+          : proto::basic_action<_domain_of>
         {
             template<typename E, typename ...Rest>
             auto operator()(E && e, Rest &&...) const

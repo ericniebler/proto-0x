@@ -1,16 +1,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // when.hpp
-// Associate a custom transform with a grammar rule
+// Associate a custom basic_action with a grammar rule
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_TRANSFORM_WHEN_HPP_INCLUDED
-#define BOOST_PROTO_TRANSFORM_WHEN_HPP_INCLUDED
+#ifndef BOOST_PROTO_ACTION_WHEN_HPP_INCLUDED
+#define BOOST_PROTO_ACTION_WHEN_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/transform/base.hpp>
+#include <boost/proto/action/base.hpp>
+#include <boost/proto/action/action.hpp>
 
 namespace boost
 {
@@ -18,16 +19,16 @@ namespace boost
     {
         ////////////////////////////////////////////////////////////////////////////////////////////
         // when
-        template<typename Grammar, typename Transform>
+        template<typename Grammar, typename Action>
         struct when
-          : transform<when<Grammar, Transform>>
+          : basic_action<when<Grammar, Action>>
         {
-            typedef Grammar proto_grammar_type;
+            //typedef Grammar proto_grammar_type;
 
             template<typename ...Args>
             auto operator()(Args &&... args) const
             BOOST_PROTO_AUTO_RETURN(
-                as_transform<Transform>()(static_cast<Args &&>(args)...)
+                action<Action>()(static_cast<Args &&>(args)...)
             )
         };
     }

@@ -18,17 +18,18 @@ typedef proto::terminal<int> term;
 struct equation;
 
 struct addition:
-    proto::or_
-    <
-       proto::terminal<proto::_>,
-       proto::plus<addition, addition>
+    proto::grammar<
+        proto::or_(
+            proto::tag::terminal(proto::_)
+          , proto::tag::plus(addition, addition)
+        )
     >
 {};
 
 struct equation:
-    proto::or_
+    proto::grammar
     <
-        proto::equal_to<addition, addition>
+        proto::tag::equal_to(addition, addition)
     >
 {};
 
