@@ -16,7 +16,7 @@
 #include <boost/get_pointer.hpp>
 #include <boost/utility/addressof.hpp>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/args.hpp>
+#include <boost/proto/children.hpp>
 #include <boost/proto/matches.hpp>
 #include <boost/proto/action/base.hpp>
 #include <boost/proto/action/when.hpp>

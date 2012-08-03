@@ -10,7 +10,7 @@
 #define BOOST_PROTO_MAKE_EXPR_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/args.hpp>
+#include <boost/proto/children.hpp>
 #include <boost/proto/tags.hpp>
 #include <boost/proto/utility.hpp>
 #include <boost/proto/detail/common_domain.hpp>

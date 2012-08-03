@@ -13,7 +13,7 @@
 #include <utility>
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/args.hpp>
+#include <boost/proto/children.hpp>
 #include <boost/proto/make_expr.hpp>
 #include <boost/proto/utility.hpp>
 #include <boost/proto/action/base.hpp>
@@ -83,8 +83,6 @@ namespace boost
             struct _pass_through_
               : basic_action<_pass_through_<Actions>>
             {
-                //typedef Expr<Tag, args<Args...>, Rest...> proto_grammar_type;
-
                 template<typename E, typename ...T, BOOST_PROTO_ENABLE_IF(is_terminal<E>::value)>
                 auto operator()(E && e, T &&...) const
                 BOOST_PROTO_AUTO_RETURN(

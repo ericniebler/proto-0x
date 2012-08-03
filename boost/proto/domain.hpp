@@ -65,13 +65,13 @@ namespace boost
             template<template<typename, typename> class Expr, typename Domain, typename Tag, typename ...T>
             inline constexpr auto make_custom_expr(Tag tag, T &&...t)
             BOOST_PROTO_AUTO_RETURN(
-                Expr<Tag, args<T...>>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
+                Expr<Tag, children<T...>>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
             )
 
             template<template<typename, typename, typename> class Expr, typename Domain, typename Tag, typename ...T>
             inline constexpr auto make_custom_expr(Tag tag, T &&...t)
             BOOST_PROTO_AUTO_RETURN(
-                Expr<Tag, args<T...>, Domain>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
+                Expr<Tag, children<T...>, Domain>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////

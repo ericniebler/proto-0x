@@ -188,7 +188,7 @@ namespace mini_lambda
     };
 
     template<typename T>
-    using var = expression<proto::tag::terminal, proto::args<T>>;
+    using var = expression<proto::tag::terminal, proto::children<T>>;
 
     namespace placeholders
     {

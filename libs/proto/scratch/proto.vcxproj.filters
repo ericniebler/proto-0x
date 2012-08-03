@@ -48,9 +48,6 @@
     <ClInclude Include="..\..\..\boost\proto\domain.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\args.hpp">
-      <Filter>Proto Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\operators.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
@@ -171,6 +168,9 @@
     <ClInclude Include="..\..\..\boost\proto\action.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\children.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -180,9 +180,6 @@
       <Filter>Test Files</Filter>
     </ClCompile>
     <ClCompile Include="..\test\expr.cpp">
-      <Filter>Test Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\test\as_transform.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
     <ClCompile Include="..\test\common_domain.cpp">
@@ -228,6 +225,9 @@
       <Filter>Test Files</Filter>
     </ClCompile>
     <ClCompile Include="..\test\construct.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\action.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
   </ItemGroup>

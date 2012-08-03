@@ -14,7 +14,7 @@
 #include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/args.hpp>
+#include <boost/proto/children.hpp>
 #include <boost/proto/expr.hpp>
 #include <boost/utility/addressof.hpp>
 
@@ -54,11 +54,11 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // virtual_member_
             template<typename A, typename B, typename Domain>
-            struct virtual_member_<tag::member, args<virtual_<A>, B>, Domain>
-              : basic_expr<tag::member, args<virtual_<A>, B>, Domain>
-              , expr_assign<virtual_member_<tag::member, args<virtual_<A>, B>, Domain>, Domain>
-              , expr_subscript<virtual_member_<tag::member, args<virtual_<A>, B>, Domain>, Domain>
-              , expr_function<virtual_member_<tag::member, args<virtual_<A>, B>, Domain>, Domain>
+            struct virtual_member_<tag::member, children<virtual_<A>, B>, Domain>
+              : basic_expr<tag::member, children<virtual_<A>, B>, Domain>
+              , expr_assign<virtual_member_<tag::member, children<virtual_<A>, B>, Domain>, Domain>
+              , expr_subscript<virtual_member_<tag::member, children<virtual_<A>, B>, Domain>, Domain>
+              , expr_function<virtual_member_<tag::member, children<virtual_<A>, B>, Domain>, Domain>
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(virtual_member_);
                 using expr_assign<virtual_member_, Domain>::operator=;

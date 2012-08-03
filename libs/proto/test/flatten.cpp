@@ -25,20 +25,20 @@ void write(std::ostream &sout, proto::tag::bitwise_or)
 }
 
 template<typename T0, typename Domain>
-void write(std::ostream &sout, proto::basic_expr<proto::tag::terminal, proto::args<T0>, Domain> const &op)
+void write(std::ostream &sout, proto::basic_expr<proto::tag::terminal, proto::children<T0>, Domain> const &op)
 {
     sout << proto::value(op);
 }
 
 template<typename Tag, typename T0, typename Domain>
-void write(std::ostream &sout, proto::basic_expr<Tag, proto::args<T0>, Domain> const &op)
+void write(std::ostream &sout, proto::basic_expr<Tag, proto::children<T0>, Domain> const &op)
 {
     write(sout, Tag());
     write(proto::child(op));
 }
 
 template<typename Tag, typename T0, typename T1, typename Domain>
-void write(std::ostream &sout, proto::basic_expr<Tag, proto::args<T0, T1>, Domain> const &op)
+void write(std::ostream &sout, proto::basic_expr<Tag, proto::children<T0, T1>, Domain> const &op)
 {
     write(sout, proto::left(op));
     write(sout, Tag());

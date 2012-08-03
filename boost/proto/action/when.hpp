@@ -23,8 +23,6 @@ namespace boost
         struct when
           : basic_action<when<Grammar, Action>>
         {
-            //typedef Grammar proto_grammar_type;
-
             template<typename ...Args>
             auto operator()(Args &&... args) const
             BOOST_PROTO_AUTO_RETURN(

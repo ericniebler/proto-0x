@@ -113,8 +113,8 @@ struct rhs_extension
 
 void test_constrained_ops()
 {
-     lhs_extension<proto::tag::terminal, proto::args<int>> const i {0};
-     rhs_extension<proto::tag::terminal, proto::args<int>> const j {0};
+     lhs_extension<proto::tag::terminal, proto::children<int>> const i {0};
+     rhs_extension<proto::tag::terminal, proto::children<int>> const j {0};
 
      proto::assert_matches_not<equation>(i);              // false
      proto::assert_matches_not<equation>(j);              // false

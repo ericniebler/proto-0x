@@ -43,7 +43,7 @@ struct e
     BOOST_PROTO_INHERIT_EXPR_CTORS(e, proto_basic_expr_type);
 };
 
-e<proto::tag::terminal, proto::args<int>> i;
+e<proto::tag::terminal, proto::children<int>> i;
 
 template<class T, class A>
 std::ostream &operator<<(std::ostream &sout, e<T, A> const &x)

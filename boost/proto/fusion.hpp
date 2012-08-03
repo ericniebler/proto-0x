@@ -22,7 +22,7 @@
 #include <boost/fusion/include/is_segmented.hpp>
 #include <boost/fusion/sequence/comparison/enable_comparison.hpp>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/args.hpp>
+#include <boost/proto/children.hpp>
 #include <boost/proto/expr.hpp>
 
 namespace boost
@@ -240,7 +240,7 @@ namespace boost
             {
                 template<typename Iterator>
                 struct apply
-                  : proto::args_element<Iterator::index, typename Iterator::expr_type::proto_args_type>
+                  : proto::children_element<Iterator::index, typename Iterator::expr_type::proto_args_type>
                 {};
             };
 
@@ -447,7 +447,7 @@ namespace boost
             {
                 template<typename Sequence, typename Index>
                 struct apply
-                  : proto::args_element<(std::size_t)Index::value, typename Sequence::proto_args_type>
+                  : proto::children_element<(std::size_t)Index::value, typename Sequence::proto_args_type>
                 {};
             };
 

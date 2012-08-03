@@ -59,7 +59,7 @@ void test_expr()
     constexpr int_ i_(42);
 
     // Quick test for big expression nodes (>10 children)
-    typedef proto::expr<proto::tag::function, proto::args<int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_>> ints_;
+    typedef proto::expr<proto::tag::function, proto::children<int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_>> ints_;
     ints_ is(p,p,p,p,p,p,p,p,p,p,p,p,p,p);
     p = proto::child<13>(is);
 
@@ -73,7 +73,7 @@ void test_expr()
     BOOST_PROTO_IGNORE_UNUSED(i);
 
     // sanity test for stored_value and stored_child (used by as_expr when building nodes)
-    proto::expr<proto::tag::function, proto::args<int_&, int_, int_, int_, proto::terminal<char const (&)[6]> >> x = p(1, 2, 3, "hello");
+    proto::expr<proto::tag::function, proto::children<int_&, int_, int_, int_, proto::terminal<char const (&)[6]> >> x = p(1, 2, 3, "hello");
     static_assert(std::is_same<decltype(proto::value(proto::child<4>(x))), char const (&)[6]>::value, "not the same!");
 
     // verify that expression nodes are Regular types.
@@ -91,7 +91,7 @@ void test_expr()
 
     // verify that expression nodes are no larger than they need to be.
     static_assert(sizeof(proto::terminal<int>) == sizeof(int), "sizeof(proto::terminal<int>) != sizeof(int)");
-    static_assert(sizeof(proto::expr<proto::tag::function, proto::args<>>) == 1, "size of empty expr is not 1");
+    static_assert(sizeof(proto::expr<proto::tag::function, proto::children<>>) == 1, "size of empty expr is not 1");
 
     // This should fail to compile:
     //typedef int_ const cint_;

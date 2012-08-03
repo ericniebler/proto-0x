@@ -103,7 +103,7 @@ namespace boost
             auto as_basic_expr(T &&t) ->
                 basic_expr<
                     tag::terminal
-                  , args<decltype(typename Domain::store_value()(t))>
+                  , children<decltype(typename Domain::store_value()(t))>
                   , Domain
                 >;
 
@@ -129,7 +129,7 @@ namespace boost
                 BOOST_PROTO_AUTO_RETURN(
                     detail::expr_maker_if_2_<
                         Tag
-                      , args<decltype(detail::as_basic_expr<Domain>(static_cast<T &&>(t)))...>
+                      , children<decltype(detail::as_basic_expr<Domain>(static_cast<T &&>(t)))...>
                       , Domain
                     >()(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
                 )

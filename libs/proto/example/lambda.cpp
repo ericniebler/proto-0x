@@ -89,7 +89,7 @@ struct lambda_expr
 };
 
 template<typename T>
-using lambda_var = lambda_expr<proto::tag::terminal, proto::args<T>>;
+using lambda_var = lambda_expr<proto::tag::terminal, proto::children<T>>;
 
 typedef lambda_var<placeholder_c<0>> _1_type;
 typedef lambda_var<placeholder_c<1>> _2_type;
