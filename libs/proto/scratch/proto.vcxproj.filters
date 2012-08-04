@@ -123,12 +123,6 @@
     <ClInclude Include="..\..\..\boost\proto\action\apply.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\action\arg.hpp">
-      <Filter>Proto Files\action</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\action\base.hpp">
-      <Filter>Proto Files\action</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\action\call.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
@@ -162,14 +156,53 @@
     <ClInclude Include="..\..\..\boost\proto\action\when.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\action\action.hpp">
-      <Filter>Proto Files\action</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\action.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\children.hpp">
       <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\placeholders.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\grammar\if.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\grammar\not.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\grammar\or.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\grammar\when.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\grammar\and.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\grammar\switch.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\and.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\if.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\or.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\switch.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\algorithm.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\expr.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\action.hpp">
+      <Filter>Proto Files\action</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

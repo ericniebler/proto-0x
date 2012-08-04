@@ -13,9 +13,8 @@
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/matches.hpp>
-#include <boost/proto/action/fold.hpp>
-#include <boost/proto/action/base.hpp>
 #include <boost/proto/action/action.hpp>
+#include <boost/proto/action/fold.hpp>
 
 namespace boost
 {

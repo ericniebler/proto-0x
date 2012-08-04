@@ -11,6 +11,7 @@
 
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/utility.hpp>
+#include <boost/proto/action/action.hpp>
 
 namespace boost
 {
@@ -209,12 +210,43 @@ namespace boost
 
                 BOOST_PROTO_IGNORE_UNUSED(data, local);
 
-                struct nullary_expr {};
-                struct unary_expr {};
-                struct binary_expr {};
-                struct nary_expr {};
-            }
+                // Abstract expression tags
+                struct nullary_expr
+                {};
+                
+                struct unary_expr
+                {};
+                
+                struct binary_expr
+                {};
+                
+                struct nary_expr
+                {};
+
+            } // namespace tag
         } // namespace tags
+
+        // Miscelaneous tags
+        struct or_
+        {};
+        
+        struct not_
+        {};
+        
+        struct and_
+        {};
+        
+        struct if_
+        {};
+        
+        struct switch_
+        {};
+        
+        struct when
+        {};
+        
+        struct match
+        {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // tag_of

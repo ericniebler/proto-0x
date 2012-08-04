@@ -38,9 +38,9 @@ void test_action()
 
     {
         proto::action<
-            proto::algorithms::match(
-                proto::case_(proto::tag::terminal(int), proto::_int<42>)
-              , proto::case_(proto::tag::terminal(std::string), proto::_int<43>)
+            proto::or_(
+                proto::when(proto::tag::terminal(int), proto::_int<42>)
+              , proto::when(proto::tag::terminal(std::string), proto::_int<43>)
             )
         > SimpleAlgo;
 

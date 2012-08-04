@@ -11,9 +11,8 @@
 #define BOOST_PROTO_ACTION_APPLY_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/base.hpp>
-#include <boost/proto/action/call.hpp>
 #include <boost/proto/action/action.hpp>
+#include <boost/proto/action/call.hpp>
 
 namespace boost
 {
@@ -36,8 +35,8 @@ namespace boost
             };
         }
 
-        template<typename Fun, typename ...Actions, int I>
-        struct action<apply(Fun, Actions...), I>
+        template<typename Fun, typename ...Actions>
+        struct action<apply(Fun, Actions...)>
           : detail::_apply<Fun, Actions...>
         {};
     }

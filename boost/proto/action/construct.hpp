@@ -12,9 +12,8 @@
 #include <utility>
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/base.hpp>
-#include <boost/proto/action/protect.hpp>
 #include <boost/proto/action/action.hpp>
+#include <boost/proto/action/protect.hpp>
 #include <boost/proto/utility.hpp>
 
 namespace boost
@@ -170,13 +169,13 @@ namespace boost
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // action
-        template<typename Type, typename ...Actions, int I>
-        struct action<construct(Type(*)(Actions...)), I>
+        template<typename Type, typename ...Actions>
+        struct action<construct(Type(*)(Actions...))>
           : detail::_construct<Type, Actions...>
         {};
 
-        template<typename Type, typename ...Actions, int I>
-        struct action<construct(Type(*)(Actions......)), I>
+        template<typename Type, typename ...Actions>
+        struct action<construct(Type(*)(Actions......))>
           : detail::_construct_unpack<Type, Actions...>
         {};
     }

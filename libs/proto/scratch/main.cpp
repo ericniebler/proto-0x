@@ -39,38 +39,38 @@ namespace algo
     using proto::construct;
     using namespace proto::algorithms;
 
-    //struct lambda_eval
-    //  : proto::grammar<
-    //        match(
-    //            case_(terminal(placeholder<_>),
-    //                apply(construct(proto::_env_var<proto::_value>()))
-    //            )
-    //          , case_(terminal(_),
-    //                proto::_value
-    //            )
-    //          , case_(nary_expr(_, lambda_eval...),
-    //                proto::_eval<lambda_eval>
-    //            )
-    //        )
-    //    >
-    //{};
-
-    // This also works
     struct lambda_eval
-      : proto::action<
-            proto::if_(matches(terminal(placeholder<_>))
-              , then(
+      : proto::algorithm<
+            proto::or_(
+                when(terminal(placeholder<_>),
                     apply(construct(proto::_env_var<proto::_value>()))
                 )
-              , else_(
-                    proto::if_(matches(terminal(_))
-                      , then(proto::_value)
-                      , else_(proto::_eval<lambda_eval>)
-                    )
+              , when(terminal(_),
+                    proto::_value
+                )
+              , when(nary_expr(_, lambda_eval...),
+                    proto::_eval<lambda_eval>
                 )
             )
         >
     {};
+
+    //// This also works
+    //struct lambda_eval
+    //  : proto::action<
+    //        proto::if_(matches(terminal(placeholder<_>))
+    //          , then(
+    //                apply(construct(proto::_env_var<proto::_value>()))
+    //            )
+    //          , else_(
+    //                proto::if_(matches(terminal(_))
+    //                  , then(proto::_value)
+    //                  , else_(proto::_eval<lambda_eval>)
+    //                )
+    //            )
+    //        )
+    //    >
+    //{};
 
     template<std::size_t ...I, typename E, typename ...T>
     inline auto lambda_eval_(proto::utility::indices<I...>, E && e, T &&... t)

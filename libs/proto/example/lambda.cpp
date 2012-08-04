@@ -32,15 +32,15 @@ template<std::size_t I>
 using placeholder_c = placeholder<std::integral_constant<std::size_t, I>>;
 
 struct lambda_eval
-  : proto::grammar<
-        proto::algorithms::match(
-            proto::case_( proto::tag::terminal(placeholder<_>),
+  : proto::algorithm<
+        proto::or_(
+            proto::when( proto::tag::terminal(placeholder<_>),
                 proto::apply(proto::construct(proto::_env_var<proto::_value>()))
             )
-          , proto::case_( proto::tag::terminal(_),
+          , proto::when( proto::tag::terminal(_),
                 proto::_value
             )
-          , proto::case_( _,
+          , proto::when( _,
                 proto::_eval<lambda_eval>
             )
         )

@@ -12,7 +12,6 @@
 #include <cstddef>
 #include <utility>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/base.hpp>
 #include <boost/proto/action/action.hpp>
 #include <boost/proto/utility.hpp>
 
@@ -181,14 +180,14 @@ namespace boost
         }
 
         // Usage: construct(wrap<proto::_value>(proto::_value))
-        template<typename Ret, typename ...Actions, int I>
-        struct action<Ret(*)(Actions......), I>
-          : action<Ret(Actions......), I>
+        template<typename Ret, typename ...Actions>
+        struct action<Ret(*)(Actions......)>
+          : action<Ret(Actions......)>
         {};
 
         // Handle actions with pack expansions
-        template<typename Ret, typename ...Actions, int I>
-        struct action<Ret(Actions......), I>
+        template<typename Ret, typename ...Actions>
+        struct action<Ret(Actions......)>
           : detail::_unpack<Ret, Actions...>
         {};
     }

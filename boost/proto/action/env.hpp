@@ -10,7 +10,7 @@
 #define BOOST_PROTO_ACTION_ENV_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/base.hpp>
+#include <boost/proto/action/action.hpp>
 #include <boost/proto/utility.hpp>
 
 namespace boost

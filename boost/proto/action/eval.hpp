@@ -18,9 +18,11 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/children.hpp>
 #include <boost/proto/matches.hpp>
-#include <boost/proto/action/base.hpp>
-#include <boost/proto/action/when.hpp>
+#include <boost/proto/algorithm.hpp>
 #include <boost/proto/action/action.hpp>
+#include <boost/proto/action/when.hpp>
+#include <boost/proto/grammar/when.hpp>
+#include <boost/proto/grammar/not.hpp>
 
 namespace boost
 {
@@ -62,23 +64,23 @@ namespace boost
             // _eval_case
             template<typename Grammar, typename Tag>
             struct _eval_case
-              : when<not_(_), _eval_unknown>
+              : algorithm<when(not_(_), _eval_unknown)>
             {};
 
             template<typename Grammar>
             struct _eval_case<Grammar, tag::terminal>
-              : when<tag::terminal(_), _value>
+              : algorithm<when(tag::terminal(_), _value)>
             {};
 
             #define BOOST_PROTO_UNARY_EVAL(OP, TAG)                                                 \
             template<typename Grammar>                                                              \
             struct BOOST_PP_CAT(_eval_, TAG)                                                        \
-              : basic_action<BOOST_PP_CAT(_eval_, TAG)<Grammar>>                                       \
+              : basic_action<BOOST_PP_CAT(_eval_, TAG)<Grammar>>                                    \
             {                                                                                       \
                 template<typename E, typename ...T>                                                 \
                 auto operator()(E && e, T &&... t) const                                            \
                 BOOST_PROTO_AUTO_RETURN(                                                            \
-                    OP action<Grammar>()(                                                     \
+                    OP action<Grammar>()(                                                           \
                         proto::child<0>(static_cast<E &&>(e))                                       \
                       , static_cast<T &&>(t)...                                                     \
                     )                                                                               \
@@ -87,23 +89,23 @@ namespace boost
                                                                                                     \
             template<typename Grammar>                                                              \
             struct _eval_case<Grammar, tag::TAG>                                                    \
-              : when<tag::unary_expr(tag::TAG, Grammar), BOOST_PP_CAT(_eval_, TAG)<Grammar>>        \
+              : algorithm<when(tag::unary_expr(tag::TAG, Grammar), BOOST_PP_CAT(_eval_, TAG)<Grammar>)> \
             {};                                                                                     \
             /**/
 
             #define BOOST_PROTO_BINARY_EVAL(OP, TAG)                                                \
             template<typename Grammar>                                                              \
             struct BOOST_PP_CAT(_eval_, TAG)                                                        \
-              : basic_action<BOOST_PP_CAT(_eval_, TAG)<Grammar>>                                       \
+              : basic_action<BOOST_PP_CAT(_eval_, TAG)<Grammar>>                                    \
             {                                                                                       \
                 template<typename E, typename ...T>                                                 \
                 auto operator()(E && e, T &&... t) const                                            \
                 BOOST_PROTO_AUTO_RETURN(                                                            \
-                    action<Grammar>()(                                                        \
+                    action<Grammar>()(                                                              \
                         proto::child<0>(static_cast<E &&>(e))                                       \
                       , static_cast<T &&>(t)...                                                     \
                     ) OP                                                                            \
-                    action<Grammar>()(                                                        \
+                    action<Grammar>()(                                                              \
                         proto::child<1>(static_cast<E &&>(e))                                       \
                       , static_cast<T &&>(t)...                                                     \
                     )                                                                               \
@@ -112,10 +114,10 @@ namespace boost
                                                                                                     \
             template<typename Grammar>                                                              \
             struct _eval_case<Grammar, tag::TAG>                                                    \
-              : when<                                                                               \
+              : algorithm<when(                                                                       \
                     tag::binary_expr(tag::TAG, Grammar, Grammar)                                    \
                   , BOOST_PP_CAT(_eval_, TAG)<Grammar>                                              \
-                >                                                                                   \
+                )>                                                                                  \
             {};                                                                                     \
             /**/
 
@@ -179,7 +181,7 @@ namespace boost
 
             template<typename Grammar>
             struct _eval_case<Grammar, tag::post_inc>
-              : when<tag::post_inc(Grammar), _eval_post_inc<Grammar>>
+              : algorithm<when(tag::post_inc(Grammar), _eval_post_inc<Grammar>)>
             {};
 
             template<typename Grammar>
@@ -198,7 +200,7 @@ namespace boost
 
             template<typename Grammar>
             struct _eval_case<Grammar, tag::post_dec>
-              : when<tag::post_dec(Grammar), _eval_post_dec<Grammar>>
+              : algorithm<when(tag::post_dec(Grammar), _eval_post_dec<Grammar>)>
             {};
 
             template<typename Grammar>
@@ -222,7 +224,7 @@ namespace boost
 
             template<typename Grammar>
             struct _eval_case<Grammar, tag::subscript>
-              : when<tag::subscript(Grammar, Grammar), _eval_subscript<Grammar>>
+              : algorithm<when(tag::subscript(Grammar, Grammar), _eval_subscript<Grammar>)>
             {};
 
             template<typename Grammar>
@@ -249,7 +251,7 @@ namespace boost
 
             template<typename Grammar>
             struct _eval_case<Grammar, tag::if_else_>
-              : when<tag::if_else_(Grammar, Grammar, Grammar), _eval_if_else_<Grammar>>
+              : algorithm<when(tag::if_else_(Grammar, Grammar, Grammar), _eval_if_else_<Grammar>)>
             {};
 
             template<typename Grammar>
@@ -307,7 +309,7 @@ namespace boost
 
             template<typename Grammar>
             struct _eval_case<Grammar, tag::function>
-              : when<tag::function(Grammar...), _eval_function<Grammar>>
+              : algorithm<when(tag::function(Grammar...), _eval_function<Grammar>)>
             {};
 
             template<typename T, typename PMF>
@@ -387,7 +389,7 @@ namespace boost
 
             template<typename Grammar>
             struct _eval_case<Grammar, tag::mem_ptr>
-              : when<tag::mem_ptr(Grammar, Grammar), _eval_mem_ptr<Grammar>>
+              : algorithm<when(tag::mem_ptr(Grammar, Grammar), _eval_mem_ptr<Grammar>)>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////

@@ -16,7 +16,6 @@
 #include <boost/proto/children.hpp>
 #include <boost/proto/make_expr.hpp>
 #include <boost/proto/utility.hpp>
-#include <boost/proto/action/base.hpp>
 #include <boost/proto/action/action.hpp>
 
 namespace boost
@@ -103,13 +102,13 @@ namespace boost
         struct pass_through
         {};
 
-        template<typename ...Actions, int I>
-        struct action<pass_through(Actions...), I>
+        template<typename ...Actions>
+        struct action<pass_through(Actions...)>
           : detail::_pass_through_<pass_through(Actions...)>
         {};
 
-        template<typename ...Actions, int I>
-        struct action<pass_through(Actions......), I>
+        template<typename ...Actions>
+        struct action<pass_through(Actions......)>
           : detail::_pass_through_<pass_through(Actions......)>
         {};
     }

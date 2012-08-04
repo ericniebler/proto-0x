@@ -30,12 +30,12 @@ struct do_eval
 };
 
 struct eval
-  : proto::grammar<
-        proto::algorithms::match(
-            proto::case_(proto::tag::terminal(_),
+  : proto::algorithm<
+        proto::or_(
+            proto::when(proto::tag::terminal(_),
                 proto::_value
             )
-          , proto::case_(_,
+          , proto::when(_,
                 do_eval(proto::construct(proto::tag_of<_>()), eval(proto::pack(_))...)
             )
         )

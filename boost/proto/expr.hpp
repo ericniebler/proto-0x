@@ -17,7 +17,7 @@
 #include <boost/proto/domain.hpp>
 #include <boost/proto/tags.hpp>
 #include <boost/proto/utility.hpp>
-#include <boost/proto/action/base.hpp>
+#include <boost/proto/action/action.hpp>
 #include <boost/proto/action/pass_through.hpp>
 
 namespace boost

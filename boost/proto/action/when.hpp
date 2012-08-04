@@ -10,8 +10,8 @@
 #define BOOST_PROTO_ACTION_WHEN_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/base.hpp>
 #include <boost/proto/action/action.hpp>
+#include <boost/proto/action/and.hpp>
 
 namespace boost
 {
@@ -19,16 +19,15 @@ namespace boost
     {
         ////////////////////////////////////////////////////////////////////////////////////////////
         // when
-        template<typename Grammar, typename Action>
-        struct when
-          : basic_action<when<Grammar, Action>>
-        {
-            template<typename ...Args>
-            auto operator()(Args &&... args) const
-            BOOST_PROTO_AUTO_RETURN(
-                action<Action>()(static_cast<Args &&>(args)...)
-            )
-        };
+        template<typename Grammar, typename ...Algo>
+        struct action<when(Grammar, Algo...)>
+          : detail::_and_<Algo...>
+        {};
+
+        template<typename Grammar, typename Algo>
+        struct action<when(Grammar, Algo)>
+          : action<Algo>
+        {};
     }
 }
 

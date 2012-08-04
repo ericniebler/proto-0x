@@ -13,9 +13,8 @@
 #include <type_traits>
 #include <boost/mpl/identity.hpp>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/base.hpp>
-#include <boost/proto/action/protect.hpp>
 #include <boost/proto/action/action.hpp>
+#include <boost/proto/action/protect.hpp>
 #include <boost/proto/utility.hpp>
 
 namespace boost
@@ -105,14 +104,14 @@ namespace boost
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // action
-        template<typename Ret, typename ...Actions, int I>
-        struct action<Ret(*)(Actions...), I>
-          : action<Ret(Actions...), I>
+        template<typename Ret, typename ...Actions>
+        struct action<Ret(*)(Actions...)>
+          : action<Ret(Actions...)>
         {};
 
         // Handle callable actions
-        template<typename Ret, typename ...Actions, int I>
-        struct action<Ret(Actions...), I>
+        template<typename Ret, typename ...Actions>
+        struct action<Ret(Actions...)>
           : detail::_call<Ret, Actions...>
         {};
     }

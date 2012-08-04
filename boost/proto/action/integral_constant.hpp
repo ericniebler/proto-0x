@@ -11,7 +11,7 @@
 
 #include <utility>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/base.hpp>
+#include <boost/proto/action/action.hpp>
 
 namespace boost
 {

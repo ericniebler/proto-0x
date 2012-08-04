@@ -12,10 +12,9 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/matches.hpp>
 #include <boost/proto/make_expr.hpp>
-#include <boost/proto/action/base.hpp>
-#include <boost/proto/action/when.hpp>
-#include <boost/proto/action/pass_through.hpp>
 #include <boost/proto/action/action.hpp>
+#include <boost/proto/action/switch.hpp>
+#include <boost/proto/action/pass_through.hpp>
 
 namespace boost
 {

@@ -226,6 +226,12 @@ namespace boost
 
         using namespace tags;
 
+        template<typename Expr>
+        struct tag_of;
+
+        template<typename T>
+        struct is_tag;
+
         namespace domains
         {
             typedef detail::not_a_domain no_super_domain;
@@ -386,14 +392,11 @@ namespace boost
         template<typename T>
         struct is_action;
 
-        template<typename T, int = 0>
+        template<typename T, typename Enable = void>
         struct action;
 
-        template<typename Grammar, typename Action = Grammar>
-        struct when;
-
-        template<typename Action>
-        using otherwise = when<_, Action>;
+        template<typename T>
+        struct algorithm;
 
         template<typename T, T Value>
         struct _integral_constant;
@@ -450,9 +453,6 @@ namespace boost
         template<typename Expr>
         struct domain_of;
 
-        template<typename Expr>
-        struct tag_of;
-
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Stuff for grammar building
         template<typename T>
@@ -474,8 +474,7 @@ namespace boost
         struct and_;
         struct if_;
         struct switch_;
-        struct case_;
-        struct match;
+        struct when;
         struct pass_through;
 
         template<typename Grammar>
@@ -489,11 +488,10 @@ namespace boost
 
         namespace algorithms
         {
-            struct block;
             struct matches;
-            struct match;
-            using proto::case_;
+            using proto::when;
 
+            typedef proto::and_ block;
             typedef block then;
             typedef block else_;
 
