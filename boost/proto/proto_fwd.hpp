@@ -226,6 +226,19 @@ namespace boost
 
         using namespace tags;
 
+        struct or_;
+        struct not_;
+        struct and_;
+        struct if_;
+        struct switch_;
+        struct when;
+        struct pass_through;
+        struct matches_;
+
+        typedef and_ block;
+        typedef block then;
+        typedef block else_;
+
         template<typename Expr>
         struct tag_of;
 
@@ -469,14 +482,6 @@ namespace boost
         //constexpr int N = (std::numeric_limits<int>::max() >> 10);
         constexpr int N = (INT_MAX >> 10);
 
-        struct or_;
-        struct not_;
-        struct and_;
-        struct if_;
-        struct switch_;
-        struct when;
-        struct pass_through;
-
         template<typename Grammar>
         struct grammar;
 
@@ -485,18 +490,6 @@ namespace boost
 
         template<typename Expr, typename Grammar, typename Enable = void>
         struct matches;
-
-        namespace algorithms
-        {
-            struct matches;
-            using proto::when;
-
-            typedef proto::and_ block;
-            typedef block then;
-            typedef block else_;
-
-            using namespace proto::tags::tag;
-        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Handy expression template aliases

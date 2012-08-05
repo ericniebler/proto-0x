@@ -179,15 +179,9 @@ namespace boost
             };
         }
 
-        // Usage: construct(wrap<proto::_value>(proto::_value))
-        template<typename Ret, typename ...Actions>
-        struct action<Ret(*)(Actions......)>
-          : action<Ret(Actions......)>
-        {};
-
         // Handle actions with pack expansions
         template<typename Ret, typename ...Actions>
-        struct action<Ret(Actions......)>
+        struct action<Ret(Actions......), typename std::enable_if<!is_tag<Ret>::value>::type>
           : detail::_unpack<Ret, Actions...>
         {};
     }

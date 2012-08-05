@@ -167,6 +167,9 @@ namespace boost
             };
         }
 
+        struct construct
+        {};
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         // action
         template<typename Type, typename ...Actions>

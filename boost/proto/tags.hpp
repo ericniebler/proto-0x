@@ -248,6 +248,9 @@ namespace boost
         struct match
         {};
 
+        struct matches_
+        {};
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         // tag_of
         template<typename Expr>

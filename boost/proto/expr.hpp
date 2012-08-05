@@ -411,7 +411,7 @@ namespace boost
                 typedef children<Args...>                       proto_args_type;
                 typedef Domain                              proto_domain_type;
                 typedef basic_expr                          proto_basic_expr_type;
-                typedef action<pass_through(Args...)>       proto_algorithm_type;
+                typedef action<pass_through(Args...)>       proto_action_type;
                 typedef
                     std::integral_constant<
                         std::size_t

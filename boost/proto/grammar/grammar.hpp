@@ -85,13 +85,6 @@ namespace boost
               , Ret(Args......)
             >
         {};
-
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // proto::matches specializations
-        template<typename Expr>
-        struct matches<Expr, proto::_>
-          : std::true_type
-        {};
     }
 }
 

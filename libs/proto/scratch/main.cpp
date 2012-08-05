@@ -11,7 +11,6 @@
 #include <type_traits>
 #include <boost/proto/proto.hpp>
 #include <boost/proto/debug.hpp>
-#include <boost/proto/action/action.hpp>
 
 namespace proto = boost::proto;
 using proto::_;
@@ -35,21 +34,19 @@ using placeholder_c = placeholder<std::integral_constant<std::size_t, I>>;
 
 namespace algo
 {
-    using proto::apply;
-    using proto::construct;
-    using namespace proto::algorithms;
+    using namespace proto;
 
     struct lambda_eval
-      : proto::algorithm<
-            proto::or_(
-                when(terminal(placeholder<_>),
-                    apply(construct(proto::_env_var<proto::_value>()))
+      : algorithm<
+            or_(
+                when(tag::terminal(placeholder<_>),
+                    apply(construct(_env_var<_value>()))
                 )
-              , when(terminal(_),
-                    proto::_value
+              , when(tag::terminal(_),
+                    _value
                 )
-              , when(nary_expr(_, lambda_eval...),
-                    proto::_eval<lambda_eval>
+              , when(tag::nary_expr(_, lambda_eval...),
+                    _eval<lambda_eval>
                 )
             )
         >
@@ -168,8 +165,7 @@ int main()
     std::cout << "The lambda '_1 + 42 * _2' yields '" << i << "' when called with 8 and 2.\n";
 
     // Test for vararg expression patterns
-    using namespace proto::algorithms;
-    proto::action<matches(nary_expr(_, terminal(_)...))> depth_one;
+    proto::action<proto::matches_(proto::tag::nary_expr(_, proto::tag::terminal(_)...))> depth_one;
 
     #define DEPTH_ONE(x) std::cout << "Q: Is '" #x "' a tree of depth one? " << \
                                       "A: " << std::boolalpha << depth_one(x).value << std::endl;

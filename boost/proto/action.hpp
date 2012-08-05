@@ -20,6 +20,7 @@
 #include <boost/proto/action/fold.hpp>
 #include <boost/proto/action/if.hpp>
 #include <boost/proto/action/integral_constant.hpp>
+#include <boost/proto/action/matches.hpp>
 #include <boost/proto/action/or.hpp>
 #include <boost/proto/action/pass_through.hpp>
 #include <boost/proto/action/placeholders.hpp>

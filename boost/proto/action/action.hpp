@@ -28,19 +28,29 @@ namespace boost
         struct basic_action
           : action_base
         {
-            typedef Action proto_algorithm_type;
+            typedef Action proto_action_type;
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // action
         template<typename T, typename Enable>
         struct action
-          : T::proto_algorithm_type
+          : T::proto_action_type
         {};
 
         template<typename T>
         struct action<action<T>>
           : action<T>
+        {};
+
+        template<typename Ret, typename ...Args>
+        struct action<Ret(*)(Args...)>
+          : action<Ret(Args...)>
+        {};
+
+        template<typename Ret, typename ...Args>
+        struct action<Ret(*)(Args......)>
+          : action<Ret(Args......)>
         {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////

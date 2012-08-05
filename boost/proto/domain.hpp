@@ -18,7 +18,7 @@
 #include <boost/proto/action/action.hpp>
 #include <boost/proto/grammar/grammar.hpp>
 #include <boost/proto/grammar/not.hpp>
-//#include <boost/proto/grammar/expr.hpp>
+#include <boost/proto/grammar/expr.hpp>
 
 namespace boost
 {
