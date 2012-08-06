@@ -10,7 +10,6 @@
 
 #include <utility>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/matches.hpp>
 #include <boost/proto/tags.hpp>
 #include <boost/proto/action/action.hpp>
 #include <boost/proto/action/pass_through.hpp>
@@ -30,22 +29,22 @@ namespace boost
         {};
 
         template<typename Tag, typename Value>
-        struct action<tag::nullary_expr(Tag, Value)>
+        struct action<nullary_expr(Tag, Value)>
           : action<pass_through(Value)>
         {};
 
         template<typename Tag, typename Action>
-        struct action<tag::unary_expr(Tag, Action)>
+        struct action<unary_expr(Tag, Action)>
           : action<pass_through(Action)>
         {};
 
         template<typename Tag, typename Tfx0, typename Tfx1>
-        struct action<tag::binary_expr(Tag, Tfx0, Tfx1)>
+        struct action<binary_expr(Tag, Tfx0, Tfx1)>
           : action<pass_through(Tfx0, Tfx1)>
         {};
 
         template<typename Tag, typename ...Actions>
-        struct action<tag::nary_expr(Tag, Actions...)>
+        struct action<nary_expr(Tag, Actions...)>
           : action<pass_through(Actions...)>
         {};
     }

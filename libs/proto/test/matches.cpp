@@ -13,22 +13,22 @@ namespace mpl = boost::mpl;
 namespace proto = boost::proto;
 using proto::_;
 
-typedef proto::terminal<int> int_;
-typedef proto::terminal<std::string> string_;
+typedef proto::literal<int> int_;
+typedef proto::literal<std::string> string_;
 struct MyIntWrap : int_ {};
 
 void test_matches()
 {
-    static_assert(proto::matches<int_, proto::tag::terminal(int)>::value, "");
-    static_assert(proto::matches<MyIntWrap, proto::tag::terminal(int)>::value, "");
-    static_assert(proto::matches<MyIntWrap &, proto::tag::terminal(int)>::value, "");
-    static_assert(!proto::matches<int_, proto::tag::unary_plus(_)>::value, "");
-    static_assert(!proto::matches<int_, proto::tag::terminal(std::string)>::value, "");
-    static_assert(proto::matches<proto::function<int_, int_, int_>, proto::tag::function(proto::tag::terminal(int)...)>::value, "");
-    static_assert(proto::matches<proto::function<int_>, proto::tag::function(proto::tag::terminal(int), proto::tag::terminal(std::string)...)>::value, "");
-    static_assert(proto::matches<proto::function<int_>, proto::tag::function(proto::tag::terminal(int)...)>::value, "");
-    static_assert(!proto::matches<proto::function<int_, int_, string_>, proto::tag::function(proto::tag::terminal(int)...)>::value, "");
-    static_assert(!proto::matches<int_, proto::tag::function(proto::tag::terminal(int), proto::tag::terminal(int))>::value, "");
+    static_assert(proto::matches<int_, proto::terminal(int)>::value, "");
+    static_assert(proto::matches<MyIntWrap, proto::terminal(int)>::value, "");
+    static_assert(proto::matches<MyIntWrap &, proto::terminal(int)>::value, "");
+    static_assert(!proto::matches<int_, proto::unary_plus(_)>::value, "");
+    static_assert(!proto::matches<int_, proto::terminal(std::string)>::value, "");
+    static_assert(proto::matches<proto::exprs::function<int_, int_, int_>, proto::function(proto::terminal(int)...)>::value, "");
+    static_assert(proto::matches<proto::exprs::function<int_>, proto::function(proto::terminal(int), proto::terminal(std::string)...)>::value, "");
+    static_assert(proto::matches<proto::exprs::function<int_>, proto::function(proto::terminal(int)...)>::value, "");
+    static_assert(!proto::matches<proto::exprs::function<int_, int_, string_>, proto::function(proto::terminal(int)...)>::value, "");
+    static_assert(!proto::matches<int_, proto::function(proto::terminal(int), proto::terminal(int))>::value, "");
 }
 
 using namespace boost::unit_test;

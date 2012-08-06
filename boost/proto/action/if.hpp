@@ -41,7 +41,7 @@ namespace boost
         /// // using is_integral<> from Boost.Type_traits.
         /// struct IsIntegral
         ///   : and_<
-        ///         terminal<_>
+        ///         literal<_>
         ///       , if_< is_integral<_value>() >
         ///     >
         /// {};
@@ -59,7 +59,7 @@ namespace boost
         /// // mpl::true_; otherwise, return mpl::false_.
         /// struct IsIntegral2
         ///   : when<
-        ///         terminal<_>
+        ///         literal<_>
         ///       , if_<
         ///             proto::construct(is_integral<_value>())
         ///           , proto::construct(std::true_type())

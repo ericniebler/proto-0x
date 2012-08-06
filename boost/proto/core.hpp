@@ -11,7 +11,7 @@
 #define BOOST_PROTO_CORE_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/algorithm.hpp>
+#include <boost/proto/active_grammar.hpp>
 #include <boost/proto/children.hpp>
 #include <boost/proto/custom.hpp>
 #include <boost/proto/domain.hpp>

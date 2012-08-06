@@ -14,18 +14,18 @@ namespace fusion = boost::fusion;
 namespace proto = boost::proto;
 using proto::_;
 
-void write(std::ostream &sout, proto::tag::shift_right)
+void write(std::ostream &sout, proto::shift_right)
 {
     sout << ">>";
 }
 
-void write(std::ostream &sout, proto::tag::bitwise_or)
+void write(std::ostream &sout, proto::bitwise_or)
 {
     sout << "|";
 }
 
 template<typename T0, typename Domain>
-void write(std::ostream &sout, proto::basic_expr<proto::tag::terminal, proto::children<T0>, Domain> const &op)
+void write(std::ostream &sout, proto::basic_expr<proto::terminal, proto::children<T0>, Domain> const &op)
 {
     sout << proto::value(op);
 }
@@ -67,15 +67,15 @@ private:
 
 void test_expr()
 {
-    proto::terminal<char> a_ {'a'};
-    proto::terminal<char> b_ {'b'};
-    proto::terminal<char> c_ {'c'};
-    proto::terminal<char> d_ {'d'};
-    proto::terminal<char> e_ {'e'};
-    proto::terminal<char> f_ {'f'};
-    proto::terminal<char> g_ {'g'};
-    proto::terminal<char> h_ {'h'};
-    proto::terminal<char> i_ {'i'};
+    proto::literal<char> a_ {'a'};
+    proto::literal<char> b_ {'b'};
+    proto::literal<char> c_ {'c'};
+    proto::literal<char> d_ {'d'};
+    proto::literal<char> e_ {'e'};
+    proto::literal<char> f_ {'f'};
+    proto::literal<char> g_ {'g'};
+    proto::literal<char> h_ {'h'};
+    proto::literal<char> i_ {'i'};
 
     std::stringstream sout;
 

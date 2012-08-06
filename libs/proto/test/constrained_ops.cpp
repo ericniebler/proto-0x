@@ -13,15 +13,15 @@
 
 using namespace boost;
 
-typedef proto::terminal<int> term;
+typedef proto::literal<int> term;
 
 struct equation;
 
 struct addition:
     proto::grammar<
         proto::or_(
-            proto::tag::terminal(proto::_)
-          , proto::tag::plus(addition, addition)
+            proto::terminal(proto::_)
+          , proto::plus(addition, addition)
         )
     >
 {};
@@ -29,7 +29,7 @@ struct addition:
 struct equation:
     proto::grammar
     <
-        proto::tag::equal_to(addition, addition)
+        proto::equal_to(addition, addition)
     >
 {};
 
@@ -113,8 +113,8 @@ struct rhs_extension
 
 void test_constrained_ops()
 {
-     lhs_extension<proto::tag::terminal, proto::children<int>> const i {0};
-     rhs_extension<proto::tag::terminal, proto::children<int>> const j {0};
+     lhs_extension<proto::terminal, proto::children<int>> const i {0};
+     rhs_extension<proto::terminal, proto::children<int>> const j {0};
 
      proto::assert_matches_not<equation>(i);              // false
      proto::assert_matches_not<equation>(j);              // false

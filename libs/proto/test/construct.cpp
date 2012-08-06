@@ -38,7 +38,7 @@ namespace test_make
 
     void make_test1()
     {
-        proto::terminal<int> i{42};
+        proto::literal<int> i{42};
         type2type< careful<int> > res = MakeTest1()(i);
         BOOST_PROTO_IGNORE_UNUSED(res);
     }
@@ -51,7 +51,7 @@ namespace test_make
 
     void make_test2()
     {
-        proto::terminal<int> i{42};
+        proto::literal<int> i{42};
         wrapper<int> res = MakeTest2()(i);
         BOOST_CHECK_EQUAL(res.t_, 0);
     }
@@ -64,7 +64,7 @@ namespace test_make
 
     void make_test3()
     {
-        proto::terminal<int> i{42};
+        proto::literal<int> i{42};
         wrapper<int> res = MakeTest3()(i);
         BOOST_CHECK_EQUAL(res.t_, 42);
     }
@@ -77,7 +77,7 @@ namespace test_make
 
     void make_test4()
     {
-        proto::terminal<int> i{42};
+        proto::literal<int> i{42};
         int res = MakeTest4()(i);
         BOOST_CHECK_EQUAL(res, 42);
     }
@@ -88,7 +88,7 @@ namespace test_make
 
     void make_test5()
     {
-        proto::terminal<int> i{42};
+        proto::literal<int> i{42};
         wrapper<int> res = MakeTest5()(i, 43);
         BOOST_CHECK_EQUAL(res.t_, 43);
     }
@@ -100,7 +100,7 @@ namespace test_make
 
     void make_test6()
     {
-        proto::terminal<int> i{42};
+        proto::literal<int> i{42};
         wrapper<int> res = MakeTest6()(i, 43);
         BOOST_CHECK_EQUAL(res.t_, 43);
     }
@@ -111,7 +111,7 @@ namespace test_make
 
     void make_test7()
     {
-        proto::terminal<int> i{42};
+        proto::literal<int> i{42};
         wrapper<int> res = MakeTest7()(i, 43);
         BOOST_CHECK_EQUAL(res.t_, 43);
     }
@@ -131,8 +131,8 @@ namespace test_make
 
     void make_test8()
     {
-        proto::terminal<int> i{42};
-        wrapper<proto::terminal<int>> res = MakeTest8()(i);
+        proto::literal<int> i{42};
+        wrapper<proto::literal<int>> res = MakeTest8()(i);
         BOOST_CHECK_EQUAL(proto::value(res.t_), 42);
     }
 }

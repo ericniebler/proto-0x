@@ -157,71 +157,68 @@ namespace boost
             template<typename Tag, typename IsTerminal = std::false_type>
             struct basic_tag;
 
-            namespace tag
-            {
-                struct terminal;
-                struct unary_plus;
-                struct negate;
-                struct dereference;
-                struct complement;
-                struct address_of;
-                struct logical_not;
-                struct pre_inc;
-                struct pre_dec;
-                struct post_inc;
-                struct post_dec;
+            struct terminal;
+            struct unary_plus;
+            struct negate;
+            struct dereference;
+            struct complement;
+            struct address_of;
+            struct logical_not;
+            struct pre_inc;
+            struct pre_dec;
+            struct post_inc;
+            struct post_dec;
 
-                struct shift_left;
-                struct shift_right;
-                struct multiplies;
-                struct divides;
-                struct modulus;
-                struct plus;
-                struct minus;
-                struct less;
-                struct greater;
-                struct less_equal;
-                struct greater_equal;
-                struct equal_to;
-                struct not_equal_to;
-                struct logical_or;
-                struct logical_and;
-                struct bitwise_and;
-                struct bitwise_or;
-                struct bitwise_xor;
-                struct comma;
-                struct mem_ptr;
+            struct shift_left;
+            struct shift_right;
+            struct multiplies;
+            struct divides;
+            struct modulus;
+            struct plus;
+            struct minus;
+            struct less;
+            struct greater;
+            struct less_equal;
+            struct greater_equal;
+            struct equal_to;
+            struct not_equal_to;
+            struct logical_or;
+            struct logical_and;
+            struct bitwise_and;
+            struct bitwise_or;
+            struct bitwise_xor;
+            struct comma;
+            struct mem_ptr;
 
-                struct assign;
-                struct shift_left_assign;
-                struct shift_right_assign;
-                struct multiplies_assign;
-                struct divides_assign;
-                struct modulus_assign;
-                struct plus_assign;
-                struct minus_assign;
-                struct bitwise_and_assign;
-                struct bitwise_or_assign;
-                struct bitwise_xor_assign;
-                struct subscript;
-                struct member;
-                struct if_else_;
-                struct function;
+            struct assign;
+            struct shift_left_assign;
+            struct shift_right_assign;
+            struct multiplies_assign;
+            struct divides_assign;
+            struct modulus_assign;
+            struct plus_assign;
+            struct minus_assign;
+            struct bitwise_and_assign;
+            struct bitwise_or_assign;
+            struct bitwise_xor_assign;
+            struct subscript;
+            struct member;
+            struct if_else_;
+            struct function;
 
-                struct nullary_expr;
-                struct unary_expr;
-                struct binary_expr;
-                struct nary_expr;
+            struct nullary_expr;
+            struct unary_expr;
+            struct binary_expr;
+            struct nary_expr;
 
-                // Fusion tags
-                struct proto_expr;
-                struct proto_expr_iterator;
-                struct proto_flat_view;
+            // Fusion tags
+            struct proto_expr;
+            struct proto_expr_iterator;
+            struct proto_flat_view;
 
-                // Action environment tags
-                struct data_type;
-                struct local_type;
-            }
+            // Action environment tags
+            struct data_type;
+            struct local_type;
         }
 
         using namespace tags;
@@ -233,7 +230,7 @@ namespace boost
         struct switch_;
         struct when;
         struct pass_through;
-        struct matches_;
+        struct match;
 
         typedef and_ block;
         typedef block then;
@@ -354,8 +351,8 @@ namespace boost
         template<typename This, typename Value, typename Domain = default_domain>
         using virtual_member =
             exprs::virtual_member_<
-                tag::member
-              , children<exprs::virtual_<This>, expr<tag::terminal, children<Value>>>
+                member
+              , children<exprs::virtual_<This>, expr<terminal, children<Value>>>
               , Domain
             >;
 
@@ -392,7 +389,7 @@ namespace boost
 
         struct _env;
 
-        typedef _env_var<tag::data_type> _data;
+        typedef _env_var<data_type> _data;
 
         struct _value;
 
@@ -409,7 +406,7 @@ namespace boost
         struct action;
 
         template<typename T>
-        struct algorithm;
+        struct active_grammar;
 
         template<typename T, T Value>
         struct _integral_constant;
@@ -491,157 +488,163 @@ namespace boost
         template<typename Expr, typename Grammar, typename Enable = void>
         struct matches;
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // Handy expression template aliases
-        template<typename Tag, typename T>
-        using nullary_expr = expr<typename detail::nullary_tag<Tag>::type, children<T>>;
+        namespace exprs
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            // Handy expression template aliases
+            template<typename Tag, typename T>
+            using nullary_expr = expr<typename detail::nullary_tag<Tag>::type, children<T>>;
 
-        template<typename Tag, typename T>
-        using unary_expr = expr<typename detail::unary_tag<Tag>::type, children<T>>;
+            template<typename Tag, typename T>
+            using unary_expr = expr<typename detail::unary_tag<Tag>::type, children<T>>;
 
-        template<typename Tag, typename L, typename R>
-        using binary_expr = expr<Tag, children<L, R>>;
+            template<typename Tag, typename L, typename R>
+            using binary_expr = expr<Tag, children<L, R>>;
 
-        template<typename Tag, typename ...T>
-        using nary_expr = expr<Tag, children<T...>>;
+            template<typename Tag, typename ...T>
+            using nary_expr = expr<Tag, children<T...>>;
+
+            template<typename T>
+            using terminal = expr<terminal, children<T>>;
+
+            template<typename T>
+            using unary_plus = expr<unary_plus, children<T>>;
+
+            template<typename T>
+            using negate = expr<negate, children<T>>;
+
+            template<typename T>
+            using dereference = expr<dereference, children<T>>;
+
+            template<typename T>
+            using complement = expr<complement, children<T>>;
+
+            template<typename T>
+            using address_of = expr<address_of, children<T>>;
+
+            template<typename T>
+            using logical_not = expr<logical_not, children<T>>;
+
+            template<typename T>
+            using pre_inc = expr<pre_inc, children<T>>;
+
+            template<typename T>
+            using pre_dec = expr<pre_dec, children<T>>;
+
+            template<typename T>
+            using post_inc = expr<post_inc, children<T>>;
+
+            template<typename T>
+            using post_dec = expr<post_dec, children<T>>;
+
+            template<typename L, typename R>
+            using shift_left = expr<shift_left, children<L, R>>;
+
+            template<typename L, typename R>
+            using shift_right = expr<shift_right, children<L, R>>;
+
+            template<typename L, typename R>
+            using multiplies = expr<multiplies, children<L, R>>;
+
+            template<typename L, typename R>
+            using divides = expr<divides, children<L, R>>;
+
+            template<typename L, typename R>
+            using modulus = expr<modulus, children<L, R>>;
+
+            template<typename L, typename R>
+            using plus = expr<plus, children<L, R>>;
+
+            template<typename L, typename R>
+            using minus = expr<minus, children<L, R>>;
+
+            template<typename L, typename R>
+            using less = expr<less, children<L, R>>;
+
+            template<typename L, typename R>
+            using greater = expr<greater, children<L, R>>;
+
+            template<typename L, typename R>
+            using less_equal = expr<less_equal, children<L, R>>;
+
+            template<typename L, typename R>
+            using greater_equal = expr<greater_equal, children<L, R>>;
+
+            template<typename L, typename R>
+            using equal_to = expr<equal_to, children<L, R>>;
+
+            template<typename L, typename R>
+            using not_equal_to = expr<not_equal_to, children<L, R>>;
+
+            template<typename L, typename R>
+            using logical_or = expr<logical_or, children<L, R>>;
+
+            template<typename L, typename R>
+            using logical_and = expr<logical_and, children<L, R>>;
+
+            template<typename L, typename R>
+            using bitwise_and = expr<bitwise_and, children<L, R>>;
+
+            template<typename L, typename R>
+            using bitwise_or = expr<bitwise_or, children<L, R>>;
+
+            template<typename L, typename R>
+            using bitwise_xor = expr<bitwise_xor, children<L, R>>;
+
+            template<typename L, typename R>
+            using comma = expr<comma, children<L, R>>;
+
+            template<typename L, typename R>
+            using mem_ptr = expr<mem_ptr, children<L, R>>;
+
+            template<typename L, typename R>
+            using assign = expr<assign, children<L, R>>;
+
+            template<typename L, typename R>
+            using shift_left_assign = expr<shift_left_assign, children<L, R>>;
+
+            template<typename L, typename R>
+            using shift_right_assign = expr<shift_right_assign, children<L, R>>;
+
+            template<typename L, typename R>
+            using multiplies_assign = expr<multiplies_assign, children<L, R>>;
+
+            template<typename L, typename R>
+            using divides_assign = expr<divides_assign, children<L, R>>;
+
+            template<typename L, typename R>
+            using modulus_assign = expr<modulus_assign, children<L, R>>;
+
+            template<typename L, typename R>
+            using plus_assign = expr<plus_assign, children<L, R>>;
+
+            template<typename L, typename R>
+            using minus_assign = expr<minus_assign, children<L, R>>;
+
+            template<typename L, typename R>
+            using bitwise_and_assign = expr<bitwise_and_assign, children<L, R>>;
+
+            template<typename L, typename R>
+            using bitwise_or_assign = expr<bitwise_or_assign, children<L, R>>;
+
+            template<typename L, typename R>
+            using bitwise_xor_assign = expr<bitwise_xor_assign, children<L, R>>;
+
+            template<typename L, typename R>
+            using subscript = expr<subscript, children<L, R>>;
+
+            template<typename L, typename R>
+            using member = expr<member, children<L, R>>;
+
+            template<typename C, typename T, typename F>
+            using if_else_ = expr<if_else_, children<C, T, F>>;
+
+            template<typename ...A>
+            using function = expr<function, children<A...>>;
+        }
 
         template<typename T>
-        using terminal = expr<tag::terminal, children<T>>;
-
-        template<typename T>
-        using unary_plus = expr<tag::unary_plus, children<T>>;
-
-        template<typename T>
-        using negate = expr<tag::negate, children<T>>;
-
-        template<typename T>
-        using dereference = expr<tag::dereference, children<T>>;
-
-        template<typename T>
-        using complement = expr<tag::complement, children<T>>;
-
-        template<typename T>
-        using address_of = expr<tag::address_of, children<T>>;
-
-        template<typename T>
-        using logical_not = expr<tag::logical_not, children<T>>;
-
-        template<typename T>
-        using pre_inc = expr<tag::pre_inc, children<T>>;
-
-        template<typename T>
-        using pre_dec = expr<tag::pre_dec, children<T>>;
-
-        template<typename T>
-        using post_inc = expr<tag::post_inc, children<T>>;
-
-        template<typename T>
-        using post_dec = expr<tag::post_dec, children<T>>;
-
-        template<typename L, typename R>
-        using shift_left = expr<tag::shift_left, children<L, R>>;
-
-        template<typename L, typename R>
-        using shift_right = expr<tag::shift_right, children<L, R>>;
-
-        template<typename L, typename R>
-        using multiplies = expr<tag::multiplies, children<L, R>>;
-
-        template<typename L, typename R>
-        using divides = expr<tag::divides, children<L, R>>;
-
-        template<typename L, typename R>
-        using modulus = expr<tag::modulus, children<L, R>>;
-
-        template<typename L, typename R>
-        using plus = expr<tag::plus, children<L, R>>;
-
-        template<typename L, typename R>
-        using minus = expr<tag::minus, children<L, R>>;
-
-        template<typename L, typename R>
-        using less = expr<tag::less, children<L, R>>;
-
-        template<typename L, typename R>
-        using greater = expr<tag::greater, children<L, R>>;
-
-        template<typename L, typename R>
-        using less_equal = expr<tag::less_equal, children<L, R>>;
-
-        template<typename L, typename R>
-        using greater_equal = expr<tag::greater_equal, children<L, R>>;
-
-        template<typename L, typename R>
-        using equal_to = expr<tag::equal_to, children<L, R>>;
-
-        template<typename L, typename R>
-        using not_equal_to = expr<tag::not_equal_to, children<L, R>>;
-
-        template<typename L, typename R>
-        using logical_or = expr<tag::logical_or, children<L, R>>;
-
-        template<typename L, typename R>
-        using logical_and = expr<tag::logical_and, children<L, R>>;
-
-        template<typename L, typename R>
-        using bitwise_and = expr<tag::bitwise_and, children<L, R>>;
-
-        template<typename L, typename R>
-        using bitwise_or = expr<tag::bitwise_or, children<L, R>>;
-
-        template<typename L, typename R>
-        using bitwise_xor = expr<tag::bitwise_xor, children<L, R>>;
-
-        template<typename L, typename R>
-        using comma = expr<tag::comma, children<L, R>>;
-
-        template<typename L, typename R>
-        using mem_ptr = expr<tag::mem_ptr, children<L, R>>;
-
-        template<typename L, typename R>
-        using assign = expr<tag::assign, children<L, R>>;
-
-        template<typename L, typename R>
-        using shift_left_assign = expr<tag::shift_left_assign, children<L, R>>;
-
-        template<typename L, typename R>
-        using shift_right_assign = expr<tag::shift_right_assign, children<L, R>>;
-
-        template<typename L, typename R>
-        using multiplies_assign = expr<tag::multiplies_assign, children<L, R>>;
-
-        template<typename L, typename R>
-        using divides_assign = expr<tag::divides_assign, children<L, R>>;
-
-        template<typename L, typename R>
-        using modulus_assign = expr<tag::modulus_assign, children<L, R>>;
-
-        template<typename L, typename R>
-        using plus_assign = expr<tag::plus_assign, children<L, R>>;
-
-        template<typename L, typename R>
-        using minus_assign = expr<tag::minus_assign, children<L, R>>;
-
-        template<typename L, typename R>
-        using bitwise_and_assign = expr<tag::bitwise_and_assign, children<L, R>>;
-
-        template<typename L, typename R>
-        using bitwise_or_assign = expr<tag::bitwise_or_assign, children<L, R>>;
-
-        template<typename L, typename R>
-        using bitwise_xor_assign = expr<tag::bitwise_xor_assign, children<L, R>>;
-
-        template<typename L, typename R>
-        using subscript = expr<tag::subscript, children<L, R>>;
-
-        template<typename L, typename R>
-        using member = expr<tag::member, children<L, R>>;
-
-        template<typename C, typename T, typename F>
-        using if_else_ = expr<tag::if_else_, children<C, T, F>>;
-
-        template<typename ...A>
-        using function = expr<tag::function, children<A...>>;
+        using literal = exprs::terminal<T>;
 
         template<template<typename...> class Expr, typename Domain = void>
         struct custom;

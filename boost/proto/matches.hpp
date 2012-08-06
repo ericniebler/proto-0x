@@ -21,6 +21,12 @@ namespace boost
 {
     namespace proto
     {
+        namespace detail
+        {
+            struct ERROR_UNKNOWN_GRAMMAR_PATTERN
+            {};
+        }
+
         /// \brief A Boolean metafunction that evaluates whether a given
         /// expression type matches a grammar.
         ///
@@ -86,12 +92,37 @@ namespace boost
         ///     such that \c Ax lambda-matches \c Bx
         template<typename Expr, typename Grammar, typename Enable>
         struct matches
-          : utility::lazy_conditional<
-                std::is_same<Grammar, typename grammar_of<Grammar>::type>::value
-              , std::false_type
-              , matches<Expr, typename grammar_of<Grammar>::type>
+          : matches<
+                Expr
+              , typename grammar_of<Grammar>::type
+                // Avoid recursive inheritance on unrecognized grammar patterns and give
+                // a useful diagnostic.
+              , typename std::conditional<
+                    std::is_same<Grammar, typename grammar_of<Grammar>::type>::value
+                  , detail::ERROR_UNKNOWN_GRAMMAR_PATTERN
+                  , void
+                >::type
             >
         {};
+
+        template<typename Expr, typename Ret, typename ...Args>
+        struct matches<Expr, Ret(*)(Args...)>
+          : matches<Expr, Ret(Args...)>
+        {};
+
+        template<typename Expr, typename Ret, typename ...Args>
+        struct matches<Expr, Ret(*)(Args......)>
+          : matches<Expr, Ret(Args......)>
+        {};
+
+        template<typename Expr, typename Grammar>
+        struct matches<Expr, Grammar, detail::ERROR_UNKNOWN_GRAMMAR_PATTERN>
+          : std::false_type
+        {
+            // If this static assert fires, check the Grammar template parameter.
+            // Proto doesn't know how to handle it.
+            static_assert(utility::never<Grammar>::value, "ERROR: Unknown grammar pattern");
+        };
 
         template<typename T>
         struct fuzzy

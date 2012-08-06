@@ -55,8 +55,8 @@ namespace boost
         /// \code
         /// BOOST_MPL_ASSERT((
         ///     matches<
-        ///         terminal<std::complex<double>>::type
-        ///       , terminal<std::complex< _ >>
+        ///         literal<std::complex<double>>::type
+        ///       , literal<std::complex< _ >>
         ///     >
         /// ));
         /// \endcode
@@ -69,7 +69,7 @@ namespace boost
         /// struct CountChildren
         ///   : or_<
         ///         // Terminals have no children
-        ///         when<terminal<_>, mpl::int_<0>()>
+        ///         when<literal<_>, mpl::int_<0>()>
         ///         // Use _fold<> to count the children of non-terminals
         ///       , otherwise<
         ///             _fold<

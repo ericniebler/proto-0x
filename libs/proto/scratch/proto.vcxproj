@@ -66,7 +66,7 @@
     <ClInclude Include="..\..\..\boost\proto\action\fold.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\if.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\integral_constant.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\action\matches.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\match.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\or.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\pass_through.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\placeholders.hpp" />
@@ -75,7 +75,7 @@
     <ClInclude Include="..\..\..\boost\proto\action\switch.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\unpack.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\when.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\algorithm.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\active_grammar.hpp" />
     <ClInclude Include="..\..\..\boost\proto\children.hpp" />
     <ClInclude Include="..\..\..\boost\proto\core.hpp" />
     <ClInclude Include="..\..\..\boost\proto\custom.hpp" />

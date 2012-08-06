@@ -24,65 +24,62 @@ namespace boost
     {
         namespace tags
         {
-            namespace tag
-            {
-                #define BOOST_PROTO_DEFINE_TAG_INSERTION(Tag)                                       \
-                /** \brief INTERNAL ONLY */                                                         \
-                inline std::ostream &operator <<(std::ostream &sout, Tag const &)                   \
-                {                                                                                   \
-                    return sout << BOOST_PP_STRINGIZE(Tag);                                         \
-                }                                                                                   \
-                /**/
+        #define BOOST_PROTO_DEFINE_TAG_INSERTION(Tag)                                               \
+            /** \brief INTERNAL ONLY */                                                             \
+            inline std::ostream &operator <<(std::ostream &sout, Tag const &)                       \
+            {                                                                                       \
+                return sout << BOOST_PP_STRINGIZE(Tag);                                             \
+            }                                                                                       \
+            /**/
 
-                BOOST_PROTO_DEFINE_TAG_INSERTION(terminal)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(unary_plus)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(negate)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(dereference)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(complement)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(address_of)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(logical_not)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(pre_inc)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(pre_dec)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(post_inc)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(post_dec)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(shift_left)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(shift_right)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(multiplies)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(divides)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(modulus)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(plus)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(minus)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(less)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(greater)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(less_equal)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(greater_equal)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(equal_to)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(not_equal_to)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(logical_or)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(logical_and)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(bitwise_and)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(bitwise_or)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(bitwise_xor)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(comma)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(mem_ptr)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(assign)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(shift_left_assign)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(shift_right_assign)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(multiplies_assign)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(divides_assign)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(modulus_assign)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(plus_assign)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(minus_assign)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(bitwise_and_assign)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(bitwise_or_assign)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(bitwise_xor_assign)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(subscript)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(member)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(if_else_)
-                BOOST_PROTO_DEFINE_TAG_INSERTION(function)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(terminal)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(unary_plus)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(negate)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(dereference)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(complement)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(address_of)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(logical_not)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(pre_inc)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(pre_dec)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(post_inc)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(post_dec)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(shift_left)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(shift_right)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(multiplies)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(divides)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(modulus)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(plus)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(minus)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(less)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(greater)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(less_equal)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(greater_equal)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(equal_to)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(not_equal_to)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(logical_or)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(logical_and)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(bitwise_and)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(bitwise_or)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(bitwise_xor)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(comma)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(mem_ptr)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(assign)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(shift_left_assign)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(shift_right_assign)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(multiplies_assign)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(divides_assign)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(modulus_assign)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(plus_assign)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(minus_assign)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(bitwise_and_assign)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(bitwise_or_assign)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(bitwise_xor_assign)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(subscript)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(member)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(if_else_)
+            BOOST_PROTO_DEFINE_TAG_INSERTION(function)
 
-                #undef BOOST_PROTO_DEFINE_TAG_INSERTION
-            }
+            #undef BOOST_PROTO_DEFINE_TAG_INSERTION
         }
 
         namespace hidden_detail_

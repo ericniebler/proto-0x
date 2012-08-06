@@ -50,7 +50,7 @@ void test_virtual_members()
 {
     My::terminal<int> xxx{42};
     My::terminal<int> & r = proto::child<0>(xxx.foo);
-    proto::terminal<foo_tag> & e = proto::child<1>(xxx.foo);
+    proto::literal<foo_tag> & e = proto::child<1>(xxx.foo);
 
     static_assert(std::is_lvalue_reference<decltype(proto::child<0>(xxx.foo))>::value, "");
     static_assert(std::is_rvalue_reference<decltype(proto::child<0>(My::terminal<int>().foo))>::value, "");
@@ -66,11 +66,11 @@ void test_virtual_members()
     BOOST_CHECK_EQUAL(boost::addressof(xxx.foo.proto_args().proto_child1), boost::addressof(e));
 
     // Check that member expressions match their grammars
-    struct G : proto::algorithm<proto::tag::member(proto::tag::terminal(int), proto::tag::terminal(foo_tag))> {};
+    struct G : proto::active_grammar<proto::member(proto::terminal(int), proto::terminal(foo_tag))> {};
     proto::assert_matches<G>(xxx.foo);
 
     // Check that the pass-through basic_action handles virtual members correctly.
-    My::member<My::terminal<int>, proto::terminal<foo_tag>> tx = proto::action<G>()(xxx.foo);
+    My::member<My::terminal<int>, proto::literal<foo_tag>> tx = proto::action<G>()(xxx.foo);
     BOOST_PROTO_IGNORE_UNUSED(tx);
 }
 

@@ -19,14 +19,14 @@ namespace boost
     {
         ////////////////////////////////////////////////////////////////////////////////////////////
         // when
-        template<typename Grammar, typename ...Algo>
-        struct action<when(Grammar, Algo...)>
-          : detail::_and_<Algo...>
+        template<typename Grammar, typename ...Action>
+        struct action<when(Grammar, Action...)>
+          : detail::_and_<Action...>
         {};
 
-        template<typename Grammar, typename Algo>
-        struct action<when(Grammar, Algo)>
-          : action<Algo>
+        template<typename Grammar, typename Action>
+        struct action<when(Grammar, Action)>
+          : action<Action>
         {};
     }
 }

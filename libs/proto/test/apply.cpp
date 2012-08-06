@@ -70,7 +70,7 @@ struct sum
 
 void test_apply()
 {
-    proto::terminal<int> i{0};
+    proto::literal<int> i{0};
 
     // 0^2 + 1^2 + 2^2 + 3^2 = 0+1+4+9 = 14
     proto::action<square(proto::_value)> square_;

@@ -18,7 +18,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/children.hpp>
 #include <boost/proto/matches.hpp>
-#include <boost/proto/algorithm.hpp>
+#include <boost/proto/active_grammar.hpp>
 #include <boost/proto/action/action.hpp>
 #include <boost/proto/action/when.hpp>
 #include <boost/proto/grammar/when.hpp>
@@ -64,12 +64,12 @@ namespace boost
             // _eval_case
             template<typename Grammar, typename Tag>
             struct _eval_case
-              : algorithm<when(not_(_), _eval_unknown)>
+              : active_grammar<when(not_(_), _eval_unknown)>
             {};
 
             template<typename Grammar>
-            struct _eval_case<Grammar, tag::terminal>
-              : algorithm<when(tag::terminal(_), _value)>
+            struct _eval_case<Grammar, terminal>
+              : active_grammar<when(terminal(_), _value)>
             {};
 
             #define BOOST_PROTO_UNARY_EVAL(OP, TAG)                                                 \
@@ -88,8 +88,8 @@ namespace boost
             };                                                                                      \
                                                                                                     \
             template<typename Grammar>                                                              \
-            struct _eval_case<Grammar, tag::TAG>                                                    \
-              : algorithm<when(tag::unary_expr(tag::TAG, Grammar), BOOST_PP_CAT(_eval_, TAG)<Grammar>)> \
+            struct _eval_case<Grammar, TAG>                                                    \
+              : active_grammar<when(unary_expr(TAG, Grammar), BOOST_PP_CAT(_eval_, TAG)<Grammar>)> \
             {};                                                                                     \
             /**/
 
@@ -113,9 +113,9 @@ namespace boost
             };                                                                                      \
                                                                                                     \
             template<typename Grammar>                                                              \
-            struct _eval_case<Grammar, tag::TAG>                                                    \
-              : algorithm<when(                                                                       \
-                    tag::binary_expr(tag::TAG, Grammar, Grammar)                                    \
+            struct _eval_case<Grammar, TAG>                                                    \
+              : active_grammar<when(                                                                \
+                    binary_expr(TAG, Grammar, Grammar)                                    \
                   , BOOST_PP_CAT(_eval_, TAG)<Grammar>                                              \
                 )>                                                                                  \
             {};                                                                                     \
@@ -180,8 +180,8 @@ namespace boost
             };
 
             template<typename Grammar>
-            struct _eval_case<Grammar, tag::post_inc>
-              : algorithm<when(tag::post_inc(Grammar), _eval_post_inc<Grammar>)>
+            struct _eval_case<Grammar, post_inc>
+              : active_grammar<when(post_inc(Grammar), _eval_post_inc<Grammar>)>
             {};
 
             template<typename Grammar>
@@ -199,8 +199,8 @@ namespace boost
             };
 
             template<typename Grammar>
-            struct _eval_case<Grammar, tag::post_dec>
-              : algorithm<when(tag::post_dec(Grammar), _eval_post_dec<Grammar>)>
+            struct _eval_case<Grammar, post_dec>
+              : active_grammar<when(post_dec(Grammar), _eval_post_dec<Grammar>)>
             {};
 
             template<typename Grammar>
@@ -223,8 +223,8 @@ namespace boost
             };
 
             template<typename Grammar>
-            struct _eval_case<Grammar, tag::subscript>
-              : algorithm<when(tag::subscript(Grammar, Grammar), _eval_subscript<Grammar>)>
+            struct _eval_case<Grammar, subscript>
+              : active_grammar<when(subscript(Grammar, Grammar), _eval_subscript<Grammar>)>
             {};
 
             template<typename Grammar>
@@ -250,8 +250,8 @@ namespace boost
             };
 
             template<typename Grammar>
-            struct _eval_case<Grammar, tag::if_else_>
-              : algorithm<when(tag::if_else_(Grammar, Grammar, Grammar), _eval_if_else_<Grammar>)>
+            struct _eval_case<Grammar, if_else_>
+              : active_grammar<when(if_else_(Grammar, Grammar, Grammar), _eval_if_else_<Grammar>)>
             {};
 
             template<typename Grammar>
@@ -308,8 +308,8 @@ namespace boost
             };
 
             template<typename Grammar>
-            struct _eval_case<Grammar, tag::function>
-              : algorithm<when(tag::function(Grammar...), _eval_function<Grammar>)>
+            struct _eval_case<Grammar, function>
+              : active_grammar<when(function(Grammar...), _eval_function<Grammar>)>
             {};
 
             template<typename T, typename PMF>
@@ -388,8 +388,8 @@ namespace boost
             };
 
             template<typename Grammar>
-            struct _eval_case<Grammar, tag::mem_ptr>
-              : algorithm<when(tag::mem_ptr(Grammar, Grammar), _eval_mem_ptr<Grammar>)>
+            struct _eval_case<Grammar, mem_ptr>
+              : active_grammar<when(mem_ptr(Grammar, Grammar), _eval_mem_ptr<Grammar>)>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////

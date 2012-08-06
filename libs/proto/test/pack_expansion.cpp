@@ -17,22 +17,22 @@ using proto::_;
 struct do_eval
 {
     template<typename Left, typename Right>
-    auto operator()(proto::tag::plus, Left left, Right right) const
+    auto operator()(proto::plus, Left left, Right right) const
     BOOST_PROTO_AUTO_RETURN(
         left + right
     )
 
     template<typename Left, typename Right>
-    auto operator()(proto::tag::multiplies, Left left, Right right) const
+    auto operator()(proto::multiplies, Left left, Right right) const
     BOOST_PROTO_AUTO_RETURN(
         left * right
     )
 };
 
 struct eval
-  : proto::algorithm<
+  : proto::active_grammar<
         proto::or_(
-            proto::when(proto::tag::terminal(_),
+            proto::when(proto::terminal(_),
                 proto::_value
             )
           , proto::when(_,
@@ -44,7 +44,7 @@ struct eval
 
 void test_call_pack()
 {
-    proto::terminal<int> i {42};
+    proto::literal<int> i {42};
     int res = eval()(i);
     BOOST_CHECK_EQUAL(res, 42);
     res = eval()(i + 2);
@@ -61,7 +61,7 @@ struct make_pair
 
 void test_make_pack()
 {
-    proto::terminal<int> i {42};
+    proto::literal<int> i {42};
     std::pair<int, int> p = make_pair()(i + 43);
     BOOST_CHECK_EQUAL(p.first, 42);
     BOOST_CHECK_EQUAL(p.second, 43);
@@ -122,13 +122,13 @@ struct accept_pairs_2
 
 void test_multiple_packs()
 {
-    proto::terminal<int> i{42};
+    proto::literal<int> i{42};
     std::ostringstream sout;
-    accept_pairs()( i(1,2) + i("hello","world"), 0, proto::tag::data = sout);
+    accept_pairs()( i(1,2) + i("hello","world"), 0, proto::data = sout);
     BOOST_CHECK_EQUAL( sout.str(), std::string("(42,42)(1,hello)(2,world)") );
 
     sout.str("");
-    accept_pairs_2()(i(1,2) + i("this","that"), 0, proto::tag::data = sout);
+    accept_pairs_2()(i(1,2) + i("this","that"), 0, proto::data = sout);
     BOOST_CHECK_EQUAL( sout.str(), std::string("(42,42)(1,this)(2,that)") );
 }
 

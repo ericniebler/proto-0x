@@ -40,7 +40,7 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // as_virtual_member
             template<typename L, typename R, typename D = typename L::proto_domain_type>
-            constexpr auto as_virtual_member(children<exprs::virtual_<L>, terminal<R>> const &a)
+            constexpr auto as_virtual_member(children<exprs::virtual_<L>, exprs::terminal<R>> const &a)
             BOOST_PROTO_AUTO_RETURN(
                 (char *)static_cast<virtual_member<L, R, D> const *>(&a)
             )

@@ -40,9 +40,8 @@ namespace boost
                 auto operator()(Expr && e, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
                     action<
-                        typename grammar_of<
-                            typename matches<Expr, proto::or_(Grammars...)>::which
-                        >::type
+                        // This relies on details of how proto::or_'s grammar behavior is implemented.
+                        typename matches<Expr, proto::or_(Grammars...)>::which::proto_grammar_type
                     >()(
                         static_cast<Expr &&>(e)
                       , static_cast<Rest &&>(rest)...

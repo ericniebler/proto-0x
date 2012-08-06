@@ -21,6 +21,10 @@ namespace boost
 {
     namespace proto
     {
+        // TODO: can the call action do something to automatically prevent the lookup of
+        // of out-of-scope local variables? Consider how function calls in C++ automatically
+        // create a new scope that hides the local one.
+
         namespace detail
         {
             ////////////////////////////////////////////////////////////////////////////////////////

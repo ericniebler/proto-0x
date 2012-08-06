@@ -14,54 +14,54 @@ namespace mpl = boost::mpl;
 namespace proto = boost::proto;
 using proto::_;
 
-typedef proto::terminal<int> int_;
-typedef proto::terminal<std::string> string_;
+typedef proto::literal<int> int_;
+typedef proto::literal<std::string> string_;
 
 void test_action()
 {
     int_ p(42);
 
     {
-        int i = (proto::tag::data = 42)[proto::tag::data];
+        int i = (proto::data = 42)[proto::data];
         BOOST_CHECK_EQUAL(i, 42);
-        auto env = (proto::tag::data = 42, proto::tag::local = "hello", proto::tag::local = "goodbye");
-        i = env[proto::tag::data];
-        char const *loc = env[proto::tag::local];
+        auto env = (proto::data = 42, proto::local = "hello", proto::local = "goodbye");
+        i = env[proto::data];
+        char const *loc = env[proto::local];
         BOOST_CHECK_EQUAL(std::string(loc), std::string("goodbye"));
         i = env.at(1,1); // lookup with a key that doesn't exist, return default
         BOOST_CHECK_EQUAL(i, 1);
 
         // Look, ma! A basic_action!
-        char const (&sz)[6] = proto::_data()(p, 42, (proto::tag::data = "hello"));
+        char const (&sz)[6] = proto::_data()(p, 42, (proto::data = "hello"));
         BOOST_PROTO_IGNORE_UNUSED(sz);
     }
 
     {
         proto::action<
             proto::or_(
-                proto::when(proto::tag::terminal(int), proto::_int<42>)
-              , proto::when(proto::tag::terminal(std::string), proto::_int<43>)
+                proto::when(proto::terminal(int), proto::_int<42>)
+              , proto::when(proto::terminal(std::string), proto::_int<43>)
             )
-        > SimpleAlgo;
+        > SimpleAction;
 
-        int i = SimpleAlgo(int_(0));
+        int i = SimpleAction(int_(0));
         BOOST_CHECK_EQUAL(i, 42);
 
-        i = SimpleAlgo(string_("hello!"));
+        i = SimpleAction(string_("hello!"));
         BOOST_CHECK_EQUAL(i, 43);
     }
 
     // Check that expressions can be used as actions
     p = proto::action<int_>()(p);
-    proto::action<proto::function<int_, int_, int_>>()(p(p, p));
+    proto::action<proto::exprs::function<int_, int_, int_>>()(p(p, p));
 
     // Check the pass-through basic_action
     proto::action<proto::pass_through(int_, int_, int_...)>()(p(p));
     proto::action<proto::pass_through(int_, int_, int_...)>()(p(p, p));
     proto::action<proto::pass_through(int_, int_, int_...)>()(p(p, p, p));
-    proto::action<proto::pass_through(proto::tag::terminal(int), proto::tag::terminal(int), proto::tag::terminal(int)...)>()(p(p));
-    proto::action<proto::pass_through(proto::tag::terminal(int), proto::tag::terminal(int), proto::tag::terminal(int)...)>()(p(p, p));
-    proto::action<proto::pass_through(proto::tag::terminal(int), proto::tag::terminal(int), proto::tag::terminal(int)...)>()(p(p, p, p));
+    proto::action<proto::pass_through(proto::terminal(int), proto::terminal(int), proto::terminal(int)...)>()(p(p));
+    proto::action<proto::pass_through(proto::terminal(int), proto::terminal(int), proto::terminal(int)...)>()(p(p, p));
+    proto::action<proto::pass_through(proto::terminal(int), proto::terminal(int), proto::terminal(int)...)>()(p(p, p, p));
 }
 
 template<typename T>
@@ -82,12 +82,12 @@ struct _my_expr
 
 void test_action_2()
 {
-    proto::terminal<int> i{42};
+    proto::literal<int> i{42};
     S<int> s0 = proto::action<proto::construct(S<proto::_state>())>()(i, 42);
     S<int> s1 = proto::action<proto::construct(S<proto::_state()>())>()(i, 42);
     S<int> s2 = proto::action<proto::construct(S<proto::_state(_my_expr)>())>()(i, 42);
-    S<int> s3 = proto::action<proto::construct(S<proto::_state(_my_expr, proto::_state)>())>()(i, 42, proto::tag::data = 55);
-    S<int> s4 = proto::action<proto::construct(S<proto::_state(_my_expr, proto::_state, proto::_env)>())>()(i, 42, proto::tag::data = 55);
+    S<int> s3 = proto::action<proto::construct(S<proto::_state(_my_expr, proto::_state)>())>()(i, 42, proto::data = 55);
+    S<int> s4 = proto::action<proto::construct(S<proto::_state(_my_expr, proto::_state, proto::_env)>())>()(i, 42, proto::data = 55);
     BOOST_PROTO_IGNORE_UNUSED(s0, s1, s2, s3, s4);
 }
 

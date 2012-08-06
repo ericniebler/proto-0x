@@ -76,7 +76,7 @@ namespace boost
                 // Must build a real binary expression from virtual members before the left hand
                 // side (actually the member's enclosing object) dies and we lose it forever.
                 typename Domain::make_expr()(
-                    tag::member()
+                    member()
                   , utility::by_val()(
                         proto::child<0>(static_cast<virtual_member<This, Value, Domain> &&>(e))
                     )
@@ -106,7 +106,7 @@ namespace boost
             template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(!is_expr<T>::value)>
             inline constexpr auto as_expr(T &&t)
             BOOST_PROTO_AUTO_RETURN(
-                detail::expr_maker(Domain(), t)(proto::tag::terminal(), static_cast<T &&>(t))
+                detail::expr_maker(Domain(), t)(proto::terminal(), static_cast<T &&>(t))
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////

@@ -46,25 +46,25 @@ void test_expr()
     using namespace proto;
 
     int i = 42;
-    terminal<int &> t1 {i};
-    terminal<int> r1 = deep_copy(t1);
+    literal<int &> t1 {i};
+    literal<int> r1 = deep_copy(t1);
     BOOST_CHECK_EQUAL(42, value(r1));
 
-    plus<terminal<int>, terminal<int>> r2 = deep_copy(t1 + 24);
+    exprs::plus<literal<int>, literal<int>> r2 = deep_copy(t1 + 24);
     BOOST_CHECK_EQUAL(42, value(left(r2)));
     BOOST_CHECK_EQUAL(24, value(right(r2)));
 
     char buf[16] = {'\0'};
-    terminal<char (&)[16]> t3 {buf};
-    terminal<char (&)[16]> r3 = deep_copy(t3);
+    literal<char (&)[16]> t3 {buf};
+    literal<char (&)[16]> r3 = deep_copy(t3);
 
-    terminal<void(&)()> t4 {foo};
-    plus<terminal<void(&)()>, terminal<int>> r4 = deep_copy(t4 + t1);
+    literal<void(&)()> t4 {foo};
+    exprs::plus<literal<void(&)()>, literal<int>> r4 = deep_copy(t4 + t1);
     BOOST_CHECK_EQUAL(42, value(right(r4)));
     BOOST_CHECK_EQUAL(&foo, &value(left(r4)));
 
-    terminal<std::ostream &> cout_ {std::cout};
-    shift_left<terminal<std::ostream &>, terminal<int>> r5 = deep_copy(cout_ << t1);
+    literal<std::ostream &> cout_ {std::cout};
+    exprs::shift_left<literal<std::ostream &>, literal<int>> r5 = deep_copy(cout_ << t1);
     BOOST_CHECK_EQUAL(42, value(right(r5)));
     BOOST_CHECK_EQUAL(boost::addressof(std::cout), boost::addressof(value(left(r5))));
 
@@ -135,11 +135,11 @@ void test_moveable()
 {
     using namespace proto;
 
-    terminal<moveable> t1 {};
-    terminal<moveable> r1 = deep_copy(std::move(t1));
+    literal<moveable> t1 {};
+    literal<moveable> r1 = deep_copy(std::move(t1));
 
-    terminal<moveable> t2 {};
-    plus<terminal<moveable>, terminal<int>> r2 = deep_copy(std::move(t2) + 24);
+    literal<moveable> t2 {};
+    exprs::plus<literal<moveable>, literal<int>> r2 = deep_copy(std::move(t2) + 24);
     BOOST_PROTO_IGNORE_UNUSED(r1, r2);
 }
 
@@ -148,10 +148,10 @@ void test_noncopyable()
     using namespace proto;
 
     noncopyable i;
-    terminal<noncopyable &> t1 {i};
-    terminal<noncopyable &> r1 = deep_copy(t1);
+    literal<noncopyable &> t1 {i};
+    literal<noncopyable &> r1 = deep_copy(t1);
 
-    plus<terminal<noncopyable &>, terminal<int>> r2 = deep_copy(t1 + 24);
+    exprs::plus<literal<noncopyable &>, literal<int>> r2 = deep_copy(t1 + 24);
     BOOST_PROTO_IGNORE_UNUSED(r1, r2);
 }
 
@@ -160,10 +160,10 @@ void test_noncopyable2()
     using namespace proto;
 
     noncopyable2 i;
-    terminal<noncopyable2 &> t1 {i};
-    terminal<noncopyable2 &> r1 = deep_copy(t1);
+    literal<noncopyable2 &> t1 {i};
+    literal<noncopyable2 &> r1 = deep_copy(t1);
 
-    plus<terminal<noncopyable2 &>, terminal<int>> r2 = deep_copy(t1 + 24);
+    exprs::plus<literal<noncopyable2 &>, literal<int>> r2 = deep_copy(t1 + 24);
     BOOST_PROTO_IGNORE_UNUSED(r1, r2);
 }
 

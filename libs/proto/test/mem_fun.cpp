@@ -29,15 +29,15 @@ struct S
 
 void test_mem_fun()
 {
-    proto::terminal<std::plus<int>> plus;
+    proto::literal<std::plus<int>> plus;
     int i = proto::_eval<>()(plus(1,2));
     BOOST_CHECK_EQUAL(i, 3);
 
     S s{42};
     std::auto_ptr<S> ps(new S{69});
-    proto::terminal<int S::*> pm{&S::m};
-    proto::terminal<void (S::*)()> pf{&S::foo};
-    proto::terminal<int (S::*)(int)> pb{&S::bar};
+    proto::literal<int S::*> pm{&S::m};
+    proto::literal<void (S::*)()> pf{&S::foo};
+    proto::literal<int (S::*)(int)> pb{&S::bar};
 
     i = proto::_eval<>()(pm(&s));
     BOOST_CHECK_EQUAL(i, 42);

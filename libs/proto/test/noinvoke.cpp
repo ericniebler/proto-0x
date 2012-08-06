@@ -71,7 +71,7 @@ struct Test3
 
 void test_noinvoke()
 {
-    typedef proto::terminal<int> Int;
+    typedef proto::literal<int> Int;
     Int i {42};
 
     static_assert(

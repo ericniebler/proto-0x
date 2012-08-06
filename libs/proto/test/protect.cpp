@@ -51,9 +51,9 @@ struct Test5
 
 void test_protect()
 {
-    proto::terminal<int> i {42};
+    proto::literal<int> i {42};
 
-    proto::terminal<int> & t = Test()(i);
+    proto::literal<int> & t = Test()(i);
     proto::_protect<_> t0 = Test0()(i);
     identity<proto::_protect<_>> t1 = Test1()(i);
     S<proto::_protect<_>> t2 = Test2()(i);

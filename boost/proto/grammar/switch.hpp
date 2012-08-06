@@ -26,9 +26,7 @@ namespace boost
         struct matches<Expr, proto::switch_(Cases)>
           : matches<
                 Expr                
-              , typename grammar_of<
-                    typename Cases::template case_<typename tag_of<Expr>::type>
-                >::type
+              , typename Cases::template case_<typename tag_of<Expr>::type>
             >
         {};
 
@@ -36,11 +34,7 @@ namespace boost
         struct matches<Expr, proto::switch_(Cases, Action)>
           : matches<
                 Expr
-              , typename grammar_of<
-                    typename Cases::template case_<
-                        decltype(action<Action>()(std::declval<Expr>()))
-                    >
-                >::type
+              , typename Cases::template case_<decltype(action<Action>()(std::declval<Expr>()))>
             >
         {};
     }

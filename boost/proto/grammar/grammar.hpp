@@ -8,11 +8,8 @@
 #ifndef BOOST_PROTO_GRAMMAR_GRAMMAR_HPP_INCLUDED
 #define BOOST_PROTO_GRAMMAR_GRAMMAR_HPP_INCLUDED
 
-#include <utility>
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/utility.hpp>
-#include <boost/proto/tags.hpp>
 
 namespace boost
 {
@@ -20,12 +17,6 @@ namespace boost
     {
         namespace detail
         {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // expr_pattern
-            template<typename Fun>
-            struct expr_pattern
-            {};
-
             ////////////////////////////////////////////////////////////////////////////////////////
             // grammar_of_
             template<typename T>
@@ -48,42 +39,6 @@ namespace boost
         template<typename Grammar>
         struct grammar_of
           : std::remove_pointer<decltype(detail::grammar_of_<Grammar>(1))>
-        {};
-
-        template<typename Ret, typename ...Args>
-        struct grammar_of<Ret(Args...)>
-          : std::conditional<
-                proto::is_tag<Ret>::value
-              , detail::expr_pattern<Ret(Args...)>
-              , Ret(Args...)
-            >
-        {};
-
-        template<typename Ret, typename ...Args>
-        struct grammar_of<Ret(*)(Args...)>
-          : std::conditional<
-                proto::is_tag<Ret>::value
-              , detail::expr_pattern<Ret(Args...)>
-              , Ret(Args...)
-            >
-        {};
-
-        template<typename Ret, typename ...Args>
-        struct grammar_of<Ret(Args......)>
-          : std::conditional<
-                proto::is_tag<Ret>::value
-              , detail::expr_pattern<Ret(Args......)>
-              , Ret(Args......)
-            >
-        {};
-
-        template<typename Ret, typename ...Args>
-        struct grammar_of<Ret(*)(Args......)>
-          : std::conditional<
-                proto::is_tag<Ret>::value
-              , detail::expr_pattern<Ret(Args......)>
-              , Ret(Args......)
-            >
         {};
     }
 }

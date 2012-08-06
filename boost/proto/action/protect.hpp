@@ -37,7 +37,7 @@ namespace boost
         ///   : proto::when<_, Bar<_>() >
         /// {};
         ///
-        /// proto::terminal<int> i {0};
+        /// proto::literal<int> i {0};
         ///
         /// int main()
         /// {

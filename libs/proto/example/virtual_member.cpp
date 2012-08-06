@@ -76,13 +76,13 @@ namespace mini_lambda
     // The grammar for mini-lambda expressions with actions for
     // evaluating the lambda expression.
     struct grammar
-      : proto::algorithm<
+      : proto::active_grammar<
             proto::or_(
                 // When evaluating a placeholder, use the placeholder
                 // to index into the "data" parameter, which is a fusion
                 // vector containing the arguments to the lambda expression.
                 proto::when(
-                    proto::tag::terminal(placeholder<_>)
+                    proto::terminal(placeholder<_>)
                   , proto::apply(proto::construct(proto::_env_var<proto::_value>()))
                 )
                 // When evaluating if/then/else expressions of the form
@@ -91,16 +91,16 @@ namespace mini_lambda
                 // use of proto::member<> to match binary expressions like
                 // "X.Y" where "Y" is a virtual data member.
               , proto::when(
-                    proto::tag::subscript(
-                        proto::tag::member(
-                            proto::tag::subscript(
-                                proto::tag::function(
-                                    proto::tag::terminal(keyword::if_)
+                    proto::subscript(
+                        proto::member(
+                            proto::subscript(
+                                proto::function(
+                                    proto::terminal(keyword::if_)
                                   , grammar
                                 )
                               , grammar
                             )
-                          , proto::tag::terminal(keyword::else_)
+                          , proto::terminal(keyword::else_)
                         )
                       , grammar
                     )
@@ -188,7 +188,7 @@ namespace mini_lambda
     };
 
     template<typename T>
-    using var = expression<proto::tag::terminal, proto::children<T>>;
+    using var = expression<proto::terminal, proto::children<T>>;
 
     namespace placeholders
     {
@@ -211,7 +211,7 @@ namespace mini_lambda
         auto if_(E && e)
         BOOST_PROTO_AUTO_RETURN(
             proto::domains::make_expr<domain>(
-                proto::tag::function()
+                proto::function()
               , keyword::if_()
               , std::forward<E>(e)
             )

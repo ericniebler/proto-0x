@@ -23,7 +23,7 @@ struct C {};
 void test_display_expr()
 {
     // https://svn.boost.org/trac/boost/ticket/4910
-    proto::terminal<int> i{0};
+    proto::literal<int> i{0};
 
     {
         std::stringstream sout;

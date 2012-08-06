@@ -17,8 +17,8 @@ using proto::_;
 // Test that simple proto expressions are trivial.
 // Note: expressions that store references are not, and cannot be, trivial because
 // they are not default constructable.
-typedef proto::terminal<int> int_;
-typedef proto::terminal<std::string> string_;
+typedef proto::literal<int> int_;
+typedef proto::literal<std::string> string_;
 static_assert(std::is_trivial<decltype(int_())>::value, "not trivial!");
 static_assert(std::is_trivial<decltype(int_()(3.14))>::value, "not trivial!");
 
@@ -59,7 +59,7 @@ void test_expr()
     constexpr int_ i_(42);
 
     // Quick test for big expression nodes (>10 children)
-    typedef proto::expr<proto::tag::function, proto::children<int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_>> ints_;
+    typedef proto::expr<proto::function, proto::children<int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_>> ints_;
     ints_ is(p,p,p,p,p,p,p,p,p,p,p,p,p,p);
     p = proto::child<13>(is);
 
@@ -73,25 +73,25 @@ void test_expr()
     BOOST_PROTO_IGNORE_UNUSED(i);
 
     // sanity test for stored_value and stored_child (used by as_expr when building nodes)
-    proto::expr<proto::tag::function, proto::children<int_&, int_, int_, int_, proto::terminal<char const (&)[6]> >> x = p(1, 2, 3, "hello");
+    proto::expr<proto::function, proto::children<int_&, int_, int_, int_, proto::literal<char const (&)[6]> >> x = p(1, 2, 3, "hello");
     static_assert(std::is_same<decltype(proto::value(proto::child<4>(x))), char const (&)[6]>::value, "not the same!");
 
     // verify that expression nodes are Regular types.
     auto y0 = (p=p);
     auto y1 = (p=pc);
-    static_assert(std::is_same<decltype(y0)::proto_tag_type, proto::tag::terminal>::value, "");
-    static_assert(std::is_same<decltype(y1)::proto_tag_type, proto::tag::terminal>::value, "");
+    static_assert(std::is_same<decltype(y0)::proto_tag_type, proto::terminal>::value, "");
+    static_assert(std::is_same<decltype(y1)::proto_tag_type, proto::terminal>::value, "");
 
     // Verify that overloaded assignment builds an assign expression node.
     auto y2 = (p='c');
-    static_assert(std::is_same<decltype(y2)::proto_tag_type, proto::tag::assign>::value, "");
+    static_assert(std::is_same<decltype(y2)::proto_tag_type, proto::assign>::value, "");
 
     // verify that args accessor on rvalue expression is itself an rvalue
     static_assert(std::is_rvalue_reference<decltype(int_().proto_args())>::value, "isn't an rvalue reference!");
 
     // verify that expression nodes are no larger than they need to be.
-    static_assert(sizeof(proto::terminal<int>) == sizeof(int), "sizeof(proto::terminal<int>) != sizeof(int)");
-    static_assert(sizeof(proto::expr<proto::tag::function, proto::children<>>) == 1, "size of empty expr is not 1");
+    static_assert(sizeof(proto::literal<int>) == sizeof(int), "sizeof(proto::literal<int>) != sizeof(int)");
+    static_assert(sizeof(proto::expr<proto::function, proto::children<>>) == 1, "size of empty expr is not 1");
 
     // This should fail to compile:
     //typedef int_ const cint_;
@@ -105,15 +105,15 @@ void test_expr()
     BOOST_CHECK(!jjj_.proto_equal_to(iii_[43]));
 
     // Test convertibility to bool
-    BOOST_CHECK(proto::domains::make_expr<MyDomain>(proto::tag::equal_to(), jjj_, iii_[42]));
-    BOOST_CHECK(!proto::domains::make_expr<MyDomain>(proto::tag::equal_to(), jjj_, iii_[43]));
-    BOOST_CHECK(!proto::domains::make_expr<MyDomain>(proto::tag::not_equal_to(), jjj_, iii_[42]));
-    BOOST_CHECK(proto::domains::make_expr<MyDomain>(proto::tag::not_equal_to(), jjj_, iii_[43]));
+    BOOST_CHECK(proto::domains::make_expr<MyDomain>(proto::equal_to(), jjj_, iii_[42]));
+    BOOST_CHECK(!proto::domains::make_expr<MyDomain>(proto::equal_to(), jjj_, iii_[43]));
+    BOOST_CHECK(!proto::domains::make_expr<MyDomain>(proto::not_equal_to(), jjj_, iii_[42]));
+    BOOST_CHECK(proto::domains::make_expr<MyDomain>(proto::not_equal_to(), jjj_, iii_[43]));
 
-    static_assert(std::is_convertible<proto::equal_to<int_, int_>, bool>::value, "not convertible to bool");
-    static_assert(std::is_convertible<proto::not_equal_to<int_, int_>, bool>::value, "not convertible to bool");
-    static_assert(!std::is_convertible<proto::equal_to<int_, proto::terminal<void *>>, bool>::value, "convertible to bool");
-    static_assert(!std::is_convertible<proto::not_equal_to<int_, proto::terminal<void *>>, bool>::value, "convertible to bool");
+    static_assert(std::is_convertible<proto::exprs::equal_to<int_, int_>, bool>::value, "not convertible to bool");
+    static_assert(std::is_convertible<proto::exprs::not_equal_to<int_, int_>, bool>::value, "not convertible to bool");
+    static_assert(!std::is_convertible<proto::exprs::equal_to<int_, proto::literal<void *>>, bool>::value, "convertible to bool");
+    static_assert(!std::is_convertible<proto::exprs::not_equal_to<int_, proto::literal<void *>>, bool>::value, "convertible to bool");
 
     bool b0 = (int_(42) + 42) == (42 + int_(42));
     BOOST_CHECK(b0);
@@ -121,7 +121,7 @@ void test_expr()
     BOOST_CHECK(!b1);
 
     // test for nothrow operations
-    typedef proto::not_equal_to<int_, int_> int_ne_int;
+    typedef proto::exprs::not_equal_to<int_, int_> int_ne_int;
     int_ne_int inei(int_(42), int_(42));
     constexpr int_ne_int cinei(int_(42), int_(42));
     static_assert(noexcept(int_ne_int()), "not noexcept default constructor");

@@ -13,6 +13,7 @@
 #include <utility>
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
+#include <boost/proto/tags.hpp>
 #include <boost/proto/matches.hpp>
 #include <boost/proto/utility.hpp>
 
@@ -101,6 +102,11 @@ namespace boost
             template<typename T, std::size_t M>
             struct lambda_matches<T[M], T[M]>
               : std::true_type
+            {};
+
+            template<typename T, typename U>
+            struct lambda_matches<T, fuzzy<U>>
+              : lambda_matches<T, U>
             {};
 
             template<template<typename...> class T, typename ...Expr0, typename ...Grammar0>
@@ -304,7 +310,7 @@ namespace boost
             struct matches_nullary_expr_<
                 Expr
               , basic_expr<Tag0, children<Value0>, Domain>
-              , tag::nullary_expr(Tag1, Value1)
+              , nullary_expr(Tag1, Value1)
               , typename std::enable_if<Tag0::proto_is_terminal>::type
             >
               : utility::and_<
@@ -328,7 +334,7 @@ namespace boost
             struct matches_unary_expr_<
                 Expr
               , basic_expr<Tag0, children<Child0>, Domain>
-              , tag::unary_expr(Tag1, Child1)
+              , unary_expr(Tag1, Child1)
               , typename std::enable_if<!Tag0::proto_is_terminal::value>::type
             >
               : utility::and_<
@@ -352,7 +358,7 @@ namespace boost
             struct matches_binary_expr_<
                 Expr
               , basic_expr<Tag0, children<Left0, Right0>, Domain>
-              , tag::binary_expr(Tag1, Left1, Right1)
+              , binary_expr(Tag1, Left1, Right1)
             >
               : utility::and_<
                     tag_matches<Tag0, Tag1>
@@ -376,7 +382,7 @@ namespace boost
             struct matches_nary_expr_<
                 Expr
               , basic_expr<Tag0, children<Args0...>, Domain>
-              , tag::nary_expr(Tag1, Args1...)
+              , nary_expr(Tag1, Args1...)
               , typename std::enable_if<
                     !Tag0::proto_is_terminal::value &&
                     sizeof...(Args0) == sizeof...(Args1)
@@ -396,7 +402,7 @@ namespace boost
             struct matches_nary_expr_<
                 Expr
               , basic_expr<Tag0, children<Args0...>, Domain>
-              , tag::nary_expr(Tag1, Args1......)
+              , nary_expr(Tag1, Args1......)
               , typename std::enable_if<!Tag0::proto_is_terminal::value>::type
             >
               : utility::and_<
@@ -406,66 +412,75 @@ namespace boost
             {};
         }
 
-        template<typename Expr, typename Grammar>
-        struct matches<Expr, detail::expr_pattern<Grammar>, void>
+        template<typename Expr, typename Tag, typename ...Grammars>
+        struct matches<Expr, Tag(Grammars...), typename std::enable_if<is_tag<Tag>::value>::type>
           : detail::matches_expr_<
                 Expr
               , typename std::remove_reference<Expr>::type::proto_basic_expr_type
-              , Grammar
+              , Tag(Grammars...)
+            >
+        {};
+
+        template<typename Expr, typename Tag, typename ...Grammars>
+        struct matches<Expr, Tag(Grammars......), typename std::enable_if<is_tag<Tag>::value>::type>
+          : detail::matches_expr_<
+                Expr
+              , typename std::remove_reference<Expr>::type::proto_basic_expr_type
+              , Tag(Grammars......)
             >
         {};
 
         template<typename Expr, typename Tag, typename Value>
-        struct matches<Expr, tag::nullary_expr(Tag, Value), void>
+        struct matches<Expr, nullary_expr(Tag, Value)>
           : detail::matches_nullary_expr_<
                 Expr
               , typename std::remove_reference<Expr>::type::proto_basic_expr_type
-              , tag::nullary_expr(Tag, Value)
+              , nullary_expr(Tag, Value)
             >
         {};
 
         template<typename Expr, typename Tag, typename Arg>
-        struct matches<Expr, tag::unary_expr(Tag, Arg), void>
+        struct matches<Expr, unary_expr(Tag, Arg)>
           : detail::matches_unary_expr_<
                 Expr
               , typename std::remove_reference<Expr>::type::proto_basic_expr_type
-              , tag::unary_expr(Tag, Arg)
+              , unary_expr(Tag, Arg)
             >
         {};
 
         template<typename Expr, typename Tag, typename Arg0, typename Arg1>
-        struct matches<Expr, tag::binary_expr(Tag, Arg0, Arg1), void>
+        struct matches<Expr, binary_expr(Tag, Arg0, Arg1)>
           : detail::matches_binary_expr_<
                 Expr
               , typename std::remove_reference<Expr>::type::proto_basic_expr_type
-              , tag::binary_expr(Tag, Arg0, Arg1)
+              , binary_expr(Tag, Arg0, Arg1)
             >
         {};
 
         template<typename Expr, typename Tag, typename Arg0>
-        struct matches<Expr, tag::binary_expr(Tag, Arg0...), void>
+        struct matches<Expr, binary_expr(Tag, Arg0...)>
           : detail::matches_binary_expr_<
                 Expr
               , typename std::remove_reference<Expr>::type::proto_basic_expr_type
-              , tag::binary_expr(Tag, Arg0, Arg0)
+              , binary_expr(Tag, Arg0, Arg0)
             >
         {};
 
         template<typename Expr, typename Tag, typename ...Args>
-        struct matches<Expr, tag::nary_expr(Tag, Args...), void>
+        struct matches<Expr, nary_expr(Tag, Args...)>
           : detail::matches_nary_expr_<
                 Expr
               , typename std::remove_reference<Expr>::type::proto_basic_expr_type
-              , tag::nary_expr(Tag, Args...)
+              , nary_expr(Tag, Args...)
             >
         {};
 
         template<typename Expr, typename Tag, typename ...Args>
-        struct matches<Expr, tag::nary_expr(Tag, Args......), void>
+        struct matches<Expr, nary_expr(Tag, Args......)>
           : detail::matches_nary_expr_<
                 Expr
               , typename std::remove_reference<Expr>::type::proto_basic_expr_type
-              , tag::nary_expr(Tag, Args......)
+              , nary_expr(Tag, Args......)
             >
         {};
     }

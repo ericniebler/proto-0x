@@ -1,13 +1,13 @@
 ///////////////////////////////////////////////////////////////////////////////
-// algorithm.hpp
+// active_grammar.hpp
 // Both a grammar and an action.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_ALGORITHM_HPP_INCLUDED
-#define BOOST_PROTO_ALGORITHM_HPP_INCLUDED
+#ifndef BOOST_PROTO_ACTIVE_GRAMMAR_HPP_INCLUDED
+#define BOOST_PROTO_ACTIVE_GRAMMAR_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/action/action.hpp>
@@ -20,7 +20,7 @@ namespace boost
         ////////////////////////////////////////////////////////////////////////////////////////////
         // grammar
         template<typename Grammar>
-        struct algorithm
+        struct active_grammar
           : action<Grammar>
         {
             typedef Grammar proto_grammar_type;

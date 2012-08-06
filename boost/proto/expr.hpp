@@ -64,7 +64,7 @@ namespace boost
             // of the EqualityComparible concept.
             template<typename T, typename U, typename Domain>
             struct expr_boolean_convertible<
-                basic_expr<tag::equal_to, children<T, U>, Domain>
+                basic_expr<equal_to, children<T, U>, Domain>
               , typename std::enable_if<are_equality_comparible<T, U>::value>::type
             >
             {
@@ -75,14 +75,14 @@ namespace boost
             public:
                 inline operator unspecified_bool_type() const
                 BOOST_PROTO_RETURN(
-                    proto::child<0>(static_cast<basic_expr<tag::equal_to, children<T, U>, Domain> const &>(*this)).proto_equal_to(
-                    proto::child<1>(static_cast<basic_expr<tag::equal_to, children<T, U>, Domain> const &>(*this))) ? &proto_smart_bool::member : 0
+                    proto::child<0>(static_cast<basic_expr<equal_to, children<T, U>, Domain> const &>(*this)).proto_equal_to(
+                    proto::child<1>(static_cast<basic_expr<equal_to, children<T, U>, Domain> const &>(*this))) ? &proto_smart_bool::member : 0
                 )
             };
 
             template<typename T, typename U, typename Domain>
             struct expr_boolean_convertible<
-                basic_expr<tag::not_equal_to, children<T, U>, Domain>
+                basic_expr<not_equal_to, children<T, U>, Domain>
               , typename std::enable_if<are_equality_comparible<T, U>::value>::type
             >
             {
@@ -93,14 +93,14 @@ namespace boost
             public:
                 inline operator unspecified_bool_type() const
                 BOOST_PROTO_RETURN(
-                    proto::child<0>(static_cast<basic_expr<tag::not_equal_to, children<T, U>, Domain> const &>(*this)).proto_equal_to(
-                    proto::child<1>(static_cast<basic_expr<tag::not_equal_to, children<T, U>, Domain> const &>(*this))) ? 0 : &proto_smart_bool::member
+                    proto::child<0>(static_cast<basic_expr<not_equal_to, children<T, U>, Domain> const &>(*this)).proto_equal_to(
+                    proto::child<1>(static_cast<basic_expr<not_equal_to, children<T, U>, Domain> const &>(*this))) ? 0 : &proto_smart_bool::member
                 )
             };
 
             template<typename T, typename Domain>
             struct expr_boolean_convertible<
-                basic_expr<tag::logical_not, children<T>, Domain>
+                basic_expr<logical_not, children<T>, Domain>
               , typename std::enable_if<std::is_convertible<T, bool>::value>::type
             >
             {
@@ -111,13 +111,13 @@ namespace boost
             public:
                 inline operator unspecified_bool_type() const
                 BOOST_PROTO_RETURN(
-                    proto::child<0>(static_cast<basic_expr<tag::logical_not, children<T>, Domain> const &>(*this)) ? 0 : &proto_smart_bool::member
+                    proto::child<0>(static_cast<basic_expr<logical_not, children<T>, Domain> const &>(*this)) ? 0 : &proto_smart_bool::member
                 )
             };
 
             template<typename T, typename U, typename Domain>
             struct expr_boolean_convertible<
-                basic_expr<tag::logical_and, children<T, U>, Domain>
+                basic_expr<logical_and, children<T, U>, Domain>
               , typename std::enable_if<
                     std::is_convertible<T, bool>::value && std::is_convertible<U, bool>::value
                 >::type
@@ -130,15 +130,15 @@ namespace boost
             public:
                 inline operator unspecified_bool_type() const
                 BOOST_PROTO_RETURN(
-                    static_cast<bool>(proto::child<0>(static_cast<basic_expr<tag::logical_and, children<T, U>, Domain> const &>(*this))) &&
-                    static_cast<bool>(proto::child<1>(static_cast<basic_expr<tag::logical_and, children<T, U>, Domain> const &>(*this)))
+                    static_cast<bool>(proto::child<0>(static_cast<basic_expr<logical_and, children<T, U>, Domain> const &>(*this))) &&
+                    static_cast<bool>(proto::child<1>(static_cast<basic_expr<logical_and, children<T, U>, Domain> const &>(*this)))
                     ? &proto_smart_bool::member : 0
                 )
             };
 
             template<typename T, typename U, typename Domain>
             struct expr_boolean_convertible<
-                basic_expr<tag::logical_or, children<T, U>, Domain>
+                basic_expr<logical_or, children<T, U>, Domain>
               , typename std::enable_if<
                     std::is_convertible<T, bool>::value && std::is_convertible<U, bool>::value
                 >::type
@@ -151,8 +151,8 @@ namespace boost
             public:
                 inline operator unspecified_bool_type() const
                 BOOST_PROTO_RETURN(
-                    static_cast<bool>(proto::child<0>(static_cast<basic_expr<tag::logical_or, children<T, U>, Domain> const &>(*this))) ||
-                    static_cast<bool>(proto::child<1>(static_cast<basic_expr<tag::logical_or, children<T, U>, Domain> const &>(*this)))
+                    static_cast<bool>(proto::child<0>(static_cast<basic_expr<logical_or, children<T, U>, Domain> const &>(*this))) ||
+                    static_cast<bool>(proto::child<1>(static_cast<basic_expr<logical_or, children<T, U>, Domain> const &>(*this)))
                     ? &proto_smart_bool::member : 0
                 )
             };
@@ -263,7 +263,7 @@ namespace boost
                 auto operator=(U && u) &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
-                        boost::proto::tag::assign()
+                        boost::proto::assign()
                       , static_cast<E &>(*this)
                       , static_cast<U &&>(u)
                     )
@@ -274,7 +274,7 @@ namespace boost
                 auto operator=(U && u) const &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
-                        boost::proto::tag::assign()
+                        boost::proto::assign()
                       , static_cast<E const &>(*this)
                       , static_cast<U &&>(u)
                     )
@@ -285,7 +285,7 @@ namespace boost
                 auto operator=(U && u) &&
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
-                        boost::proto::tag::assign()
+                        boost::proto::assign()
                       , static_cast<E &&>(static_cast<expr_assign &&>(*this))
                       , static_cast<U &&>(u)
                     )
@@ -309,7 +309,7 @@ namespace boost
                 auto operator[](U && u) &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
-                        boost::proto::tag::subscript()
+                        boost::proto::subscript()
                       , static_cast<E &>(*this)
                       , static_cast<U &&>(u)
                     )
@@ -319,7 +319,7 @@ namespace boost
                 auto operator[](U && u) const &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
-                        boost::proto::tag::subscript()
+                        boost::proto::subscript()
                       , static_cast<E const &>(*this)
                       , static_cast<U &&>(u)
                     )
@@ -329,7 +329,7 @@ namespace boost
                 auto operator[](U && u) &&
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
-                        boost::proto::tag::subscript()
+                        boost::proto::subscript()
                       , static_cast<E &&>(static_cast<expr_subscript &&>(*this))
                       , static_cast<U &&>(u)
                     )
@@ -352,7 +352,7 @@ namespace boost
                 auto operator()(U &&... u) &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
-                        boost::proto::tag::function()
+                        boost::proto::function()
                       , static_cast<E &>(*this)
                       , static_cast<U &&>(u)...
                     )
@@ -362,7 +362,7 @@ namespace boost
                 auto operator()(U &&... u) const &
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
-                        boost::proto::tag::function()
+                        boost::proto::function()
                       , static_cast<E const &>(*this)
                       , static_cast<U &&>(u)...
                     )
@@ -372,7 +372,7 @@ namespace boost
                 auto operator()(U &&... u) &&
                 BOOST_PROTO_AUTO_RETURN(
                     boost::proto::domains::make_expr<Domain>(
-                        boost::proto::tag::function()
+                        boost::proto::function()
                       , static_cast<E &&>(static_cast<expr_function &&>(*this))
                       , static_cast<U &&>(u)...
                     )
@@ -419,7 +419,7 @@ namespace boost
                     >
                 proto_arity;
 
-                typedef tag::proto_expr                     fusion_tag; ///< For Fusion
+                typedef proto_expr                     fusion_tag; ///< For Fusion
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // constructors

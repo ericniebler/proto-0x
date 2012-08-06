@@ -36,38 +36,35 @@ namespace algo
 {
     using namespace proto;
 
-    struct lambda_eval
-      : algorithm<
-            or_(
-                when(tag::terminal(placeholder<_>),
-                    apply(construct(_env_var<_value>()))
-                )
-              , when(tag::terminal(_),
-                    _value
-                )
-              , when(tag::nary_expr(_, lambda_eval...),
-                    _eval<lambda_eval>
-                )
-            )
-        >
-    {};
-
-    //// This also works
     //struct lambda_eval
-    //  : proto::action<
-    //        proto::if_(matches(terminal(placeholder<_>))
-    //          , then(
-    //                apply(construct(proto::_env_var<proto::_value>()))
+    //  : active_grammar<
+    //        or_(
+    //            when(terminal(placeholder<_>),
+    //                apply(construct(_env_var<_value>()))
     //            )
-    //          , else_(
-    //                proto::if_(matches(terminal(_))
-    //                  , then(proto::_value)
-    //                  , else_(proto::_eval<lambda_eval>)
-    //                )
+    //          , when(terminal(_),
+    //                _value
+    //            )
+    //          , when(nary_expr(_, lambda_eval...),
+    //                _eval<lambda_eval>
+    //                //eval(_tag_of, lambda_eval(pack(_))...)
     //            )
     //        )
     //    >
     //{};
+
+    // This also works
+    struct lambda_eval
+      : action<
+            if_(match(terminal(placeholder<_>))
+              , apply(construct(_env_var<_value>()))
+              , if_(match(terminal(_))
+                  , _value
+                  , _eval<lambda_eval>
+                )
+            )
+        >
+    {};
 
     template<std::size_t ...I, typename E, typename ...T>
     inline auto lambda_eval_(proto::utility::indices<I...>, E && e, T &&... t)
@@ -118,7 +115,7 @@ struct lambda_expr
 };
 
 template<typename T>
-using lambda_var = lambda_expr<proto::tag::terminal, proto::children<T>>;
+using lambda_var = lambda_expr<proto::terminal, proto::children<T>>;
 
 typedef lambda_var<placeholder_c<0>> _1_type;
 typedef lambda_var<placeholder_c<1>> _2_type;
@@ -133,18 +130,6 @@ namespace
 }
 
 BOOST_PROTO_IGNORE_UNUSED(_1, _2, _3);
-
-/***
-How about this:
-    proto::expr<proto::terminal(int)>
-    proto::grammar<proto::terminal(int)>
-    proto::action<proto::terminal(int)>
-
-But I still like:
-    proto::terminal<int> x(42);
-
-Can I have both?
-//*/
 
 int main()
 {
@@ -165,7 +150,7 @@ int main()
     std::cout << "The lambda '_1 + 42 * _2' yields '" << i << "' when called with 8 and 2.\n";
 
     // Test for vararg expression patterns
-    proto::action<proto::matches_(proto::tag::nary_expr(_, proto::tag::terminal(_)...))> depth_one;
+    proto::action<proto::match(proto::nary_expr(_, proto::terminal(_)...))> depth_one;
 
     #define DEPTH_ONE(x) std::cout << "Q: Is '" #x "' a tree of depth one? " << \
                                       "A: " << std::boolalpha << depth_one(x).value << std::endl;

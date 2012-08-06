@@ -42,46 +42,46 @@
     /**/
 
 #define BOOST_PROTO_DEFINE_OPERATORS(TRAIT, DOMAIN)                                                 \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(+, boost::proto::tag::unary_plus, TRAIT, DOMAIN, 0)           \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(-, boost::proto::tag::negate, TRAIT, DOMAIN, 0)               \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(*, boost::proto::tag::dereference, TRAIT, DOMAIN, 0)          \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(~, boost::proto::tag::complement, TRAIT, DOMAIN, 0)           \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(&, boost::proto::tag::address_of, TRAIT, DOMAIN, 0)           \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(!, boost::proto::tag::logical_not, TRAIT, DOMAIN, 0)          \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(++, boost::proto::tag::pre_inc, TRAIT, DOMAIN, 0)             \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(--, boost::proto::tag::pre_dec, TRAIT, DOMAIN, 0)             \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(++, boost::proto::tag::post_inc, TRAIT, DOMAIN, 1)            \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(--, boost::proto::tag::post_dec, TRAIT, DOMAIN, 1)            \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<<, boost::proto::tag::shift_left, TRAIT, DOMAIN)            \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>>, boost::proto::tag::shift_right, TRAIT, DOMAIN)           \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(*, boost::proto::tag::multiplies, TRAIT, DOMAIN)             \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(/, boost::proto::tag::divides, TRAIT, DOMAIN)                \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(%, boost::proto::tag::modulus, TRAIT, DOMAIN)                \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(+, boost::proto::tag::plus, TRAIT, DOMAIN)                   \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(-, boost::proto::tag::minus, TRAIT, DOMAIN)                  \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<, boost::proto::tag::less, TRAIT, DOMAIN)                   \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>, boost::proto::tag::greater, TRAIT, DOMAIN)                \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<=, boost::proto::tag::less_equal, TRAIT, DOMAIN)            \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>=, boost::proto::tag::greater_equal, TRAIT, DOMAIN)         \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(==, boost::proto::tag::equal_to, TRAIT, DOMAIN)              \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(!=, boost::proto::tag::not_equal_to, TRAIT, DOMAIN)          \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(||, boost::proto::tag::logical_or, TRAIT, DOMAIN)            \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(&&, boost::proto::tag::logical_and, TRAIT, DOMAIN)           \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(&, boost::proto::tag::bitwise_and, TRAIT, DOMAIN)            \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(|, boost::proto::tag::bitwise_or, TRAIT, DOMAIN)             \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(^, boost::proto::tag::bitwise_xor, TRAIT, DOMAIN)            \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(BOOST_PP_COMMA(), boost::proto::tag::comma, TRAIT, DOMAIN)   \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(->*, boost::proto::tag::mem_ptr, TRAIT, DOMAIN)              \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<<=, boost::proto::tag::shift_left_assign, TRAIT, DOMAIN)    \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>>=, boost::proto::tag::shift_right_assign, TRAIT, DOMAIN)   \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(*=, boost::proto::tag::multiplies_assign, TRAIT, DOMAIN)     \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(/=, boost::proto::tag::divides_assign, TRAIT, DOMAIN)        \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(%=, boost::proto::tag::modulus_assign, TRAIT, DOMAIN)        \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(+=, boost::proto::tag::plus_assign, TRAIT, DOMAIN)           \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(-=, boost::proto::tag::minus_assign, TRAIT, DOMAIN)          \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(&=, boost::proto::tag::bitwise_and_assign, TRAIT, DOMAIN)    \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(|=, boost::proto::tag::bitwise_or_assign, TRAIT, DOMAIN)     \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(^=, boost::proto::tag::bitwise_xor_assign, TRAIT, DOMAIN)    \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(+, boost::proto::unary_plus, TRAIT, DOMAIN, 0)           \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(-, boost::proto::negate, TRAIT, DOMAIN, 0)               \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(*, boost::proto::dereference, TRAIT, DOMAIN, 0)          \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(~, boost::proto::complement, TRAIT, DOMAIN, 0)           \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(&, boost::proto::address_of, TRAIT, DOMAIN, 0)           \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(!, boost::proto::logical_not, TRAIT, DOMAIN, 0)          \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(++, boost::proto::pre_inc, TRAIT, DOMAIN, 0)             \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(--, boost::proto::pre_dec, TRAIT, DOMAIN, 0)             \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(++, boost::proto::post_inc, TRAIT, DOMAIN, 1)            \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(--, boost::proto::post_dec, TRAIT, DOMAIN, 1)            \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<<, boost::proto::shift_left, TRAIT, DOMAIN)            \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>>, boost::proto::shift_right, TRAIT, DOMAIN)           \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(*, boost::proto::multiplies, TRAIT, DOMAIN)             \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(/, boost::proto::divides, TRAIT, DOMAIN)                \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(%, boost::proto::modulus, TRAIT, DOMAIN)                \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(+, boost::proto::plus, TRAIT, DOMAIN)                   \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(-, boost::proto::minus, TRAIT, DOMAIN)                  \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<, boost::proto::less, TRAIT, DOMAIN)                   \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>, boost::proto::greater, TRAIT, DOMAIN)                \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<=, boost::proto::less_equal, TRAIT, DOMAIN)            \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>=, boost::proto::greater_equal, TRAIT, DOMAIN)         \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(==, boost::proto::equal_to, TRAIT, DOMAIN)              \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(!=, boost::proto::not_equal_to, TRAIT, DOMAIN)          \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(||, boost::proto::logical_or, TRAIT, DOMAIN)            \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(&&, boost::proto::logical_and, TRAIT, DOMAIN)           \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(&, boost::proto::bitwise_and, TRAIT, DOMAIN)            \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(|, boost::proto::bitwise_or, TRAIT, DOMAIN)             \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(^, boost::proto::bitwise_xor, TRAIT, DOMAIN)            \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(BOOST_PP_COMMA(), boost::proto::comma, TRAIT, DOMAIN)   \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(->*, boost::proto::mem_ptr, TRAIT, DOMAIN)              \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<<=, boost::proto::shift_left_assign, TRAIT, DOMAIN)    \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>>=, boost::proto::shift_right_assign, TRAIT, DOMAIN)   \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(*=, boost::proto::multiplies_assign, TRAIT, DOMAIN)     \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(/=, boost::proto::divides_assign, TRAIT, DOMAIN)        \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(%=, boost::proto::modulus_assign, TRAIT, DOMAIN)        \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(+=, boost::proto::plus_assign, TRAIT, DOMAIN)           \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(-=, boost::proto::minus_assign, TRAIT, DOMAIN)          \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(&=, boost::proto::bitwise_and_assign, TRAIT, DOMAIN)    \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(|=, boost::proto::bitwise_or_assign, TRAIT, DOMAIN)     \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(^=, boost::proto::bitwise_xor_assign, TRAIT, DOMAIN)    \
     /**/
 
 #define BOOST_PROTO_APPLY_UNARY_(TRAIT, ARG)          (TRAIT<ARG>::value)
@@ -102,7 +102,7 @@ namespace boost
             template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(!is_expr<T>::value)>
             auto as_basic_expr(T &&t) ->
                 basic_expr<
-                    tag::terminal
+                    terminal
                   , children<decltype(typename Domain::store_value()(t))>
                   , Domain
                 >;
@@ -171,7 +171,7 @@ namespace boost
             inline auto if_else(A0 &&a0, A1 &&a1, A2 &&a2)
             BOOST_PROTO_AUTO_RETURN(
                 ::boost::proto::domains::make_expr<deduce_domain>(
-                    tag::if_else_()
+                    tags::if_else_()
                   , static_cast<A0 &&>(a0)
                   , static_cast<A1 &&>(a1)
                   , static_cast<A2 &&>(a2)
