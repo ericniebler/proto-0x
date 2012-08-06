@@ -107,63 +107,79 @@ namespace boost
                     )
                 )
             };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // _fold
+            // \brief A BasicAction that invokes the <tt>fusion::_fold\<\></tt>
+            // action to accumulate
+            template<typename Sequence, typename State0, typename Fun>
+            struct _fold
+              : basic_action<_fold<Sequence, State0, Fun>>
+            {
+                template<typename E>
+                auto operator()(E && e) const
+                BOOST_PROTO_AUTO_RETURN(
+                    fold_impl_<Fun>::fold_1_(
+                        action<Sequence>()(static_cast<E &&>(e))
+                      , action<State0>()(static_cast<E &&>(e))
+                    )
+                )
+
+                template<typename E, typename S, typename ...Rest>
+                auto operator()(E && e, S && s, Rest &&... rest) const
+                BOOST_PROTO_AUTO_RETURN(
+                    fold_impl_<Fun>::fold_1_(
+                        action<Sequence>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                      , action<State0>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                      , static_cast<Rest &&>(rest)...
+                    )
+                )
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // _reverse_fold
+            // A BasicAction that invokes the <tt>fusion::fold\<\></tt>
+            // action to accumulate
+            template<typename Sequence, typename State0, typename Fun>
+            struct _reverse_fold
+              : basic_action<_reverse_fold<Sequence, State0, Fun>>
+            {
+                template<typename E>
+                auto operator()(E && e) const
+                BOOST_PROTO_AUTO_RETURN(
+                    fold_impl_<Fun>::reverse_fold_1_(
+                        action<Sequence>()(static_cast<E &&>(e))
+                      , action<State0>()(static_cast<E &&>(e))
+                    )
+                )
+
+                template<typename E, typename S, typename ...Rest>
+                auto operator()(E && e, S && s, Rest &&... rest) const
+                BOOST_PROTO_AUTO_RETURN(
+                    fold_impl_<Fun>::reverse_fold_1_(
+                        action<Sequence>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                      , action<State0>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                      , static_cast<Rest &&>(rest)...
+                    )
+                )
+            };
         }
 
-        ////////////////////////////////////////////////////////////////////////////////////////
-        // _fold
-        // \brief A BasicAction that invokes the <tt>fusion::_fold\<\></tt>
-        // action to accumulate
-        template<typename Sequence, typename State0, typename Fun>
-        struct _fold
-          : basic_action<_fold<Sequence, State0, Fun>>
-        {
-            template<typename E>
-            auto operator()(E && e) const
-            BOOST_PROTO_AUTO_RETURN(
-                detail::fold_impl_<Fun>::fold_1_(
-                    action<Sequence>()(static_cast<E &&>(e))
-                  , action<State0>()(static_cast<E &&>(e))
-                )
-            )
+        struct fold
+        {};
 
-            template<typename E, typename S, typename ...Rest>
-            auto operator()(E && e, S && s, Rest &&... rest) const
-            BOOST_PROTO_AUTO_RETURN(
-                detail::fold_impl_<Fun>::fold_1_(
-                    action<Sequence>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
-                  , action<State0>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
-                  , static_cast<Rest &&>(rest)...
-                )
-            )
-        };
+        struct reverse_fold
+        {};
 
-        ////////////////////////////////////////////////////////////////////////////////////////
-        // _reverse_fold
-        // A BasicAction that invokes the <tt>fusion::fold\<\></tt>
-        // action to accumulate
-        template<typename Sequence, typename State0, typename Fun>
-        struct _reverse_fold
-          : basic_action<_reverse_fold<Sequence, State0, Fun>>
-        {
-            template<typename E>
-            auto operator()(E && e) const
-            BOOST_PROTO_AUTO_RETURN(
-                detail::fold_impl_<Fun>::reverse_fold_1_(
-                    action<Sequence>()(static_cast<E &&>(e))
-                  , action<State0>()(static_cast<E &&>(e))
-                )
-            )
+        template<typename Seq, typename State0, typename Fun>
+        struct action<fold(Seq, State0, Fun)>
+          : detail::_fold<Seq, State0, Fun>
+        {};
 
-            template<typename E, typename S, typename ...Rest>
-            auto operator()(E && e, S && s, Rest &&... rest) const
-            BOOST_PROTO_AUTO_RETURN(
-                detail::fold_impl_<Fun>::reverse_fold_1_(
-                    action<Sequence>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
-                  , action<State0>()(static_cast<E &&>(e), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
-                  , static_cast<Rest &&>(rest)...
-                )
-            )
-        };
+        template<typename Seq, typename State0, typename Fun>
+        struct action<reverse_fold(Seq, State0, Fun)>
+          : detail::_fold<Seq, State0, Fun>
+        {};
     }
 }
 

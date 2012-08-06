@@ -240,7 +240,7 @@ namespace boost
             {
                 template<typename Iterator>
                 struct apply
-                  : proto::children_element<Iterator::index, typename Iterator::expr_type::proto_args_type>
+                  : proto::children_element<Iterator::index, typename Iterator::expr_type::proto_children_type>
                 {};
             };
 
@@ -447,7 +447,7 @@ namespace boost
             {
                 template<typename Sequence, typename Index>
                 struct apply
-                  : proto::children_element<(std::size_t)Index::value, typename Sequence::proto_args_type>
+                  : proto::children_element<(std::size_t)Index::value, typename Sequence::proto_children_type>
                 {};
             };
 
@@ -575,14 +575,14 @@ namespace boost
 {
     namespace mpl
     {
-        template<typename Tag, typename Args, typename Domain>
-        struct sequence_tag<proto::expr<Tag, Args, Domain>>
+        template<typename Tag, typename Children, typename Domain>
+        struct sequence_tag<proto::expr<Tag, Children, Domain>>
         {
             typedef fusion::fusion_sequence_tag type;
         };
 
-        template<typename Tag, typename Args, typename Domain>
-        struct sequence_tag<proto::basic_expr<Tag, Args, Domain>>
+        template<typename Tag, typename Children, typename Domain>
+        struct sequence_tag<proto::basic_expr<Tag, Children, Domain>>
         {
             typedef fusion::fusion_sequence_tag type;
         };

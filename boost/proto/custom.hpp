@@ -27,10 +27,10 @@ namespace boost
         struct custom
         {
             template<typename Tag, typename T>
-            using nullary_expr = Expr<typename detail::nullary_tag<Tag>::type, children<T>, Domain>;
+            using nullary_expr = Expr<Tag, children<T>, Domain>;
 
             template<typename Tag, typename T>
-            using unary_expr = Expr<typename detail::unary_tag<Tag>::type, children<T>, Domain>;
+            using unary_expr = Expr<Tag, children<T>, Domain>;
 
             template<typename Tag, typename L, typename R>
             using binary_expr = Expr<Tag, children<L, R>, Domain>;
@@ -181,10 +181,10 @@ namespace boost
         struct custom<Expr, void>
         {
             template<typename Tag, typename T>
-            using nullary_expr = Expr<typename detail::nullary_tag<Tag>::type, children<T>>;
+            using nullary_expr = Expr<Tag, children<T>>;
 
             template<typename Tag, typename T>
-            using unary_expr = Expr<typename detail::unary_tag<Tag>::type, children<T>>;
+            using unary_expr = Expr<Tag, children<T>>;
 
             template<typename Tag, typename L, typename R>
             using binary_expr = Expr<Tag, children<L, R>>;

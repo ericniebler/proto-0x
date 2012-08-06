@@ -70,7 +70,7 @@ namespace mini_lambda
     struct eval_if_else;
 
     // Forward declaration for the mini-lambda expression wrapper
-    template<class Tag, class Args>
+    template<class Tag, class Children>
     struct expression;
 
     // The grammar for mini-lambda expressions with actions for
@@ -150,11 +150,11 @@ namespace mini_lambda
     // 1) To define operator() overloads that evaluate the lambda expression, and
     // 2) To define virtual data members like "else_" so that we can write
     //    expressions like "if_(X)[Y].else_[Z]".
-    template<class Tag, class Args>
+    template<class Tag, class Children>
     struct expression
-      : proto::basic_expr<Tag, Args, domain>
-      , proto::expr_assign<expression<Tag, Args>, domain>
-      , proto::expr_subscript<expression<Tag, Args>, domain>
+      : proto::basic_expr<Tag, Children, domain>
+      , proto::expr_assign<expression<Tag, Children>, domain>
+      , proto::expr_subscript<expression<Tag, Children>, domain>
     {
     private:
         template<std::size_t ...I, typename ...A>
@@ -164,7 +164,7 @@ namespace mini_lambda
         )
 
     public:
-        typedef proto::basic_expr<Tag, Args, domain> proto_basic_expr_type;
+        typedef proto::basic_expr<Tag, Children, domain> proto_basic_expr_type;
         BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expression);
         BOOST_PROTO_INHERIT_EXPR_CTORS(expression, proto_basic_expr_type);
         using proto::expr_assign<expression, domain>::operator=;

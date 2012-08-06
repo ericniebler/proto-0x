@@ -118,7 +118,7 @@ void test_expr()
 ////////////////////////////////////////////////////////////////////////
 // Test that expression extensions are also valid fusion sequences
 
-template<typename Tag, typename Args>
+template<typename Tag, typename Children>
 struct My;
 
 struct MyDomain
@@ -129,12 +129,12 @@ struct MyDomain
     {};
 };
 
-template<typename Tag, typename Args>
+template<typename Tag, typename Children>
 struct My
-  : proto::basic_expr<Tag, Args, MyDomain>
-  , proto::expr_function<My<Tag, Args>, MyDomain>
+  : proto::basic_expr<Tag, Children, MyDomain>
+  , proto::expr_function<My<Tag, Children>, MyDomain>
 {
-    typedef proto::basic_expr<Tag, Args, MyDomain> proto_basic_expr_type;
+    typedef proto::basic_expr<Tag, Children, MyDomain> proto_basic_expr_type;
     BOOST_PROTO_INHERIT_EXPR_CTORS(My, proto_basic_expr_type);
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(My);
 };

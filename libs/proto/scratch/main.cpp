@@ -83,7 +83,7 @@ namespace algo
 // "grammar-ish" parts from the "actions-ish" part. Or do we even need grammars? Can't
 // they just be a special case of an action that returns true_type or false_type?
 
-template<typename Tag, typename Args>
+template<typename Tag, typename Children>
 struct lambda_expr;
 
 struct lambda_domain
@@ -94,17 +94,17 @@ struct lambda_domain
     {};
 };
 
-template<typename Tag, typename Args>
+template<typename Tag, typename Children>
 struct lambda_expr
-  : proto::basic_expr<Tag, Args, lambda_domain>
-  , proto::expr_assign<lambda_expr<Tag, Args>, lambda_domain>
-  , proto::expr_subscript<lambda_expr<Tag, Args>, lambda_domain>
+  : proto::basic_expr<Tag, Children, lambda_domain>
+  , proto::expr_assign<lambda_expr<Tag, Children>, lambda_domain>
+  , proto::expr_subscript<lambda_expr<Tag, Children>, lambda_domain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(lambda_expr);
 
     using proto::expr_assign<lambda_expr, lambda_domain>::operator=;
-    //using proto::basic_expr<Tag, Args, lambda_domain>::basic_expr;
-    typedef proto::basic_expr<Tag, Args, lambda_domain> proto_basic_expr_type;
+    //using proto::basic_expr<Tag, Children, lambda_domain>::basic_expr;
+    typedef proto::basic_expr<Tag, Children, lambda_domain> proto_basic_expr_type;
     BOOST_PROTO_INHERIT_EXPR_CTORS(lambda_expr, proto_basic_expr_type);
 
     template<typename ...T>

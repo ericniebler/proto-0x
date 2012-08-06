@@ -48,28 +48,28 @@ namespace boost
             struct child_impl_
             {
                 #define BOOST_PP_LOCAL_MACRO(N)                                                     \
-                template<typename Args>                                                             \
+                template<typename Children>                                                         \
                 static inline constexpr auto child(                                                 \
-                    Args &&that                                                                     \
+                    Children &&that                                                                 \
                   , std::integral_constant<std::size_t, N>                                          \
                 )                                                                                   \
                 BOOST_PROTO_AUTO_RETURN(                                                            \
                     /*extra parens are significant!*/                                               \
-                    (static_cast<Args &&>(that).BOOST_PP_CAT(proto_child, N))                       \
+                    (static_cast<Children &&>(that).BOOST_PP_CAT(proto_child, N))                   \
                 )                                                                                   \
                 /**/
 
                 #define BOOST_PP_LOCAL_LIMITS (0, BOOST_PP_DEC(BOOST_PROTO_ARGS_UNROLL_MAX))
                 #include BOOST_PP_LOCAL_ITERATE()
 
-                template<typename Args, std::size_t I, typename Impl = child_impl_>
+                template<typename Children, std::size_t I, typename Impl = child_impl_>
                 static inline constexpr auto child(
-                    Args &&that
+                    Children &&that
                   , std::integral_constant<std::size_t, I>
                 )
                 BOOST_PROTO_AUTO_RETURN(
                     Impl::child(
-                        static_cast<Args &&>(that).proto_args_tail
+                        static_cast<Children &&>(that).proto_args_tail
                       , std::integral_constant<std::size_t, I - BOOST_PROTO_ARGS_UNROLL_MAX>()
                     )
                 )
@@ -135,10 +135,10 @@ namespace boost
                 )                                                                                   \
             };                                                                                      \
                                                                                                     \
-            template<typename Args>                                                                 \
-            struct children_element<BOOST_PP_DEC(N), Args>                                          \
+            template<typename Children>                                                             \
+            struct children_element<BOOST_PP_DEC(N), Children>                                      \
             {                                                                                       \
-                typedef typename Args::BOOST_PP_CAT(proto_child_type, BOOST_PP_DEC(N)) type;        \
+                typedef typename Children::BOOST_PP_CAT(proto_child_type, BOOST_PP_DEC(N)) type;    \
             };                                                                                      \
                                                                                                     \
             template<BOOST_PP_ENUM_PARAMS(N, typename T), typename F>                               \
@@ -213,7 +213,7 @@ namespace boost
                 );
 
                 static_assert(
-                    std::is_empty<typename children_element<0, typename B::proto_args_type>::type>::value
+                    std::is_empty<typename children_element<0, typename B::proto_children_type>::type>::value
                   , "Only empty terminal expressions are allowed as virtual data members"
                 );
 
@@ -243,9 +243,9 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // children_element
-            template<std::size_t N, typename Args>
+            template<std::size_t N, typename Children>
             struct children_element
-              : children_element<N - BOOST_PROTO_ARGS_UNROLL_MAX, typename Args::proto_args_tail_type>
+              : children_element<N - BOOST_PROTO_ARGS_UNROLL_MAX, typename Children::proto_args_tail_type>
             {};
 
             template<typename ...T, typename F>
