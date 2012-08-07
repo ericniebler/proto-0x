@@ -272,6 +272,9 @@
     <ClCompile Include="..\test\action.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\test\fold.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\test\Jamfile">

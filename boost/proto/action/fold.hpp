@@ -178,7 +178,7 @@ namespace boost
 
         template<typename Seq, typename State0, typename Fun>
         struct action<reverse_fold(Seq, State0, Fun)>
-          : detail::_fold<Seq, State0, Fun>
+          : detail::_reverse_fold<Seq, State0, Fun>
         {};
     }
 }

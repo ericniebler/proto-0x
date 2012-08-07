@@ -188,20 +188,16 @@ namespace mini_lambda
     };
 
     template<typename T>
-    using var = expression<proto::terminal, proto::children<T>>;
+    using var = proto::custom<expression>::terminal<T>;
 
     namespace placeholders
     {
-        typedef var<placeholder_c<0>> _1_t;
-        typedef var<placeholder_c<1>> _2_t;
-        typedef var<placeholder_c<2>> _3_t;
-
         // Define some placeholders
         namespace
         {
-            constexpr _1_t const & _1 = proto::utility::static_const<_1_t>::value;
-            constexpr _2_t const & _2 = proto::utility::static_const<_2_t>::value;
-            constexpr _3_t const & _3 = proto::utility::static_const<_3_t>::value;
+            constexpr auto const & _1 = proto::utility::static_const<var<placeholder_c<0>>>::value;
+            constexpr auto const & _2 = proto::utility::static_const<var<placeholder_c<1>>>::value;
+            constexpr auto const & _3 = proto::utility::static_const<var<placeholder_c<2>>>::value;
         }
 
         BOOST_PROTO_IGNORE_UNUSED(_1, _2, _3);

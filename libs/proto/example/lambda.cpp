@@ -89,20 +89,16 @@ struct lambda_expr
 };
 
 template<typename T>
-using lambda_var = lambda_expr<proto::terminal, proto::children<T>>;
-
-typedef lambda_var<placeholder_c<0>> _1_type;
-typedef lambda_var<placeholder_c<1>> _2_type;
-typedef lambda_var<placeholder_c<2>> _3_type;
-static_assert(std::is_trivial<_1_type>::value, "_1 should be trivial");
+using lambda_var = proto::custom<lambda_expr>::terminal<T>;
 
 namespace
 {
-    constexpr _1_type const & _1 = proto::utility::static_const<_1_type>::value;
-    constexpr _2_type const & _2 = proto::utility::static_const<_2_type>::value;
-    constexpr _3_type const & _3 = proto::utility::static_const<_3_type>::value;
+    constexpr auto const & _1 = proto::utility::static_const<lambda_var<placeholder_c<0>>>::value;
+    constexpr auto const & _2 = proto::utility::static_const<lambda_var<placeholder_c<1>>>::value;
+    constexpr auto const & _3 = proto::utility::static_const<lambda_var<placeholder_c<2>>>::value;
 }
 
+static_assert(std::is_trivial<lambda_var<placeholder_c<0>>>::value, "_1 should be trivial");
 BOOST_PROTO_IGNORE_UNUSED(_1, _2, _3);
 
 int main()

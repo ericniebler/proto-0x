@@ -92,10 +92,12 @@ namespace boost
                 template<typename E, typename ...Rest>
                 auto operator()(E && e, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
-                    proto::_fold<
-                        Sequence
-                      , State0
-                      , detail::_recursive_fold_<typename tag_of<E>::type, Fun>
+                    action<
+                        fold(
+                            Sequence
+                          , State0
+                          , detail::_recursive_fold_<typename tag_of<E>::type, Fun>
+                        )
                     >()(
                         static_cast<E &&>(e)
                       , static_cast<Rest &&>(rest)...
@@ -142,10 +144,12 @@ namespace boost
                 template<typename E, typename ...Rest>
                 auto operator()(E && e, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
-                    proto::_reverse_fold<
-                        Sequence
-                      , State0
-                      , detail::_reverse_recursive_fold_<typename tag_of<E>::type, Fun>
+                    action<
+                        reverse_fold(
+                            Sequence
+                          , State0
+                          , detail::_reverse_recursive_fold_<typename tag_of<E>::type, Fun>
+                        )
                     >()(
                         static_cast<E &&>(e)
                       , static_cast<Rest &&>(rest)...
@@ -167,7 +171,7 @@ namespace boost
 
         template<typename Seq, typename State0, typename Fun>
         struct action<reverse_recursive_fold(Seq, State0, Fun)>
-          : detail::_recursive_fold<Seq, State0, Fun>
+          : detail::_reverse_recursive_fold<Seq, State0, Fun>
         {};
     }
 }
