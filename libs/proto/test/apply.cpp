@@ -5,6 +5,7 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <utility>
 #include <boost/proto/proto.hpp>
 #include "./unit_test.hpp"
 
@@ -13,16 +14,16 @@ using proto::_;
 
 template<int I>
 struct fN
-  : proto::tags::basic_tag<fN<I>>
+  : proto::tags::env_var_tag<fN<I>>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(fN);
-    using proto::tags::basic_tag<fN>::operator=;
+    using proto::tags::env_var_tag<fN>::operator=;
 };
 
 namespace
 {
-    constexpr fN<0> const & _f0 = proto::utility::static_const<fN<0>>::value;
-    constexpr fN<1> const & _f1 = proto::utility::static_const<fN<1>>::value;
+    constexpr auto const & _f0 = proto::utility::static_const<fN<0>>::value;
+    constexpr auto const & _f1 = proto::utility::static_const<fN<1>>::value;
 }
 
 struct eval_unpack
@@ -38,9 +39,9 @@ template<typename E, typename F0, typename F1>
 auto unpack(E && e, F0 && f0, F1 && f1)
 BOOST_PROTO_AUTO_RETURN(
     eval_unpack()(
-        static_cast<E &&>(e)
+        std::forward<E>(e)
       , 0
-      , (_f0 = static_cast<F0 &&>(f0), _f1 = static_cast<F1 &&>(f1))
+      , (_f0 = std::forward<F0>(f0), _f1 = std::forward<F1>(f1))
     )
 )
 

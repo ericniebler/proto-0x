@@ -30,7 +30,7 @@ namespace boost
     namespace proto
     {
         template<typename Tag>
-        struct eval_tag
+        struct op
         {
             template<typename Expr, typename ...Rest>
             utility::any operator()(Expr && expr, Rest &&...) const noexcept
@@ -58,6 +58,30 @@ namespace boost
             BOOST_PROTO_AUTO_RETURN(
                 get_pointer(static_cast<T &&>(t))
             )
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // mem_fun_binder_
+            template<typename T, typename PMF>
+            class mem_fun_binder_
+            {
+                T obj_;
+                PMF pmf_;
+
+            public:
+                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(mem_fun_binder_);
+
+                template<typename U>
+                mem_fun_binder_(U && u, PMF pmf) noexcept(noexcept(T(static_cast<U &&>(u))))
+                  : obj_(static_cast<U &&>(u))
+                  , pmf_(pmf)
+                {}
+
+                template<typename ...A>
+                auto operator()(A &&... a) const
+                BOOST_PROTO_AUTO_RETURN(
+                    (detail::proto_get_pointer(obj_, 1) ->* pmf_)(static_cast<A &&>(a)...)
+                )
+            };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // _eval_unknown
@@ -89,20 +113,20 @@ namespace boost
         }
 
         template<>
-        struct eval_tag<terminal>
+        struct op<terminal>
           : utility::identity
         {};
 
         namespace detail
         {
             template<typename Tag, typename Action>
-            struct _eval_tag
-              : basic_action<_eval_tag<Tag, Action>>
+            struct _op_unpack
+              : basic_action<_op_unpack<Tag, Action>>
             {
                 template<std::size_t ...I, typename Expr, typename ...Rest>
                 auto impl(utility::indices<I...>, Expr && expr, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
-                    eval_tag<Tag>()(
+                    op<Tag>()(
                         action<Action>()(
                             proto::child<I>(static_cast<Expr &&>(expr))
                           , static_cast<Rest &&>(rest)...
@@ -122,14 +146,72 @@ namespace boost
             };
 
             template<typename Action>
-            struct _eval_tag<terminal, Action>
+            struct _op_unpack<terminal, Action>
               : _value
             {};
+
+            // Must respect short-circuit evaluation
+            template<typename ActiveGrammar>
+            struct _op_unpack<logical_or, ActiveGrammar>
+            {
+                template<typename Expr, typename ...Rest>
+                auto operator()(Expr && expr, Rest &&... rest) const
+                BOOST_PROTO_AUTO_RETURN(
+                    action<ActiveGrammar>()(
+                        proto::child<0>(static_cast<Expr &&>(expr))
+                      , static_cast<Rest &&>(rest)...
+                    )
+                 || action<ActiveGrammar>()(
+                        proto::child<1>(static_cast<Expr &&>(expr))
+                      , static_cast<Rest &&>(rest)...
+                    )
+                )
+            };
+
+            // Must respect short-circuit evaluation
+            template<typename ActiveGrammar>
+            struct _op_unpack<logical_and, ActiveGrammar>
+            {
+                template<typename Expr, typename ...Rest>
+                auto operator()(Expr && expr, Rest &&... rest) const
+                BOOST_PROTO_AUTO_RETURN(
+                    action<ActiveGrammar>()(
+                        proto::child<0>(static_cast<Expr &&>(expr))
+                      , static_cast<Rest &&>(rest)...
+                    )
+                 && action<ActiveGrammar>()(
+                        proto::child<1>(static_cast<Expr &&>(expr))
+                      , static_cast<Rest &&>(rest)...
+                    )
+                )
+            };
+
+            // Must respect short-circuit evaluation
+            template<typename ActiveGrammar>
+            struct _op_unpack<if_else_, ActiveGrammar>
+            {
+                template<typename Expr, typename ...Rest>
+                auto operator()(Expr && expr, Rest &&... rest) const
+                BOOST_PROTO_AUTO_RETURN(
+                    action<ActiveGrammar>()(
+                        proto::child<0>(static_cast<Expr &&>(expr))
+                      , static_cast<Rest &&>(rest)...
+                    )
+                  ? action<ActiveGrammar>()(
+                        proto::child<1>(static_cast<Expr &&>(expr))
+                      , static_cast<Rest &&>(rest)...
+                    )
+                  : action<ActiveGrammar>()(
+                        proto::child<2>(static_cast<Expr &&>(expr))
+                      , static_cast<Rest &&>(rest)...
+                    )
+                )
+            };
         }
 
     #define BOOST_PROTO_UNARY_EVAL(OP, TAG)                                                         \
         template<>                                                                                  \
-        struct eval_tag<TAG>                                                                        \
+        struct op<TAG>                                                                              \
         {                                                                                           \
             template<typename T>                                                                    \
             auto operator()(T && t) const                                                           \
@@ -142,14 +224,14 @@ namespace boost
         {                                                                                           \
             template<typename ActiveGrammar>                                                        \
             struct _eval_case<ActiveGrammar, TAG>                                                   \
-              : active_grammar<when(TAG(ActiveGrammar), _eval_tag<TAG, ActiveGrammar>)>             \
+              : active_grammar<when(TAG(ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)>            \
             {};                                                                                     \
         }                                                                                           \
         /**/
 
     #define BOOST_PROTO_BINARY_EVAL(OP, TAG)                                                        \
         template<>                                                                                  \
-        struct eval_tag<TAG>                                                                        \
+        struct op<TAG>                                                                              \
         {                                                                                           \
             template<typename T, typename U>                                                        \
             auto operator()(T && t, U && u) const                                                   \
@@ -162,7 +244,7 @@ namespace boost
         {                                                                                           \
             template<typename ActiveGrammar>                                                        \
             struct _eval_case<ActiveGrammar, TAG>                                                   \
-              : active_grammar<when(TAG(ActiveGrammar, ActiveGrammar), _eval_tag<TAG, ActiveGrammar>)> \
+              : active_grammar<when(TAG(ActiveGrammar, ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)> \
             {};                                                                                     \
         }                                                                                           \
         /**/
@@ -189,9 +271,12 @@ namespace boost
         BOOST_PROTO_BINARY_EVAL(>=, greater_equal)
         BOOST_PROTO_BINARY_EVAL(==, equal_to)
         BOOST_PROTO_BINARY_EVAL(!=, not_equal_to)
+        BOOST_PROTO_BINARY_EVAL(||, logical_or)
+        BOOST_PROTO_BINARY_EVAL(&&, logical_and)
         BOOST_PROTO_BINARY_EVAL(&, bitwise_and)
         BOOST_PROTO_BINARY_EVAL(|, bitwise_or)
         BOOST_PROTO_BINARY_EVAL(^, bitwise_xor)
+        BOOST_PROTO_BINARY_EVAL(BOOST_PP_COMMA(), comma)
 
         BOOST_PROTO_BINARY_EVAL(=, assign)
         BOOST_PROTO_BINARY_EVAL(<<=, shift_left_assign)
@@ -209,7 +294,7 @@ namespace boost
         #undef BOOST_PROTO_BINARY_EVAL
 
         template<>
-        struct eval_tag<post_inc>
+        struct op<post_inc>
         {
             template<typename T>
             auto operator()(T && t) const
@@ -218,16 +303,8 @@ namespace boost
             )
         };
 
-        namespace detail
-        {
-            template<typename ActiveGrammar>
-            struct _eval_case<ActiveGrammar, post_inc>
-              : active_grammar<when(post_inc(ActiveGrammar), _eval_tag<post_inc, ActiveGrammar>)>
-            {};
-        }
-
         template<>
-        struct eval_tag<post_dec>
+        struct op<post_dec>
         {
             template<typename T>
             auto operator()(T && t) const
@@ -236,16 +313,8 @@ namespace boost
             )
         };
 
-        namespace detail
-        {
-            template<typename ActiveGrammar>
-            struct _eval_case<ActiveGrammar, post_dec>
-              : active_grammar<when(post_dec(ActiveGrammar), _eval_tag<post_dec, ActiveGrammar>)>
-            {};
-        }
-
         template<>
-        struct eval_tag<subscript>
+        struct op<subscript>
         {
             template<typename T, typename U>
             auto operator()(T && t, U && u) const
@@ -254,124 +323,30 @@ namespace boost
             )
         };
 
-        namespace detail
-        {
-            template<typename ActiveGrammar>
-            struct _eval_case<ActiveGrammar, subscript>
-              : active_grammar<when(subscript(ActiveGrammar, ActiveGrammar), _eval_tag<subscript, ActiveGrammar>)>
-            {};
-        }
-
         template<>
-        struct eval_tag<logical_or>
+        struct op<mem_ptr>
         {
             template<typename T, typename U>
             auto operator()(T && t, U && u) const
             BOOST_PROTO_AUTO_RETURN(
-                static_cast<T &&>(t) || static_cast<U &&>(u)
+                static_cast<T &&>(t) ->* static_cast<U &&>(u)
             )
-        };
 
-        namespace detail
-        {
-            // Must respect short-circuit evaluation
-            template<typename ActiveGrammar>
-            struct _eval_tag<logical_or, ActiveGrammar>
-            {
-                template<typename Expr, typename ...Rest>
-                auto operator()(Expr && expr, Rest &&... rest) const
-                BOOST_PROTO_AUTO_RETURN(
-                    action<ActiveGrammar>()(
-                        proto::child<0>(static_cast<Expr &&>(expr))
-                      , static_cast<Rest &&>(rest)...
-                    )
-                    || action<ActiveGrammar>()(
-                        proto::child<1>(static_cast<Expr &&>(expr))
-                      , static_cast<Rest &&>(rest)...
-                    )
-                )
-            };
-
-            template<typename ActiveGrammar>
-            struct _eval_case<ActiveGrammar, logical_or>
-              : active_grammar<when(logical_or(ActiveGrammar, ActiveGrammar), _eval_tag<logical_or, ActiveGrammar>)>
-            {};
-        }
-
-        template<>
-        struct eval_tag<logical_and>
-        {
-            template<typename T, typename U>
-            auto operator()(T && t, U && u) const
+            template<typename Obj, typename Type, typename Class>
+            auto operator()(Obj && obj, Type Class::*pm) const
             BOOST_PROTO_AUTO_RETURN(
-                static_cast<T &&>(t) && static_cast<U &&>(u)
+                (detail::proto_get_pointer(static_cast<Obj &&>(obj), 1) ->* pm)
             )
-        };
 
-        namespace detail
-        {
-            // Must respect short-circuit evaluation
-            template<typename ActiveGrammar>
-            struct _eval_tag<logical_and, ActiveGrammar>
-            {
-                template<typename Expr, typename ...Rest>
-                auto operator()(Expr && expr, Rest &&... rest) const
-                BOOST_PROTO_AUTO_RETURN(
-                    action<ActiveGrammar>()(
-                        proto::child<0>(static_cast<Expr &&>(expr))
-                      , static_cast<Rest &&>(rest)...
-                    )
-                    && action<ActiveGrammar>()(
-                        proto::child<1>(static_cast<Expr &&>(expr))
-                      , static_cast<Rest &&>(rest)...
-                    )
-                )
-            };
-
-            template<typename ActiveGrammar>
-            struct _eval_case<ActiveGrammar, logical_and>
-              : active_grammar<when(logical_and(ActiveGrammar, ActiveGrammar), _eval_tag<logical_and, ActiveGrammar>)>
-            {};
-        }
-
-        template<>
-        struct eval_tag<comma>
-        {
-            template<typename T, typename U>
-            auto operator()(T && t, U && u) const
+            template<typename Obj, typename Type, typename Class, typename ...Args>
+            auto operator()(Obj && obj, Type (Class::*pmf)(Args...)) const
             BOOST_PROTO_AUTO_RETURN(
-                static_cast<T &&>(t) BOOST_PP_COMMA() static_cast<U &&>(u)
+                detail::mem_fun_binder_<Obj, Type (Class::*)(Args...)>(static_cast<Obj &&>(obj), pmf)
             )
         };
 
-        namespace detail
-        {
-            // Must respect short-circuit evaluation
-            template<typename ActiveGrammar>
-            struct _eval_tag<comma, ActiveGrammar>
-            {
-                template<typename Expr, typename ...Rest>
-                auto operator()(Expr && expr, Rest &&... rest) const
-                BOOST_PROTO_AUTO_RETURN(
-                    action<ActiveGrammar>()(
-                        proto::child<0>(static_cast<Expr &&>(expr))
-                      , static_cast<Rest &&>(rest)...
-                    )
-                    BOOST_PP_COMMA() action<ActiveGrammar>()(
-                        proto::child<1>(static_cast<Expr &&>(expr))
-                      , static_cast<Rest &&>(rest)...
-                    )
-                )
-            };
-
-            template<typename ActiveGrammar>
-            struct _eval_case<ActiveGrammar, comma>
-              : active_grammar<when(comma(ActiveGrammar, ActiveGrammar), _eval_tag<comma, ActiveGrammar>)>
-            {};
-        }
-
         template<>
-        struct eval_tag<if_else_>
+        struct op<if_else_>
         {
             template<typename T, typename U, typename V>
             auto operator()(T && t, U && u, V && v) const
@@ -380,38 +355,8 @@ namespace boost
             )
         };
 
-        namespace detail
-        {
-            // Must respect short-circuit evaluation
-            template<typename ActiveGrammar>
-            struct _eval_tag<if_else_, ActiveGrammar>
-            {
-                template<typename Expr, typename ...Rest>
-                auto operator()(Expr && expr, Rest &&... rest) const
-                BOOST_PROTO_AUTO_RETURN(
-                    action<ActiveGrammar>()(
-                        proto::child<0>(static_cast<Expr &&>(expr))
-                      , static_cast<Rest &&>(rest)...
-                    )
-                    ? action<ActiveGrammar>()(
-                        proto::child<1>(static_cast<Expr &&>(expr))
-                      , static_cast<Rest &&>(rest)...
-                    )
-                    : action<ActiveGrammar>()(
-                        proto::child<2>(static_cast<Expr &&>(expr))
-                      , static_cast<Rest &&>(rest)...
-                    )
-                )
-            };
-
-            template<typename ActiveGrammar>
-            struct _eval_case<ActiveGrammar, if_else_>
-              : active_grammar<when(if_else_(ActiveGrammar, ActiveGrammar, ActiveGrammar), _eval_tag<if_else_, ActiveGrammar>)>
-            {};
-        }
-
         template<>
-        struct eval_tag<function>
+        struct op<function>
         {
             template<typename Fun, typename ...T>
             auto operator()(Fun && fun, T &&... t) const
@@ -435,62 +380,33 @@ namespace boost
         namespace detail
         {
             template<typename ActiveGrammar>
-            struct _eval_case<ActiveGrammar, function>
-              : active_grammar<when(function(ActiveGrammar...), _eval_tag<function, ActiveGrammar>)>
+            struct _eval_case<ActiveGrammar, post_inc>
+              : active_grammar<when(post_inc(ActiveGrammar), _op_unpack<post_inc, ActiveGrammar>)>
             {};
-        }
 
-        namespace detail
-        {
-            template<typename T, typename PMF>
-            struct memfun
-            {
-                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(memfun);
+            template<typename ActiveGrammar>
+            struct _eval_case<ActiveGrammar, post_dec>
+              : active_grammar<when(post_dec(ActiveGrammar), _op_unpack<post_dec, ActiveGrammar>)>
+            {};
 
-                T obj_;
-                PMF pmf_;
+            template<typename ActiveGrammar>
+            struct _eval_case<ActiveGrammar, subscript>
+              : active_grammar<when(subscript(ActiveGrammar, ActiveGrammar), _op_unpack<subscript, ActiveGrammar>)>
+            {};
 
-                template<typename U>
-                memfun(U && u, PMF pmf) noexcept(noexcept(T(static_cast<U &&>(u))))
-                  : obj_(static_cast<U &&>(u))
-                  , pmf_(pmf)
-                {}
-
-                template<typename ...A>
-                auto operator()(A &&... a) const
-                BOOST_PROTO_AUTO_RETURN(
-                    (detail::proto_get_pointer(obj_, 1) ->* pmf_)(static_cast<A &&>(a)...)
-                )
-            };
-        }
-
-        template<>
-        struct eval_tag<mem_ptr>
-        {
-            template<typename T, typename U>
-            auto operator()(T && t, U && u) const
-            BOOST_PROTO_AUTO_RETURN(
-                static_cast<T &&>(t) ->* static_cast<U &&>(u)
-            )
-
-            template<typename Obj, typename Type, typename Class>
-            auto operator()(Obj && obj, Type Class::*pm) const
-            BOOST_PROTO_AUTO_RETURN(
-                (detail::proto_get_pointer(static_cast<Obj &&>(obj), 1) ->* pm)
-            )
-
-            template<typename Obj, typename Type, typename Class, typename ...Args>
-            auto operator()(Obj && obj, Type (Class::*pmf)(Args...)) const
-            BOOST_PROTO_AUTO_RETURN(
-                detail::memfun<Obj, Type (Class::*)(Args...)>(static_cast<Obj &&>(obj), pmf)
-            )
-        };
-
-        namespace detail
-        {
             template<typename ActiveGrammar>
             struct _eval_case<ActiveGrammar, mem_ptr>
-              : active_grammar<when(mem_ptr(ActiveGrammar, ActiveGrammar), _eval_tag<mem_ptr, ActiveGrammar>)>
+              : active_grammar<when(mem_ptr(ActiveGrammar, ActiveGrammar), _op_unpack<mem_ptr, ActiveGrammar>)>
+            {};
+
+            template<typename ActiveGrammar>
+            struct _eval_case<ActiveGrammar, if_else_>
+              : active_grammar<when(if_else_(ActiveGrammar, ActiveGrammar, ActiveGrammar), _op_unpack<if_else_, ActiveGrammar>)>
+            {};
+
+            template<typename ActiveGrammar>
+            struct _eval_case<ActiveGrammar, function>
+              : active_grammar<when(function(ActiveGrammar...), _op_unpack<function, ActiveGrammar>)>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -519,14 +435,14 @@ namespace boost
             template<typename Tag, typename ...T>
             auto operator()(Tag, T &&... t) const
             BOOST_PROTO_AUTO_RETURN(
-                eval_tag<Tag>()(static_cast<T &&>(t)...)
+                op<Tag>()(static_cast<T &&>(t)...)
             )
         };
 
         namespace detail
         {
             // Loopy indirection that allows proto::_eval<> to be
-            // used without specifying a ActiveGrammar argument.
+            // used without specifying an ActiveGrammar argument.
             struct _eval
               : proto::_eval<>
             {};

@@ -11,11 +11,11 @@
 
 #include <utility>
 #include <type_traits>
-#include <boost/mpl/identity.hpp>
 #include <boost/proto/proto_fwd.hpp>
+#include <boost/proto/utility.hpp>
 #include <boost/proto/action/action.hpp>
 #include <boost/proto/action/protect.hpp>
-#include <boost/proto/utility.hpp>
+#include <boost/proto/action/env.hpp>
 
 namespace boost
 {
@@ -34,14 +34,15 @@ namespace boost
             {
                 template<typename Action, typename ...Args>
                 auto operator()(
-                    Action &&tfx
+                    Action &&act
                   , Results &&... results
                   , utility::first<utility::any, Results>...
                   , Args &&... args
                 ) const
                 BOOST_PROTO_AUTO_RETURN(
-                    static_cast<Action &&>(tfx)(
-                        static_cast<Results &&>(results)...
+                    do_action_<detail::is_local_<Action>::value>()(
+                        static_cast<Action &&>(act)
+                      , static_cast<Results &&>(results)...
                       , static_cast<Args &&>(args)...
                     )
                 )
@@ -51,9 +52,12 @@ namespace boost
             struct call_2_<true, Results...>
             {
                 template<typename Action, typename ...Ts>
-                auto operator()(Action &&tfx, Results &&... results, Ts &&...) const
+                auto operator()(Action &&act, Results &&... results, Ts &&...) const
                 BOOST_PROTO_AUTO_RETURN(
-                    static_cast<Action &&>(tfx)(static_cast<Results &&>(results)...)
+                    do_action_<detail::is_local_<Action>::value>()(
+                        static_cast<Action &&>(act)
+                      , static_cast<Results &&>(results)...
+                    )
                 )
             };
 
@@ -68,13 +72,13 @@ namespace boost
                   , typename ...Args
                   , BOOST_PROTO_ENABLE_IF(is_action<Action>::value)
                 >
-                auto operator()(Action &&tfx, Args &&... args) const
+                auto operator()(Action &&act, Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
                     call_2_<
                         (sizeof...(Args) <= sizeof...(Actions))
                       , decltype(action<Actions>()(static_cast<Args &&>(args)...))...
                     >()(
-                        static_cast<Action &&>(tfx)
+                        static_cast<Action &&>(act)
                       , action<Actions>()(static_cast<Args &&>(args)...)...
                       , static_cast<Args &&>(args)...
                     )

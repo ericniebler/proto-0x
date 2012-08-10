@@ -9,6 +9,7 @@
 #ifndef BOOST_PROTO_ACTION_ENV_HPP_INCLUDED
 #define BOOST_PROTO_ACTION_ENV_HPP_INCLUDED
 
+#include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/action/action.hpp>
 #include <boost/proto/utility.hpp>
@@ -31,10 +32,21 @@ namespace boost
                     return key_not_found();
                 }
 
+                std::false_type operator[](tags::has_scope_type) const noexcept
+                {
+                    return std::false_type();
+                }
+
                 template<typename T>
                 T at(utility::any, T && t) const noexcept(noexcept(T(static_cast<T &&>(t))))
                 {
                     return static_cast<T &&>(t);
+                }
+
+                template<typename T>
+                std::false_type at(tags::has_scope_type, T &&) const noexcept
+                {
+                    return std::false_type();
                 }
             };
 
@@ -58,17 +70,17 @@ namespace boost
 
                 // For key-based lookups not intended to fail
                 using Env::operator[];
-                auto operator[](Key) const
-                BOOST_PROTO_AUTO_RETURN(
-                    (static_cast<env const &>(*this).value_)
+                Value operator[](Key) const
+                BOOST_PROTO_RETURN(
+                    this->value_
                 )
 
                 // For key-based lookups that can fail, use the default if key not found.
                 using Env::at;
                 template<typename T>
-                auto at(Key, T &&) const
-                BOOST_PROTO_AUTO_RETURN(
-                    (static_cast<env const &>(*this).value_)
+                Value at(Key, T &&) const
+                BOOST_PROTO_RETURN(
+                    this->value_
                 )
 
                 template<typename T, typename V>
@@ -125,6 +137,28 @@ namespace boost
         BOOST_PROTO_AUTO_RETURN(
             detail::make_env_impl_::make_env(static_cast<T &&>(t)...)
         )
+
+        namespace functional
+        {
+            template<typename Key>
+            struct env_var
+            {
+                template<typename Env>
+                auto operator()(Env &&env) const
+                BOOST_PROTO_AUTO_RETURN(
+                    static_cast<Env &&>(env)[Key()]
+                )
+            };
+        }
+
+        namespace result_of
+        {
+            template<typename Env, typename Key>
+            struct env_var
+            {
+                typedef decltype(functional::env_var<Key>()(std::declval<Env>())) type;
+            };
+        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // _env_var

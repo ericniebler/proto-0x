@@ -213,6 +213,9 @@
     <ClInclude Include="..\..\..\boost\proto\active_grammar.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\let.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -275,6 +278,9 @@
     <ClCompile Include="..\test\fold.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\test\let.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\test\Jamfile">
@@ -289,5 +295,6 @@
     <None Include="Jamfile">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="..\..\..\TODO.txt" />
   </ItemGroup>
 </Project>

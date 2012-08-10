@@ -133,14 +133,21 @@ namespace boost
             struct not_a_domain;
 
             struct _eval;
+
+            struct local_base;
+
+            struct empty_state
+            {};
         }
 
         ///////////////////////////////////////////////////////////////////////////////
         // Operator tags
         namespace tags
         {
+            struct expr_tag_base;
+
             template<typename Tag, typename IsTerminal = std::false_type>
-            struct basic_tag;
+            struct expr_tag;
 
             struct terminal;
             struct unary_plus;
@@ -201,9 +208,12 @@ namespace boost
             struct proto_expr_iterator;
             struct proto_flat_view;
 
+            template<typename Tag>
+            struct env_var_tag;
+
             // Action environment tags
             struct data_type;
-            struct local_type;
+            struct has_scope_type;
         }
 
         using namespace tags;
@@ -281,6 +291,9 @@ namespace boost
             struct make_expr;
 
             struct as_expr;
+
+            template<typename Key>
+            struct env_var;
         }
 
         namespace result_of
@@ -290,6 +303,9 @@ namespace boost
 
             template<typename T>
             struct as_expr;
+
+            template<typename Env, typename Key>
+            struct env_var;
         }
 
         namespace exprs
@@ -405,18 +421,6 @@ namespace boost
         template<typename Grammar = detail::_eval>
         struct _eval;
 
-        template<typename Seq, typename State0, typename Fun>
-        struct _fold;
-
-        template<typename Seq, typename State0, typename Fun>
-        struct _recursive_fold;
-
-        template<typename Seq, typename State0, typename Fun>
-        struct _reverse_fold;
-
-        template<typename Seq, typename State0, typename Fun>
-        struct _reverse_recursive_fold;
-        
         template<typename T>
         struct noinvoke;
 
@@ -428,11 +432,16 @@ namespace boost
 
         struct _domain_of;
 
+        template<typename Local>
+        struct _local;
+
         struct pack;
 
         struct apply;
 
         struct construct;
+
+        struct let;
 
         struct fold;
         struct reverse_fold;

@@ -22,17 +22,6 @@ namespace boost
         namespace detail
         {
             ////////////////////////////////////////////////////////////////////////////////////////
-            // build_result_
-            template<typename Ret, typename List, typename... Rest>
-            struct build_result_;
-
-            template<typename Ret, typename ...Actions, typename... Rest>
-            struct build_result_<Ret, utility::list<Actions...>, Rest...>
-            {
-                typedef Ret type(Actions..., Rest...);
-            };
-
-            ////////////////////////////////////////////////////////////////////////////////////////
             // expand_pattern_2_
             template<std::size_t I, typename BasicAction>
             struct expand_pattern_2_
@@ -65,7 +54,7 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // expand_pattern_1_
-            template<typename Indices, typename BasicAction>
+            template<typename Indices, typename Actions>
             struct expand_pattern_1_;
 
             template<std::size_t ...I, typename Ret, typename ...Actions>
@@ -159,6 +148,9 @@ namespace boost
             template<typename Ret, typename ...Actions>
             struct _unpack
               : basic_action<_unpack<Ret, Actions...>>
+              // TODO: move implementation into _unpack_impl that is parameterized on result of
+              // collect_pack_actions_, and specialized on void(action<_>) to have a more
+              // optimal implementation.
             {
                 typedef
                     typename collect_pack_actions_<

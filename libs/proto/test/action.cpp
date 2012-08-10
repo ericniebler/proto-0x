@@ -17,6 +17,18 @@ using proto::_;
 typedef proto::literal<int> int_;
 typedef proto::literal<std::string> string_;
 
+struct scope_type
+  : proto::env_var_tag<scope_type>
+{
+    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(scope_type);
+    using proto::env_var_tag<scope_type>::operator=;
+};
+
+namespace
+{
+    constexpr auto const & scope = proto::utility::static_const<scope_type>::value;
+}
+
 void test_action()
 {
     int_ p(42);
@@ -24,9 +36,9 @@ void test_action()
     {
         int i = (proto::data = 42)[proto::data];
         BOOST_CHECK_EQUAL(i, 42);
-        auto env = (proto::data = 42, proto::local = "hello", proto::local = "goodbye");
+        auto env = (proto::data = 42, scope = "hello", scope = "goodbye");
         i = env[proto::data];
-        char const *loc = env[proto::local];
+        char const *loc = env[scope];
         BOOST_CHECK_EQUAL(std::string(loc), std::string("goodbye"));
         i = env.at(1,1); // lookup with a key that doesn't exist, return default
         BOOST_CHECK_EQUAL(i, 1);

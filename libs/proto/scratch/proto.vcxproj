@@ -66,6 +66,7 @@
     <ClInclude Include="..\..\..\boost\proto\action\fold.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\if.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\integral_constant.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\let.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\match.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\or.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\pass_through.hpp" />
@@ -171,6 +172,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\test\let.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\test\matches.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -198,6 +203,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\TODO.txt" />
     <None Include="..\example\Jamfile" />
     <None Include="..\test\Jamfile" />
     <None Include="Jamfile" />
