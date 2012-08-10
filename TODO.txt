@@ -1,4 +1,4 @@
-Implement a let transform with local variables with proper lexical scoping.
+Implement  proper lexical scoping for let expressions.
 	- Can the call action be modified to automatically create a proper lexical scope?
 
 Think about basic actions.

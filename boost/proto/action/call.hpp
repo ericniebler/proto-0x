@@ -40,9 +40,8 @@ namespace boost
                   , Args &&... args
                 ) const
                 BOOST_PROTO_AUTO_RETURN(
-                    do_action_<detail::is_local_<Action>::value>()(
-                        static_cast<Action &&>(act)
-                      , static_cast<Results &&>(results)...
+                    static_cast<Action &&>(act)(
+                        static_cast<Results &&>(results)...
                       , static_cast<Args &&>(args)...
                     )
                 )
@@ -54,10 +53,7 @@ namespace boost
                 template<typename Action, typename ...Ts>
                 auto operator()(Action &&act, Results &&... results, Ts &&...) const
                 BOOST_PROTO_AUTO_RETURN(
-                    do_action_<detail::is_local_<Action>::value>()(
-                        static_cast<Action &&>(act)
-                      , static_cast<Results &&>(results)...
-                    )
+                    static_cast<Action &&>(act)(static_cast<Results &&>(results)...)
                 )
             };
 

@@ -596,6 +596,14 @@ namespace boost
             }
 
             BOOST_PROTO_IGNORE_UNUSED(void_);
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // sized_type
+            template<int N>
+            struct sized_type
+            {
+                typedef char (&type)[N];
+            };
         }
     }
 }

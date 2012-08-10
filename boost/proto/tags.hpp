@@ -208,26 +208,14 @@ namespace boost
                 using env_var_tag<data_type>::operator=;
             };
 
-            /// Tag type for testing whether there is a scope
-            struct has_scope_type
-              : env_var_tag<has_scope_type>
-            {
-                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(has_scope_type);
-                using env_var_tag<has_scope_type>::operator=;
-            };
-
             namespace
             {
                 ////////////////////////////////////////////////////////////////////////////////
                 // data
                 constexpr auto const & data = utility::static_const<data_type>::value;
-
-                ////////////////////////////////////////////////////////////////////////////////
-                // has_scope
-                constexpr auto const & has_scope = utility::static_const<has_scope_type>::value;
             }
 
-            BOOST_PROTO_IGNORE_UNUSED(data, has_scope);
+            BOOST_PROTO_IGNORE_UNUSED(data);
 
         } // namespace tags
 

@@ -30,14 +30,20 @@ struct once
 int once::ctors = 0;
 
 struct wrap_a
-  : proto::action<_a>
+  : proto::action<
+        proto::let(
+            _b(proto::construct(int()))
+          , proto::functional::make_pair(_a, _a)
+        )
+    >
 {};
 
 struct LetCallOnce
   : proto::action<
         proto::let(
             _a(proto::construct(once()))
-          , proto::functional::make_pair(_a, _a)
+          , wrap_a
+          //, proto::functional::make_pair(wrap_a, _a)
         )
     >
 {};

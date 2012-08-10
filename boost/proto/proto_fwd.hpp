@@ -19,7 +19,7 @@
 //   noexcept clause from Dave Abrahams, tweaked by me.
 #define BOOST_PROTO_AUTO_RETURN(...)                                                                \
     noexcept(noexcept(                                                                              \
-        decltype(__VA_ARGS__)(boost::proto::detail::move_declval<decltype(__VA_ARGS__)>())          \
+        decltype(__VA_ARGS__)(boost::proto::utility::move_declval<decltype(__VA_ARGS__)>())         \
     )) -> decltype(__VA_ARGS__)                                                                     \
     {                                                                                               \
         return (__VA_ARGS__);                                                                       \
@@ -28,7 +28,7 @@
 
 #define BOOST_PROTO_RETURN(...)                                                                     \
     noexcept(noexcept(                                                                              \
-        decltype(__VA_ARGS__)(boost::proto::detail::move_declval<decltype(__VA_ARGS__)>())          \
+        decltype(__VA_ARGS__)(boost::proto::utility::move_declval<decltype(__VA_ARGS__)>())         \
     ))                                                                                              \
     {                                                                                               \
         return (__VA_ARGS__);                                                                       \
@@ -70,27 +70,19 @@ namespace boost
     {
         struct _;
 
-        namespace utility
-        {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // is_base_of
-            template<typename T, typename U>
-            struct is_base_of;
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // any
-            struct any;
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // static_const
-            template<typename T>
-            struct static_const;
-        }
-
         namespace detail
         {
-            typedef char yes_type;
-            typedef char (&no_type)[2];
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // for use by BOOST_PROTO_ENABLE_IF
+            extern void* enabler;
+
+            struct not_a_grammar;
+            struct not_a_domain;
+
+            struct _eval;
+
+            struct empty_state
+            {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // rvalue_type
@@ -111,33 +103,33 @@ namespace boost
             {
                 typedef void type;
             };
+        }
+
+        namespace utility
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // is_base_of
+            template<typename T, typename U>
+            struct is_base_of;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // any
+            struct any;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // static_const
+            template<typename T>
+            struct static_const;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // a declval+move that allows void
             template<typename T>
-            typename rvalue_type<T>::type move_declval() noexcept;
+            typename detail::rvalue_type<T>::type move_declval() noexcept;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // sized_type
             template<int N>
-            struct sized_type
-            {
-                typedef char (&type)[N];
-            };
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // for use by BOOST_PROTO_ENABLE_IF
-            extern void* enabler;
-
-            struct not_a_grammar;
-            struct not_a_domain;
-
-            struct _eval;
-
-            struct local_base;
-
-            struct empty_state
-            {};
+            struct sized_type;
         }
 
         ///////////////////////////////////////////////////////////////////////////////
@@ -213,7 +205,6 @@ namespace boost
 
             // Action environment tags
             struct data_type;
-            struct has_scope_type;
         }
 
         using namespace tags;

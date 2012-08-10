@@ -32,21 +32,10 @@ namespace boost
                     return key_not_found();
                 }
 
-                std::false_type operator[](tags::has_scope_type) const noexcept
-                {
-                    return std::false_type();
-                }
-
                 template<typename T>
                 T at(utility::any, T && t) const noexcept(noexcept(T(static_cast<T &&>(t))))
                 {
                     return static_cast<T &&>(t);
-                }
-
-                template<typename T>
-                std::false_type at(tags::has_scope_type, T &&) const noexcept
-                {
-                    return std::false_type();
                 }
             };
 

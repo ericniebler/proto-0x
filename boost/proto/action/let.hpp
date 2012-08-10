@@ -48,10 +48,7 @@ namespace boost
                     action<Action>()(
                         static_cast<Expr &&>(expr)
                       , detail::empty_state()
-                      , proto::make_env(
-                            eval_local<Locals>()(static_cast<Expr &&>(expr))...
-                          , tags::has_scope = std::true_type()
-                        )
+                      , proto::make_env(eval_local<Locals>()(static_cast<Expr &&>(expr))...)
                     )
                 )
 
@@ -66,7 +63,6 @@ namespace boost
                                 static_cast<Expr &&>(expr)
                               , static_cast<State &&>(state)
                             )...
-                          , tags::has_scope = std::true_type()
                         )
                     )
                 )
@@ -85,35 +81,21 @@ namespace boost
                               , static_cast<Env &&>(env)
                               , static_cast<Rest &&>(rest)...
                             )...
-                          , tags::has_scope = std::true_type()
                         )
                       , static_cast<Rest &&>(rest)...
                     )
                 )
             };
-
-            template<typename Local, typename Env>
-            inline void assert_has_scope(Env const &) noexcept
-            {
-                static_assert(
-                    result_of::env_var<Env, tags::has_scope_type>::type::value
-                  , "local variable accessed out of a let scope"
-                );
-            }
         }
 
         template<typename Local>
         struct _local
           : basic_action<_local<Local>>
-          , detail::local_base
         {
             template<typename Expr, typename State, typename Env, typename ...Rest, typename This = Local>
             auto operator()(Expr &&, State &&, Env &&env, Rest &&...) const
             BOOST_PROTO_AUTO_RETURN(
-                (
-                    detail::assert_has_scope<Local>(env)
-                  , static_cast<Env &&>(env)[static_cast<This const &>(*this)]
-                )
+                static_cast<Env &&>(env)[static_cast<This const &>(*this)]
             )
         };
 
