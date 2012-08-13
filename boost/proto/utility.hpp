@@ -620,40 +620,43 @@ namespace boost
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // is_callable
-            template<typename Sig, typename Enable = void>
-            struct is_callable
-              : std::false_type
-            {};
-
-            template<typename Fun, typename ...Args>
-            struct is_callable<
-                Fun(Args...)
-              , decltype(static_cast<void>(std::declval<Fun>()(std::declval<Args>()...)))
-            >
-              : std::true_type
-            {};
-
-            ////////////////////////////////////////////////////////////////////////////////////////
             // Many thanks to Paul Fultz for the ideas behind the try_call function wrapper
             template<typename Fun>
-            struct try_call
+            struct try_call_wrapper
             {
-                template<typename ...Args, BOOST_PROTO_ENABLE_IF(is_callable<Fun(Args...)>::value)>
+                Fun fun_;
+
+                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(try_call_wrapper);
+
+                explicit try_call_wrapper(Fun &&fun)
+                  : fun_(static_cast<Fun &&>(fun))
+                {}
+
+                template<typename ...Args>
                 auto operator()(Args &&...args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    Fun()(static_cast<Args &&>(args)...)
+                    fun_(static_cast<Args &&>(args)...)
                 )
 
-                template<typename ...Args, BOOST_PROTO_ENABLE_IF(!is_callable<Fun(Args...)>::value)>
-                auto operator()(Args &&...) const
-                BOOST_PROTO_AUTO_RETURN(
-                    sfinae_error<Fun(Args...)>()
-                )
+                template<typename ...Args>
+                sfinae_error<Fun(Args...)> operator()(Args &&...args) const volatile noexcept
+                {
+                    // Uncomment the next 2 lines to get the full template instantiation backtrace
+                    //auto & fun = const_cast<try_call_wrapper<Fun> const &>(*this).fun_;
+                    //fun(static_cast<Args &&>(args)...);
+                    utility::ignore(args...);
+                    return sfinae_error<Fun(Args...)>();
+                }
             };
 
+            template<typename Fun>
+            inline constexpr auto try_call(Fun &&fun)
+            BOOST_PROTO_AUTO_RETURN(
+                try_call_wrapper<Fun>(static_cast<Fun &&>(fun))
+            )
+
         #if 1
-            #define BOOST_PROTO_TRY_CALL(...) boost::proto::utility::try_call<__VA_ARGS__>
+            #define BOOST_PROTO_TRY_CALL(...) boost::proto::utility::try_call(__VA_ARGS__)
         #else
             #define BOOST_PROTO_TRY_CALL(...) __VA_ARGS__
         #endif

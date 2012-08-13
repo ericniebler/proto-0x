@@ -40,7 +40,7 @@ namespace boost
                   , Args &&... args
                 ) const
                 BOOST_PROTO_AUTO_RETURN(
-                    static_cast<Action &&>(act)(
+                    BOOST_PROTO_TRY_CALL(static_cast<Action &&>(act))(
                         static_cast<Results &&>(results)...
                       , static_cast<Args &&>(args)...
                     )
@@ -53,7 +53,9 @@ namespace boost
                 template<typename Action, typename ...Ts>
                 auto operator()(Action &&act, Results &&... results, Ts &&...) const
                 BOOST_PROTO_AUTO_RETURN(
-                    static_cast<Action &&>(act)(static_cast<Results &&>(results)...)
+                    BOOST_PROTO_TRY_CALL(static_cast<Action &&>(act))(
+                        static_cast<Results &&>(results)...
+                    )
                 )
             };
 
@@ -70,10 +72,10 @@ namespace boost
                 >
                 auto operator()(Action &&act, Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    call_2_<
+                    BOOST_PROTO_TRY_CALL(call_2_<
                         (sizeof...(Args) <= sizeof...(Actions))
                       , decltype(action<Actions>()(static_cast<Args &&>(args)...))...
-                    >()(
+                    >())(
                         static_cast<Action &&>(act)
                       , action<Actions>()(static_cast<Args &&>(args)...)...
                       , static_cast<Args &&>(args)...
@@ -88,7 +90,9 @@ namespace boost
                 >
                 auto operator()(Fun &&fun, Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    static_cast<Fun &&>(fun)(action<Actions>()(static_cast<Args &&>(args)...)...)
+                    BOOST_PROTO_TRY_CALL(static_cast<Fun &&>(fun))(
+                        action<Actions>()(static_cast<Args &&>(args)...)...
+                    )
                 )
             };
 
@@ -101,7 +105,7 @@ namespace boost
                 template<typename ...Args, typename Fun = Ret>
                 auto operator()(Args &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    BOOST_PROTO_TRY_CALL(call_1_<Actions...>)()(Fun(), static_cast<Args &&>(t)...)
+                    BOOST_PROTO_TRY_CALL(call_1_<Actions...>())(Fun(), static_cast<Args &&>(t)...)
                 )
             };
         }

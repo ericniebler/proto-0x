@@ -126,7 +126,7 @@ namespace boost
                 template<std::size_t ...I, typename Expr, typename ...Rest>
                 auto impl(utility::indices<I...>, Expr && expr, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
-                    BOOST_PROTO_TRY_CALL(op<Tag>)()(
+                    BOOST_PROTO_TRY_CALL(op<Tag>())(
                         action<Action>()(
                             proto::child<I>(static_cast<Expr &&>(expr))
                           , static_cast<Rest &&>(rest)...
@@ -435,7 +435,7 @@ namespace boost
             template<typename Tag, typename ...T>
             auto operator()(Tag, T &&... t) const
             BOOST_PROTO_AUTO_RETURN(
-                BOOST_PROTO_TRY_CALL(op<Tag>)()(static_cast<T &&>(t)...)
+                BOOST_PROTO_TRY_CALL(op<Tag>())(static_cast<T &&>(t)...)
             )
         };
 
