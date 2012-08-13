@@ -109,7 +109,7 @@ void test_let_scope()
 {
     std::string hello("hello");
     proto::literal<short> i((short)42);
-    std::pair<short, std::pair<float, std::string> > p = LetScope()(i, 3.14f, proto::data = hello);
+    std::pair<short, std::pair<float, std::string>> p = LetScope()(i, 3.14f, proto::data = hello);
     BOOST_CHECK_EQUAL(42, p.first);
     BOOST_CHECK_EQUAL(3.14f, p.second.first);
     BOOST_CHECK_EQUAL(hello, p.second.second);
@@ -137,7 +137,7 @@ void test_let_scope2()
 {
     char const * sz = "";
     proto::literal<short> i((short)42);
-    std::pair<short, std::pair<short, float> > p2 = LetScope2()(i, 3.14f, proto::data = sz);
+    std::pair<short, std::pair<short, float>> p2 = LetScope2()(i, 3.14f, proto::data = sz);
     BOOST_CHECK_EQUAL(42, p2.first);
     BOOST_CHECK_EQUAL(42, p2.second.first);
     BOOST_CHECK_EQUAL(3.14f, p2.second.second);

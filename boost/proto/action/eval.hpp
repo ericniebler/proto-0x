@@ -32,11 +32,11 @@ namespace boost
         template<typename Tag>
         struct op
         {
-            template<typename Expr, typename ...Rest>
-            utility::any operator()(Expr && expr, Rest &&...) const noexcept
+            template<typename ...T>
+            utility::any operator()(T &&...) const noexcept
             {
                 static_assert(
-                    utility::never<Expr>::value
+                    utility::never<Tag, T...>::value
                   , "proto::eval doesn't know how to evaluate this expression!"
                 );
                 return utility::any();
@@ -126,7 +126,7 @@ namespace boost
                 template<std::size_t ...I, typename Expr, typename ...Rest>
                 auto impl(utility::indices<I...>, Expr && expr, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
-                    op<Tag>()(
+                    BOOST_PROTO_TRY_CALL(op<Tag>)()(
                         action<Action>()(
                             proto::child<I>(static_cast<Expr &&>(expr))
                           , static_cast<Rest &&>(rest)...
@@ -435,7 +435,7 @@ namespace boost
             template<typename Tag, typename ...T>
             auto operator()(Tag, T &&... t) const
             BOOST_PROTO_AUTO_RETURN(
-                op<Tag>()(static_cast<T &&>(t)...)
+                BOOST_PROTO_TRY_CALL(op<Tag>)()(static_cast<T &&>(t)...)
             )
         };
 

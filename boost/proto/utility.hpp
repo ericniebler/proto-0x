@@ -604,6 +604,59 @@ namespace boost
             {
                 typedef char (&type)[N];
             };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // sfinae_error
+            template<typename Sig>
+            struct sfinae_error;
+
+            template<typename Fun, typename ...Args>
+            struct sfinae_error<Fun(Args...)>
+            {
+                virtual void what() const noexcept
+                {
+                    typedef decltype(std::declval<Fun>()(std::declval<Args>()...)) type;
+                }
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // is_callable
+            template<typename Sig, typename Enable = void>
+            struct is_callable
+              : std::false_type
+            {};
+
+            template<typename Fun, typename ...Args>
+            struct is_callable<
+                Fun(Args...)
+              , decltype(static_cast<void>(std::declval<Fun>()(std::declval<Args>()...)))
+            >
+              : std::true_type
+            {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // Many thanks to Paul Fultz for the ideas behind the try_call function wrapper
+            template<typename Fun>
+            struct try_call
+            {
+                template<typename ...Args, BOOST_PROTO_ENABLE_IF(is_callable<Fun(Args...)>::value)>
+                auto operator()(Args &&...args) const
+                BOOST_PROTO_AUTO_RETURN(
+                    Fun()(static_cast<Args &&>(args)...)
+                )
+
+                template<typename ...Args, BOOST_PROTO_ENABLE_IF(!is_callable<Fun(Args...)>::value)>
+                auto operator()(Args &&...) const
+                BOOST_PROTO_AUTO_RETURN(
+                    sfinae_error<Fun(Args...)>()
+                )
+            };
+
+        #if 1
+            #define BOOST_PROTO_TRY_CALL(...) boost::proto::utility::try_call<__VA_ARGS__>
+        #else
+            #define BOOST_PROTO_TRY_CALL(...) __VA_ARGS__
+        #endif
         }
     }
 }

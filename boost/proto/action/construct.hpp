@@ -54,7 +54,7 @@ namespace boost
             template<bool IsAction, typename R, typename ...Args>
             struct make_3_
             {
-                typedef decltype(utility::by_val()(R()(std::declval<Args>()...))) type;
+                typedef decltype(utility::by_val()(BOOST_PROTO_TRY_CALL(R)()(std::declval<Args>()...))) type;
                 typedef std::true_type applied;
             };
 

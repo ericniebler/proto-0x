@@ -11,6 +11,7 @@
 
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
+#include <boost/proto/utility.hpp>
 
 namespace boost
 {
@@ -35,8 +36,15 @@ namespace boost
         // action
         template<typename T, typename Enable>
         struct action
-          : T::proto_action_type
-        {};
+        {
+            typedef typename T::proto_action_type proto_action_type;
+
+            template<typename ...Args>
+            auto operator()(Args &&... args) const
+            BOOST_PROTO_AUTO_RETURN(
+                BOOST_PROTO_TRY_CALL(proto_action_type)()(static_cast<Args &&>(args)...)
+            )
+        };
 
         template<typename T>
         struct action<action<T>>

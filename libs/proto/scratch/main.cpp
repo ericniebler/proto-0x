@@ -14,51 +14,15 @@
 
 namespace proto = boost::proto;
 using proto::_;
-using proto::_a;
-using proto::_b;
 
-///////////////////////////////////////////////////////////////////////////////
-// test_let_call_once
-//  verify that the transform bound to the local variable is really called
-//  only once.
-struct once
-{
-    static int ctors;
-    once() { ++ctors; }
-};
-
-int once::ctors = 0;
-
-struct wrap_a
-  : proto::action<
-        proto::let(
-            _b(proto::construct(int()))
-          , proto::functional::make_pair(_a, _a)
-        )
-    >
+struct foo
 {};
-
-struct LetCallOnce
-  : proto::action<
-        proto::let(
-            _a(proto::construct(once()))
-          , wrap_a
-          //, proto::functional::make_pair(wrap_a, _a)
-        )
-    >
-{};
-
-void test_let_call_once()
-{
-    proto::literal<int> i(0);
-    std::pair<once, once> p = LetCallOnce()(i);
-
-    std::cout << "Should be 1: " << once::ctors << std::endl;
-}
 
 int main()
 {
-    test_let_call_once();
+    proto::_eval<> eval;
+    auto x = eval( proto::literal<int>(42) + 36 );
+    auto y = eval( proto::literal<int>(42) + foo() );
 
     void done();
     done();
