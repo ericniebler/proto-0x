@@ -191,12 +191,12 @@ namespace boost
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(env_var_tag);
 
                 // So that tag objects of type (derived from) env_var_tag can be used
-                // to create basic_action environments like (data=x, local=y),
-                // where "data" and "local" are tags.
+                // to create basic_action environments like (data=x, myvar=y),
+                // where "data" and "myvar" are tags.
                 template<typename V, BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<env_var_tag, V>::value))>
                 env<Tag, V> operator=(V && v) const
                 {
-                    return env<Tag, V>{static_cast<V &&>(v)};
+                    return env<Tag, V>(static_cast<V &&>(v));
                 }
             };
 

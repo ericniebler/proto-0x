@@ -21,6 +21,22 @@ namespace boost
             // none
             struct none
             {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // find_first_sfinae_error
+            template<typename ...Args>
+            struct find_first_sfinae_error;
+
+            template<typename Head, typename ...Tail>
+            struct find_first_sfinae_error<Head, Tail...>
+              : find_first_sfinae_error<Tail...>
+            {};
+
+            template<typename Sig, typename ...Tail>
+            struct find_first_sfinae_error<utility::sfinae_error<Sig>, Tail...>
+            {
+                typedef utility::sfinae_error<Sig> type;
+            };
         }
 
         namespace utility
@@ -607,44 +623,74 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // sfinae_error
-            template<typename Sig>
-            struct sfinae_error;
-
-            template<typename Fun, typename ...Args>
-            struct sfinae_error<Fun(Args...)>
+            struct sfinae_error_base
             {
-                virtual void what() const noexcept
+                template<typename ...Args>
+                friend typename detail::find_first_sfinae_error<Args...>::type
+                boost_proto_try_find_errors(int, Args &&...args) noexcept
                 {
-                    typedef decltype(std::declval<Fun>()(std::declval<Args>()...)) type;
+                    return typename detail::find_first_sfinae_error<Args...>::type();
                 }
             };
 
+            template<typename Fun, typename ...Args>
+            struct sfinae_error<Fun(Args...)>
+              : sfinae_error_base
+            {
+                virtual void what() const noexcept
+                {
+                    typedef decltype(std::declval<Fun>()(std::declval<Args>()...)) error_message;
+                }
+            };
+
+            template<typename ...Args>
+            inline int boost_proto_try_find_errors(long, Args &&...) noexcept
+            {
+                return 0;
+            }
+
             ////////////////////////////////////////////////////////////////////////////////////////
-            // Many thanks to Paul Fultz for the ideas behind the try_call function wrapper
+            // Many thanks to Paul Fultz for some of the ideas behind try_call
             template<typename Fun>
-            struct try_call_wrapper
+            class try_call_wrapper
             {
                 Fun fun_;
 
+                template<typename ...Args>
+                auto call_or_fail_(int, Args &&... args) const
+                BOOST_PROTO_AUTO_RETURN(
+                    fun_(static_cast<Args &&>(args)...)
+                )
+
+                template<typename Sig, typename ...Args>
+                sfinae_error<Sig> call_or_fail_(sfinae_error<Sig>, Args &&... args) const noexcept
+                {
+                    return sfinae_error<Sig>();
+                }
+
+            public:
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(try_call_wrapper);
 
-                explicit try_call_wrapper(Fun &&fun)
+                explicit constexpr try_call_wrapper(Fun &&fun)
+                    noexcept(noexcept(Fun(static_cast<Fun &&>(fun))))
                   : fun_(static_cast<Fun &&>(fun))
                 {}
 
                 template<typename ...Args>
                 auto operator()(Args &&...args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    fun_(static_cast<Args &&>(args)...)
+                    this->call_or_fail_(
+                        // Must be an unqualified call to possibly find the sfinae_error friend function
+                        boost_proto_try_find_errors(1, static_cast<Args &&>(args)...)
+                      , static_cast<Args &&>(args)...
+                    )
                 )
 
                 template<typename ...Args>
-                sfinae_error<Fun(Args...)> operator()(Args &&...args) const volatile noexcept
+                sfinae_error<Fun(Args...)> operator()(Args &&...) const volatile noexcept
                 {
-                    // Uncomment the next 2 lines to get the full template instantiation backtrace
-                    //auto & fun = const_cast<try_call_wrapper<Fun> const &>(*this).fun_;
-                    //fun(static_cast<Args &&>(args)...);
-                    utility::ignore(args...);
+                    // Uncomment this line to get the full template instantiation backtrace
+                    //const_cast<try_call_wrapper const *>(this)->fun_(static_cast<Args &&>(args)...);
                     return sfinae_error<Fun(Args...)>();
                 }
             };

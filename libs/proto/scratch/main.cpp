@@ -16,13 +16,28 @@ namespace proto = boost::proto;
 using proto::_;
 
 struct foo
-{};
+{
+    int m;
+};
+
+struct S
+{
+    int m;
+};
 
 int main()
 {
+    proto::literal<S> s;
+    proto::value(s).m = 42;
+
     proto::_eval<> eval;
     auto x = eval( proto::literal<int>(42) + 36 );
-    auto y = eval( proto::literal<int>(42) + foo() );
+    auto y = eval( 1+ 2 * (proto::literal<int>(42) + foo()) );
+
+    //int i = eval(s ->* &S::m);
+    //std::cout << "i == " << i << std::endl;
+
+    //eval(s ->* &foo::m);
 
     void done();
     done();

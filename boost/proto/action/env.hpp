@@ -75,10 +75,10 @@ namespace boost
                 template<typename T, typename V>
                 friend env<T, V, env> operator,(env tail, env<T, V> head)
                 {
-                    return env<T, V, env>{
+                    return env<T, V, env>(
                         static_cast<env<T, V> &&>(head).value_
                       , static_cast<env &&>(tail)
-                    };
+                    );
                 }
             };
         }

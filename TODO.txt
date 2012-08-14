@@ -3,17 +3,11 @@ Implement  proper lexical scoping for let expressions.
 
 Think about basic actions.
 	- Is the interface correct?
-	-  Maybe the environment should be the second parameter ans state should be third.
+	- Maybe the environment should be the second parameter and state should be third.
 	- Should the local variable scope be part of the environment, or should it be a
 	  fourth parameter?
 	- Should *all* environment variables be part of a scope? Should we allow
 	  non-environments in the environments parameter as Proto-current does?
-
-Think about poor SFINAE error reporting cause by too-extensive use of BOOST_PROTO_AUTO_RETURN.
-
-Related to the SFINAE thing: Can something be done about deep template instantion backtraces?
-Would it be possible to use something like Haskell's Either monad to transport the offending
-code closer to Proto's API boundary?
 
 Thoughts about construct(foo<some_action<int>>())
 	- It doesn't invoke some_action. Should it? With what semantics? Is it right to be looking
@@ -23,6 +17,8 @@ Thoughts about construct(foo<some_action<int>>())
 How about a static_cast_ function object?
 
 Should terminal-ness really be encoded in the tag?
+
+I don't really like the use of enable_if<!is_tag...> in action specialization for callables.
 
 Functional namespace should be carved up: proto::functional::fusion? proto::functional::std?
 

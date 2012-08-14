@@ -92,12 +92,6 @@ namespace boost
                 typedef T && type;
             };
 
-            template<typename T>
-            struct rvalue_type<T &>
-            {
-                typedef T && type;
-            };
-
             template<>
             struct rvalue_type<void>
             {
@@ -130,6 +124,11 @@ namespace boost
             // sized_type
             template<int N>
             struct sized_type;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // sfinae_error
+            template<typename Sig>
+            struct sfinae_error;
         }
 
         ///////////////////////////////////////////////////////////////////////////////

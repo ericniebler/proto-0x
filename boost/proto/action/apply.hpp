@@ -11,8 +11,10 @@
 #define BOOST_PROTO_ACTION_APPLY_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
+#include <boost/proto/utility.hpp>
 #include <boost/proto/action/action.hpp>
 #include <boost/proto/action/call.hpp>
+#include <boost/proto/utility.hpp>
 
 namespace boost
 {
@@ -27,7 +29,7 @@ namespace boost
                 template<typename ...Args>
                 auto operator()(Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    BOOST_PROTO_TRY_CALL(detail::call_1_<Actions...>())(
+                    detail::call_1_<Actions...>()(
                         action<Fun>()(static_cast<Args &&>(args)...)
                       , static_cast<Args &&>(args)...
                     )

@@ -140,7 +140,7 @@ namespace boost
             template<typename Domain, typename ...U>
             inline constexpr auto expr_maker_if(Domain, U const &...u)
             BOOST_PROTO_AUTO_RETURN(
-                detail::make_expr_if_<decltype(detail::get_common_domain(Domain(), u...))>{}
+                detail::make_expr_if_<decltype(detail::get_common_domain(Domain(), u...))>()
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////
