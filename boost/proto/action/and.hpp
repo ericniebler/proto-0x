@@ -36,7 +36,7 @@ namespace boost
                 template<typename ...Args>
                 auto operator()(Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    utility::back(
+                    BOOST_PROTO_TRY_CALL(utility::functional::back())(
                         (action<Actions>()(static_cast<Args &&>(args)...), utility::void_)...
                     )
                 )

@@ -81,7 +81,7 @@ void test_noinvoke()
         >::value
       , "test 1"
     );
-    
+
     std::remove_pointer<Int *> t = Test()(i);
     BOOST_PROTO_IGNORE_UNUSED(t);
 
@@ -92,7 +92,7 @@ void test_noinvoke()
         >::value
       , "test 2"
     );
-    
+
     std::remove_pointer<Int *> * t2 = Test2()(i);
     BOOST_PROTO_IGNORE_UNUSED(t2);
 
@@ -103,7 +103,7 @@ void test_noinvoke()
         >::value
       , "test 3"
     );
-    
+
     select2nd<void, Int *> t3 = Test3()(i);
     BOOST_PROTO_IGNORE_UNUSED(t3);
 }

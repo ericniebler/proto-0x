@@ -106,7 +106,7 @@ namespace boost
               : std::conditional<
                     Arity0 == 0
                   , utility::indices<(std::size_t)-1>
-                  , utility::make_indices<0, Arity0>
+                  , utility::make_indices<Arity0>
                 >
             {
                 static_assert(

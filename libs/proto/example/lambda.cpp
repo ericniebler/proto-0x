@@ -84,7 +84,7 @@ struct lambda_expr
     template<typename ...T>
     auto operator()(T &&... t) const
     BOOST_PROTO_AUTO_RETURN(
-        lambda_eval_(proto::utility::make_indices<0, sizeof...(T)>(), *this, std::forward<T>(t)...)
+        lambda_eval_(proto::utility::make_indices<sizeof...(T)>(), *this, std::forward<T>(t)...)
     )
 };
 

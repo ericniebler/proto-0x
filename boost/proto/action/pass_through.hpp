@@ -92,7 +92,7 @@ namespace boost
                 auto operator()(E && e, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
                     detail::pass_through_0_<
-                        utility::make_indices<0, arity_of<E>::value>
+                        utility::make_indices<arity_of<E>::value>
                       , Actions
                     >()(static_cast<E &&>(e), static_cast<Rest &&>(rest)...)
                 )

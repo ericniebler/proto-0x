@@ -5,6 +5,10 @@
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Acknowledgements:
+//  Richard Smith for the ideas behind get_nth and back
+//  Dave Abrahams for some additional compile-time perf tweaks to get_nth and back
 
 #ifndef BOOST_PROTO_UTILITY_HPP_INCLUDED
 #define BOOST_PROTO_UTILITY_HPP_INCLUDED
@@ -23,19 +27,19 @@ namespace boost
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // find_first_sfinae_error
+            // find_first_substitution_failure
             template<typename ...Args>
-            struct find_first_sfinae_error;
+            struct find_first_substitution_failure;
 
             template<typename Head, typename ...Tail>
-            struct find_first_sfinae_error<Head, Tail...>
-              : find_first_sfinae_error<Tail...>
+            struct find_first_substitution_failure<Head, Tail...>
+              : find_first_substitution_failure<Tail...>
             {};
 
             template<typename Sig, typename ...Tail>
-            struct find_first_sfinae_error<utility::sfinae_error<Sig>, Tail...>
+            struct find_first_substitution_failure<utility::substitution_failure<Sig>, Tail...>
             {
-                typedef utility::sfinae_error<Sig> type;
+                typedef utility::substitution_failure<Sig> type;
             };
         }
 
@@ -52,20 +56,6 @@ namespace boost
             struct never
               : std::false_type
             {};
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // any
-            struct any
-            {
-                any() = default;
-
-                template<typename T>
-                constexpr any(T const &) noexcept
-                {}
-
-                template<typename T>
-                operator T &&() const noexcept;
-            };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // static_const
@@ -170,22 +160,70 @@ namespace boost
             template<std::size_t ...I>
             struct indices
             {};
+
+            ///////////////////////////////////////////////////////////////////////////
+            // list
+            template<typename...>
+            struct list;
         }
 
         namespace detail
         {
-            template<std::size_t From, std::size_t To, typename Ints>
-            struct make_indices_;
+            // Wrapper to prevent type decay
+            template<typename T>
+            struct no_decay
+            {
+                typedef T type;
+            };
 
-            template<std::size_t From, std::size_t To, std::size_t... I>
-            struct make_indices_<From, To, utility::indices<I...>>
-              : make_indices_<From, To-1, utility::indices<To-1, I...>>
+            template<typename Ignored>
+            struct any
+            {
+                any() = default;
+
+                template<typename T>
+                constexpr any(T const &) noexcept
+                {}
+
+                template<typename T>
+                operator T &&() const noexcept;
+            };
+
+            template<typename Ignored = void>
+            struct any_pod
+            {
+                any_pod(...);
+            };
+
+            // Glue two sets of indices together
+            template<typename I1, typename I2>
+            struct append_indices;
+
+            template<std::size_t...N1, std::size_t...N2>
+            struct append_indices<utility::indices<N1...>, utility::indices<N2...>>
+            {
+                typedef utility::indices<N1..., (sizeof...(N1) + N2)...> type;
+            };
+
+            // generate indices [0,N) in O(log(N)) time
+            template<std::size_t N>
+            struct make_indices
+              : append_indices<
+                    typename make_indices<N / 2>::type
+                  , typename make_indices<N - N / 2>::type
+                >
             {};
 
-            template<std::size_t N, std::size_t... I>
-            struct make_indices_<N, N, utility::indices<I...>>
+            template<>
+            struct make_indices<0>
             {
-                typedef utility::indices<I...> type;
+                typedef utility::indices<> type;
+            };
+
+            template<>
+            struct make_indices<1>
+            {
+                typedef utility::indices<0> type;
             };
         }
 
@@ -193,8 +231,8 @@ namespace boost
         {
             ///////////////////////////////////////////////////////////////////////////
             // make_indices
-            template<std::size_t From, std::size_t To>
-            using make_indices = typename detail::make_indices_<From, To, indices<>>::type;
+            template<std::size_t N>
+            using make_indices = typename detail::make_indices<N>::type;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // identity
@@ -395,12 +433,12 @@ namespace boost
             // pop_back
             template<typename List>
             struct pop_back;
-            
+
             template<template<typename...> class List, typename...As>
             struct pop_back<List<As...>>
               : detail::pop_back_<List<>, As...>
             {};
-            
+
             template<typename Ret, typename...As>
             struct pop_back<Ret(As...)>
               : detail::pop_back_<Ret(), As...>
@@ -437,59 +475,40 @@ namespace boost
             {
                 typedef Ret0 type(List..., Rest...);
             };
-        }
 
-        namespace detail
-        {
-            template<std::size_t I, typename T, typename List>
-            struct append_;
-
-            template<typename T, typename ...Ts>
-            struct append_<0, T, utility::list<Ts...>>
-            {
-                typedef utility::list<Ts...> type;
-            };
-
-            template<typename T, typename ...Ts>
-            struct append_<1, T, utility::list<Ts...>>
-            {
-                typedef utility::list<Ts..., T> type;
-            };
-
-            template<typename T, typename ...Ts>
-            struct append_<2, T, utility::list<Ts...>>
-            {
-                typedef utility::list<Ts..., T, T> type;
-            };
-
-            template<typename T, typename ...Ts>
-            struct append_<3, T, utility::list<Ts...>>
-            {
-                typedef utility::list<Ts..., T, T, T> type;
-            };
-
-            template<typename T, typename ...Ts>
-            struct append_<4, T, utility::list<Ts...>>
-            {
-                typedef utility::list<Ts..., T, T, T, T> type;
-            };
-
-            template<std::size_t I, typename T, typename ...Ts>
-            struct append_<I, T, utility::list<Ts...>>
-              : append_<I-5, T, utility::list<Ts..., T, T, T, T, T>>
-            {};
-        }
-
-        namespace utility
-        {
-            template<std::size_t I, typename T, typename List = list<>>
+            // Generate lists<_,_,_,..._> with N arguments in O(log N)
+            template<std::size_t N, typename T, typename List = list<>>
             struct list_of
-              : detail::append_<I, T, List>
+              : concat<
+                    typename list_of<N / 2, T, List>::type
+                  , typename list_of<N - N / 2, T, List>::type
+                >
             {};
+
+            template<typename T, typename List>
+            struct list_of<0, T, List>
+            {
+                typedef List type;
+            };
+
+            template<typename T, template<typename...> class List>
+            struct list_of<1, T, List<>>
+            {
+                typedef List<T> type;
+            };
+
+            template<typename T, typename R>
+            struct list_of<1, T, R()>
+            {
+                typedef R type(T);
+            };
 
             template<std::size_t I, typename T, typename List>
             struct append
-              : detail::append_<I, T, List>
+              : concat<
+                    List
+                  , typename list_of<I, T>::type
+                >
             {};
 
             template<typename First, typename Second>
@@ -508,23 +527,31 @@ namespace boost
                   : value(static_cast<T &&>(t))
                 {}
 
-                T && get() const
-                {
-                    return static_cast<T &&>(value);
-                }
+                auto get() const
+                    BOOST_PROTO_AUTO_RETURN(T(static_cast<T &&>(value)))
             };
         }
 
         namespace detail
         {
-            template<typename Ints>
-            struct get_nth_;
+            template<typename Vs>
+            struct get_nth_type;
 
             template<typename ...Vs>
-            struct get_nth_<utility::list<Vs...>>
+            struct get_nth_type<utility::list<Vs...>>
             {
                 template<typename T, typename ...Us>
-                static constexpr auto eval(utility::first<utility::any, Vs>..., T && t, Us &&...) noexcept
+                static constexpr T eval(any_pod<Vs>..., T *, Us *...) noexcept;
+            };
+
+            template<typename Vs>
+            struct get_nth_value;
+
+            template<typename ...Vs>
+            struct get_nth_value<utility::list<Vs...>>
+            {
+                template<typename T, typename ...Us>
+                static constexpr auto eval(detail::any<Vs>..., T && t, Us &&...) noexcept
                     -> utility::rvalue_reference_wrapper<T>
                 {
                     return static_cast<T &&>(t);
@@ -538,15 +565,25 @@ namespace boost
             {
                 template<std::size_t N, typename ...Ts>
                 struct get_nth
-                  : decltype(detail::get_nth_<typename list_of<N, void>::type>::eval(std::declval<Ts>()...))
+                  : decltype(
+                        detail::get_nth_type<typename list_of<N, void>::type>::eval(
+                            (detail::no_decay<Ts>*)0 ...))
                 {};
             }
 
-            template<std::size_t N, typename ...Ts>
-            inline constexpr typename result_of::get_nth<N, Ts...>::type get_nth(Ts &&... ts)
-            BOOST_PROTO_RETURN(
-                detail::get_nth_<typename list_of<N, void>::type>::eval(static_cast<Ts &&>(ts)...).get()
-            )
+            namespace functional
+            {
+                template<std::size_t N>
+                struct get_nth
+                {
+                    template<typename ...Ts>
+                    inline constexpr auto operator()(Ts &&... ts) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        detail::get_nth_value<typename list_of<N, void>::type>::eval(
+                            static_cast<Ts &&>(ts)...).get()
+                    )
+                };
+            }
 
             namespace result_of
             {
@@ -556,11 +593,17 @@ namespace boost
                 {};
             }
 
-            template<typename... Ts>
-            inline constexpr auto back(Ts &&... ts)
-            BOOST_PROTO_AUTO_RETURN(
-                utility::get_nth<sizeof...(Ts) - 1>(static_cast<Ts &&>(ts)...)
-            )
+            namespace functional
+            {
+                struct back
+                {
+                    template<typename... Ts>
+                    inline constexpr auto operator()(Ts &&... ts) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        utility::functional::get_nth<sizeof...(Ts) - 1>()(static_cast<Ts &&>(ts)...)
+                    )
+                };
+            }
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // is_base_of
@@ -614,28 +657,20 @@ namespace boost
             BOOST_PROTO_IGNORE_UNUSED(void_);
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // sized_type
-            template<int N>
-            struct sized_type
-            {
-                typedef char (&type)[N];
-            };
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // sfinae_error
-            struct sfinae_error_base
+            // substitution_failure
+            struct substitution_failure_base
             {
                 template<typename ...Args>
-                friend typename detail::find_first_sfinae_error<Args...>::type
-                boost_proto_try_find_errors(int, Args &&...args) noexcept
+                friend typename detail::find_first_substitution_failure<Args...>::type
+                boost_proto_try_find_substitution_failure(int, Args &&...) noexcept
                 {
-                    return typename detail::find_first_sfinae_error<Args...>::type();
+                    return typename detail::find_first_substitution_failure<Args...>::type();
                 }
             };
 
             template<typename Fun, typename ...Args>
-            struct sfinae_error<Fun(Args...)>
-              : sfinae_error_base
+            struct substitution_failure<Fun(Args...)>
+              : substitution_failure_base
             {
                 virtual void what() const noexcept
                 {
@@ -643,10 +678,13 @@ namespace boost
                 }
             };
 
+            struct no_substitution_failure
+            {};
+
             template<typename ...Args>
-            inline int boost_proto_try_find_errors(long, Args &&...) noexcept
+            inline no_substitution_failure boost_proto_try_find_substitution_failure(long, Args &&...) noexcept
             {
-                return 0;
+                return no_substitution_failure();
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -657,15 +695,15 @@ namespace boost
                 Fun fun_;
 
                 template<typename ...Args>
-                auto call_or_fail_(int, Args &&... args) const
+                auto call_or_fail_(no_substitution_failure, Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
                     fun_(static_cast<Args &&>(args)...)
                 )
 
                 template<typename Sig, typename ...Args>
-                sfinae_error<Sig> call_or_fail_(sfinae_error<Sig>, Args &&... args) const noexcept
+                substitution_failure<Sig> call_or_fail_(substitution_failure<Sig>, Args &&...) const noexcept
                 {
-                    return sfinae_error<Sig>();
+                    return substitution_failure<Sig>();
                 }
 
             public:
@@ -680,18 +718,18 @@ namespace boost
                 auto operator()(Args &&...args) const
                 BOOST_PROTO_AUTO_RETURN(
                     this->call_or_fail_(
-                        // Must be an unqualified call to possibly find the sfinae_error friend function
-                        boost_proto_try_find_errors(1, static_cast<Args &&>(args)...)
+                        // Must be an unqualified call to possibly find the substitution_failure friend function
+                        boost_proto_try_find_substitution_failure(1, static_cast<Args &&>(args)...)
                       , static_cast<Args &&>(args)...
                     )
                 )
 
                 template<typename ...Args>
-                sfinae_error<Fun(Args...)> operator()(Args &&...) const volatile noexcept
+                substitution_failure<Fun(Args...)> operator()(Args &&...) const volatile noexcept
                 {
                     // Uncomment this line to get the full template instantiation backtrace
                     //const_cast<try_call_wrapper const *>(this)->fun_(static_cast<Args &&>(args)...);
-                    return sfinae_error<Fun(Args...)>();
+                    return substitution_failure<Fun(Args...)>();
                 }
             };
 

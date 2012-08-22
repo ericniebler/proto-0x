@@ -72,10 +72,10 @@ namespace boost
                 >
                 auto operator()(Action &&act, Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    call_2_<
+                    BOOST_PROTO_TRY_CALL(call_2_<
                         (sizeof...(Args) <= sizeof...(Actions))
                       , decltype(action<Actions>()(static_cast<Args &&>(args)...))...
-                    >()(
+                    >())(
                         static_cast<Action &&>(act)
                       , action<Actions>()(static_cast<Args &&>(args)...)...
                       , static_cast<Args &&>(args)...

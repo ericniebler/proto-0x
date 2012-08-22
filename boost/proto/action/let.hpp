@@ -17,8 +17,6 @@ namespace boost
 {
     namespace proto
     {
-        // TODO: I think this implementation allows non-local scope variables to be
-        // accessed from with the action of other let statements. That would be a bug.
         namespace detail
         {
             template<typename Local>

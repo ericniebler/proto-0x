@@ -52,10 +52,10 @@ namespace boost
               : domain_<not_a_domain>
             {};
 
-            utility::sized_type<1>::type default_test(void*, void*);
-            utility::sized_type<2>::type default_test(domain_<default_domain>*, void*);
-            utility::sized_type<3>::type default_test(void*, domain_<default_domain>*);
-            utility::sized_type<4>::type default_test(domain_<default_domain>*, domain_<default_domain>*);
+            utility::sized_type<1> default_test(void*, void*);
+            utility::sized_type<2> default_test(domain_<default_domain>*, void*);
+            utility::sized_type<3> default_test(void*, domain_<default_domain>*);
+            utility::sized_type<4> default_test(domain_<default_domain>*, domain_<default_domain>*);
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // common_domain2

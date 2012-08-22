@@ -97,6 +97,9 @@ namespace boost
             {
                 typedef void type;
             };
+
+            template<typename Ignored = void>
+            struct any;
         }
 
         namespace utility
@@ -108,7 +111,7 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // any
-            struct any;
+            typedef detail::any<> any;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // static_const
@@ -123,12 +126,12 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // sized_type
             template<int N>
-            struct sized_type;
+            using sized_type = char(&)[N];
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // sfinae_error
+            // substitution_failure
             template<typename Sig>
-            struct sfinae_error;
+            struct substitution_failure;
         }
 
         ///////////////////////////////////////////////////////////////////////////////

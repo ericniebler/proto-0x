@@ -25,7 +25,7 @@ namespace boost
         template<typename Expr, typename Cases>
         struct matches<Expr, proto::switch_(Cases)>
           : matches<
-                Expr                
+                Expr
               , typename Cases::template case_<typename tag_of<Expr>::type>
             >
         {};

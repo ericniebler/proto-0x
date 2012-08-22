@@ -173,13 +173,13 @@ namespace boost
             // Abstract expression tags
             struct nullary_expr
             {};
-                
+
             struct unary_expr
             {};
-                
+
             struct binary_expr
             {};
-                
+
             struct nary_expr
             {};
 
@@ -222,22 +222,22 @@ namespace boost
         // Miscelaneous tags
         struct or_
         {};
-        
+
         struct not_
         {};
-        
+
         struct and_
         {};
-        
+
         struct if_
         {};
-        
+
         struct switch_
         {};
-        
+
         struct when
         {};
-        
+
         struct match
         {};
 
