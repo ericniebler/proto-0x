@@ -9,6 +9,7 @@
 #ifndef BOOST_PROTO_FUNCTIONAL_STD_HPP_INCLUDED
 #define BOOST_PROTO_FUNCTIONAL_STD_HPP_INCLUDED
 
+#include <boost/proto/functional/std/iterator.hpp>
 #include <boost/proto/functional/std/utility.hpp>
 
 #endif

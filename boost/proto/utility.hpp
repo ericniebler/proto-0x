@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // utility.hpp
 // Generally useful stuff.
 //
@@ -13,43 +13,17 @@
 #ifndef BOOST_PROTO_UTILITY_HPP_INCLUDED
 #define BOOST_PROTO_UTILITY_HPP_INCLUDED
 
+#include <cstddef>
+#include <functional>
+#include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
 
 namespace boost
 {
     namespace proto
     {
-        namespace detail
-        {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // none
-            struct none
-            {};
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // find_first_substitution_failure
-            template<typename ...Args>
-            struct find_first_substitution_failure;
-
-            template<typename Head, typename ...Tail>
-            struct find_first_substitution_failure<Head, Tail...>
-              : find_first_substitution_failure<Tail...>
-            {};
-
-            template<typename Sig, typename ...Tail>
-            struct find_first_substitution_failure<utility::substitution_failure<Sig>, Tail...>
-            {
-                typedef utility::substitution_failure<Sig> type;
-            };
-        }
-
         namespace utility
         {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // empty
-            struct empty
-            {};
-
             ////////////////////////////////////////////////////////////////////////////////////////
             // never
             template<typename ...T>
@@ -62,7 +36,7 @@ namespace boost
             template<typename T>
             struct static_const
             {
-                static constexpr T value = T();
+                static constexpr T value{};
             };
 
             template<typename T>
@@ -77,6 +51,11 @@ namespace boost
 
         namespace detail
         {
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // none
+            struct none
+            {};
+
             template<bool Head, typename ...List>
             struct or_
               : std::false_type
@@ -189,7 +168,7 @@ namespace boost
                 operator T &&() const noexcept;
             };
 
-            template<typename Ignored = void>
+            template<typename Ignored = decltype(nullptr)>
             struct any_pod
             {
                 any_pod(...);
@@ -534,24 +513,24 @@ namespace boost
 
         namespace detail
         {
-            template<typename Vs>
+            template<typename Ignored>
             struct get_nth_type;
 
-            template<typename ...Vs>
-            struct get_nth_type<utility::list<Vs...>>
+            template<typename ...Ignored>
+            struct get_nth_type<utility::list<Ignored...>>
             {
                 template<typename T, typename ...Us>
-                static constexpr T eval(any_pod<Vs>..., T *, Us *...) noexcept;
+                static constexpr T eval(any_pod<Ignored>..., T *, Us *...) noexcept;
             };
 
-            template<typename Vs>
+            template<typename Ignored>
             struct get_nth_value;
 
-            template<typename ...Vs>
-            struct get_nth_value<utility::list<Vs...>>
+            template<typename ...Ignored>
+            struct get_nth_value<utility::list<Ignored...>>
             {
                 template<typename T, typename ...Us>
-                static constexpr auto eval(detail::any<Vs>..., T && t, Us &&...) noexcept
+                static constexpr auto eval(detail::any<Ignored>..., T && t, Us &&...) noexcept
                     -> utility::rvalue_reference_wrapper<T>
                 {
                     return static_cast<T &&>(t);
@@ -566,8 +545,8 @@ namespace boost
                 template<std::size_t N, typename ...Ts>
                 struct get_nth
                   : decltype(
-                        detail::get_nth_type<typename list_of<N, void>::type>::eval(
-                            (detail::no_decay<Ts>*)0 ...))
+                        detail::get_nth_type<typename list_of<N, decltype(nullptr)>::type>::eval(
+                            (detail::no_decay<Ts>*)nullptr ...))
                 {};
             }
 
@@ -579,7 +558,7 @@ namespace boost
                     template<typename ...Ts>
                     inline constexpr auto operator()(Ts &&... ts) const
                     BOOST_PROTO_AUTO_RETURN(
-                        detail::get_nth_value<typename list_of<N, void>::type>::eval(
+                        detail::get_nth_value<typename list_of<N, decltype(nullptr)>::type>::eval(
                             static_cast<Ts &&>(ts)...).get()
                     )
                 };
@@ -660,31 +639,56 @@ namespace boost
             // substitution_failure
             struct substitution_failure_base
             {
-                template<typename ...Args>
-                friend typename detail::find_first_substitution_failure<Args...>::type
-                boost_proto_try_find_substitution_failure(int, Args &&...) noexcept
+            private:
+                template<typename Sig, typename ...Args>
+                static auto find_first_failure(substitution_failure<Sig> const &, Args const &...)
+                    -> substitution_failure<Sig>;
+
+                template<typename Head, typename ...Args, typename Impl = substitution_failure_base>
+                static auto find_first_failure(Head const &, Args const &...args)
+                    -> decltype(Impl::find_first_failure(args...));
+
+            public:
+                template<typename ...Args, typename Impl = substitution_failure_base>
+                friend inline auto
+                boost_proto_try_find_substitution_failure(int, Args const &...args) noexcept
+                    -> decltype(substitution_failure_base::find_first_failure(args...))
                 {
-                    return typename detail::find_first_substitution_failure<Args...>::type();
+                    return decltype(substitution_failure_base::find_first_failure(args...))();
                 }
             };
 
             template<typename Fun, typename ...Args>
-            struct substitution_failure<Fun(Args...)>
+            struct substitution_failure<Fun(Args...)> final
               : substitution_failure_base
             {
+                #if 0
+                // The following is not needed in clang because the "virtual" what method has
+                // the desired effect. Other compilers, however, might benefit from the following,
+                // in which case, the error will be reported iff a substitution_failure gets
+                // assigned to an auto variable.
+                substitution_failure() = default;
+                substitution_failure(substitution_failure &&) = default;
+                substitution_failure(substitution_failure const &that)
+                {
+                    that.what();
+                }
+                substitution_failure &operator=(substitution_failure &&) = delete;
+                substitution_failure &operator=(substitution_failure const &) = delete;
+                #endif
+
                 virtual void what() const noexcept
                 {
-                    typedef decltype(std::declval<Fun>()(std::declval<Args>()...)) error_message;
+                    typedef
+                        decltype(std::declval<Fun>()(std::declval<Args>()...))
+                    error_message;
                 }
             };
 
-            struct no_substitution_failure
-            {};
-
             template<typename ...Args>
-            inline no_substitution_failure boost_proto_try_find_substitution_failure(long, Args &&...) noexcept
+            inline int boost_proto_try_find_substitution_failure(long, Args const &...) noexcept
             {
-                return no_substitution_failure();
+                return 0;
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -695,13 +699,14 @@ namespace boost
                 Fun fun_;
 
                 template<typename ...Args>
-                auto call_or_fail_(no_substitution_failure, Args &&... args) const
+                auto call_or_fail_(int, Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
                     fun_(static_cast<Args &&>(args)...)
                 )
 
                 template<typename Sig, typename ...Args>
-                substitution_failure<Sig> call_or_fail_(substitution_failure<Sig>, Args &&...) const noexcept
+                auto call_or_fail_(substitution_failure<Sig> const &, Args &&...) const noexcept
+                    -> substitution_failure<Sig>
                 {
                     return substitution_failure<Sig>();
                 }
@@ -719,13 +724,14 @@ namespace boost
                 BOOST_PROTO_AUTO_RETURN(
                     this->call_or_fail_(
                         // Must be an unqualified call to possibly find the substitution_failure friend function
-                        boost_proto_try_find_substitution_failure(1, static_cast<Args &&>(args)...)
+                        boost_proto_try_find_substitution_failure(1, args...)
                       , static_cast<Args &&>(args)...
                     )
                 )
 
                 template<typename ...Args>
-                substitution_failure<Fun(Args...)> operator()(Args &&...) const volatile noexcept
+                auto operator()(Args &&...) const volatile noexcept
+                    -> substitution_failure<Fun(Args...)>
                 {
                     // Uncomment this line to get the full template instantiation backtrace
                     //const_cast<try_call_wrapper const *>(this)->fun_(static_cast<Args &&>(args)...);
@@ -740,9 +746,9 @@ namespace boost
             )
 
         #if 1
-            #define BOOST_PROTO_TRY_CALL(...) boost::proto::utility::try_call(__VA_ARGS__)
+            #define BOOST_PROTO_TRY_CALL boost::proto::utility::try_call
         #else
-            #define BOOST_PROTO_TRY_CALL(...) __VA_ARGS__
+            #define BOOST_PROTO_TRY_CALL
         #endif
         }
     }

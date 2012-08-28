@@ -19,6 +19,7 @@
 #include <boost/proto/expr.hpp>
 #include <boost/proto/fusion.hpp>
 #include <boost/proto/grammar.hpp>
+#include <boost/proto/literals.hpp>
 #include <boost/proto/matches.hpp>
 #include <boost/proto/operators.hpp>
 #include <boost/proto/tags.hpp>

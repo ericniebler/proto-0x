@@ -31,6 +31,9 @@
     <Filter Include="Proto Files\action">
       <UniqueIdentifier>{1617621d-4ce9-4de2-b204-9d89fb132868}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Proto Files\functional\range">
+      <UniqueIdentifier>{3a2d0b57-582a-4bd0-a145-0053ea9aa5d2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\boost\proto\expr.hpp">
@@ -216,6 +219,33 @@
     <ClInclude Include="..\..\..\boost\proto\action\let.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\literals.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\functional\range.hpp">
+      <Filter>Proto Files\functional</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\functional\range\begin.hpp">
+      <Filter>Proto Files\functional\range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\functional\range\empty.hpp">
+      <Filter>Proto Files\functional\range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\functional\range\end.hpp">
+      <Filter>Proto Files\functional\range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\functional\range\rbegin.hpp">
+      <Filter>Proto Files\functional\range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\functional\range\rend.hpp">
+      <Filter>Proto Files\functional\range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\functional\range\size.hpp">
+      <Filter>Proto Files\functional\range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\functional\std\iterator.hpp">
+      <Filter>Proto Files\functional\std</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -279,6 +309,9 @@
       <Filter>Test Files</Filter>
     </ClCompile>
     <ClCompile Include="..\test\let.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\cpp-next_bug.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
   </ItemGroup>

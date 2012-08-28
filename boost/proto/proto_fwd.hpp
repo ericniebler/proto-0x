@@ -9,6 +9,7 @@
 #ifndef BOOST_PROTO_FWD_HPP_INCLUDED
 #define BOOST_PROTO_FWD_HPP_INCLUDED
 
+#include <cstddef>
 #include <utility>
 #include <type_traits>
 //#include <limits>
@@ -98,7 +99,7 @@ namespace boost
                 typedef void type;
             };
 
-            template<typename Ignored = void>
+            template<typename Ignored = decltype(nullptr)>
             struct any;
         }
 

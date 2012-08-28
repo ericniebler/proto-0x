@@ -7,37 +7,74 @@
 
 #include <iostream>
 #include <iomanip>
+#include <vector>
 #include <utility>
 #include <type_traits>
 #include <boost/proto/proto.hpp>
 #include <boost/proto/debug.hpp>
 
+namespace mpl = boost::mpl;
 namespace proto = boost::proto;
 using proto::_;
 
-struct foo
+namespace linear_algebra
 {
-    int m;
-};
+    // A trait that returns true only for std::vector
+    template<typename T>
+    struct is_std_vector
+      : mpl::false_
+    {};
 
-struct S
-{
-    int m;
-};
+    template<typename T, typename A>
+    struct is_std_vector<std::vector<T, A> >
+      : mpl::true_
+    {};
+
+    // A type used as a domain for linear algebra expressions
+    struct linear_algebra_domain
+      : proto::domain<linear_algebra_domain>
+    {};
+
+    // Define all the operator overloads for combining std::vectors
+    BOOST_PROTO_DEFINE_OPERATORS(is_std_vector, linear_algebra_domain)
+
+    // Take any expression and turn each node
+    // into a subscript expression, using the
+    // state as the RHS.
+    struct Distribute
+      : proto::active_grammar<
+            proto::or_(
+                proto::when(
+                    proto::terminal(_)
+                  , proto::functional::make_expr(proto::construct(proto::subscript()), _, proto::_state)
+                )
+              , proto::plus(Distribute, Distribute)
+            )
+        >
+    {};
+
+    struct Optimize
+      : proto::active_grammar<
+            proto::or_(
+                proto::when(
+                    proto::subscript(Distribute, proto::terminal(_))
+                  , Distribute(proto::_left, proto::_right)
+                )
+              , proto::plus(Optimize, Optimize)
+              , proto::terminal(_)
+            )
+        >
+    {};
+}
+
+std::vector<int> A({1,2,3,4}), B(A);
 
 int main()
 {
-    proto::literal<S> s;
-    proto::value(s).m = 42;
-
+    using namespace linear_algebra;
     proto::_eval<> eval;
-    auto x = eval( proto::literal<int>(42) + 36 );
-    //auto y = eval( 1+ 2 * (proto::literal<int>(42) + foo()) );
-
-    //int i = eval(s ->* &S::m);
-    //std::cout << "i == " << i << std::endl;
-
-    //eval(s ->* &foo::m);
+    int result = eval(Optimize()((A + B)[3]));
+    std::cout << "should be 8 :" << result << std::endl;
 
     void done();
     done();

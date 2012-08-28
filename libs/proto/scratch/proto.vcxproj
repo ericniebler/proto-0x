@@ -93,7 +93,15 @@
     <ClInclude Include="..\..\..\boost\proto\functional\fusion\push_back.hpp" />
     <ClInclude Include="..\..\..\boost\proto\functional\fusion\push_front.hpp" />
     <ClInclude Include="..\..\..\boost\proto\functional\fusion\reverse.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\range.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\range\begin.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\range\empty.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\range\end.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\range\rbegin.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\range\rend.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\range\size.hpp" />
     <ClInclude Include="..\..\..\boost\proto\functional\std.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\functional\std\iterator.hpp" />
     <ClInclude Include="..\..\..\boost\proto\functional\std\utility.hpp" />
     <ClInclude Include="..\..\..\boost\proto\fusion.hpp" />
     <ClInclude Include="..\..\..\boost\proto\grammar.hpp" />
@@ -106,6 +114,7 @@
     <ClInclude Include="..\..\..\boost\proto\grammar\placeholders.hpp" />
     <ClInclude Include="..\..\..\boost\proto\grammar\switch.hpp" />
     <ClInclude Include="..\..\..\boost\proto\grammar\when.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\literals.hpp" />
     <ClInclude Include="..\..\..\boost\proto\make_expr.hpp" />
     <ClInclude Include="..\..\..\boost\proto\matches.hpp" />
     <ClInclude Include="..\..\..\boost\proto\operators.hpp" />
@@ -149,6 +158,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\test\construct.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\test\cpp-next_bug.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>

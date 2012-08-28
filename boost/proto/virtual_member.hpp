@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // virtual_member.hpp
 //
 // Copyright 2012 Eric Niebler.
@@ -18,8 +18,8 @@
 #include <boost/proto/expr.hpp>
 #include <boost/utility/addressof.hpp>
 
-/// INTERNAL ONLY
-///
+// INTERNAL ONLY
+//
 #define BOOST_PROTO_EXTENDS_MEMBER_DETAIL(R, THIS_DOMAIN, ELEM)                                     \
     boost::proto::virtual_member<                                                                   \
         BOOST_PP_TUPLE_ELEM(2, 0, THIS_DOMAIN)                                                      \
@@ -28,8 +28,8 @@
     > BOOST_PP_TUPLE_ELEM(2, 1, ELEM);                                                              \
     /**/
 
-/// \brief For declaring virtual data members in an extension class.
-///
+// \brief For declaring virtual data members in an extension class.
+//
 #define BOOST_PROTO_EXTENDS_MEMBERS(THIS, DOMAIN, SEQ)                                              \
     union                                                                                           \
     {                                                                                               \
