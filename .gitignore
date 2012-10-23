@@ -1,3 +1,8 @@
 *.suo
 *.vcxproj.user
 *.lastbuildstate
+*.o
+*.obj
+*.sdf
+*.opensdf
+*.exe
