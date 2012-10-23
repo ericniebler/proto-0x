@@ -328,6 +328,8 @@
     <None Include="Jamfile">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="..\..\..\TODO.txt" />
+    <None Include="..\..\..\TODO.md" />
+    <None Include="..\..\..\README.md" />
+    <None Include="..\..\..\LICENSE.md" />
   </ItemGroup>
 </Project>
