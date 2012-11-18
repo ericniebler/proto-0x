@@ -33,7 +33,7 @@ struct equation:
     >
 {};
 
-template<class ExprSig>
+template<class ExprDesc>
 struct extension;
 
 struct my_domain:
@@ -49,7 +49,7 @@ struct my_domain:
     {};
 };
 
-template<class ExprSig>
+template<class ExprDesc>
 struct lhs_extension;
 
 struct my_lhs_domain:
@@ -65,7 +65,7 @@ struct my_lhs_domain:
     {};
 };
 
-template<class ExprSig>
+template<class ExprDesc>
 struct rhs_extension;
 
 struct my_rhs_domain:
@@ -81,33 +81,33 @@ struct my_rhs_domain:
     {};
 };
 
-template<class ExprSig>
+template<class ExprDesc>
 struct extension
-  : proto::basic_expr<ExprSig, my_domain>
+  : proto::basic_expr<ExprDesc, my_domain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(extension);
-    typedef proto::basic_expr<ExprSig, my_domain> proto_basic_expr_type;
+    typedef proto::basic_expr<ExprDesc, my_domain> proto_basic_expr_type;
     BOOST_PROTO_INHERIT_EXPR_CTORS(extension, proto_basic_expr_type);
 
     void test() const
     {}
 };
 
-template<class ExprSig>
+template<class ExprDesc>
 struct lhs_extension
-  : proto::basic_expr<ExprSig, my_lhs_domain>
+  : proto::basic_expr<ExprDesc, my_lhs_domain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(lhs_extension);
-    typedef proto::basic_expr<ExprSig, my_lhs_domain> proto_basic_expr_type;
+    typedef proto::basic_expr<ExprDesc, my_lhs_domain> proto_basic_expr_type;
     BOOST_PROTO_INHERIT_EXPR_CTORS(lhs_extension, proto_basic_expr_type);
 };
 
-template<class ExprSig>
+template<class ExprDesc>
 struct rhs_extension
-  : proto::basic_expr<ExprSig, my_rhs_domain>
+  : proto::basic_expr<ExprDesc, my_rhs_domain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(rhs_extension);
-    typedef proto::basic_expr<ExprSig, my_rhs_domain> proto_basic_expr_type;
+    typedef proto::basic_expr<ExprDesc, my_rhs_domain> proto_basic_expr_type;
     BOOST_PROTO_INHERIT_EXPR_CTORS(rhs_extension, proto_basic_expr_type);
 };
 

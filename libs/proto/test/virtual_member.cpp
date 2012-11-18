@@ -17,7 +17,7 @@ using proto::_;
 struct foo_tag {};
 struct bar_tag {};
 
-template<typename ExprSig>
+template<typename ExprDesc>
 struct MyExpr;
 
 struct MyDomain
@@ -28,13 +28,13 @@ struct MyDomain
     {};
 };
 
-template<typename ExprSig>
+template<typename ExprDesc>
 struct MyExpr
-  : proto::basic_expr<ExprSig, MyDomain>
+  : proto::basic_expr<ExprDesc, MyDomain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(MyExpr);
 
-    typedef proto::basic_expr<ExprSig, MyDomain> proto_basic_expr_type;
+    typedef proto::basic_expr<ExprDesc, MyDomain> proto_basic_expr_type;
     BOOST_PROTO_INHERIT_EXPR_CTORS(MyExpr, proto_basic_expr_type);
 
     BOOST_PROTO_EXTENDS_MEMBERS(

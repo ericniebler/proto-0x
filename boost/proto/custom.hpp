@@ -26,8 +26,8 @@ namespace boost
         template<template<typename...> class Expr, typename Domain>
         struct custom
         {
-            template<typename ExprSig>
-            using expr = Expr<ExprSig, Domain>;
+            template<typename ExprDesc>
+            using expr = Expr<ExprDesc, Domain>;
 
             template<typename T>
             using terminal = Expr<terminal(T), Domain>;
@@ -171,8 +171,8 @@ namespace boost
         template<template<typename...> class Expr>
         struct custom<Expr, void>
         {
-            template<typename ExprSig>
-            using expr = Expr<ExprSig>;
+            template<typename ExprDesc>
+            using expr = Expr<ExprDesc>;
 
             template<typename T>
             using terminal = Expr<terminal(T)>;

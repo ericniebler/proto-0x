@@ -22,7 +22,7 @@ typedef proto::literal<std::string> string_;
 static_assert(std::is_trivial<decltype(int_())>::value, "not trivial!");
 static_assert(std::is_trivial<decltype(int_()(3.14))>::value, "not trivial!");
 
-template<typename ExprSig>
+template<typename ExprDesc>
 struct MyExpr;
 
 struct MyDomain
@@ -33,17 +33,17 @@ struct MyDomain
     {};
 };
 
-template<typename ExprSig>
+template<typename ExprDesc>
 struct MyExpr
-  : proto::basic_expr<ExprSig, MyDomain>
-  , proto::expr_assign<MyExpr<ExprSig>, MyDomain>
-  , proto::expr_subscript<MyExpr<ExprSig>, MyDomain>
-  , proto::expr_function<MyExpr<ExprSig>, MyDomain>
+  : proto::basic_expr<ExprDesc, MyDomain>
+  , proto::expr_assign<MyExpr<ExprDesc>, MyDomain>
+  , proto::expr_subscript<MyExpr<ExprDesc>, MyDomain>
+  , proto::expr_function<MyExpr<ExprDesc>, MyDomain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(MyExpr);
 
-    //using proto::basic_expr<ExprSig, MyDomain>::basic_expr;
-    typedef proto::basic_expr<ExprSig, MyDomain> proto_basic_expr_type;
+    //using proto::basic_expr<ExprDesc, MyDomain>::basic_expr;
+    typedef proto::basic_expr<ExprDesc, MyDomain> proto_basic_expr_type;
     BOOST_PROTO_INHERIT_EXPR_CTORS(MyExpr, proto_basic_expr_type);
 
     using proto::expr_assign<MyExpr, MyDomain>::operator=;

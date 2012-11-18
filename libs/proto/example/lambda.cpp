@@ -57,7 +57,7 @@ BOOST_PROTO_AUTO_RETURN(
     )
 )
 
-template<typename ExprSig>
+template<typename ExprDesc>
 struct lambda_expr;
 
 struct lambda_domain
@@ -68,17 +68,17 @@ struct lambda_domain
     {};
 };
 
-template<typename ExprSig>
+template<typename ExprDesc>
 struct lambda_expr
-  : proto::basic_expr<ExprSig, lambda_domain>
-  , proto::expr_assign<lambda_expr<ExprSig>, lambda_domain>
-  , proto::expr_subscript<lambda_expr<ExprSig>, lambda_domain>
+  : proto::basic_expr<ExprDesc, lambda_domain>
+  , proto::expr_assign<lambda_expr<ExprDesc>, lambda_domain>
+  , proto::expr_subscript<lambda_expr<ExprDesc>, lambda_domain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(lambda_expr);
 
     using proto::expr_assign<lambda_expr, lambda_domain>::operator=;
-    //using proto::basic_expr<ExprSig, lambda_domain>::basic_expr;
-    typedef proto::basic_expr<ExprSig, lambda_domain> proto_basic_expr_type;
+    //using proto::basic_expr<ExprDesc, lambda_domain>::basic_expr;
+    typedef proto::basic_expr<ExprDesc, lambda_domain> proto_basic_expr_type;
     BOOST_PROTO_INHERIT_EXPR_CTORS(lambda_expr, proto_basic_expr_type);
 
     template<typename ...T>

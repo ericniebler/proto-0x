@@ -108,8 +108,8 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // expr_maker_if_2_
-            template<typename ExprSig, typename Domain
-              , typename E = basic_expr<ExprSig, Domain>
+            template<typename ExprDesc, typename Domain
+              , typename E = basic_expr<ExprDesc, Domain>
               , typename G = typename Domain::proto_grammar_type
               , BOOST_PROTO_ENABLE_IF(matches<E, G>::value)
             >

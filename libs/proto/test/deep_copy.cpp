@@ -71,7 +71,7 @@ void test_expr()
     BOOST_PROTO_IGNORE_UNUSED(r3);
 }
 
-template<typename ExprSig>
+template<typename ExprDesc>
 struct Expr;
 
 struct Domain
@@ -90,11 +90,11 @@ struct Domain
     {};
 };
 
-template<typename ExprSig>
+template<typename ExprDesc>
 struct Expr
-  : proto::basic_expr<ExprSig, Domain>
+  : proto::basic_expr<ExprDesc, Domain>
 {
-    typedef proto::basic_expr<ExprSig, Domain> proto_basic_expr_type;
+    typedef proto::basic_expr<ExprDesc, Domain> proto_basic_expr_type;
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(Expr);
     BOOST_PROTO_INHERIT_EXPR_CTORS(Expr, proto_basic_expr_type);
 };

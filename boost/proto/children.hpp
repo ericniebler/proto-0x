@@ -40,7 +40,7 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // as_virtual_member
             template<typename L, typename R, typename D = typename L::proto_domain_type>
-            constexpr auto as_virtual_member(children<exprs::virtual_<L>, exprs::terminal<R>> const &a)
+            constexpr auto as_virtual_member(exprs::children<exprs::virtual_<L>, exprs::terminal<R>> const &a)
             BOOST_PROTO_AUTO_RETURN(
                 (char *)static_cast<virtual_member<L, R, D> const *>(&a)
             )
@@ -69,7 +69,7 @@ namespace boost
                 )
                 BOOST_PROTO_AUTO_RETURN(
                     Impl::child(
-                        static_cast<Children &&>(that).proto_args_tail
+                        static_cast<Children &&>(that).proto_children_tail
                       , std::integral_constant<std::size_t, I - BOOST_PROTO_ARGS_UNROLL_MAX>()
                     )
                 )
@@ -173,8 +173,8 @@ namespace boost
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(children);
                 typedef std::integral_constant<std::size_t, BOOST_PROTO_ARGS_UNROLL_MAX + sizeof...(Tail)> proto_size;
                 BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, MEMBERS, ~)
-                typedef children<Tail...> proto_args_tail_type;
-                children<Tail...> proto_args_tail;
+                typedef children<Tail...> proto_children_tail_type;
+                children<Tail...> proto_children_tail;
 
                 template<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, typename U), typename ...Rest
                   , BOOST_PROTO_ENABLE_IF(sizeof...(Rest) == sizeof...(Tail))
@@ -186,13 +186,13 @@ namespace boost
                         noexcept(children<Tail...>(static_cast<Rest &&>(rest)...))
                     )
                   : BOOST_PP_ENUM(BOOST_PROTO_ARGS_UNROLL_MAX, INIT, ~)
-                  , proto_args_tail(static_cast<Rest &&>(rest)...) // std::forward is NOT constexpr!
+                  , proto_children_tail(static_cast<Rest &&>(rest)...) // std::forward is NOT constexpr!
                 {}
 
                 template<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, typename U), typename ...Rest>
                 inline auto operator==(children<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, U), Rest...> const &that) const
                 BOOST_PROTO_AUTO_RETURN(
-                    BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, EQUAL_TO, ~) proto_args_tail == that.proto_args_tail
+                    BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, EQUAL_TO, ~) proto_children_tail == that.proto_children_tail
                 )
 
                 template<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, typename U), typename ...Rest>
@@ -245,28 +245,28 @@ namespace boost
             // children_element
             template<std::size_t N, typename Children>
             struct children_element
-              : children_element<N - BOOST_PROTO_ARGS_UNROLL_MAX, typename Children::proto_args_tail_type>
+              : children_element<N - BOOST_PROTO_ARGS_UNROLL_MAX, typename Children::proto_children_tail_type>
             {};
 
             template<typename ...T, typename F>
             inline F for_each(children<T...> & a, F const & f)
             {
                 BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, INVOKE, a)
-                return exprs::for_each(a.proto_args_tail, f);
+                return exprs::for_each(a.proto_children_tail, f);
             }
 
             template<typename ...T, typename F>
             inline F for_each(children<T...> const & a, F const & f)
             {
                 BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, INVOKE, a)
-                return exprs::for_each(a.proto_args_tail, f);
+                return exprs::for_each(a.proto_children_tail, f);
             }
 
             template<typename ...T, typename F>
             inline F for_each(children<T...> && a, F const & f)
             {
                 BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, INVOKE, a)
-                return exprs::for_each(static_cast<children<T...> &&>(a).proto_args_tail, f);
+                return exprs::for_each(static_cast<children<T...> &&>(a).proto_children_tail, f);
             }
 
             #undef INIT

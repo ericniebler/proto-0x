@@ -393,7 +393,7 @@ namespace boost
             struct basic_expr<Tag(Children...), Domain>
               : expr_base
               , Tag
-              , children<Children...>
+              , exprs::children<Children...>
               , detail::expr_boolean_convertible<basic_expr<Tag(Children...), Domain>>
             {
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -406,20 +406,20 @@ namespace boost
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(basic_expr);
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // typedefs
-                typedef Tag                                 proto_tag_type;
-                typedef children<Children...>               proto_children_type;
-                typedef Domain                              proto_domain_type;
-                typedef basic_expr                          proto_basic_expr_type;
-                typedef action<pass_through(Children...)>   proto_action_type;
-                typedef
+                // usings and typedefs
+                using proto_tag_type                = Tag;
+                using proto_children_type           = exprs::children<Children...>;
+                using proto_domain_type             = Domain;
+                using proto_basic_expr_type         = basic_expr;
+                using proto_action_type             = action<pass_through(Children...)>;
+                using proto_expr_descriptor_type    = Tag(Children...);
+                using proto_arity                   =
                     std::integral_constant<
                         std::size_t
                       , decltype(detail::is_terminal_<Tag>(1))::value ? 0 : sizeof...(Children)
-                    >
-                proto_arity;
+                    >;
 
-                typedef proto_expr                          fusion_tag; ///< For Fusion
+                using fusion_tag                = proto_expr; ///< For Fusion
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // constructors
@@ -553,19 +553,19 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // struct expr
-            template<typename ExprSig, typename Domain>
+            template<typename ExprDesc, typename Domain>
             struct expr
-              : basic_expr<ExprSig, Domain>
-              , expr_assign<expr<ExprSig, Domain>, Domain>
-              , expr_subscript<expr<ExprSig, Domain>, Domain>
-              , expr_function<expr<ExprSig, Domain>, Domain>
+              : basic_expr<ExprDesc, Domain>
+              , expr_assign<expr<ExprDesc, Domain>, Domain>
+              , expr_subscript<expr<ExprDesc, Domain>, Domain>
+              , expr_function<expr<ExprDesc, Domain>, Domain>
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr);
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // constructors
-                //using basic_expr<ExprSig, Domain>::basic_expr;
-                typedef basic_expr<ExprSig, Domain> proto_base_expr_type;
+                //using basic_expr<ExprDesc, Domain>::basic_expr;
+                typedef basic_expr<ExprDesc, Domain> proto_base_expr_type;
                 BOOST_PROTO_INHERIT_EXPR_CTORS(expr, proto_base_expr_type);
 
                 ////////////////////////////////////////////////////////////////////////////////////

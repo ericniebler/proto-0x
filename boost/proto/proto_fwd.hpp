@@ -321,21 +321,19 @@ namespace boost
 
             struct expr_base;
 
-            template<typename ExprSig, typename Domain>
+            template<typename ExprDesc, typename Domain>
             struct basic_expr;
 
-            template<typename ExprSig, typename Domain = default_domain>
+            template<typename ExprDesc, typename Domain = default_domain>
             struct expr;
 
-            template<typename ExprSig, typename Domain>
+            template<typename ExprDesc, typename Domain>
             struct virtual_member_;
 
             template<typename Expr>
             struct virtual_;
         }
 
-        using exprs::children;
-        using exprs::children_element;
         using exprs::expr_assign;
         using exprs::expr_subscript;
         using exprs::expr_function;
