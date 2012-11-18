@@ -102,15 +102,14 @@ namespace boost
             template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(!is_expr<T>::value)>
             auto as_basic_expr(T &&t) ->
                 basic_expr<
-                    terminal
-                  , children<decltype(typename Domain::store_value()(t))>
+                    terminal(decltype(typename Domain::store_value()(t)))
                   , Domain
                 >;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // expr_maker_if_2_
-            template<typename Tag, typename Children, typename Domain
-              , typename E = basic_expr<Tag, Children, Domain>
+            template<typename ExprSig, typename Domain
+              , typename E = basic_expr<ExprSig, Domain>
               , typename G = typename Domain::proto_grammar_type
               , BOOST_PROTO_ENABLE_IF(matches<E, G>::value)
             >
@@ -128,8 +127,7 @@ namespace boost
                 constexpr auto operator()(Tag tag, T &&...t) const
                 BOOST_PROTO_AUTO_RETURN(
                     detail::expr_maker_if_2_<
-                        Tag
-                      , children<decltype(detail::as_basic_expr<Domain>(static_cast<T &&>(t)))...>
+                        Tag(decltype(detail::as_basic_expr<Domain>(static_cast<T &&>(t)))...)
                       , Domain
                     >()(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
                 )

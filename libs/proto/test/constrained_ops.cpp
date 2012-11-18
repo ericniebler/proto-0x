@@ -33,7 +33,7 @@ struct equation:
     >
 {};
 
-template<class Tag, class Children>
+template<class ExprSig>
 struct extension;
 
 struct my_domain:
@@ -49,7 +49,7 @@ struct my_domain:
     {};
 };
 
-template<class Tag, class Children>
+template<class ExprSig>
 struct lhs_extension;
 
 struct my_lhs_domain:
@@ -65,7 +65,7 @@ struct my_lhs_domain:
     {};
 };
 
-template<class Tag, class Children>
+template<class ExprSig>
 struct rhs_extension;
 
 struct my_rhs_domain:
@@ -81,40 +81,40 @@ struct my_rhs_domain:
     {};
 };
 
-template<class Tag, typename Children>
+template<class ExprSig>
 struct extension
-  : proto::basic_expr<Tag, Children, my_domain>
+  : proto::basic_expr<ExprSig, my_domain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(extension);
-    typedef proto::basic_expr<Tag, Children, my_domain> proto_basic_expr_type;
+    typedef proto::basic_expr<ExprSig, my_domain> proto_basic_expr_type;
     BOOST_PROTO_INHERIT_EXPR_CTORS(extension, proto_basic_expr_type);
 
     void test() const
     {}
 };
 
-template<class Tag, typename Children>
+template<class ExprSig>
 struct lhs_extension
-  : proto::basic_expr<Tag, Children, my_lhs_domain>
+  : proto::basic_expr<ExprSig, my_lhs_domain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(lhs_extension);
-    typedef proto::basic_expr<Tag, Children, my_lhs_domain> proto_basic_expr_type;
+    typedef proto::basic_expr<ExprSig, my_lhs_domain> proto_basic_expr_type;
     BOOST_PROTO_INHERIT_EXPR_CTORS(lhs_extension, proto_basic_expr_type);
 };
 
-template<class Tag, typename Children>
+template<class ExprSig>
 struct rhs_extension
-  : proto::basic_expr<Tag, Children, my_rhs_domain>
+  : proto::basic_expr<ExprSig, my_rhs_domain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(rhs_extension);
-    typedef proto::basic_expr<Tag, Children, my_rhs_domain> proto_basic_expr_type;
+    typedef proto::basic_expr<ExprSig, my_rhs_domain> proto_basic_expr_type;
     BOOST_PROTO_INHERIT_EXPR_CTORS(rhs_extension, proto_basic_expr_type);
 };
 
 void test_constrained_ops()
 {
-     lhs_extension<proto::terminal, proto::children<int>> const i {0};
-     rhs_extension<proto::terminal, proto::children<int>> const j {0};
+     lhs_extension<proto::terminal(int)> const i {0};
+     rhs_extension<proto::terminal(int)> const j {0};
 
      proto::assert_matches_not<equation>(i);              // false
      proto::assert_matches_not<equation>(j);              // false

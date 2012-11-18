@@ -41,6 +41,7 @@
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <ExecutablePath>C:\cygwin\bin;$(ExecutablePath)</ExecutablePath>
     <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;C:\home\src\proto;C:\boost\org\trunk</IncludePath>
+    <NMakeIncludeSearchPath>C:\proto-0x</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <NMakeBuildCommandLine>C:\gnuwin32\bin\make.exe all</NMakeBuildCommandLine>
@@ -50,6 +51,7 @@
     <NMakePreprocessorDefinitions>NDEBUG;WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <ExecutablePath>C:\cygwin\bin;$(ExecutablePath)</ExecutablePath>
     <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;C:\boost\org\trunk;</IncludePath>
+    <NMakeIncludeSearchPath>C:\proto-0x</NMakeIncludeSearchPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>

@@ -22,7 +22,7 @@ typedef proto::literal<std::string> string_;
 static_assert(std::is_trivial<decltype(int_())>::value, "not trivial!");
 static_assert(std::is_trivial<decltype(int_()(3.14))>::value, "not trivial!");
 
-template<typename Tag, typename Children>
+template<typename ExprSig>
 struct MyExpr;
 
 struct MyDomain
@@ -33,17 +33,17 @@ struct MyDomain
     {};
 };
 
-template<typename Tag, typename Children>
+template<typename ExprSig>
 struct MyExpr
-  : proto::basic_expr<Tag, Children, MyDomain>
-  , proto::expr_assign<MyExpr<Tag, Children>, MyDomain>
-  , proto::expr_subscript<MyExpr<Tag, Children>, MyDomain>
-  , proto::expr_function<MyExpr<Tag, Children>, MyDomain>
+  : proto::basic_expr<ExprSig, MyDomain>
+  , proto::expr_assign<MyExpr<ExprSig>, MyDomain>
+  , proto::expr_subscript<MyExpr<ExprSig>, MyDomain>
+  , proto::expr_function<MyExpr<ExprSig>, MyDomain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(MyExpr);
 
-    //using proto::basic_expr<Tag, Children, MyDomain>::basic_expr;
-    typedef proto::basic_expr<Tag, Children, MyDomain> proto_basic_expr_type;
+    //using proto::basic_expr<ExprSig, MyDomain>::basic_expr;
+    typedef proto::basic_expr<ExprSig, MyDomain> proto_basic_expr_type;
     BOOST_PROTO_INHERIT_EXPR_CTORS(MyExpr, proto_basic_expr_type);
 
     using proto::expr_assign<MyExpr, MyDomain>::operator=;
@@ -59,7 +59,7 @@ void test_expr()
     constexpr int_ i_(42);
 
     // Quick test for big expression nodes (>10 children)
-    typedef proto::expr<proto::function, proto::children<int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_>> ints_;
+    typedef proto::expr<proto::function(int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_)> ints_;
     ints_ is(p,p,p,p,p,p,p,p,p,p,p,p,p,p);
     p = proto::child<13>(is);
 
@@ -73,7 +73,7 @@ void test_expr()
     BOOST_PROTO_IGNORE_UNUSED(i);
 
     // sanity test for stored_value and stored_child (used by as_expr when building nodes)
-    proto::expr<proto::function, proto::children<int_&, int_, int_, int_, proto::literal<char const (&)[6]> >> x = p(1, 2, 3, "hello");
+    proto::expr<proto::function(int_&, int_, int_, int_, proto::literal<char const (&)[6]> )> x = p(1, 2, 3, "hello");
     static_assert(std::is_same<decltype(proto::value(proto::child<4>(x))), char const (&)[6]>::value, "not the same!");
 
     // verify that expression nodes are Regular types.
@@ -91,7 +91,7 @@ void test_expr()
 
     // verify that expression nodes are no larger than they need to be.
     static_assert(sizeof(proto::literal<int>) == sizeof(int), "sizeof(proto::literal<int>) != sizeof(int)");
-    static_assert(sizeof(proto::expr<proto::function, proto::children<>>) == 1, "size of empty expr is not 1");
+    static_assert(sizeof(proto::expr<proto::function()>) == 1, "size of empty expr is not 1");
 
     // This should fail to compile:
     //typedef int_ const cint_;

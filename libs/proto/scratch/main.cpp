@@ -1,80 +1,139 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// main.cpp
+// lambda.cpp
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <iostream>
-#include <iomanip>
-#include <vector>
+#include <cstdio>
 #include <utility>
 #include <type_traits>
 #include <boost/proto/proto.hpp>
 #include <boost/proto/debug.hpp>
 
-namespace mpl = boost::mpl;
 namespace proto = boost::proto;
 using proto::_;
 
-namespace linear_algebra
+template<typename T>
+struct placeholder
+  : proto::tags::env_var_tag<placeholder<T>>
 {
-    // A trait that returns true only for std::vector
-    template<typename T>
-    struct is_std_vector
-      : mpl::false_
-    {};
+    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(placeholder);
+    using proto::tags::env_var_tag<placeholder<T>>::operator=;
 
-    template<typename T, typename A>
-    struct is_std_vector<std::vector<T, A> >
-      : mpl::true_
-    {};
+    // So placeholder terminals can be pretty-printed with display_expr
+    friend std::ostream & operator << (std::ostream & s, placeholder<T>)
+    {
+        return s << "_" << T::value + 1;
+    }
+};
 
-    // A type used as a domain for linear algebra expressions
-    struct linear_algebra_domain
-      : proto::domain<linear_algebra_domain>
-    {};
+template<std::size_t I>
+using placeholder_c = placeholder<std::integral_constant<std::size_t, I>>;
 
-    // Define all the operator overloads for combining std::vectors
-    BOOST_PROTO_DEFINE_OPERATORS(is_std_vector, linear_algebra_domain)
-
-    // Take any expression and turn each node
-    // into a subscript expression, using the
-    // state as the RHS.
-    struct Distribute
-      : proto::active_grammar<
-            proto::or_(
-                proto::when(
-                    proto::terminal(_)
-                  , proto::functional::make_expr(proto::construct(proto::subscript()), _, proto::_state)
-                )
-              , proto::plus(Distribute, Distribute)
+struct lambda_eval
+  : proto::active_grammar<
+        proto::or_(
+            proto::when( proto::terminal(placeholder<_>),
+                proto::apply(proto::construct(proto::_env_var<proto::_value>()))
             )
-        >
-    {};
-
-    struct Optimize
-      : proto::active_grammar<
-            proto::or_(
-                proto::when(
-                    proto::subscript(Distribute, proto::terminal(_))
-                  , Distribute(proto::_left, proto::_right)
-                )
-              , proto::plus(Optimize, Optimize)
-              , proto::terminal(_)
+          , proto::when( proto::terminal(_),
+                proto::_value
             )
-        >
+          , proto::when( _,
+                proto::_eval<lambda_eval>
+            )
+        )
+    >
+{};
+
+/*
+struct lambda_eval
+  : proto::match<
+        proto::case_( proto::terminal(placeholder<_>),
+            proto::apply(proto::construct(proto::_env_var<proto::_value>()))
+        )
+      , proto::case_( proto::terminal(_),
+            proto::_value
+        )
+      , proto::case_( _,
+            proto::_eval<lambda_eval>
+        )
+    >
+{};
+*/
+
+template<std::size_t ...I, typename E, typename ...T>
+inline auto lambda_eval_(proto::utility::indices<I...>, E && e, T &&... t)
+BOOST_PROTO_AUTO_RETURN(
+    lambda_eval()(
+        std::forward<E>(e)
+      , 0
+      , proto::make_env(placeholder_c<I>() = std::forward<T>(t)...)
+    )
+)
+
+template<typename ExprSig>
+struct lambda_expr;
+
+struct lambda_domain
+  : proto::domain<lambda_domain>
+{
+    struct make_expr
+      : proto::make_custom_expr<lambda_expr>
     {};
+};
+
+template<typename ExprSig>
+struct lambda_expr
+  : proto::basic_expr<ExprSig, lambda_domain>
+  , proto::expr_assign<lambda_expr<ExprSig>, lambda_domain>
+  , proto::expr_subscript<lambda_expr<ExprSig>, lambda_domain>
+{
+    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(lambda_expr);
+
+    using proto::expr_assign<lambda_expr, lambda_domain>::operator=;
+    //using proto::basic_expr<ExprSig, lambda_domain>::basic_expr;
+    typedef proto::basic_expr<ExprSig, lambda_domain> proto_basic_expr_type;
+    BOOST_PROTO_INHERIT_EXPR_CTORS(lambda_expr, proto_basic_expr_type);
+
+    template<typename ...T>
+    auto operator()(T &&... t) const
+    BOOST_PROTO_AUTO_RETURN(
+        lambda_eval_(proto::utility::make_indices<sizeof...(T)>(), *this, std::forward<T>(t)...)
+    )
+};
+
+template<typename T>
+using lambda_var = proto::custom<lambda_expr>::terminal<T>;
+
+namespace
+{
+    constexpr auto const & _1 = proto::utility::static_const<lambda_var<placeholder_c<0>>>::value;
+    constexpr auto const & _2 = proto::utility::static_const<lambda_var<placeholder_c<1>>>::value;
+    constexpr auto const & _3 = proto::utility::static_const<lambda_var<placeholder_c<2>>>::value;
 }
 
-std::vector<int> A({1,2,3,4}), B(A);
+static_assert(std::is_trivial<lambda_var<placeholder_c<0>>>::value, "_1 should be trivial");
+BOOST_PROTO_IGNORE_UNUSED(_1, _2, _3);
 
 int main()
 {
-    using namespace linear_algebra;
-    proto::_eval<> eval;
-    int result = eval(Optimize()((A + B)[3]));
-    std::cout << "should be 8 :" << result << std::endl;
+    std::printf("*** \n");
+    std::printf("*** This program demonstrates how to build a lambda library with Proto.\n");
+    std::printf("*** \n");
+
+    // Create a lambda
+    auto fun = _1 + 42 * _2;
+
+    // pretty-print the expression
+    proto::display_expr(fun);
+
+    // Call the lambda
+    int i = fun(8, 2);
+
+    // print the result
+    std::printf("The lambda '_1 + 42 * _2' yields '%d' when called with 8 and 2.\n", i);
 
     void done();
     done();
@@ -82,105 +141,7 @@ int main()
 
 void done()
 {
-    char ch = 0;
-    std::cout << "Press <CTRL> + D to quit...";
-    while(std::cin.get(ch));
+    char ch{};
+    std::cout << "CTRL+D to end...";
+    std::cin >> ch;
 }
-
-
-
-
-//#include <utility>
-//
-//template <class T, class U> struct assert_same;
-//template <class T> struct assert_same<T,T> {};
-//
-//enum place { _ };
-//template <place...>
-//struct places {};
-//
-//template <class P1, class P2> struct append_places;
-//
-//template <place...X1, place...X2>
-//struct append_places<places<X1...>, places<X2...> >
-//{
-//    typedef places<X1...,X2...> type;
-//};
-//
-//template <unsigned N>
-//struct make_places
-//  : append_places<
-//        typename make_places<N/2>::type,
-//        typename make_places<N-N/2>::type
-//    >
-//{};
-//
-//template <> struct make_places<0> { typedef places<> type; };
-//template <> struct make_places<1> { typedef places<_> type; };
-//
-//inline void test_places()
-//{
-//  assert_same<make_places<2>::type, places<_,_> > a2;
-//  assert_same<make_places<3>::type, places<_,_,_> > a3;
-//  assert_same<make_places<4>::type, places<_,_,_,_> > a4;
-//  assert_same<make_places<5>::type, places<_,_,_,_,_> > a5;
-//}
-//
-//template <class...T> struct types
-//{
-//    typedef types type;
-//};
-//
-//template <class T>
-//struct no_decay
-//{
-//    typedef T type;
-//};
-//
-//// Use as function parameter that eats any POD
-//template <place ignored>
-//struct eat
-//{ eat(...); };
-//
-//template<class T>
-//struct take_impl
-//{
-//};
-//
-//template<place Y, place...X>
-//struct take_impl<places<Y, X...>>
-//  : take_impl<places<X...>>
-//{
-//
-//};
-//
-//template<unsigned N, class S>
-//struct take;
-//
-//template<unsigned N, class ...T>
-//struct take<N, types<T...>>
-//  : take_impl<
-//        typename append_bools<
-//            typename make_bools<N, true>::type,
-//            typename make_bools<sizeof...(T)-N, false>::type
-//        >::type,
-//        types<T...>
-//    >
-//{};
-//
-//inline void test_take()
-//{
-//    using seq = types<void(int),char[3],long,double>;
-//
-//    //assert_same<take<0,seq>::type, types<> > a0;
-//    //assert_same<take<1,seq>::type, types<void(int)> > a1;
-//    //assert_same<take<2,seq>::type, types<void(int),char[3]> > a2;
-//    assert_same<take<3,seq>::type, types<void(int),char[3],long> > a3;
-//    //assert_same<take<4,seq>::type, seq> a4;
-//}
-//
-//int main()
-//{
-//}
-//
-//

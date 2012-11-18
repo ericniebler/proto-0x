@@ -64,25 +64,25 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // detail::make_custom_expr
+            template<template<typename> class Expr, typename Domain, typename Tag, typename ...T>
+            inline constexpr auto make_custom_expr(Tag tag, T &&...t)
+            BOOST_PROTO_AUTO_RETURN(
+                Expr<Tag(T...)>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
+            )
+
             template<template<typename, typename> class Expr, typename Domain, typename Tag, typename ...T>
             inline constexpr auto make_custom_expr(Tag tag, T &&...t)
             BOOST_PROTO_AUTO_RETURN(
-                Expr<Tag, children<T...>>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
-            )
-
-            template<template<typename, typename, typename> class Expr, typename Domain, typename Tag, typename ...T>
-            inline constexpr auto make_custom_expr(Tag tag, T &&...t)
-            BOOST_PROTO_AUTO_RETURN(
-                Expr<Tag, children<T...>, Domain>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
+                Expr<Tag(T...), Domain>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // detail::template_arity
+            template<template<typename> class T>
+            char (&template_arity())[1];
+
             template<template<typename, typename> class T>
             char (&template_arity())[2];
-
-            template<template<typename, typename, typename> class T>
-            char (&template_arity())[3];
         }
 
         namespace domains
@@ -95,12 +95,12 @@ namespace boost
                 static constexpr std::size_t template_arity = sizeof(detail::template_arity<Expr>());
 
                 static_assert(
-                    template_arity == 2 || template_arity == 3
-                  , "expected template of arity 2 or 3"
+                    template_arity == 1 || template_arity == 2
+                  , "expected template of arity 1 or 2"
                 );
 
                 static_assert(
-                    template_arity == 2 || !std::is_same<Domain, void>::value
+                    template_arity == 1 || !std::is_same<Domain, void>::value
                   , "for custom expression types that accept a domain parameter, you must"
                     " specify what the domain should be"
                 );

@@ -25,20 +25,20 @@ void write(std::ostream &sout, proto::bitwise_or)
 }
 
 template<typename T0, typename Domain>
-void write(std::ostream &sout, proto::basic_expr<proto::terminal, proto::children<T0>, Domain> const &op)
+void write(std::ostream &sout, proto::basic_expr<proto::terminal(T0), Domain> const &op)
 {
     sout << proto::value(op);
 }
 
 template<typename Tag, typename T0, typename Domain>
-void write(std::ostream &sout, proto::basic_expr<Tag, proto::children<T0>, Domain> const &op)
+void write(std::ostream &sout, proto::basic_expr<Tag(T0), Domain> const &op)
 {
     write(sout, Tag());
     write(proto::child(op));
 }
 
 template<typename Tag, typename T0, typename T1, typename Domain>
-void write(std::ostream &sout, proto::basic_expr<Tag, proto::children<T0, T1>, Domain> const &op)
+void write(std::ostream &sout, proto::basic_expr<Tag(T0, T1), Domain> const &op)
 {
     write(sout, proto::left(op));
     write(sout, Tag());
@@ -118,7 +118,7 @@ void test_expr()
 ////////////////////////////////////////////////////////////////////////
 // Test that expression extensions are also valid fusion sequences
 
-template<typename Tag, typename Children>
+template<typename ExprSig>
 struct My;
 
 struct MyDomain
@@ -129,12 +129,12 @@ struct MyDomain
     {};
 };
 
-template<typename Tag, typename Children>
+template<typename ExprSig>
 struct My
-  : proto::basic_expr<Tag, Children, MyDomain>
-  , proto::expr_function<My<Tag, Children>, MyDomain>
+  : proto::basic_expr<ExprSig, MyDomain>
+  , proto::expr_function<My<ExprSig>, MyDomain>
 {
-    typedef proto::basic_expr<Tag, Children, MyDomain> proto_basic_expr_type;
+    typedef proto::basic_expr<ExprSig, MyDomain> proto_basic_expr_type;
     BOOST_PROTO_INHERIT_EXPR_CTORS(My, proto_basic_expr_type);
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(My);
 };

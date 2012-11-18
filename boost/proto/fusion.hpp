@@ -575,14 +575,14 @@ namespace boost
 {
     namespace mpl
     {
-        template<typename Tag, typename Children, typename Domain>
-        struct sequence_tag<proto::expr<Tag, Children, Domain>>
+        template<typename ExprSig, typename Domain>
+        struct sequence_tag<proto::expr<ExprSig, Domain>>
         {
             typedef fusion::fusion_sequence_tag type;
         };
 
-        template<typename Tag, typename Children, typename Domain>
-        struct sequence_tag<proto::basic_expr<Tag, Children, Domain>>
+        template<typename ExprSig, typename Domain>
+        struct sequence_tag<proto::basic_expr<ExprSig, Domain>>
         {
             typedef fusion::fusion_sequence_tag type;
         };

@@ -12,7 +12,7 @@ namespace mpl = boost::mpl;
 namespace proto = boost::proto;
 using proto::_;
 
-template<class T, class A>
+template<class E>
 struct e;
 
 struct g
@@ -32,21 +32,21 @@ struct d
     {};
 };
 
-template<class T, class A>
+template<class E>
 struct e
-  : proto::basic_expr<T, A, d>
+  : proto::basic_expr<E, d>
 {
-    typedef proto::basic_expr<T, A, d> proto_basic_expr_type;
+    typedef proto::basic_expr<E, d> proto_basic_expr_type;
     static_assert(proto::matches<proto_basic_expr_type, g>::value, "");
 
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(e);
     BOOST_PROTO_INHERIT_EXPR_CTORS(e, proto_basic_expr_type);
 };
 
-e<proto::terminal, proto::children<int>> i;
+e<proto::terminal(int)> i;
 
-template<class T, class A>
-std::ostream &operator<<(std::ostream &sout, e<T, A> const &x)
+template<class E>
+std::ostream &operator<<(std::ostream &sout, e<E> const &x)
 {
     return sout;
 }

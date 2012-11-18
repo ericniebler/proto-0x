@@ -236,7 +236,7 @@ namespace boost
             >
             struct matches_expr_<
                 Expr
-              , basic_expr<Tag0, children<Child0...>, Domain>
+              , basic_expr<Tag0(Child0...), Domain>
               , Tag1(Child1...)
               , typename std::enable_if<
                     !Tag0::proto_is_terminal::value &&
@@ -257,7 +257,7 @@ namespace boost
             >
             struct matches_expr_<
                 Expr
-              , basic_expr<Tag0, children<Child0...>, Domain>
+              , basic_expr<Tag0(Child0...), Domain>
               , Tag1(Child1......)
               , typename std::enable_if<!Tag0::proto_is_terminal::value>::type
             >
@@ -275,7 +275,7 @@ namespace boost
             >
             struct matches_expr_<
                 Expr
-              , basic_expr<Tag0, children<Value0>, Domain>
+              , basic_expr<Tag0(Value0), Domain>
               , Tag1(Value1)
               , typename std::enable_if<Tag0::proto_is_terminal::value>::type
             >
@@ -299,7 +299,7 @@ namespace boost
             >
             struct matches_nullary_expr_<
                 Expr
-              , basic_expr<Tag0, children<Value0>, Domain>
+              , basic_expr<Tag0(Value0), Domain>
               , nullary_expr(Tag1, Value1)
               , typename std::enable_if<Tag0::proto_is_terminal>::type
             >
@@ -323,7 +323,7 @@ namespace boost
             >
             struct matches_unary_expr_<
                 Expr
-              , basic_expr<Tag0, children<Child0>, Domain>
+              , basic_expr<Tag0(Child0), Domain>
               , unary_expr(Tag1, Child1)
               , typename std::enable_if<!Tag0::proto_is_terminal::value>::type
             >
@@ -347,7 +347,7 @@ namespace boost
             >
             struct matches_binary_expr_<
                 Expr
-              , basic_expr<Tag0, children<Left0, Right0>, Domain>
+              , basic_expr<Tag0(Left0, Right0), Domain>
               , binary_expr(Tag1, Left1, Right1)
             >
               : utility::and_<
@@ -371,7 +371,7 @@ namespace boost
             >
             struct matches_nary_expr_<
                 Expr
-              , basic_expr<Tag0, children<Child0...>, Domain>
+              , basic_expr<Tag0(Child0...), Domain>
               , nary_expr(Tag1, Child1...)
               , typename std::enable_if<
                     !Tag0::proto_is_terminal::value &&
@@ -391,7 +391,7 @@ namespace boost
             >
             struct matches_nary_expr_<
                 Expr
-              , basic_expr<Tag0, children<Child0...>, Domain>
+              , basic_expr<Tag0(Child0...), Domain>
               , nary_expr(Tag1, Child1......)
               , typename std::enable_if<!Tag0::proto_is_terminal::value>::type
             >
