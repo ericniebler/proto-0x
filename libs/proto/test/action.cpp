@@ -63,17 +63,11 @@ void test_action()
         BOOST_CHECK_EQUAL(i, 43);
     }
 
-    // Check that expressions can be used as actions
-    p = proto::action<int_>()(p);
-    proto::action<proto::exprs::function<int_, int_, int_>>()(p(p, p));
-
     // Check the pass-through basic_action
-    proto::action<proto::pass_through(int_, int_, int_...)>()(p(p));
-    proto::action<proto::pass_through(int_, int_, int_...)>()(p(p, p));
-    proto::action<proto::pass_through(int_, int_, int_...)>()(p(p, p, p));
-    proto::action<proto::pass_through(proto::terminal(int), proto::terminal(int), proto::terminal(int)...)>()(p(p));
-    proto::action<proto::pass_through(proto::terminal(int), proto::terminal(int), proto::terminal(int)...)>()(p(p, p));
-    proto::action<proto::pass_through(proto::terminal(int), proto::terminal(int), proto::terminal(int)...)>()(p(p, p, p));
+    using X = proto::when(proto::terminal(int), _);
+    proto::action<proto::pass_through(X, X, X...)>()(p(p));
+    proto::action<proto::pass_through(X, X, X...)>()(p(p, p));
+    proto::action<proto::pass_through(X, X, X...)>()(p(p, p, p));
 }
 
 template<typename T>

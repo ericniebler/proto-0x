@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <boost/proto/proto.hpp>
+#include <boost/proto/debug.hpp>
 #include "./unit_test.hpp"
 namespace mpl = boost::mpl;
 namespace proto = boost::proto;
@@ -42,9 +43,13 @@ namespace linear_algebra
                 proto::when(
                     proto::terminal(_)
                     // BUGBUG uuuuugly!
-                  , proto::functional::make_expr(proto::construct(proto::subscript()), _, proto::_state)
+                  , proto::subscript(_, proto::_state)
+                  //, proto::functional::make_expr(proto::construct(proto::subscript()), _, proto::_state)
                 )
-              , proto::plus(Distribute, Distribute)
+              , proto::when(
+                    proto::plus(Distribute, Distribute)
+                  , proto::pass
+                )
             )
         >
     {};
@@ -56,15 +61,21 @@ namespace linear_algebra
                     proto::subscript(Distribute, proto::terminal(_))
                   , Distribute(proto::_left, proto::_right)
                 )
-              , proto::plus(Optimize, Optimize)
-              , proto::terminal(_)
+              , proto::when(
+                    proto::plus(Optimize, Optimize)
+                  , proto::pass
+                )
+              , proto::when(
+                    proto::terminal(_)
+                  , proto::pass
+                )
             )
         >
     {};
 }
 
-static const int celems = 4;
-static int const value[celems] = {1,2,3,4};
+static constexpr int celems = 4;
+static constexpr int value[celems] = {1,2,3,4};
 std::vector<int> A(value, value+celems), B(A);
 
 void test1()
@@ -72,6 +83,8 @@ void test1()
     using namespace linear_algebra;
     proto::_eval<> eval;
     int result = eval(Optimize()((A + B)[3]));
+    proto::assert_matches<Optimize>((A + B)[3]);
+    proto::assert_matches_not<Optimize>((A - B)[3]);
     BOOST_CHECK_EQUAL(8, result);
 }
 

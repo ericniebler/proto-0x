@@ -55,8 +55,8 @@ namespace boost
         /// \code
         /// BOOST_MPL_ASSERT((
         ///     matches<
-        ///         literal<std::complex<double>>::type
-        ///       , literal<std::complex< _ >>
+        ///         expr<terminal(std::complex< double >)>
+        ///       , terminal(std::complex< _ >)
         ///     >
         /// ));
         /// \endcode

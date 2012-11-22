@@ -28,6 +28,13 @@ namespace boost
         struct action<when(Grammar, Action)>
           : action<Action>
         {};
+
+        // These two are defined in pass_through.hpp
+        template<typename Tag, typename ...ActiveGrammars>
+        struct action<when(Tag(ActiveGrammars...), pass)>;
+
+        template<typename Tag, typename ...ActiveGrammars>
+        struct action<when(Tag(ActiveGrammars......), pass)>;
     }
 }
 

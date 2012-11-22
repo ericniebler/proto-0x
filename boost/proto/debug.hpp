@@ -138,7 +138,7 @@ namespace boost
                     this->sout_.width(this->depth_);
                     this->sout_ << (this->first_ ? "" : ", ");
                     this->sout_ << tag() << "(\n";
-                    exprs::for_each(e, display_expr_(this->sout_, this->depth_ + 4));
+                    exprs::for_each(e.proto_args(), display_expr_(this->sout_, this->depth_ + 4));
                     this->sout_.width(this->depth_);
                     this->sout_ << "" << ")\n";
                     this->first_ = false;

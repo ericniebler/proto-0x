@@ -246,6 +246,12 @@
     <ClInclude Include="..\..\..\boost\proto\functional\std\iterator.hpp">
       <Filter>Proto Files\functional\std</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\detail\compressed_pair.hpp">
+      <Filter>Proto Files\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\accessors.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

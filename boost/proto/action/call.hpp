@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/utility.hpp>
+#include <boost/proto/tags.hpp>
 #include <boost/proto/action/action.hpp>
 #include <boost/proto/action/protect.hpp>
 #include <boost/proto/action/env.hpp>
@@ -113,7 +114,7 @@ namespace boost
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Handle callable actions
         template<typename Ret, typename ...Actions>
-        struct action<Ret(Actions...), typename std::enable_if<!is_tag<Ret>::value>::type>
+        struct action<Ret(Actions...), typename std::enable_if<!detail::is_terminal_tag<Ret>::value>::type> //, typename std::enable_if<!is_tag<Ret>::value>::type>
           : detail::_call<Ret, Actions...>
         {};
     }

@@ -37,14 +37,6 @@ namespace boost
     {
         namespace detail
         {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // as_virtual_member
-            template<typename L, typename R, typename D = typename L::proto_domain_type>
-            constexpr auto as_virtual_member(exprs::children<exprs::virtual_<L>, exprs::terminal<R>> const &a)
-            BOOST_PROTO_AUTO_RETURN(
-                (char *)static_cast<virtual_member<L, R, D> const *>(&a)
-            )
-
             struct child_impl_
             {
                 #define BOOST_PP_LOCAL_MACRO(N)                                                     \
@@ -110,14 +102,14 @@ namespace boost
 
             #define BOOST_PP_LOCAL_MACRO(N)                                                         \
             template<BOOST_PP_ENUM_PARAMS(N, typename T)>                                           \
-            struct children<BOOST_PP_ENUM_PARAMS(N, T)>                                                 \
+            struct children<BOOST_PP_ENUM_PARAMS(N, T)>                                             \
             {                                                                                       \
-                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(children);                                            \
+                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(children);                                        \
                 typedef std::integral_constant<std::size_t, N> proto_size;                          \
                 BOOST_PP_REPEAT(N, MEMBERS, ~)                                                      \
                                                                                                     \
-                template<BOOST_PP_ENUM_PARAMS(N, typename U) DISABLE_COPY_IF(children, N, U0)>          \
-                explicit constexpr children(BOOST_PP_ENUM_BINARY_PARAMS(N, U, &&u))                     \
+                template<BOOST_PP_ENUM_PARAMS(N, typename U) DISABLE_COPY_IF(children, N, U0)>      \
+                explicit constexpr children(BOOST_PP_ENUM_BINARY_PARAMS(N, U, &&u))                 \
                     noexcept(BOOST_PP_REPEAT(N, NOEXCEPT, ~) true)                                  \
                   : BOOST_PP_ENUM(N, INIT, ~)                                                       \
                 {}                                                                                  \
@@ -277,138 +269,26 @@ namespace boost
             #undef DISABLE_COPY_IF
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // child
+            // get
             template<std::size_t I, typename ...T>
-            inline constexpr auto child(children<T...> &a)
+            inline constexpr auto get(children<T...> &a)
             BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl_::child(a, std::integral_constant<std::size_t, I>())
             )
 
             template<std::size_t I, typename ...T>
-            inline constexpr auto child(children<T...> const &a)
+            inline constexpr auto get(children<T...> const &a)
             BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl_::child(a, std::integral_constant<std::size_t, I>())
             )
 
             template<std::size_t I, typename ...T>
-            inline constexpr auto child(children<T...> &&a)
+            inline constexpr auto get(children<T...> &&a)
             BOOST_PROTO_AUTO_RETURN(
                 detail::child_impl_::child(
                     static_cast<children<T...> &&>(a)
                   , std::integral_constant<std::size_t, I>()
                 )
-            )
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // child when 0th element is "virtual" (see virtual_member)
-            template<std::size_t I, typename L, typename R, BOOST_PROTO_ENABLE_IF(I == 0)>
-            inline constexpr L & child(children<virtual_<L>, R> &a)
-            BOOST_PROTO_RETURN(
-                *(L *)(detail::as_virtual_member(a) -
-                    ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a))
-            )
-
-            template<std::size_t I, typename L, typename R, BOOST_PROTO_ENABLE_IF(I == 0)>
-            inline constexpr L const & child(children<virtual_<L>, R> const &a)
-            BOOST_PROTO_RETURN(
-                *(L const *)(detail::as_virtual_member(a) -
-                    ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a))
-            )
-
-            template<std::size_t I, typename L, typename R, BOOST_PROTO_ENABLE_IF(I == 0)>
-            inline constexpr L && child(children<virtual_<L>, R> &&a)
-            BOOST_PROTO_RETURN(
-                static_cast<L &&>(*(L*)(detail::as_virtual_member(a) -
-                    ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a)))
-            )
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // left
-            template<typename L, typename R>
-            inline constexpr auto left(children<L, R> &a)
-            BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl_::child(a, std::integral_constant<std::size_t, 0>())
-            )
-
-            template<typename L, typename R>
-            inline constexpr auto left(children<L, R> const &a)
-            BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl_::child(a, std::integral_constant<std::size_t, 0>())
-            )
-
-            template<typename L, typename R>
-            inline constexpr auto left(children<L, R> &&a)
-            BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl_::child(
-                    static_cast<children<L, R> &&>(a)
-                  , std::integral_constant<std::size_t, 0>()
-                )
-            )
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // left when 0th element is "virtual" (see virtual_member)
-            template<typename L, typename R>
-            inline constexpr L & left(children<virtual_<L>, R> &a)
-            BOOST_PROTO_RETURN(
-                *(L *)(detail::as_virtual_member(a) -
-                    ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a))
-            )
-
-            template<typename L, typename R>
-            inline constexpr L const & left(children<virtual_<L>, R> const &a)
-            BOOST_PROTO_RETURN(
-                *(L const *)(detail::as_virtual_member(a) -
-                    ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a))
-            )
-
-            template<typename L, typename R>
-            inline constexpr L && left(children<virtual_<L>, R> &&a)
-            BOOST_PROTO_RETURN(
-                static_cast<L &&>(*(L *)(detail::as_virtual_member(a) -
-                    ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a)))
-            )
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // right
-            template<typename L, typename R>
-            inline constexpr auto right(children<L, R> &a)
-            BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl_::child(a, std::integral_constant<std::size_t, 1>())
-            )
-
-            template<typename L, typename R>
-            inline constexpr auto right(children<L, R> const &a)
-            BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl_::child(a, std::integral_constant<std::size_t, 1>())
-            )
-
-            template<typename L, typename R>
-            inline constexpr auto right(children<L, R> &&a)
-            BOOST_PROTO_AUTO_RETURN(
-                detail::child_impl_::child(
-                    static_cast<children<L, R> &&>(a)
-                  , std::integral_constant<std::size_t, 1>()
-                )
-            )
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // value
-            template<typename T>
-            inline constexpr auto value(children<T> &that)
-            BOOST_PROTO_AUTO_RETURN(
-                (that.proto_child0) // extra parens are significant!
-            )
-
-            template<typename T>
-            inline constexpr auto value(children<T> const &that)
-            BOOST_PROTO_AUTO_RETURN(
-                (that.proto_child0) // extra parens are significant!
-            )
-
-            template<typename T>
-            inline constexpr auto value(children<T> &&that)
-            BOOST_PROTO_AUTO_RETURN(
-                (static_cast<children<T> &&>(that).proto_child0)  // extra parens are significant!
             )
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -419,63 +299,6 @@ namespace boost
                 children<T...>(static_cast<T &&>(t)...)
             )
         }
-
-        using exprs::child;
-        using exprs::left;
-        using exprs::right;
-        using exprs::value;
-
-        namespace result_of
-        {
-            template<typename Expr, std::size_t N>
-            struct child
-            {
-                typedef decltype(proto::child<N>(std::declval<Expr>())) type;
-            };
-
-            template<typename Expr>
-            struct left
-            {
-                typedef decltype(proto::left(std::declval<Expr>())) type;
-            };
-
-            template<typename Expr>
-            struct right
-            {
-                typedef decltype(proto::right(std::declval<Expr>())) type;
-            };
-
-            template<typename Expr>
-            struct value
-            {
-                typedef decltype(proto::value(std::declval<Expr>())) type;
-            };
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // _child
-        template<std::size_t N>
-        struct _child
-          : basic_action<_child<N>>
-        {
-            template<typename E, typename ...Rest>
-            auto operator()(E && e, Rest &&...) const
-            BOOST_PROTO_AUTO_RETURN(
-                proto::child<N>(e)
-            )
-        };
-
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // _value
-        struct _value
-          : basic_action<_value>
-        {
-            template<typename E, typename ...Rest>
-            auto operator()(E && e, Rest &&...) const
-            BOOST_PROTO_AUTO_RETURN(
-                proto::value(e)
-            )
-        };
     }
 }
 

@@ -19,12 +19,11 @@ namespace boost
     {
         ////////////////////////////////////////////////////////////////////////////////////////////
         // grammar
-        template<typename Grammar>
+        template<typename ActiveGrammar>
         struct active_grammar
-          : action<Grammar>
-        {
-            typedef Grammar proto_grammar_type;
-        };
+          : action<ActiveGrammar>
+          , grammar<ActiveGrammar>
+        {};
     }
 }
 

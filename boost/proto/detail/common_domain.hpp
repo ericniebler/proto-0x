@@ -12,8 +12,8 @@
 // also to Jeremiah Willcock, John Bytheway and Krishna Achuthan who
 // offered alternate solutions to this tricky programming problem.
 
-#ifndef BOOST_PROTO_COMMON_DOMAIN_HPP_INCLUDED
-#define BOOST_PROTO_COMMON_DOMAIN_HPP_INCLUDED
+#ifndef BOOST_PROTO_DETAIL_COMMON_DOMAIN_HPP_INCLUDED
+#define BOOST_PROTO_DETAIL_COMMON_DOMAIN_HPP_INCLUDED
 
 #include <cstddef>
 #include <type_traits>
@@ -124,4 +124,4 @@ namespace boost
     }
 }
 
-#endif // BOOST_PROTO_COMMON_DOMAIN_HPP_INCLUDED
+#endif // BOOST_PROTO_DETAIL_COMMON_DOMAIN_HPP_INCLUDED

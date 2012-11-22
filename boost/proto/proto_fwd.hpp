@@ -101,6 +101,8 @@ namespace boost
 
             template<typename Ignored = decltype(nullptr)>
             struct any;
+
+            struct expr_tag_base;
         }
 
         namespace utility
@@ -139,8 +141,6 @@ namespace boost
         // Operator tags
         namespace tags
         {
-            struct expr_tag_base;
-
             template<typename Tag, typename IsTerminal = std::false_type>
             struct expr_tag;
 
@@ -193,11 +193,6 @@ namespace boost
             struct if_else_;
             struct function;
 
-            struct nullary_expr;
-            struct unary_expr;
-            struct binary_expr;
-            struct nary_expr;
-
             // Fusion tags
             struct proto_expr;
             struct proto_expr_iterator;
@@ -218,6 +213,7 @@ namespace boost
         struct if_;
         struct switch_;
         struct when;
+        struct pass;
         struct pass_through;
         struct match;
 

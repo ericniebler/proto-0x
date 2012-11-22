@@ -14,11 +14,12 @@
 #include <boost/mpl/integral_c_fwd.hpp>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/children.hpp>
+#include <boost/proto/accessors.hpp>
 #include <boost/proto/domain.hpp>
 #include <boost/proto/tags.hpp>
 #include <boost/proto/utility.hpp>
+#include <boost/proto/detail/compressed_pair.hpp>
 #include <boost/proto/action/action.hpp>
-#include <boost/proto/action/pass_through.hpp>
 
 namespace boost
 {
@@ -26,14 +27,6 @@ namespace boost
     {
         namespace detail
         {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // is_terminal_
-            template<typename Tag>
-            typename Tag::proto_is_terminal is_terminal_(int);
-
-            template<typename Tag>
-            std::false_type is_terminal_(long);
-
             ////////////////////////////////////////////////////////////////////////////////////////
             // are_equality_comparible
             template<typename L, typename R
@@ -44,9 +37,7 @@ namespace boost
             std::false_type are_equality_comparible_(long);
 
             template<typename L, typename R>
-            struct are_equality_comparible
-              : decltype(detail::are_equality_comparible_<L, R>(1))
-            {};
+            using are_equality_comparible = decltype(detail::are_equality_comparible_<L, R>(1));
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // struct expr_boolean_convertible
@@ -392,14 +383,17 @@ namespace boost
             template<typename Tag, typename ...Children, typename Domain>
             struct basic_expr<Tag(Children...), Domain>
               : expr_base
-              , Tag
-              , exprs::children<Children...>
               , detail::expr_boolean_convertible<basic_expr<Tag(Children...), Domain>>
             {
+            private:
+                using tag_and_children_type = detail::compressed_pair<Tag, exprs::children<Children...>>;
+                tag_and_children_type tag_and_children_;
+
+            public:
                 ////////////////////////////////////////////////////////////////////////////////////
                 // Check constraints
                 static_assert(
-                    !decltype(detail::is_terminal_<Tag>(1))::value || sizeof...(Children) <= 1
+                    !detail::is_terminal_tag<Tag>::value || sizeof...(Children) <= 1
                   , "terminals can have only 1 value"
                 );
 
@@ -408,15 +402,16 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // usings and typedefs
                 using proto_tag_type                = Tag;
+                using proto_is_terminal             = typename proto_tag_type::proto_is_terminal;
                 using proto_children_type           = exprs::children<Children...>;
+                using proto_size                    = typename proto_children_type::proto_size;
                 using proto_domain_type             = Domain;
                 using proto_basic_expr_type         = basic_expr;
-                using proto_action_type             = action<pass_through(Children...)>;
                 using proto_expr_descriptor_type    = Tag(Children...);
                 using proto_arity                   =
                     std::integral_constant<
                         std::size_t
-                      , decltype(detail::is_terminal_<Tag>(1))::value ? 0 : sizeof...(Children)
+                      , detail::is_terminal_tag<Tag>::value ? 0 : sizeof...(Children)
                     >;
 
                 using fusion_tag                = proto_expr; ///< For Fusion
@@ -425,11 +420,17 @@ namespace boost
                 // constructors
                 constexpr basic_expr(Tag tag, proto_children_type args)
                     noexcept(
-                        noexcept(Tag(static_cast<Tag &&>(tag))) &&
-                        noexcept(proto_children_type(static_cast<proto_children_type &&>(args)))
+                        noexcept(
+                            tag_and_children_type(
+                                static_cast<Tag &&>(tag)
+                              , static_cast<proto_children_type &&>(args)
+                            )
+                        )
                     )
-                  : Tag(static_cast<Tag &&>(tag))
-                  , proto_children_type(static_cast<proto_children_type &&>(args))
+                  : tag_and_children_(
+                        static_cast<Tag &&>(tag)
+                      , static_cast<proto_children_type &&>(args)
+                    )
                 {}
 
                 explicit constexpr basic_expr(proto_children_type args)
@@ -444,11 +445,17 @@ namespace boost
                 >
                 constexpr basic_expr(Tag tag, A &&a)
                     noexcept(
-                        noexcept(Tag(static_cast<Tag &&>(tag))) &&
-                        noexcept(proto_children_type(static_cast<A &&>(a)))
+                        noexcept(
+                            tag_and_children_type(
+                                static_cast<Tag &&>(tag)
+                              , proto_children_type(static_cast<A &&>(a))
+                            )
+                        )
                     )
-                  : Tag(static_cast<Tag &&>(tag))
-                  , proto_children_type(static_cast<A &&>(a))
+                  : tag_and_children_(
+                        static_cast<Tag &&>(tag)
+                      , proto_children_type(static_cast<A &&>(a))
+                    )
                 {}
 
                 template<
@@ -469,11 +476,17 @@ namespace boost
                 >
                 constexpr basic_expr(Tag tag, A &&a, B &&b, C &&... c)
                     noexcept(
-                        noexcept(Tag(static_cast<Tag &&>(tag))) &&
-                        noexcept(proto_children_type(static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...))
+                        noexcept(
+                            tag_and_children_type(
+                                static_cast<Tag &&>(tag)
+                              , proto_children_type(static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...)
+                            )
+                        )
                     )
-                  : Tag(static_cast<Tag &&>(tag))
-                  , proto_children_type(static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...)
+                  : tag_and_children_(
+                        static_cast<Tag &&>(tag)
+                      , proto_children_type(static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...)
+                    )
                 {}
 
                 template<typename A, typename B, typename ...C
@@ -496,32 +509,32 @@ namespace boost
                 // accessors
                 Tag & proto_tag() & noexcept
                 {
-                    return *this;
+                    return tag_and_children_.first();
                 }
 
                 Tag const & proto_tag() const & noexcept
                 {
-                    return *this;
+                    return tag_and_children_.first();
                 }
 
                 Tag && proto_tag() && noexcept
                 {
-                    return static_cast<Tag &&>(*this);
+                    return static_cast<tag_and_children_type &&>(tag_and_children_).first();
                 }
 
                 proto_children_type & proto_args() & noexcept
                 {
-                    return *this;
+                    return tag_and_children_.second();
                 }
 
                 proto_children_type const & proto_args() const & noexcept
                 {
-                    return *this;
+                    return tag_and_children_.second();
                 }
 
                 proto_children_type && proto_args() && noexcept
                 {
-                    return static_cast<proto_children_type &&>(*this);
+                    return static_cast<tag_and_children_type &&>(tag_and_children_).second();
                 }
 
                 basic_expr & proto_base() & noexcept
@@ -571,6 +584,33 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // operator=
                 using expr_assign<expr, Domain>::operator=;
+            };
+        }
+
+        namespace result_of
+        {
+            template<typename Expr, std::size_t N>
+            struct child
+            {
+                typedef decltype(proto::child<N>(std::declval<Expr>())) type;
+            };
+
+            template<typename Expr>
+            struct left
+            {
+                typedef decltype(proto::left(std::declval<Expr>())) type;
+            };
+
+            template<typename Expr>
+            struct right
+            {
+                typedef decltype(proto::right(std::declval<Expr>())) type;
+            };
+
+            template<typename Expr>
+            struct value
+            {
+                typedef decltype(proto::value(std::declval<Expr>())) type;
             };
         }
 
@@ -658,10 +698,35 @@ namespace boost
           : proto::basic_action<_arity_of>
         {
             template<typename E, typename ...Rest>
-            arity_of<E> operator()(E && e, Rest &&...) const noexcept
+            arity_of<E> operator()(E &&, Rest &&...) const noexcept
             {
                 return arity_of<E>();
             };
+        };
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // _child
+        template<std::size_t N>
+        struct _child
+          : basic_action<_child<N>>
+        {
+            template<typename E, typename ...Rest>
+            auto operator()(E && e, Rest &&...) const
+            BOOST_PROTO_AUTO_RETURN(
+                proto::child<N>(e)
+            )
+        };
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // _value
+        struct _value
+          : basic_action<_value>
+        {
+            template<typename E, typename ...Rest>
+            auto operator()(E && e, Rest &&...) const
+            BOOST_PROTO_AUTO_RETURN(
+                proto::value(e)
+            )
         };
     }
 }

@@ -56,6 +56,7 @@
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\boost\proto\accessors.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\action.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\and.hpp" />
@@ -85,6 +86,7 @@
     <ClInclude Include="..\..\..\boost\proto\debug.hpp" />
     <ClInclude Include="..\..\..\boost\proto\deep_copy.hpp" />
     <ClInclude Include="..\..\..\boost\proto\detail\common_domain.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\detail\compressed_pair.hpp" />
     <ClInclude Include="..\..\..\boost\proto\domain.hpp" />
     <ClInclude Include="..\..\..\boost\proto\expr.hpp" />
     <ClInclude Include="..\..\..\boost\proto\functional.hpp" />

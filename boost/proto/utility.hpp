@@ -16,6 +16,7 @@
 #include <cstddef>
 #include <functional>
 #include <type_traits>
+#include <boost/utility/addressof.hpp>
 #include <boost/proto/proto_fwd.hpp>
 
 namespace boost
@@ -543,11 +544,10 @@ namespace boost
             namespace result_of
             {
                 template<std::size_t N, typename ...Ts>
-                struct get_nth
-                  : decltype(
+                using get_nth =
+                   decltype(
                         detail::get_nth_type<typename list_of<N, decltype(nullptr)>::type>::eval(
-                            (detail::no_decay<Ts>*)nullptr ...))
-                {};
+                            (detail::no_decay<Ts>*)nullptr ...));
             }
 
             namespace functional
@@ -750,6 +750,47 @@ namespace boost
         #else
             #define BOOST_PROTO_TRY_CALL
         #endif
+        }
+
+        namespace detail
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // proto_get_pointer
+            template<typename T>
+            auto proto_get_pointer(T & t, long)
+            BOOST_PROTO_AUTO_RETURN(
+                boost::addressof(t) // TODO replace with std::addressof
+            )
+
+            template<typename T>
+            auto proto_get_pointer(T && t, int)
+            BOOST_PROTO_AUTO_RETURN(
+                get_pointer(static_cast<T &&>(t))
+            )
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // mem_fun_binder_
+            template<typename T, typename PMF>
+            class mem_fun_binder_
+            {
+                T obj_;
+                PMF pmf_;
+
+            public:
+                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(mem_fun_binder_);
+
+                template<typename U>
+                mem_fun_binder_(U && u, PMF pmf) noexcept(noexcept(T(static_cast<U &&>(u))))
+                  : obj_(static_cast<U &&>(u))
+                  , pmf_(pmf)
+                {}
+
+                template<typename ...A>
+                auto operator()(A &&... a) const
+                BOOST_PROTO_AUTO_RETURN(
+                    (detail::proto_get_pointer(obj_, 1) ->* pmf_)(static_cast<A &&>(a)...)
+                )
+            };
         }
     }
 }

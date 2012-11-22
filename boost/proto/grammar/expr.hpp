@@ -223,20 +223,18 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // matches_expr_
-            template<typename Expr, typename BasicExpr, typename Grammar, typename Enable = void>
+            template<typename BasicExpr, typename Grammar, typename Enable = void>
             struct matches_expr_
               : std::false_type
             {};
 
             // Handle non-variadic non-terminal matches
             template<
-                typename Expr
-              , typename Tag0, typename ...Child0
+                typename Tag0, typename ...Child0
               , typename Tag1, typename ...Child1
             >
             struct matches_expr_<
-                Expr
-              , Tag0(Child0...)
+                Tag0(Child0...)
               , Tag1(Child1...)
               , typename std::enable_if<
                     !Tag0::proto_is_terminal::value &&
@@ -251,13 +249,11 @@ namespace boost
 
             // Handle variadic non-terminal matches
             template<
-                typename Expr
-              , typename Tag0, typename ...Child0
+                typename Tag0, typename ...Child0
               , typename Tag1, typename ...Child1
             >
             struct matches_expr_<
-                Expr
-              , Tag0(Child0...)
+                Tag0(Child0...)
               , Tag1(Child1......)
               , typename std::enable_if<!Tag0::proto_is_terminal::value>::type
             >
@@ -269,13 +265,11 @@ namespace boost
 
             // Handle terminal matches.
             template<
-                typename Expr
-              , typename Tag0, typename Value0
+                typename Tag0, typename Value0
               , typename Tag1, typename Value1
             >
             struct matches_expr_<
-                Expr
-              , Tag0(Value0)
+                Tag0(Value0)
               , Tag1(Value1)
               , typename std::enable_if<Tag0::proto_is_terminal::value>::type
             >
@@ -284,129 +278,12 @@ namespace boost
                   , value_matches_<Value0, Value1>
                 >
             {};
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // matches_nullary_expr_
-            template<typename Expr, typename BasicExpr, typename Grammar, typename Enable = void>
-            struct matches_nullary_expr_
-              : std::false_type
-            {};
-
-            template<
-                typename Expr
-              , typename Tag0, typename Value0
-              , typename Tag1, typename Value1
-            >
-            struct matches_nullary_expr_<
-                Expr
-              , Tag0(Value0)
-              , nullary_expr(Tag1, Value1)
-              , typename std::enable_if<Tag0::proto_is_terminal>::type
-            >
-              : utility::and_<
-                    tag_matches<Tag0, Tag1>
-                  , value_matches_<Value0, Value1>
-                >
-            {};
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // matches_unary_expr_
-            template<typename Expr, typename BasicExpr, typename Grammar, typename Enable = void>
-            struct matches_unary_expr_
-              : std::false_type
-            {};
-
-            template<
-                typename Expr
-              , typename Tag0, typename Child0
-              , typename Tag1, typename Child1
-            >
-            struct matches_unary_expr_<
-                Expr
-              , Tag0(Child0)
-              , unary_expr(Tag1, Child1)
-              , typename std::enable_if<!Tag0::proto_is_terminal::value>::type
-            >
-              : utility::and_<
-                    tag_matches<Tag0, Tag1>
-                  , matches<Child0, Child1>
-                >
-            {};
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // matches_binary_expr_
-            template<typename Expr, typename BasicExpr, typename Grammar>
-            struct matches_binary_expr_
-              : std::false_type
-            {};
-
-            template<
-                typename Expr
-              , typename Tag0, typename Left0, typename Right0
-              , typename Tag1, typename Left1, typename Right1
-            >
-            struct matches_binary_expr_<
-                Expr
-              , Tag0(Left0, Right0)
-              , binary_expr(Tag1, Left1, Right1)
-            >
-              : utility::and_<
-                    tag_matches<Tag0, Tag1>
-                  , matches<Left0, Left1>
-                  , matches<Right0, Right1>
-                >
-            {};
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // matches_nary_expr_
-            template<typename Expr, typename BasicExpr, typename Grammar, typename Enable = void>
-            struct matches_nary_expr_
-              : std::false_type
-            {};
-
-            template<
-                typename Expr
-              , typename Tag0, typename ...Child0
-              , typename Tag1, typename ...Child1
-            >
-            struct matches_nary_expr_<
-                Expr
-              , Tag0(Child0...)
-              , nary_expr(Tag1, Child1...)
-              , typename std::enable_if<
-                    !Tag0::proto_is_terminal::value &&
-                    sizeof...(Child0) == sizeof...(Child1)
-                >::type
-            >
-              : utility::and_<
-                    tag_matches<Tag0, Tag1>
-                  , matches<Child0, Child1>...
-                >
-            {};
-
-            template<
-                typename Expr
-              , typename Tag0, typename ...Child0
-              , typename Tag1, typename ...Child1
-            >
-            struct matches_nary_expr_<
-                Expr
-              , Tag0(Child0...)
-              , nary_expr(Tag1, Child1......)
-              , typename std::enable_if<!Tag0::proto_is_terminal::value>::type
-            >
-              : utility::and_<
-                    tag_matches<Tag0, Tag1>
-                  , vararg_matches<void(Child0...), void(Child1...)>
-                >
-            {};
         }
 
         template<typename Expr, typename Tag, typename ...Grammars>
         struct matches<Expr, Tag(Grammars...), typename std::enable_if<is_tag<Tag>::value>::type>
           : detail::matches_expr_<
-                Expr
-              , typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
+                typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
               , Tag(Grammars...)
             >
         {};
@@ -414,63 +291,24 @@ namespace boost
         template<typename Expr, typename Tag, typename ...Grammars>
         struct matches<Expr, Tag(Grammars......), typename std::enable_if<is_tag<Tag>::value>::type>
           : detail::matches_expr_<
-                Expr
-              , typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
+                typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
               , Tag(Grammars......)
             >
         {};
 
-        template<typename Expr, typename Tag, typename Value>
-        struct matches<Expr, nullary_expr(Tag, Value)>
-          : detail::matches_nullary_expr_<
-                Expr
-              , typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
-              , nullary_expr(Tag, Value)
+        template<typename Expr, typename ...Children>
+        struct matches<Expr, _(Children...)>
+          : detail::matches_expr_<
+                typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
+              , _(Children...)
             >
         {};
 
-        template<typename Expr, typename Tag, typename Child>
-        struct matches<Expr, unary_expr(Tag, Child)>
-          : detail::matches_unary_expr_<
-                Expr
-              , typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
-              , unary_expr(Tag, Child)
-            >
-        {};
-
-        template<typename Expr, typename Tag, typename Child0, typename Child1>
-        struct matches<Expr, binary_expr(Tag, Child0, Child1)>
-          : detail::matches_binary_expr_<
-                Expr
-              , typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
-              , binary_expr(Tag, Child0, Child1)
-            >
-        {};
-
-        template<typename Expr, typename Tag, typename Child0>
-        struct matches<Expr, binary_expr(Tag, Child0...)>
-          : detail::matches_binary_expr_<
-                Expr
-              , typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
-              , binary_expr(Tag, Child0, Child0)
-            >
-        {};
-
-        template<typename Expr, typename Tag, typename ...Children>
-        struct matches<Expr, nary_expr(Tag, Children...)>
-          : detail::matches_nary_expr_<
-                Expr
-              , typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
-              , nary_expr(Tag, Children...)
-            >
-        {};
-
-        template<typename Expr, typename Tag, typename ...Children>
-        struct matches<Expr, nary_expr(Tag, Children......)>
-          : detail::matches_nary_expr_<
-                Expr
-              , typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
-              , nary_expr(Tag, Children......)
+        template<typename Expr, typename ...Children>
+        struct matches<Expr, _(Children......)>
+          : detail::matches_expr_<
+                typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
+              , _(Children......)
             >
         {};
     }

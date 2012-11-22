@@ -102,6 +102,9 @@ namespace boost
         struct pass_through
         {};
 
+        struct pass
+        {};
+
         template<typename ...Actions>
         struct action<pass_through(Actions...)>
           : detail::_pass_through_<pass_through(Actions...)>
@@ -110,6 +113,16 @@ namespace boost
         template<typename ...Actions>
         struct action<pass_through(Actions......)>
           : detail::_pass_through_<pass_through(Actions......)>
+        {};
+
+        template<typename Tag, typename ...ActiveGrammars>
+        struct action<when(Tag(ActiveGrammars...), pass)>
+          : detail::_pass_through_<pass_through(ActiveGrammars...)>
+        {};
+
+        template<typename Tag, typename ...ActiveGrammars>
+        struct action<when(Tag(ActiveGrammars......), pass)>
+          : detail::_pass_through_<pass_through(ActiveGrammars......)>
         {};
     }
 }

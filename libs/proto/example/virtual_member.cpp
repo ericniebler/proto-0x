@@ -88,7 +88,7 @@ namespace mini_lambda
                 // When evaluating if/then/else expressions of the form
                 // "if_( E0 )[ E1 ].else_[ E2 ]", pass E0, E1 and E2 to
                 // eval_if_else along with the "data" parameter. Note the
-                // use of proto::member<> to match binary expressions like
+                // use of proto::member to match binary expressions like
                 // "X.Y" where "Y" is a virtual data member.
               , proto::when(
                     proto::subscript(
