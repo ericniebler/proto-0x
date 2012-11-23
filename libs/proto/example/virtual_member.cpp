@@ -76,44 +76,42 @@ namespace mini_lambda
     // The grammar for mini-lambda expressions with actions for
     // evaluating the lambda expression.
     struct grammar
-      : proto::active_grammar<
-            proto::or_(
-                // When evaluating a placeholder, use the placeholder
-                // to index into the "data" parameter, which is a fusion
-                // vector containing the arguments to the lambda expression.
-                proto::when(
-                    proto::terminal(placeholder<_>)
-                  , proto::apply(proto::construct(proto::_env_var<proto::_value>()))
-                )
-                // When evaluating if/then/else expressions of the form
-                // "if_( E0 )[ E1 ].else_[ E2 ]", pass E0, E1 and E2 to
-                // eval_if_else along with the "data" parameter. Note the
-                // use of proto::member to match binary expressions like
-                // "X.Y" where "Y" is a virtual data member.
-              , proto::when(
-                    proto::subscript(
-                        proto::member(
-                            proto::subscript(
-                                proto::function(
-                                    proto::terminal(keyword::if_)
-                                  , grammar
-                                )
+      : proto::match<
+            // When evaluating a placeholder, use the placeholder
+            // to index into the "data" parameter, which is a fusion
+            // vector containing the arguments to the lambda expression.
+            proto::case_(
+                proto::terminal(placeholder<_>)
+              , proto::apply(proto::construct(proto::_env_var<proto::_value>()))
+            )
+            // When evaluating if/then/else expressions of the form
+            // "if_( E0 )[ E1 ].else_[ E2 ]", pass E0, E1 and E2 to
+            // eval_if_else along with the "data" parameter. Note the
+            // use of proto::member to match binary expressions like
+            // "X.Y" where "Y" is a virtual data member.
+          , proto::case_(
+                proto::subscript(
+                    proto::member(
+                        proto::subscript(
+                            proto::function(
+                                proto::terminal(keyword::if_)
                               , grammar
                             )
-                          , proto::terminal(keyword::else_)
+                          , grammar
                         )
-                      , grammar
+                      , proto::terminal(keyword::else_)
                     )
-                  , eval_if_else(
-                        proto::_right(proto::_left(proto::_left(proto::_left)))
-                      , proto::_right(proto::_left(proto::_left))
-                      , proto::_right
-                      , proto::_env
-                    )
+                  , grammar
                 )
-              , proto::when( _,
-                    proto::_eval<grammar>
+              , eval_if_else(
+                    proto::_right(proto::_left(proto::_left(proto::_left)))
+                  , proto::_right(proto::_left(proto::_left))
+                  , proto::_right
+                  , proto::_env
                 )
+            )
+          , proto::case_( _,
+                proto::_eval<grammar>
             )
         >
     {};

@@ -214,7 +214,11 @@ namespace boost
         struct switch_;
         struct when;
         struct pass;
-        struct pass_through;
+        struct matches_;
+        struct pass;
+        using case_ = when;
+
+        template<typename... Cases>
         struct match;
 
         typedef and_ block;

@@ -65,14 +65,13 @@
     <ClInclude Include="..\..\..\boost\proto\action\construct.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\env.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\eval.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\action\expr.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\fold.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\if.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\integral_constant.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\let.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\action\match.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\matches.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\or.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\action\pass_through.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\pass.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\placeholders.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\protect.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\recursive_fold.hpp" />

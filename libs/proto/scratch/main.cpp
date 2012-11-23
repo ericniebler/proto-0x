@@ -32,23 +32,6 @@ template<std::size_t I>
 using placeholder_c = placeholder<std::integral_constant<std::size_t, I>>;
 
 struct lambda_eval
-  : proto::active_grammar<
-        proto::or_(
-            proto::when( proto::terminal(placeholder<_>),
-                proto::apply(proto::construct(proto::_env_var<proto::_value>()))
-            )
-          , proto::when( proto::terminal(_),
-                proto::_value
-            )
-          , proto::when( _,
-                proto::_eval<lambda_eval>
-            )
-        )
-    >
-{};
-
-/*
-struct lambda_eval
   : proto::match<
         proto::case_( proto::terminal(placeholder<_>),
             proto::apply(proto::construct(proto::_env_var<proto::_value>()))
@@ -61,7 +44,6 @@ struct lambda_eval
         )
     >
 {};
-*/
 
 template<std::size_t ...I, typename E, typename ...T>
 inline auto lambda_eval_(proto::utility::indices<I...>, E && e, T &&... t)

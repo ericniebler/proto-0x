@@ -144,9 +144,6 @@
     <ClInclude Include="..\..\..\boost\proto\action\integral_constant.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\action\pass_through.hpp">
-      <Filter>Proto Files\action</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\action\protect.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
@@ -198,9 +195,6 @@
     <ClInclude Include="..\..\..\boost\proto\action\switch.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\action\expr.hpp">
-      <Filter>Proto Files\action</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\action\action.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
@@ -209,9 +203,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\grammar\expr.hpp">
       <Filter>Proto Files\grammar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\action\match.hpp">
-      <Filter>Proto Files\action</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\active_grammar.hpp">
       <Filter>Proto Files</Filter>
@@ -251,6 +242,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\accessors.hpp">
       <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\matches.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\pass.hpp">
+      <Filter>Proto Files\action</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

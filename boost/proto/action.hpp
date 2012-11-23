@@ -16,14 +16,13 @@
 #include <boost/proto/action/construct.hpp>
 #include <boost/proto/action/env.hpp>
 #include <boost/proto/action/eval.hpp>
-#include <boost/proto/action/expr.hpp>
 #include <boost/proto/action/fold.hpp>
 #include <boost/proto/action/if.hpp>
 #include <boost/proto/action/integral_constant.hpp>
 #include <boost/proto/action/let.hpp>
-#include <boost/proto/action/match.hpp>
+#include <boost/proto/action/matches.hpp>
 #include <boost/proto/action/or.hpp>
-#include <boost/proto/action/pass_through.hpp>
+#include <boost/proto/action/pass.hpp>
 #include <boost/proto/action/placeholders.hpp>
 #include <boost/proto/action/protect.hpp>
 #include <boost/proto/action/recursive_fold.hpp>

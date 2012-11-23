@@ -38,37 +38,31 @@ namespace linear_algebra
     // into a subscript expression, using the
     // state as the RHS.
     struct Distribute
-      : proto::active_grammar<
-            proto::or_(
-                proto::when(
-                    proto::terminal(_)
-                    // BUGBUG uuuuugly!
-                  , proto::subscript(_, proto::_state)
-                  //, proto::functional::make_expr(proto::construct(proto::subscript()), _, proto::_state)
-                )
-              , proto::when(
-                    proto::plus(Distribute, Distribute)
-                  , proto::pass
-                )
+      : proto::match<
+            proto::case_(
+                proto::terminal(_)
+              , proto::subscript(_, proto::_state)
+            )
+          , proto::case_(
+                proto::plus(Distribute, Distribute)
+              , proto::pass
             )
         >
     {};
 
     struct Optimize
-      : proto::active_grammar<
-            proto::or_(
-                proto::when(
-                    proto::subscript(Distribute, proto::terminal(_))
-                  , Distribute(proto::_left, proto::_right)
-                )
-              , proto::when(
-                    proto::plus(Optimize, Optimize)
-                  , proto::pass
-                )
-              , proto::when(
-                    proto::terminal(_)
-                  , proto::pass
-                )
+      : proto::match<
+            proto::case_(
+                proto::subscript(Distribute, proto::terminal(_))
+              , Distribute(proto::_left, proto::_right)
+            )
+          , proto::case_(
+                proto::plus(Optimize, Optimize)
+              , proto::pass
+            )
+          , proto::case_(
+                proto::terminal(_)
+              , proto::pass
             )
         >
     {};

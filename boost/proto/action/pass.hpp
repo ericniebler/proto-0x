@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// pass_through.hpp
+// pass.hpp
 // Rebuild an expression where each child has been transformed according
 // to the corresponding action.
 //
@@ -7,8 +7,8 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_ACTION_PASS_THROUGH_HPP_INCLUDED
-#define BOOST_PROTO_ACTION_PASS_THROUGH_HPP_INCLUDED
+#ifndef BOOST_PROTO_ACTION_pass_HPP_INCLUDED
+#define BOOST_PROTO_ACTION_pass_HPP_INCLUDED
 
 #include <utility>
 #include <type_traits>
@@ -24,11 +24,29 @@ namespace boost
     {
         namespace detail
         {
+            template<typename Actions>
+            struct _pass_;
+
+            template<typename Action, typename Enable = void>
+            struct as_pass_action
+              : proto::action<Action>
+            {};
+
+            template<typename Tag, typename ...Grammars>
+            struct as_pass_action<Tag(*)(Grammars...), typename std::enable_if<proto::is_tag<Tag>::value>::type>
+              : _pass_<Tag(Grammars...)>
+            {};
+
+            template<typename Tag, typename ...Grammars>
+            struct as_pass_action<Tag(*)(Grammars......), typename std::enable_if<proto::is_tag<Tag>::value>::type>
+              : _pass_<Tag(Grammars......)>
+            {};
+
             template<typename Indices, typename Pattern>
-            struct pass_through_0_;
+            struct pass_0_;
 
             template<std::size_t ...I, typename Tag, typename ...Actions>
-            struct pass_through_0_<utility::indices<I...>, Tag(Actions...)>
+            struct pass_0_<utility::indices<I...>, Tag(Actions...)>
             {
                 static_assert(
                     sizeof...(I) == sizeof...(Actions)
@@ -42,7 +60,7 @@ namespace boost
                         static_cast<E &&>(e).proto_tag()
                       , utility::by_val()(
                             proto::domains::as_expr<decltype(e.proto_domain())>(
-                                proto::action<Actions>()(
+                                as_pass_action<Actions>()(
                                     proto::child<I>(static_cast<E &&>(e))
                                   , static_cast<Rest &&>(rest)...
                                 )
@@ -53,7 +71,7 @@ namespace boost
             };
 
             template<std::size_t ...I, typename Tag, typename ...Actions>
-            struct pass_through_0_<utility::indices<I...>, Tag(Actions......)>
+            struct pass_0_<utility::indices<I...>, Tag(Actions......)>
             {
                 static_assert(
                     sizeof...(I) + 1 >= sizeof...(Actions)
@@ -63,7 +81,7 @@ namespace boost
                 template<typename ...Args>
                 auto operator()(Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    pass_through_0_<
+                    pass_0_<
                         utility::indices<I...>
                       , typename utility::concat<
                             typename utility::pop_back<Tag(Actions...)>::type
@@ -77,10 +95,10 @@ namespace boost
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////////
-            // _pass_through_
+            // _pass_
             template<typename Actions>
-            struct _pass_through_
-              : basic_action<_pass_through_<Actions>>
+            struct _pass_
+              : basic_action<_pass_<Actions>>
             {
                 template<typename E, typename ...T, BOOST_PROTO_ENABLE_IF(is_terminal<E>::value)>
                 auto operator()(E && e, T &&...) const
@@ -91,7 +109,7 @@ namespace boost
                 template<typename E, typename ...Rest, BOOST_PROTO_ENABLE_IF(!is_terminal<E>::value)>
                 auto operator()(E && e, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
-                    detail::pass_through_0_<
+                    detail::pass_0_<
                         utility::make_indices<arity_of<E>::value>
                       , Actions
                     >()(static_cast<E &&>(e), static_cast<Rest &&>(rest)...)
@@ -99,30 +117,27 @@ namespace boost
             };
         }
 
-        struct pass_through
-        {};
-
         struct pass
         {};
 
         template<typename ...Actions>
-        struct action<pass_through(Actions...)>
-          : detail::_pass_through_<pass_through(Actions...)>
+        struct action<pass(Actions...)>
+          : detail::_pass_<pass(Actions...)>
         {};
 
         template<typename ...Actions>
-        struct action<pass_through(Actions......)>
-          : detail::_pass_through_<pass_through(Actions......)>
+        struct action<pass(Actions......)>
+          : detail::_pass_<pass(Actions......)>
         {};
 
         template<typename Tag, typename ...ActiveGrammars>
         struct action<when(Tag(ActiveGrammars...), pass)>
-          : detail::_pass_through_<pass_through(ActiveGrammars...)>
+          : detail::_pass_<pass(ActiveGrammars...)>
         {};
 
         template<typename Tag, typename ...ActiveGrammars>
         struct action<when(Tag(ActiveGrammars......), pass)>
-          : detail::_pass_through_<pass_through(ActiveGrammars......)>
+          : detail::_pass_<pass(ActiveGrammars......)>
         {};
     }
 }

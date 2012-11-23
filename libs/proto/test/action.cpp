@@ -64,10 +64,10 @@ void test_action()
     }
 
     // Check the pass-through basic_action
-    using X = proto::when(proto::terminal(int), _);
-    proto::action<proto::pass_through(X, X, X...)>()(p(p));
-    proto::action<proto::pass_through(X, X, X...)>()(p(p, p));
-    proto::action<proto::pass_through(X, X, X...)>()(p(p, p, p));
+    using X = proto::terminal(int);
+    proto::action<proto::pass(X, X, X...)>()(p(p));
+    proto::action<proto::pass(X, X, X...)>()(p(p, p));
+    proto::action<proto::pass(X, X, X...)>()(p(p, p, p));
 }
 
 template<typename T>

@@ -47,10 +47,13 @@ namespace boost
             struct terminal
               : expr_tag<terminal, std::true_type>
             {
-                template<typename T>
+                template<typename T
+                  , typename Terminal = terminal
+                  , typename MakeExpr = proto::functional::make_expr
+                >
                 auto operator()(T && t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    static_cast<T &&>(t)
+                    MakeExpr()(Terminal(), static_cast<T &&>(t))
                 )
             };
 
@@ -538,7 +541,8 @@ namespace boost
             {
                 template<typename T, typename U
                   , typename Member = member
-                  , typename MakeExpr = proto::functional::make_expr>
+                  , typename MakeExpr = proto::functional::make_expr
+                >
                 auto operator()(T && t, U && u) const
                 BOOST_PROTO_AUTO_RETURN(
                     MakeExpr()(Member(), static_cast<T &&>(t), static_cast<U &&>(u))
@@ -632,9 +636,6 @@ namespace boost
         {};
 
         struct when
-        {};
-
-        struct match
         {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////

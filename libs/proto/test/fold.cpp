@@ -37,10 +37,10 @@ template<typename Fold, int I = 0>
 struct lambda_arity
   : proto::action<
         proto::if_(
-            proto::match( proto::terminal( placeholder<_> ) )
+            proto::matches_( proto::terminal( placeholder<_> ) )
           , proto::construct( mpl::next< proto::_value >() )
           , proto::if_(
-                proto::match( proto::terminal(_) )
+                proto::matches_( proto::terminal(_) )
               , proto::construct( mpl::int_<0>() )
               , Fold(
                     _

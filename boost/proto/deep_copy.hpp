@@ -14,7 +14,7 @@
 #include <boost/proto/make_expr.hpp>
 #include <boost/proto/action/action.hpp>
 #include <boost/proto/action/switch.hpp>
-#include <boost/proto/action/pass_through.hpp>
+#include <boost/proto/action/pass.hpp>
 
 namespace boost
 {
@@ -26,7 +26,7 @@ namespace boost
             {
                 template<typename Tag, bool IsTerminal = Tag::proto_is_terminal::value>
                 struct case_
-                  : proto::action<proto::pass_through(proto::_deep_copy...)>
+                  : proto::action<proto::pass(proto::_deep_copy...)>
                 {};
 
                 template<typename Tag>

@@ -1,7 +1,7 @@
 A Grab-Bag of Miscellaneous Thoughts
 ====================================
 
-* Implement  proper lexical scoping for let expressions.
+* Implement proper lexical scoping for `let` expressions.
     + Can the call action be modified to automatically create a proper lexical scope?
 
 * Think about basic actions.
@@ -21,39 +21,33 @@ A Grab-Bag of Miscellaneous Thoughts
 
 * Should terminal-ness really be encoded in the tag?
 
-* I don't really like the use of `enable_if<!is_tag...>` in action specialization for callables.
-
 * Functional namespace should be carved up: `proto::functional::fusion`? `proto::functional::std`?
 
 * Should `or_/when` be renamed `match/case_`? Answer: probably. Maybe even:
     + `struct MyAlgo : match<case_(g0, a0), case_(g1, a0), /*...*/> {};`
 
+* Should `and_`, `or_`, and `not_` expect Boolean Actions, like `if_`? And logically negating a match
+  could be `match_not()`
+
 * Everyplace where we directly return an rvalue reference is potentially creating a dangling
   reference.
 
-* Crazy thought: what if the tags (e.g. `proto::plus`) were aliases for `proto::op`
-  (`proto::op<proto::some_plus_tag>`). It could be used in actions to add stuff, and an action
-  like `plus(transform(_left), transform(_right))` would find proto's overloaded `operator+` 
-  and naturally be like the pass-through transform. (Danger: don't return dangling references
-  if the domain captures child nodes by reference!)
-    + Problem: `plus(transform, transform)` wouldn't be "right" since it would apply transform
-      twice to the current expression and build a plus node out of that instead of out of the
-      transformed children.
-
-* Inconsistencies and inadequecies:
-    + Expression types are templates, Grammars and actions are functions. The grammar to match
-      and expression doesn't look like the expression type.
-    + Expression patterns as functions doesn't work for proto::terminal(char [42])
-    + Expression patterns as functions causes the 'enable_if<!is_tag...>' weirdness is action
-      specializations for callables.
-
-    + Possible solution: give up using function types for expressions. Go back to Proto-98's
-      dual use of expression types as expression patterns. The action associated with expression
-      types is the pass_through transform, as before. That frees
-      `plus(transform(_left), transform(_right))` to be an addition.
-    - Problem: no natural syntax for vararg expression patterns. Rats!!!  ????
-    - Observation: vararg never needed for terminals. terminal<int> is ok. maybe expr<plus(foo...)>
-      is an expresison pattern? Don't like the inconsistency.
-    - What about using expr<tag(child)> for declaring expressions, and tag(child) for
-      declaring expression patterns? <=== YES, THIS. No more expr<Tag, children<...>>!
-
+* An action like `plus(transform(_left), transform(_right))` finds proto's overloaded `operator+` 
+  and is naturally like the pass-through transform. DANGER: don't return dangling references
+  if the domain captures child nodes by reference!
+    - How about this: 
+    
+        struct unary_plus
+        {
+            template<typename T, BOOST_PROTO_ENABLE_IF(is_expr<decltype(+declval<T>())>::value)>
+            auto operator()(T && t) const
+            BOOST_PROTO_AUTO_RETURN(
+                make_expr(unary_plus(), static_cast<T &&>(t))
+            )
+            
+            template<typename T, BOOST_PROTO_ENABLE_IF(!is_expr<decltype(+declval<T>())>::value)>
+            auto operator()(T && t) const
+            BOOST_PROTO_AUTO_RETURN(
+                + static_cast<T &&>(t)
+            )
+        };

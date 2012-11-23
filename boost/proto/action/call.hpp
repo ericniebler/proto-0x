@@ -114,7 +114,7 @@ namespace boost
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Handle callable actions
         template<typename Ret, typename ...Actions>
-        struct action<Ret(Actions...), typename std::enable_if<!detail::is_terminal_tag<Ret>::value>::type> //, typename std::enable_if<!is_tag<Ret>::value>::type>
+        struct action<Ret(Actions...)>
           : detail::_call<Ret, Actions...>
         {};
     }

@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// match.hpp
+// matches.hpp
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_ACTION_MATCH_HPP_INCLUDED
-#define BOOST_PROTO_ACTION_MATCH_HPP_INCLUDED
+#ifndef BOOST_PROTO_ACTION_MATCHES_HPP_INCLUDED
+#define BOOST_PROTO_ACTION_MATCHES_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/matches.hpp>
@@ -19,24 +19,29 @@ namespace boost
         namespace detail
         {
             ////////////////////////////////////////////////////////////////////////////////////////
-            // _matches basic_action
-            template<typename Gram>
-            struct _match
-              : proto::basic_action<_match<Gram>>
+            // _matches_ basic_action
+            template<typename Grammar>
+            struct _matches_
+              : proto::basic_action<_matches_<Grammar>>
             {
                 template<typename Expr, typename... Rest>
                 auto operator()(Expr &&, Rest &&...) const
                 BOOST_PROTO_AUTO_RETURN(
-                    proto::matches<Expr, Gram>()
+                    proto::matches<Expr, Grammar>()
                 )
             };
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
+        // matches_
+        struct matches_
+        {};
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
         // action
-        template<typename Expr>
-        struct action<match(Expr)>
-          : detail::_match<Expr>
+        template<typename Grammar>
+        struct action<matches_(Grammar)>
+          : detail::_matches_<Grammar>
         {};
     }
 }
