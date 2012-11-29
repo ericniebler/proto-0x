@@ -19,6 +19,7 @@
 #include <boost/proto/grammar/grammar.hpp>
 #include <boost/proto/grammar/not.hpp>
 #include <boost/proto/grammar/expr.hpp>
+#include <boost/proto/action/matches.hpp>
 
 namespace boost
 {
@@ -153,7 +154,8 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // default_grammar
             struct default_grammar
-              : grammar<not_(address_of(_))>
+              : grammar<not_(matches_(address_of(_)))>
+              //: grammar<if_(construct(std::true_type()))>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////

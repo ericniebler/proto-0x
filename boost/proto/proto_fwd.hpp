@@ -212,18 +212,15 @@ namespace boost
         struct and_;
         struct if_;
         struct switch_;
-        struct when;
+        struct case_;
         struct pass;
+        struct match;
         struct matches_;
         struct pass;
-        using case_ = when;
+        struct block;
 
-        template<typename... Cases>
-        struct match;
-
-        typedef and_ block;
-        typedef block then;
-        typedef block else_;
+        using then = block;
+        using else_ = block;
 
         template<typename Expr>
         struct tag_of;
@@ -396,7 +393,7 @@ namespace boost
         template<typename T>
         struct is_action;
 
-        template<typename T, typename Enable = void>
+        template<typename T>
         struct action;
 
         template<typename T>
@@ -477,7 +474,7 @@ namespace boost
         template<typename Grammar>
         struct grammar_of;
 
-        template<typename Expr, typename Grammar, typename Enable = void>
+        template<typename Expr, typename Grammar>
         struct matches;
 
         namespace exprs

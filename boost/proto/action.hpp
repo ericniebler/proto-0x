@@ -11,6 +11,7 @@
 
 #include <boost/proto/action/action.hpp>
 #include <boost/proto/action/and.hpp>
+#include <boost/proto/action/block.hpp>
 #include <boost/proto/action/apply.hpp>
 #include <boost/proto/action/call.hpp>
 #include <boost/proto/action/construct.hpp>
@@ -20,7 +21,9 @@
 #include <boost/proto/action/if.hpp>
 #include <boost/proto/action/integral_constant.hpp>
 #include <boost/proto/action/let.hpp>
+#include <boost/proto/action/match.hpp>
 #include <boost/proto/action/matches.hpp>
+#include <boost/proto/action/not.hpp>
 #include <boost/proto/action/or.hpp>
 #include <boost/proto/action/pass.hpp>
 #include <boost/proto/action/placeholders.hpp>
@@ -28,6 +31,6 @@
 #include <boost/proto/action/recursive_fold.hpp>
 #include <boost/proto/action/switch.hpp>
 #include <boost/proto/action/unpack.hpp>
-#include <boost/proto/action/when.hpp>
+#include <boost/proto/action/case.hpp>
 
 #endif

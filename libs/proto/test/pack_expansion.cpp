@@ -30,13 +30,15 @@ struct do_eval
 };
 
 struct eval
-  : proto::match<
-        proto::case_(proto::terminal(_),
-            proto::_value
-        )
-      , proto::case_(_,
-            // could use _tag_of here, but construct is a nice test case.
-            do_eval(proto::construct(proto::tag_of<_>()), eval(proto::pack(_))...)
+  : proto::active_grammar<
+        proto::match(
+            proto::case_(proto::terminal(_),
+                proto::_value
+            )
+          , proto::case_(_,
+                // could use _tag_of here, but construct is a nice test case.
+                do_eval(proto::construct(proto::tag_of<_>()), eval(proto::pack(_))...)
+            )
         )
     >
 {};

@@ -153,9 +153,6 @@
     <ClInclude Include="..\..\..\boost\proto\action\unpack.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\action\when.hpp">
-      <Filter>Proto Files\action</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\action.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
@@ -174,17 +171,11 @@
     <ClInclude Include="..\..\..\boost\proto\grammar\or.hpp">
       <Filter>Proto Files\grammar</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\grammar\when.hpp">
-      <Filter>Proto Files\grammar</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\grammar\and.hpp">
       <Filter>Proto Files\grammar</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\grammar\switch.hpp">
       <Filter>Proto Files\grammar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\action\and.hpp">
-      <Filter>Proto Files\action</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\action\if.hpp">
       <Filter>Proto Files\action</Filter>
@@ -247,6 +238,24 @@
       <Filter>Proto Files\action</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\action\pass.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\match.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\grammar\match.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\block.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\case.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\grammar\case.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\and.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
   </ItemGroup>

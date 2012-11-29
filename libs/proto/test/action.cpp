@@ -50,9 +50,9 @@ void test_action()
 
     {
         proto::action<
-            proto::or_(
-                proto::when(proto::terminal(int), proto::_int<42>)
-              , proto::when(proto::terminal(std::string), proto::_int<43>)
+            proto::match(
+                proto::case_(proto::terminal(int), proto::_int<42>)
+              , proto::case_(proto::terminal(std::string), proto::_int<43>)
             )
         > SimpleAction;
 

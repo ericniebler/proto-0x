@@ -28,17 +28,17 @@ namespace boost
             struct _pass_;
 
             template<typename Action, typename Enable = void>
-            struct as_pass_action
+            struct as_pass_action_
               : proto::action<Action>
             {};
 
             template<typename Tag, typename ...Grammars>
-            struct as_pass_action<Tag(*)(Grammars...), typename std::enable_if<proto::is_tag<Tag>::value>::type>
+            struct as_pass_action_<Tag(*)(Grammars...), typename std::enable_if<proto::is_tag<Tag>::value>::type>
               : _pass_<Tag(Grammars...)>
             {};
 
             template<typename Tag, typename ...Grammars>
-            struct as_pass_action<Tag(*)(Grammars......), typename std::enable_if<proto::is_tag<Tag>::value>::type>
+            struct as_pass_action_<Tag(*)(Grammars......), typename std::enable_if<proto::is_tag<Tag>::value>::type>
               : _pass_<Tag(Grammars......)>
             {};
 
@@ -60,7 +60,7 @@ namespace boost
                         static_cast<E &&>(e).proto_tag()
                       , utility::by_val()(
                             proto::domains::as_expr<decltype(e.proto_domain())>(
-                                as_pass_action<Actions>()(
+                                as_pass_action_<Actions>()(
                                     proto::child<I>(static_cast<E &&>(e))
                                   , static_cast<Rest &&>(rest)...
                                 )
@@ -131,12 +131,12 @@ namespace boost
         {};
 
         template<typename Tag, typename ...ActiveGrammars>
-        struct action<when(Tag(ActiveGrammars...), pass)>
+        struct action<case_(Tag(ActiveGrammars...), pass)>
           : detail::_pass_<pass(ActiveGrammars...)>
         {};
 
         template<typename Tag, typename ...ActiveGrammars>
-        struct action<when(Tag(ActiveGrammars......), pass)>
+        struct action<case_(Tag(ActiveGrammars......), pass)>
           : detail::_pass_<pass(ActiveGrammars......)>
         {};
     }

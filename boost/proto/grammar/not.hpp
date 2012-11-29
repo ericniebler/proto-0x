@@ -11,17 +11,20 @@
 
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/tags.hpp>
-#include <boost/proto/matches.hpp>
+#include <boost/proto/grammar/grammar.hpp>
+#include <boost/proto/action/action.hpp>
 
 namespace boost
 {
     namespace proto
     {
         // Handle proto::not_
-        template<typename Expr, typename Grammar>
-        struct matches<Expr, proto::not_(Grammar)>
-          : std::integral_constant<bool, !matches<Expr, Grammar>::value>
+        template<typename Expr, typename BoolAction>
+        struct matches<Expr, proto::not_(BoolAction)>
+          : std::integral_constant<
+                bool
+              , !detail::eval_bool_action_<BoolAction, Expr>::value
+            >
         {};
     }
 }

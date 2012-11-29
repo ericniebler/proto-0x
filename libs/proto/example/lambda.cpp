@@ -33,14 +33,14 @@ using placeholder_c = placeholder<std::integral_constant<std::size_t, I>>;
 
 struct lambda_eval
   : proto::active_grammar<
-        proto::or_(
-            proto::when( proto::terminal(placeholder<_>),
+        proto::match(
+            proto::case_( proto::terminal(placeholder<_>),
                 proto::apply(proto::construct(proto::_env_var<proto::_value>()))
             )
-          , proto::when( proto::terminal(_),
+          , proto::case_( proto::terminal(_),
                 proto::_value
             )
-          , proto::when( _,
+          , proto::case_( _,
                 proto::_eval<lambda_eval>
             )
         )

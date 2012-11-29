@@ -1,40 +1,40 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// when.hpp
+// case.hpp
 // Associate a custom basic_action with a grammar rule
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_ACTION_WHEN_HPP_INCLUDED
-#define BOOST_PROTO_ACTION_WHEN_HPP_INCLUDED
+#ifndef BOOST_PROTO_ACTION_CASE_HPP_INCLUDED
+#define BOOST_PROTO_ACTION_CASE_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/action/action.hpp>
-#include <boost/proto/action/and.hpp>
+#include <boost/proto/action/block.hpp>
 
 namespace boost
 {
     namespace proto
     {
         ////////////////////////////////////////////////////////////////////////////////////////////
-        // when
+        // case_
         template<typename Grammar, typename ...Action>
-        struct action<when(Grammar, Action...)>
-          : detail::_and_<Action...>
+        struct action<case_(Grammar, Action...)>
+          : detail::_block<Action...>
         {};
 
         template<typename Grammar, typename Action>
-        struct action<when(Grammar, Action)>
+        struct action<case_(Grammar, Action)>
           : action<Action>
         {};
 
         // These two are defined in pass_through.hpp
         template<typename Tag, typename ...ActiveGrammars>
-        struct action<when(Tag(ActiveGrammars...), pass)>;
+        struct action<case_(Tag(ActiveGrammars...), pass)>;
 
         template<typename Tag, typename ...ActiveGrammars>
-        struct action<when(Tag(ActiveGrammars......), pass)>;
+        struct action<case_(Tag(ActiveGrammars......), pass)>;
     }
 }
 

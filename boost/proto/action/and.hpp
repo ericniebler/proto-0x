@@ -8,44 +8,72 @@
 #ifndef BOOST_PROTO_ACTION_AND_HPP_INCLUDED
 #define BOOST_PROTO_ACTION_AND_HPP_INCLUDED
 
+#include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/tags.hpp>
-#include <boost/proto/utility.hpp>
 #include <boost/proto/action/action.hpp>
 
 namespace boost
 {
     namespace proto
     {
-        /// \brief For matching all of a set of grammars. When used as a
-        /// basic_action, \c and_\<\> applies the actions associated with
-        /// the each grammar in the set, and returns the result of the last.
-        ///
-        /// An expression type \c E matches <tt>and_\<B0,B1,...Bn\></tt> if \c E
-        /// matches all \c Bx for \c x in <tt>[0,n)</tt>.
-        ///
-        /// When applying <tt>and_\<B0,B1,...Bn\></tt> as a basic_action with an
-        /// expression \c e, state \c s and data \c d, it is
-        /// equivalent to <tt>(B0()(e, s, d),B1()(e, s, d),...Bn()(e, s, d))</tt>.
         namespace detail
         {
-            template<typename... Actions>
+            struct logical_and_
+            {
+                template<typename A, typename B>
+                std::integral_constant<bool, static_cast<bool>(A::value) && static_cast<bool>(B::value)>
+                operator()(A const &, B const &) const noexcept
+                {
+                    return std::integral_constant<bool, static_cast<bool>(A::value) && static_cast<bool>(B::value)>();
+                }
+
+                template<typename B, bool BV = static_cast<bool>(B::value)>
+                inline bool operator()(bool a, B const &) const noexcept
+                {
+                    return a && BV;
+                }
+
+                template<typename A, bool AV = static_cast<bool>(A::value)>
+                inline bool operator()(A const &, bool b) const noexcept
+                {
+                    return AV && b;
+                }
+
+                inline bool operator()(bool a, bool b) const noexcept
+                {
+                    return a && b;
+                }
+            };
+
+            struct fold_and_
+            {
+                static std::true_type call() noexcept
+                {
+                    return std::true_type();
+                }
+
+                template<typename BoolHead, typename ...BoolTail, typename Impl = fold_and_>
+                static auto call(BoolHead const &bh, BoolTail const &...bt)
+                BOOST_PROTO_AUTO_RETURN(
+                    BOOST_PROTO_TRY_CALL(logical_and_())(bh, Impl::call(bt...))
+                )
+            };
+
+            template<typename...BoolActions>
             struct _and_
-              : basic_action<_and_<Actions...>>
+              : basic_action<_and_<BoolActions...>>
             {
                 template<typename ...Args>
-                auto operator()(Args &&... args) const
+                auto operator()(Args &&...args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    BOOST_PROTO_TRY_CALL(utility::functional::back())(
-                        (action<Actions>()(static_cast<Args &&>(args)...), utility::void_)...
-                    )
+                    fold_and_::call(proto::action<BoolActions>()(static_cast<Args &&>(args)...)...)
                 )
             };
         }
 
-        template<typename... Actions>
-        struct action<and_(Actions...)>
-          : detail::_and_<Actions...>
+        template<typename...BoolActions>
+        struct action<and_(BoolActions...)>
+          : detail::_and_<BoolActions...>
         {};
     }
 }

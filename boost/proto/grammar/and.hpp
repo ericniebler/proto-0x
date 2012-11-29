@@ -10,8 +10,7 @@
 #define BOOST_PROTO_GRAMMAR_AND_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/tags.hpp>
-#include <boost/proto/matches.hpp>
+#include <boost/proto/action/action.hpp>
 #include <boost/proto/utility.hpp>
 
 namespace boost
@@ -19,9 +18,9 @@ namespace boost
     namespace proto
     {
         // Handle proto::and_
-        template<typename Expr, typename ...Grammars>
-        struct matches<Expr, proto::and_(Grammars...)>
-          : utility::and_<matches<Expr, Grammars>...>
+        template<typename Expr, typename ...BoolActions>
+        struct matches<Expr, proto::and_(BoolActions...)>
+          : utility::and_<detail::eval_bool_action_<BoolActions, Expr>...>
         {};
     }
 }

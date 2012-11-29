@@ -86,11 +86,7 @@ namespace boost
                 auto operator()(Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
                     typename std::conditional<
-                        static_cast<bool>(
-                            std::remove_reference<
-                                decltype(action<If>()(static_cast<Args &&>(args)...))
-                            >::type::value
-                        )
+                        eval_bool_action_<If, Args...>::value
                       , action<Then>
                       , action<Else>
                     >::type()(static_cast<Args &&>(args)...)

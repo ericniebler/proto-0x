@@ -90,19 +90,9 @@ namespace boost
         ///     <tt>T\<A0,A1,...An\></tt> and for each \c x in
         ///     <tt>[0,n)</tt>, \c Ax and \c Bx are types
         ///     such that \c Ax lambda-matches \c Bx
-        template<typename Expr, typename Grammar, typename Enable>
+        template<typename Expr, typename Grammar>
         struct matches
-          : matches<
-                Expr
-              , typename grammar_of<Grammar>::type
-                // Avoid recursive inheritance on unrecognized grammar patterns and give
-                // a useful diagnostic.
-              , typename std::conditional<
-                    std::is_same<Grammar, typename grammar_of<Grammar>::type>::value
-                  , detail::ERROR_UNKNOWN_GRAMMAR_PATTERN
-                  , void
-                >::type
-            >
+          : matches<Expr, typename grammar_of<Grammar>::type>
         {};
 
         template<typename Expr, typename Ret, typename ...Args>
@@ -115,14 +105,13 @@ namespace boost
           : matches<Expr, Ret(Args......)>
         {};
 
-        template<typename Expr, typename Grammar>
-        struct matches<Expr, Grammar, detail::ERROR_UNKNOWN_GRAMMAR_PATTERN>
-          : std::false_type
-        {
-            // If this static assert fires, check the Grammar template parameter.
-            // Proto doesn't know how to handle it.
-            static_assert(utility::never<Grammar>::value, "ERROR: Unknown grammar pattern");
-        };
+        // Defined in grammar/expr.hpp
+        template<typename Expr, typename Tag, typename ...Grammars>
+        struct matches<Expr, Tag(Grammars...)>;
+
+        // Defined in grammar/expr.hpp
+        template<typename Expr, typename Tag, typename ...Grammars>
+        struct matches<Expr, Tag(Grammars......)>;
 
         template<typename T>
         struct fuzzy

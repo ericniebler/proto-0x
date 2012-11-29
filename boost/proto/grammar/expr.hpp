@@ -281,7 +281,7 @@ namespace boost
         }
 
         template<typename Expr, typename Tag, typename ...Grammars>
-        struct matches<Expr, Tag(Grammars...), typename std::enable_if<is_tag<Tag>::value>::type>
+        struct matches<Expr, Tag(Grammars...)>
           : detail::matches_expr_<
                 typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
               , Tag(Grammars...)
@@ -289,7 +289,7 @@ namespace boost
         {};
 
         template<typename Expr, typename Tag, typename ...Grammars>
-        struct matches<Expr, Tag(Grammars......), typename std::enable_if<is_tag<Tag>::value>::type>
+        struct matches<Expr, Tag(Grammars......)>
           : detail::matches_expr_<
                 typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
               , Tag(Grammars......)

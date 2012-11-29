@@ -13,10 +13,11 @@
 #include <boost/proto/grammar/and.hpp>
 #include <boost/proto/grammar/expr.hpp>
 #include <boost/proto/grammar/if.hpp>
+#include <boost/proto/grammar/match.hpp>
 #include <boost/proto/grammar/not.hpp>
 #include <boost/proto/grammar/or.hpp>
 #include <boost/proto/grammar/placeholders.hpp>
 #include <boost/proto/grammar/switch.hpp>
-#include <boost/proto/grammar/when.hpp>
+#include <boost/proto/grammar/case.hpp>
 
 #endif

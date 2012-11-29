@@ -635,7 +635,10 @@ namespace boost
         struct switch_
         {};
 
-        struct when
+        struct case_
+        {};
+
+        struct match
         {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////

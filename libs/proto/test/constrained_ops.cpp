@@ -19,7 +19,7 @@ struct equation;
 
 struct addition:
     proto::grammar<
-        proto::or_(
+        proto::match(
             proto::terminal(proto::_)
           , proto::plus(addition, addition)
         )

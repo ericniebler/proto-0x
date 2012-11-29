@@ -17,7 +17,7 @@ struct e;
 
 struct g
   : proto::grammar<
-        proto::or_(
+        proto::match(
             proto::terminal(int)
           , proto::plus(g, g)
         )

@@ -9,6 +9,7 @@
 #ifndef BOOST_PROTO_ACTION_ACTION_HPP_INCLUDED
 #define BOOST_PROTO_ACTION_ACTION_HPP_INCLUDED
 
+#include <utility>
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/utility.hpp>
@@ -17,6 +18,21 @@ namespace boost
 {
     namespace proto
     {
+        namespace detail
+        {
+            template<typename BoolAction, typename ...Args>
+            struct eval_bool_action_
+              : std::integral_constant<
+                    bool
+                  , static_cast<bool>(
+                        std::remove_reference<
+                            decltype(proto::action<BoolAction>()(std::declval<Args>()...))
+                        >::type::value
+                    )
+                >
+            {};
+        }
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         // action_base
         struct action_base
@@ -34,15 +50,17 @@ namespace boost
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // action
-        template<typename T, typename Enable>
+        template<typename T>
         struct action
         {
-            typedef typename T::proto_action_type proto_action_type;
+            // This was necessary when expressions could be grammars. That's 
+            // no longer the case.
+            typedef T proto_action_type;
 
-            template<typename ...Args>
+            template<typename ...Args, typename Action = T>
             auto operator()(Args &&... args) const
             BOOST_PROTO_AUTO_RETURN(
-                BOOST_PROTO_TRY_CALL(proto_action_type())(static_cast<Args &&>(args)...)
+                BOOST_PROTO_TRY_CALL(Action())(static_cast<Args &&>(args)...)
             )
         };
 
