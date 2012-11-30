@@ -155,7 +155,6 @@ namespace boost
             // default_grammar
             struct default_grammar
               : grammar<not_(matches_(address_of(_)))>
-              //: grammar<if_(construct(std::true_type()))>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////

@@ -53,8 +53,6 @@ namespace boost
         template<typename T>
         struct action
         {
-            // This was necessary when expressions could be grammars. That's 
-            // no longer the case.
             typedef T proto_action_type;
 
             template<typename ...Args, typename Action = T>
