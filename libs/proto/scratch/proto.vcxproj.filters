@@ -195,9 +195,6 @@
     <ClInclude Include="..\..\..\boost\proto\grammar\expr.hpp">
       <Filter>Proto Files\grammar</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\active_grammar.hpp">
-      <Filter>Proto Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\action\let.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>

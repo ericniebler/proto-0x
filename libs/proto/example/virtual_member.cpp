@@ -76,7 +76,7 @@ namespace mini_lambda
     // The grammar for mini-lambda expressions with actions for
     // evaluating the lambda expression.
     struct grammar
-      : proto::active_grammar<
+      : proto::action<
             proto::match(
                 // When evaluating a placeholder, use the placeholder
                 // to index into the "data" parameter, which is a fusion

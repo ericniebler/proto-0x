@@ -19,11 +19,19 @@ namespace boost
         {
             ////////////////////////////////////////////////////////////////////////////////////////
             // grammar_of_
-            template<typename T>
-            typename T::proto_grammar_type *grammar_of_(int);
+            struct grammar_of_impl_
+            {
+                template<
+                    typename T
+                  , typename U = typename T::proto_grammar_type
+                  , typename Impl = grammar_of_impl_
+                  , typename V = decltype(Impl::template call<U>(1))
+                >
+                static V call(int);
 
-            template<typename T>
-            T *grammar_of_(long);
+                template<typename T>
+                static T *call(long);
+            };
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +46,7 @@ namespace boost
         // grammar_of
         template<typename Grammar>
         struct grammar_of
-          : std::remove_pointer<decltype(detail::grammar_of_<Grammar>(1))>
+          : std::remove_pointer<decltype(detail::grammar_of_impl_::call<Grammar>(1))>
         {};
     }
 }

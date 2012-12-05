@@ -32,7 +32,7 @@ template<std::size_t I>
 using placeholder_c = placeholder<std::integral_constant<std::size_t, I>>;
 
 struct lambda_eval
-  : proto::active_grammar<
+  : proto::action<
         proto::match(
             proto::case_( proto::terminal(placeholder<_>),
                 proto::apply(proto::construct(proto::_env_var<proto::_value>()))

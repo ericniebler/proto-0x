@@ -18,7 +18,6 @@
 #include <boost/proto/children.hpp>
 #include <boost/proto/matches.hpp>
 #include <boost/proto/utility.hpp>
-#include <boost/proto/active_grammar.hpp>
 #include <boost/proto/action/action.hpp>
 #include <boost/proto/action/case.hpp>
 #include <boost/proto/grammar/case.hpp>
@@ -65,12 +64,12 @@ namespace boost
             // _eval_case
             template<typename ActiveGrammar, typename Tag>
             struct _eval_case
-              : active_grammar<case_(not_(matches_(_)), _eval_unknown)>
+              : action<case_(not_(matches_(_)), _eval_unknown)>
             {};
 
             template<typename ActiveGrammar>
             struct _eval_case<ActiveGrammar, terminal>
-              : active_grammar<case_(terminal(_), _value)>
+              : action<case_(terminal(_), _value)>
             {};
         }
 
@@ -181,7 +180,7 @@ namespace boost
         {                                                                                           \
             template<typename ActiveGrammar>                                                        \
             struct _eval_case<ActiveGrammar, TAG>                                                   \
-              : active_grammar<case_(TAG(ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)>            \
+              : action<case_(TAG(ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)>            \
             {};                                                                                     \
         }                                                                                           \
         /**/
@@ -196,7 +195,7 @@ namespace boost
         {                                                                                           \
             template<typename ActiveGrammar>                                                        \
             struct _eval_case<ActiveGrammar, TAG>                                                   \
-              : active_grammar<case_(TAG(ActiveGrammar, ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)> \
+              : action<case_(TAG(ActiveGrammar, ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)> \
             {};                                                                                     \
         }                                                                                           \
         /**/
@@ -264,12 +263,12 @@ namespace boost
         {
             template<typename ActiveGrammar>
             struct _eval_case<ActiveGrammar, if_else_>
-              : active_grammar<case_(if_else_(ActiveGrammar, ActiveGrammar, ActiveGrammar), _op_unpack<if_else_, ActiveGrammar>)>
+              : action<case_(if_else_(ActiveGrammar, ActiveGrammar, ActiveGrammar), _op_unpack<if_else_, ActiveGrammar>)>
             {};
 
             template<typename ActiveGrammar>
             struct _eval_case<ActiveGrammar, function>
-              : active_grammar<case_(function(ActiveGrammar...), _op_unpack<function, ActiveGrammar>)>
+              : action<case_(function(ActiveGrammar...), _op_unpack<function, ActiveGrammar>)>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////

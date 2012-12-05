@@ -12,6 +12,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/action/action.hpp>
 #include <boost/proto/action/block.hpp>
+#include <boost/proto/grammar/grammar.hpp>
 
 namespace boost
 {
@@ -22,11 +23,13 @@ namespace boost
         template<typename Grammar, typename ...Action>
         struct action<case_(Grammar, Action...)>
           : detail::_block<Action...>
+          , grammar<case_(Grammar, Action...)>
         {};
 
         template<typename Grammar, typename Action>
         struct action<case_(Grammar, Action)>
           : action<Action>
+          , grammar<case_(Grammar, Action)>
         {};
 
         // These two are defined in pass_through.hpp

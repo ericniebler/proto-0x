@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/utility.hpp>
+#include <boost/proto/grammar/grammar.hpp>
 
 namespace boost
 {
@@ -44,18 +45,15 @@ namespace boost
         template<typename Action>
         struct basic_action
           : action_base
-        {
-            typedef Action proto_action_type;
-        };
+        {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // action
-        template<typename T>
+        template<typename ActionOrActiveGrammar>
         struct action
+          : grammar<ActionOrActiveGrammar>
         {
-            typedef T proto_action_type;
-
-            template<typename ...Args, typename Action = T>
+            template<typename ...Args, typename Action = ActionOrActiveGrammar>
             auto operator()(Args &&... args) const
             BOOST_PROTO_AUTO_RETURN(
                 BOOST_PROTO_TRY_CALL(Action())(static_cast<Args &&>(args)...)

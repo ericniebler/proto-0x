@@ -11,6 +11,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/tags.hpp>
 #include <boost/proto/action/action.hpp>
+#include <boost/proto/grammar/grammar.hpp>
 
 namespace boost
 {
@@ -76,11 +77,13 @@ namespace boost
         template<typename Cases>
         struct action<switch_(Cases)>
           : detail::_switch_<Cases, _tag_of>
+          , grammar<switch_(Cases)>
         {};
 
         template<typename Cases, typename Action>
         struct action<switch_(Cases, Action)>
           : detail::_switch_<Cases, Action>
+          , grammar<switch_(Cases, Action)>
         {};
     }
 }

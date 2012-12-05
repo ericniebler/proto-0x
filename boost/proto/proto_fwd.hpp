@@ -396,9 +396,6 @@ namespace boost
         template<typename T>
         struct action;
 
-        template<typename T>
-        struct active_grammar;
-
         template<typename T, T Value>
         struct _integral_constant;
 

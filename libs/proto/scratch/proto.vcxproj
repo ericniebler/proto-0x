@@ -80,7 +80,6 @@
     <ClInclude Include="..\..\..\boost\proto\action\recursive_fold.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\switch.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\unpack.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\active_grammar.hpp" />
     <ClInclude Include="..\..\..\boost\proto\children.hpp" />
     <ClInclude Include="..\..\..\boost\proto\core.hpp" />
     <ClInclude Include="..\..\..\boost\proto\custom.hpp" />

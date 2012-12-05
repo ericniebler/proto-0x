@@ -1,10 +1,93 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// lambda.cpp
+// main.cpp
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+
+#include <vector>
+#include <boost/proto/proto.hpp>
+#include <boost/proto/debug.hpp>
+namespace mpl = boost::mpl;
+namespace proto = boost::proto;
+using proto::_;
+
+namespace linear_algebra
+{
+    // A trait that returns true only for std::vector
+    template<typename T>
+    struct is_std_vector
+      : mpl::false_
+    {};
+
+    template<typename T, typename A>
+    struct is_std_vector<std::vector<T, A> >
+      : mpl::true_
+    {};
+
+    // A type used as a domain for linear algebra expressions
+    struct linear_algebra_domain
+      : proto::domain<linear_algebra_domain>
+    {};
+
+    // Define all the operator overloads for combining std::vectors
+    BOOST_PROTO_DEFINE_OPERATORS(is_std_vector, linear_algebra_domain)
+
+    // Take any expression and turn each node
+    // into a subscript expression, using the
+    // state as the RHS.
+    struct Distribute
+      : proto::action<
+            proto::match(
+                proto::case_(
+                    proto::terminal(_)
+                  , proto::subscript(_, proto::_state)
+                )
+              , proto::case_(
+                    proto::plus(Distribute, Distribute)
+                  , proto::pass
+                )
+            )
+        >
+    {};
+
+    struct Optimize
+      : proto::action<
+            proto::match(
+                proto::case_(
+                    proto::subscript(Distribute, proto::terminal(_))
+                  , Distribute(proto::_left, proto::_right)
+                )
+              , proto::case_(
+                    proto::plus(Optimize, Optimize)
+                  , proto::pass
+                )
+              , proto::case_(
+                    proto::terminal(_)
+                  , proto::pass
+                )
+            )
+        >
+    {};
+}
+
+static constexpr int celems = 4;
+static constexpr int value[celems] = {1,2,3,4};
+std::vector<int> A(value, value+celems), B(A);
+
+int main()
+{
+    using namespace linear_algebra;
+    proto::_eval<> eval;
+    int result = eval(Optimize()((A + B)[3]));
+    proto::assert_matches<Optimize>((A + B)[3]);
+    proto::assert_matches_not<Optimize>((A - B)[3]);
+    BOOST_CHECK_EQUAL(8, result);
+}
+
+
+/*
 #include <cstdio>
 #include <utility>
 #include <type_traits>
@@ -32,7 +115,7 @@ template<std::size_t I>
 using placeholder_c = placeholder<std::integral_constant<std::size_t, I>>;
 
 struct lambda_eval
-  : proto::active_grammar<
+  : proto::action<
         proto::match(
             proto::case_( proto::terminal(placeholder<_>),
                 proto::apply(proto::construct(proto::_env_var<proto::_value>()))
@@ -129,3 +212,4 @@ void done()
     std::cout << "CTRL+D to end...";
     std::cin >> ch;
 }
+//*/

@@ -30,7 +30,7 @@ struct do_eval
 };
 
 struct eval
-  : proto::active_grammar<
+  : proto::action<
         proto::match(
             proto::case_(proto::terminal(_),
                 proto::_value

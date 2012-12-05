@@ -67,7 +67,7 @@ void test_virtual_members()
 
     // Check that member expressions match their grammars
     struct G
-      : proto::active_grammar<
+      : proto::action<
             proto::match(
                 proto::case_(
                     proto::member(proto::terminal(int), proto::terminal(foo_tag))

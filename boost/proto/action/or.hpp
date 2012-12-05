@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/action/action.hpp>
+#include <boost/proto/grammar/grammar.hpp>
 
 namespace boost
 {
@@ -74,6 +75,7 @@ namespace boost
         template<typename...BoolActions>
         struct action<or_(BoolActions...)>
           : detail::_or_<BoolActions...>
+          , grammar<or_(BoolActions...)>
         {};
     }
 }
