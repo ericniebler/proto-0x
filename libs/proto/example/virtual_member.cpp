@@ -125,13 +125,13 @@ namespace mini_lambda
         template<typename If, typename Then, typename Else, typename Args>
         void operator()(If const &if_, Then const &then_, Else const &else_, Args const &args) const
         {
-            if(grammar()(if_, 0, args))
+            if(grammar()(if_, args))
             {
-                grammar()(then_, 0, args);
+                grammar()(then_, args);
             }
             else
             {
-                grammar()(else_, 0, args);
+                grammar()(else_, args);
             }
         }
     };
@@ -160,7 +160,7 @@ namespace mini_lambda
         template<std::size_t ...I, typename ...A>
         auto eval(proto::utility::indices<I...>, A &&...a) const
         BOOST_PROTO_AUTO_RETURN(
-            grammar()(*this, 0, proto::make_env(placeholder_c<I>() = std::forward<A>(a)...))
+            grammar()(*this, proto::make_env(placeholder_c<I>() = std::forward<A>(a)...))
         )
 
     public:

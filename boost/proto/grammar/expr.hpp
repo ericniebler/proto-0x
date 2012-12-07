@@ -237,7 +237,7 @@ namespace boost
                 Tag0(Child0...)
               , Tag1(Child1...)
               , typename std::enable_if<
-                    !Tag0::proto_is_terminal::value &&
+                    !Tag0::proto_is_terminal_type::value &&
                     sizeof...(Child0) == sizeof...(Child1)
                 >::type
             >
@@ -255,7 +255,7 @@ namespace boost
             struct matches_expr_<
                 Tag0(Child0...)
               , Tag1(Child1......)
-              , typename std::enable_if<!Tag0::proto_is_terminal::value>::type
+              , typename std::enable_if<!Tag0::proto_is_terminal_type::value>::type
             >
               : utility::and_<
                     tag_matches<Tag0, Tag1>
@@ -271,7 +271,7 @@ namespace boost
             struct matches_expr_<
                 Tag0(Value0)
               , Tag1(Value1)
-              , typename std::enable_if<Tag0::proto_is_terminal::value>::type
+              , typename std::enable_if<Tag0::proto_is_terminal_type::value>::type
             >
               : utility::and_<
                     tag_matches<Tag0, Tag1>

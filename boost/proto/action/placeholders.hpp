@@ -33,8 +33,8 @@ namespace boost
         struct _state
           : basic_action<_state>
         {
-            template<typename E, typename S, typename ...Rest>
-            auto operator()(E &&, S && s, Rest &&...) const
+            template<typename E, typename Env, typename S, typename ...Rest>
+            auto operator()(E &&, Env &&, S && s, Rest &&...) const
             BOOST_PROTO_AUTO_RETURN(
                 static_cast<S &&>(s)
             )

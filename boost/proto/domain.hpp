@@ -43,7 +43,7 @@ namespace boost
             struct make_expr_raw_
             {
                 // If Tag does not represents a terminal, first pass the argument(s) through as_expr
-                template<typename Tag, typename ...T, BOOST_PROTO_ENABLE_IF(!Tag::proto_is_terminal::value)>
+                template<typename Tag, typename ...T, BOOST_PROTO_ENABLE_IF(!Tag::proto_is_terminal_type::value)>
                 inline constexpr auto operator()(Tag tag, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     typename Domain::make_expr()(
@@ -53,7 +53,7 @@ namespace boost
                 )
 
                 // If Tag represents a terminal, don't pass the argument(s) through as_expr
-                template<typename Tag, typename T, BOOST_PROTO_ENABLE_IF(Tag::proto_is_terminal::value)>
+                template<typename Tag, typename T, BOOST_PROTO_ENABLE_IF(Tag::proto_is_terminal_type::value)>
                 inline constexpr auto operator()(Tag tag, T && t) const
                 BOOST_PROTO_AUTO_RETURN(
                     typename Domain::make_expr()(

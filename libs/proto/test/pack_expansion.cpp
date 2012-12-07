@@ -125,11 +125,11 @@ void test_multiple_packs()
 {
     proto::literal<int> i{42};
     std::ostringstream sout;
-    accept_pairs()( i(1,2) + i("hello","world"), 0, proto::data = sout);
+    accept_pairs()( i(1,2) + i("hello","world"), proto::data = sout);
     BOOST_CHECK_EQUAL( sout.str(), std::string("(42,42)(1,hello)(2,world)") );
 
     sout.str("");
-    accept_pairs_2()(i(1,2) + i("this","that"), 0, proto::data = sout);
+    accept_pairs_2()(i(1,2) + i("this","that"), proto::data = sout);
     BOOST_CHECK_EQUAL( sout.str(), std::string("(42,42)(1,this)(2,that)") );
 }
 

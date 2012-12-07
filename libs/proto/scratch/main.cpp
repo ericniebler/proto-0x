@@ -6,85 +6,57 @@
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 
-#include <vector>
+#include <boost/mpl/int.hpp>
+#include <boost/mpl/next.hpp>
+#include <boost/mpl/min_max.hpp>
+#include <boost/fusion/container/list/cons.hpp>
 #include <boost/proto/proto.hpp>
-#include <boost/proto/debug.hpp>
+#include <boost/fusion/include/for_each.hpp>
+
 namespace mpl = boost::mpl;
+namespace fusion = boost::fusion;
 namespace proto = boost::proto;
 using proto::_;
 
-namespace linear_algebra
+template<typename Int>
+struct placeholder
+  : Int
+{};
+
+namespace
 {
-    // A trait that returns true only for std::vector
-    template<typename T>
-    struct is_std_vector
-      : mpl::false_
-    {};
-
-    template<typename T, typename A>
-    struct is_std_vector<std::vector<T, A> >
-      : mpl::true_
-    {};
-
-    // A type used as a domain for linear algebra expressions
-    struct linear_algebra_domain
-      : proto::domain<linear_algebra_domain>
-    {};
-
-    // Define all the operator overloads for combining std::vectors
-    BOOST_PROTO_DEFINE_OPERATORS(is_std_vector, linear_algebra_domain)
-
-    // Take any expression and turn each node
-    // into a subscript expression, using the
-    // state as the RHS.
-    struct Distribute
-      : proto::action<
-            proto::match(
-                proto::case_(
-                    proto::terminal(_)
-                  , proto::subscript(_, proto::_state)
-                )
-              , proto::case_(
-                    proto::plus(Distribute, Distribute)
-                  , proto::pass
-                )
-            )
-        >
-    {};
-
-    struct Optimize
-      : proto::action<
-            proto::match(
-                proto::case_(
-                    proto::subscript(Distribute, proto::terminal(_))
-                  , Distribute(proto::_left, proto::_right)
-                )
-              , proto::case_(
-                    proto::plus(Optimize, Optimize)
-                  , proto::pass
-                )
-              , proto::case_(
-                    proto::terminal(_)
-                  , proto::pass
-                )
-            )
-        >
-    {};
+    constexpr auto const & _1 = proto::utility::static_const<proto::literal<placeholder<mpl::int_<0>>>>::value;
+    constexpr auto const & _2 = proto::utility::static_const<proto::literal<placeholder<mpl::int_<1>>>>::value;
+    constexpr auto const & _3 = proto::utility::static_const<proto::literal<placeholder<mpl::int_<2>>>>::value;
 }
 
-static constexpr int celems = 4;
-static constexpr int value[celems] = {1,2,3,4};
-std::vector<int> A(value, value+celems), B(A);
+BOOST_PROTO_IGNORE_UNUSED(_1, _2, _3);
+
+// The lambda grammar, with the transforms for calculating the max arity
+struct lambda_arity
+  : proto::action<
+        proto::if_(
+            proto::matches_( proto::terminal( placeholder<_> ) )
+          , proto::construct( mpl::next< proto::_value >() )
+          , proto::if_(
+                proto::matches_( proto::terminal(_) )
+              , proto::construct( mpl::int_<0>() )
+              , proto::fold(
+                    _
+                  , proto::construct( mpl::int_<0>() )
+                  , proto::construct( mpl::max<lambda_arity, proto::_state>() )
+                )
+            )
+        )
+    >
+{};
 
 int main()
 {
-    using namespace linear_algebra;
-    proto::_eval<> eval;
-    int result = eval(Optimize()((A + B)[3]));
-    proto::assert_matches<Optimize>((A + B)[3]);
-    proto::assert_matches_not<Optimize>((A - B)[3]);
-    BOOST_CHECK_EQUAL(8, result);
+    auto result0 = lambda_arity()(proto::literal<int>(42) + 36);
 }
+
+
 
 
 /*
@@ -135,7 +107,6 @@ inline auto lambda_eval_(proto::utility::indices<I...>, E && e, T &&... t)
 BOOST_PROTO_AUTO_RETURN(
     lambda_eval()(
         std::forward<E>(e)
-      , 0
       , proto::make_env(placeholder_c<I>() = std::forward<T>(t)...)
     )
 )

@@ -24,7 +24,7 @@ namespace boost
         {
             struct _deep_copy_cases
             {
-                template<typename Tag, bool IsTerminal = Tag::proto_is_terminal::value>
+                template<typename Tag, bool IsTerminal = Tag::proto_is_terminal_type::value>
                 struct case_
                   : proto::action<proto::pass(proto::_deep_copy...)>
                 {};

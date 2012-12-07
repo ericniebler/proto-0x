@@ -402,7 +402,7 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // usings and typedefs
                 using proto_tag_type                = Tag;
-                using proto_is_terminal             = typename proto_tag_type::proto_is_terminal;
+                using proto_is_terminal_type        = typename proto_tag_type::proto_is_terminal_type;
                 using proto_children_type           = exprs::children<Children...>;
                 using proto_size                    = typename proto_children_type::proto_size;
                 using proto_domain_type             = Domain;
@@ -644,7 +644,7 @@ namespace boost
         // is_terminal
         template<typename Expr>
         struct is_terminal
-          : Expr::proto_is_terminal
+          : Expr::proto_is_terminal_type
         {
             typedef is_terminal type;
             typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
@@ -652,7 +652,7 @@ namespace boost
 
         template<typename Expr>
         struct is_terminal<Expr &>
-          : Expr::proto_is_terminal
+          : Expr::proto_is_terminal_type
         {
             typedef is_terminal type;
             typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
@@ -660,7 +660,7 @@ namespace boost
 
         template<typename Expr>
         struct is_terminal<Expr &&>
-          : Expr::proto_is_terminal
+          : Expr::proto_is_terminal_type
         {
             typedef is_terminal type;
             typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant

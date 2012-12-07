@@ -155,8 +155,8 @@ namespace boost
         struct _env_var
           : basic_action<_env_var<Key>>
         {
-            template<typename E, typename S, typename Env, typename ...Rest>
-            auto operator()(E &&, S &&, Env && env, Rest &&...) const
+            template<typename E, typename Env, typename ...Rest>
+            auto operator()(E &&, Env && env, Rest &&...) const
             BOOST_PROTO_AUTO_RETURN(
                 static_cast<Env &&>(env)[Key()]
             )
@@ -167,8 +167,8 @@ namespace boost
         struct _env
           : basic_action<_env>
         {
-            template<typename E, typename S, typename Env, typename ...Rest>
-            auto operator()(E &&, S &&, Env && env, Rest &&...) const
+            template<typename E, typename Env, typename ...Rest>
+            auto operator()(E &&, Env && env, Rest &&...) const
             BOOST_PROTO_AUTO_RETURN(
                 static_cast<Env &&>(env)
             )

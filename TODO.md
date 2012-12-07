@@ -6,7 +6,6 @@ A Grab-Bag of Miscellaneous Thoughts
 
 * Think about basic actions.
     + Is the interface correct?
-    + Maybe the environment should be the second parameter and state should be third.
     + Should the local variable scope be part of the environment, or should it be a
       fourth parameter?
     + Should *all* environment variables be part of a scope? Should we allow
@@ -22,12 +21,6 @@ A Grab-Bag of Miscellaneous Thoughts
 * Should terminal-ness really be encoded in the tag?
 
 * Functional namespace should be carved up: `proto::functional::fusion`? `proto::functional::std`?
-
-* Should `or_/when` be renamed `match/case_`? Answer: probably. Maybe even:
-    + `struct MyAlgo : match<case_(g0, a0), case_(g1, a0), /*...*/> {};`
-
-* Should `and_`, `or_`, and `not_` expect Boolean Actions, like `if_`? And logically negating a match
-  could be `match_not()`
 
 * Everyplace where we directly return an rvalue reference is potentially creating a dangling
   reference.

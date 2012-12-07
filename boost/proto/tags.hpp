@@ -19,9 +19,6 @@ namespace boost
     {
         namespace detail
         {
-            struct expr_tag_base
-            {};
-
             template<typename Tag, typename IsTerminal>
             IsTerminal is_terminal_tag_(tags::expr_tag<Tag, IsTerminal> const *);
 
@@ -33,14 +30,20 @@ namespace boost
 
         namespace tags
         {
+            struct expr_tag_tag
+            {};
+
+            struct expr_tag_base
+            {
+                typedef expr_tag_tag proto_tag_type;
+            };
+
             template<typename Tag, typename IsTerminal>
             struct expr_tag
-              : detail::expr_tag_base
+              : expr_tag_base
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr_tag);
-
-                typedef Tag         proto_tag;
-                typedef IsTerminal  proto_is_terminal;
+                typedef IsTerminal  proto_is_terminal_type;
             };
 
             /// Tag type for terminals; aka, leaves in the expression tree.
@@ -643,39 +646,39 @@ namespace boost
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // tag_of
-        template<typename Expr>
+        template<typename T>
         struct tag_of
         {
-            typedef typename Expr::proto_tag_type type;
+            typedef typename T::proto_tag_type type;
         };
 
-        template<typename Expr>
-        struct tag_of<Expr &>
+        template<typename T>
+        struct tag_of<T &>
         {
-            typedef typename Expr::proto_tag_type type;
+            typedef typename T::proto_tag_type type;
         };
 
-        template<typename Expr>
-        struct tag_of<Expr &&>
+        template<typename T>
+        struct tag_of<T &&>
         {
-            typedef typename Expr::proto_tag_type type;
+            typedef typename T::proto_tag_type type;
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // is_tag
         template<typename T>
         struct is_tag
-          : std::is_base_of<detail::expr_tag_base, T>
+          : std::is_base_of<expr_tag_base, T>
         {};
 
         template<typename T>
         struct is_tag<T &>
-          : std::is_base_of<detail::expr_tag_base, T>
+          : std::is_base_of<expr_tag_base, T>
         {};
 
         template<typename T>
         struct is_tag<T &&>
-          : std::is_base_of<detail::expr_tag_base, T>
+          : std::is_base_of<expr_tag_base, T>
         {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////

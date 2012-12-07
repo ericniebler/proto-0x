@@ -83,13 +83,13 @@ namespace test_make
     }
 
     struct MakeTest5
-      : proto::action< proto::construct( wrapper< proto::_state(_, proto::_state) >(proto::_state(_)) ) >
+      : proto::action< proto::construct( wrapper< proto::_state(_, proto::_env, proto::_state) >(proto::_state(_)) ) >
     {};
 
     void make_test5()
     {
         proto::literal<int> i{42};
-        wrapper<int> res = MakeTest5()(i, 43);
+        wrapper<int> res = MakeTest5()(i, proto::empty_env(), 43);
         BOOST_CHECK_EQUAL(res.t_, 43);
     }
 
@@ -101,7 +101,7 @@ namespace test_make
     void make_test6()
     {
         proto::literal<int> i{42};
-        wrapper<int> res = MakeTest6()(i, 43);
+        wrapper<int> res = MakeTest6()(i, proto::empty_env(), 43);
         BOOST_CHECK_EQUAL(res.t_, 43);
     }
 
@@ -112,7 +112,7 @@ namespace test_make
     void make_test7()
     {
         proto::literal<int> i{42};
-        wrapper<int> res = MakeTest7()(i, 43);
+        wrapper<int> res = MakeTest7()(i, proto::empty_env(), 43);
         BOOST_CHECK_EQUAL(res.t_, 43);
     }
 

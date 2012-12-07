@@ -85,6 +85,9 @@ namespace boost
             struct empty_state
             {};
 
+            struct empty_data
+            {};
+
             ////////////////////////////////////////////////////////////////////////////////////////
             // rvalue_type
             template<typename T>
@@ -101,8 +104,6 @@ namespace boost
 
             template<typename Ignored = decltype(nullptr)>
             struct any;
-
-            struct expr_tag_base;
         }
 
         namespace utility
@@ -141,6 +142,9 @@ namespace boost
         // Operator tags
         namespace tags
         {
+            struct expr_tag_tag;
+            struct expr_tag_base;
+
             template<typename Tag, typename IsTerminal = std::false_type>
             struct expr_tag;
 

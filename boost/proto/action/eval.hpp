@@ -180,7 +180,7 @@ namespace boost
         {                                                                                           \
             template<typename ActiveGrammar>                                                        \
             struct _eval_case<ActiveGrammar, TAG>                                                   \
-              : action<case_(TAG(ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)>            \
+              : action<case_(TAG(ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)>                   \
             {};                                                                                     \
         }                                                                                           \
         /**/
@@ -195,7 +195,7 @@ namespace boost
         {                                                                                           \
             template<typename ActiveGrammar>                                                        \
             struct _eval_case<ActiveGrammar, TAG>                                                   \
-              : action<case_(TAG(ActiveGrammar, ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)> \
+              : action<case_(TAG(ActiveGrammar, ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)>    \
             {};                                                                                     \
         }                                                                                           \
         /**/

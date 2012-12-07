@@ -25,9 +25,8 @@ namespace boost
                     typename T
                   , typename U = typename T::proto_grammar_type
                   , typename Impl = grammar_of_impl_
-                  , typename V = decltype(Impl::template call<U>(1))
                 >
-                static V call(int);
+                static auto call(int) -> decltype(Impl::template call<U>(1));
 
                 template<typename T>
                 static T *call(long);

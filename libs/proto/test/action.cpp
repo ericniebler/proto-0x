@@ -44,7 +44,7 @@ void test_action()
         BOOST_CHECK_EQUAL(i, 1);
 
         // Look, ma! A basic_action!
-        char const (&sz)[6] = proto::_data()(p, 42, (proto::data = "hello"));
+        char const (&sz)[6] = proto::_data()(p, (proto::data = "hello"));
         BOOST_PROTO_IGNORE_UNUSED(sz);
     }
 
@@ -89,11 +89,11 @@ struct _my_expr
 void test_action_2()
 {
     proto::literal<int> i{42};
-    S<int> s0 = proto::action<proto::construct(S<proto::_state>())>()(i, 42);
-    S<int> s1 = proto::action<proto::construct(S<proto::_state()>())>()(i, 42);
-    S<int> s2 = proto::action<proto::construct(S<proto::_state(_my_expr)>())>()(i, 42);
-    S<int> s3 = proto::action<proto::construct(S<proto::_state(_my_expr, proto::_state)>())>()(i, 42, proto::data = 55);
-    S<int> s4 = proto::action<proto::construct(S<proto::_state(_my_expr, proto::_state, proto::_env)>())>()(i, 42, proto::data = 55);
+    S<int> s0 = proto::action<proto::construct(S<proto::_state>())>()(i, proto::empty_env(), 42);
+    S<int> s1 = proto::action<proto::construct(S<proto::_state()>())>()(i, proto::empty_env(), 42);
+    S<int> s2 = proto::action<proto::construct(S<proto::_state(_my_expr)>())>()(i, proto::empty_env(), 42);
+    S<int> s3 = proto::action<proto::construct(S<proto::_state(_my_expr, proto::_env)>())>()(i, proto::data = 55, 42);
+    S<int> s4 = proto::action<proto::construct(S<proto::_state(_my_expr, proto::_env, proto::_state)>())>()(i, proto::data = 55, 42);
     BOOST_PROTO_IGNORE_UNUSED(s0, s1, s2, s3, s4);
 }
 

@@ -100,8 +100,8 @@ namespace boost
             struct _pass_
               : basic_action<_pass_<Actions>>
             {
-                template<typename E, typename ...T, BOOST_PROTO_ENABLE_IF(is_terminal<E>::value)>
-                auto operator()(E && e, T &&...) const
+                template<typename E, typename ...Rest, BOOST_PROTO_ENABLE_IF(is_terminal<E>::value)>
+                auto operator()(E && e, Rest &&...) const
                 BOOST_PROTO_AUTO_RETURN(
                     utility::by_val()(static_cast<E &&>(e))
                 )

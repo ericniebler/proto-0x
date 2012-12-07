@@ -45,37 +45,19 @@ namespace boost
                 BOOST_PROTO_AUTO_RETURN(
                     action<Action>()(
                         static_cast<Expr &&>(expr)
-                      , detail::empty_state()
                       , proto::make_env(eval_local<Locals>()(static_cast<Expr &&>(expr))...)
                     )
                 )
 
-                template<typename Expr, typename State>
-                auto operator()(Expr &&expr, State && state) const
+                template<typename Expr, typename Env, typename ...Rest>
+                auto operator()(Expr &&expr, Env &&env, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
                     action<Action>()(
                         static_cast<Expr &&>(expr)
-                      , static_cast<State &&>(state)
-                      , proto::make_env(
-                            eval_local<Locals>()(
-                                static_cast<Expr &&>(expr)
-                              , static_cast<State &&>(state)
-                            )...
-                        )
-                    )
-                )
-
-                template<typename Expr, typename State, typename Env, typename ...Rest>
-                auto operator()(Expr &&expr, State && state, Env &&env, Rest &&... rest) const
-                BOOST_PROTO_AUTO_RETURN(
-                    action<Action>()(
-                        static_cast<Expr &&>(expr)
-                      , static_cast<State &&>(state)
                       , proto::make_env(
                             static_cast<Env &&>(env)
                           , eval_local<Locals>()(
                                 static_cast<Expr &&>(expr)
-                              , static_cast<State &&>(state)
                               , static_cast<Env &&>(env)
                               , static_cast<Rest &&>(rest)...
                             )...
@@ -90,8 +72,8 @@ namespace boost
         struct _local
           : basic_action<_local<Local>>
         {
-            template<typename Expr, typename State, typename Env, typename ...Rest, typename This = Local>
-            auto operator()(Expr &&, State &&, Env &&env, Rest &&...) const
+            template<typename Expr, typename Env, typename ...Rest, typename This = Local>
+            auto operator()(Expr &&, Env &&env, Rest &&...) const
             BOOST_PROTO_AUTO_RETURN(
                 static_cast<Env &&>(env)[static_cast<This const &>(*this)]
             )

@@ -40,7 +40,6 @@ auto unpack(E && e, F0 && f0, F1 && f1)
 BOOST_PROTO_AUTO_RETURN(
     eval_unpack()(
         std::forward<E>(e)
-      , 0
       , (_f0 = std::forward<F0>(f0), _f1 = std::forward<F1>(f1))
     )
 )

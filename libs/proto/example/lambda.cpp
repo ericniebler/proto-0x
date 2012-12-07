@@ -52,7 +52,6 @@ inline auto lambda_eval_(proto::utility::indices<I...>, E && e, T &&... t)
 BOOST_PROTO_AUTO_RETURN(
     lambda_eval()(
         std::forward<E>(e)
-      , 0
       , proto::make_env(placeholder_c<I>() = std::forward<T>(t)...)
     )
 )
