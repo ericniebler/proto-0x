@@ -22,7 +22,6 @@
 #include <boost/proto/action/case.hpp>
 #include <boost/proto/grammar/case.hpp>
 #include <boost/proto/grammar/not.hpp>
-#include <boost/proto/grammar/placeholders.hpp>
 
 namespace boost
 {

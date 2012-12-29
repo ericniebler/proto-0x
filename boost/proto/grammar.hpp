@@ -17,7 +17,6 @@
 #include <boost/proto/grammar/match.hpp>
 #include <boost/proto/grammar/not.hpp>
 #include <boost/proto/grammar/or.hpp>
-#include <boost/proto/grammar/placeholders.hpp>
 #include <boost/proto/grammar/switch.hpp>
 
 #endif
