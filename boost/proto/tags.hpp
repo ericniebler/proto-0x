@@ -44,13 +44,15 @@ namespace boost
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr_tag);
                 typedef IsTerminal  proto_is_terminal_type;
+                typedef expr_tag<Tag> proto_grammar_type;
             };
 
             /// Tag type for terminals; aka, leaves in the expression tree.
             struct terminal
               : expr_tag<terminal, std::true_type>
             {
-                template<typename T
+                template<
+                    typename T
                   , typename Terminal = terminal
                   , typename MakeExpr = proto::functional::make_expr
                 >

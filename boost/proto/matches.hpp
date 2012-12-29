@@ -21,12 +21,6 @@ namespace boost
 {
     namespace proto
     {
-        namespace detail
-        {
-            struct ERROR_UNKNOWN_GRAMMAR_PATTERN
-            {};
-        }
-
         /// \brief A Boolean metafunction that evaluates whether a given
         /// expression type matches a grammar.
         ///
@@ -92,26 +86,8 @@ namespace boost
         ///     such that \c Ax lambda-matches \c Bx
         template<typename Expr, typename Grammar>
         struct matches
-          : matches<Expr, typename grammar_of<Grammar>::type>
+          : grammar<Grammar>::template apply<Expr>
         {};
-
-        template<typename Expr, typename Ret, typename ...Args>
-        struct matches<Expr, Ret(*)(Args...)>
-          : matches<Expr, Ret(Args...)>
-        {};
-
-        template<typename Expr, typename Ret, typename ...Args>
-        struct matches<Expr, Ret(*)(Args......)>
-          : matches<Expr, Ret(Args......)>
-        {};
-
-        // Defined in grammar/expr.hpp
-        template<typename Expr, typename Tag, typename ...Grammars>
-        struct matches<Expr, Tag(Grammars...)>;
-
-        // Defined in grammar/expr.hpp
-        template<typename Expr, typename Tag, typename ...Grammars>
-        struct matches<Expr, Tag(Grammars......)>;
 
         template<typename T>
         struct fuzzy

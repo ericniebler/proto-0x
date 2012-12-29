@@ -17,11 +17,18 @@ namespace boost
 {
     namespace proto
     {
-        // Handle proto::or_
-        template<typename Expr, typename ...BoolActions>
-        struct matches<Expr, proto::or_(BoolActions...)>
-          : utility::or_<detail::eval_bool_action_<BoolActions, Expr>...>
-        {};
+        namespace extension
+        {
+            // Handle proto::or_
+            template<typename ...BoolActions>
+            struct grammar_impl<proto::or_(BoolActions...)>
+            {
+                template<typename Expr>
+                struct apply
+                  : utility::or_<detail::eval_bool_action_<BoolActions, Expr>...>
+                {};
+            };
+        }
     }
 }
 

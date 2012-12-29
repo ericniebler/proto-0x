@@ -72,11 +72,13 @@ namespace boost
             };
         }
 
-        template<typename...BoolActions>
-        struct action<or_(BoolActions...)>
-          : detail::_or_<BoolActions...>
-          , grammar<or_(BoolActions...)>
-        {};
+        namespace extension
+        {
+            template<typename...BoolActions>
+            struct action_impl<or_(BoolActions...)>
+              : detail::_or_<BoolActions...>
+            {};
+        }
     }
 }
 

@@ -40,10 +40,13 @@ namespace boost
         struct apply
         {};
 
-        template<typename Fun, typename ...Actions>
-        struct action<apply(Fun, Actions...)>
-          : detail::_apply<Fun, Actions...>
-        {};
+        namespace extension
+        {
+            template<typename Fun, typename ...Actions>
+            struct action_impl<apply(Fun, Actions...)>
+              : detail::_apply<Fun, Actions...>
+            {};
+        }
     }
 }
 

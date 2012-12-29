@@ -90,13 +90,16 @@ namespace boost
         struct let
         {};
 
-        template<typename ...As>
-        struct action<let(As...)>
-          : detail::_let<
-                typename utility::result_of::back<As...>::type
-              , typename utility::pop_back<void(As...)>::type
-            >
-        {};
+        namespace extension
+        {
+            template<typename ...As>
+            struct action_impl<let(As...)>
+              : detail::_let<
+                    typename utility::result_of::back<As...>::type
+                  , typename utility::pop_back<void(As...)>::type
+                >
+            {};
+        }
     }
 }
 

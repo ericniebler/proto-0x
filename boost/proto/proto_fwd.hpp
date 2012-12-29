@@ -138,7 +138,7 @@ namespace boost
             struct substitution_failure;
         }
 
-        ///////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////
         // Operator tags
         namespace tags
         {
@@ -469,18 +469,32 @@ namespace boost
         //constexpr int N = (std::numeric_limits<int>::max() >> 10);
         constexpr int N = (INT_MAX >> 10);
 
+        struct grammar_base;
+
+        template<typename Grammar>
+        struct basic_grammar;
+
         template<typename Grammar>
         struct grammar;
 
         template<typename Grammar>
-        struct grammar_of;
+        struct is_grammar;
+
+        namespace extension
+        {
+            template<typename Grammar>
+            struct grammar_impl;
+
+            template<typename Grammar>
+            struct action_impl;
+        }
 
         template<typename Expr, typename Grammar>
         struct matches;
 
         namespace exprs
         {
-            ////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////
             // Handy expression template aliases
             template<typename T>
             using terminal = expr<tags::terminal(T)>;

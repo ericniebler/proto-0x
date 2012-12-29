@@ -5,61 +5,7 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-
-#include <boost/mpl/int.hpp>
-#include <boost/mpl/next.hpp>
-#include <boost/mpl/min_max.hpp>
-#include <boost/fusion/container/list/cons.hpp>
-#include <boost/proto/proto.hpp>
-#include <boost/fusion/include/for_each.hpp>
-
-namespace mpl = boost::mpl;
-namespace fusion = boost::fusion;
-namespace proto = boost::proto;
-using proto::_;
-
-template<typename Int>
-struct placeholder
-  : Int
-{};
-
-namespace
-{
-    constexpr auto const & _1 = proto::utility::static_const<proto::literal<placeholder<mpl::int_<0>>>>::value;
-    constexpr auto const & _2 = proto::utility::static_const<proto::literal<placeholder<mpl::int_<1>>>>::value;
-    constexpr auto const & _3 = proto::utility::static_const<proto::literal<placeholder<mpl::int_<2>>>>::value;
-}
-
-BOOST_PROTO_IGNORE_UNUSED(_1, _2, _3);
-
-// The lambda grammar, with the transforms for calculating the max arity
-struct lambda_arity
-  : proto::action<
-        proto::if_(
-            proto::matches_( proto::terminal( placeholder<_> ) )
-          , proto::construct( mpl::next< proto::_value >() )
-          , proto::if_(
-                proto::matches_( proto::terminal(_) )
-              , proto::construct( mpl::int_<0>() )
-              , proto::fold(
-                    _
-                  , proto::construct( mpl::int_<0>() )
-                  , proto::construct( mpl::max<lambda_arity, proto::_state>() )
-                )
-            )
-        )
-    >
-{};
-
-int main()
-{
-    auto result0 = lambda_arity()(proto::literal<int>(42) + 36);
-}
-
-
-
-
-/*
+//*
 #include <cstdio>
 #include <utility>
 #include <type_traits>
@@ -143,7 +89,7 @@ struct lambda_expr
 };
 
 template<typename T>
-using lambda_var = proto::custom<lambda_expr>::terminal<T>;
+using lambda_var = lambda_expr<proto::terminal(T)>;
 
 namespace
 {

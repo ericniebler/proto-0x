@@ -74,17 +74,18 @@ namespace boost
             };
         }
 
-        template<typename Cases>
-        struct action<switch_(Cases)>
-          : detail::_switch_<Cases, _tag_of>
-          , grammar<switch_(Cases)>
-        {};
+        namespace extension
+        {
+            template<typename Cases>
+            struct action_impl<switch_(Cases)>
+              : detail::_switch_<Cases, _tag_of>
+            {};
 
-        template<typename Cases, typename Action>
-        struct action<switch_(Cases, Action)>
-          : detail::_switch_<Cases, Action>
-          , grammar<switch_(Cases, Action)>
-        {};
+            template<typename Cases, typename Action>
+            struct action_impl<switch_(Cases, Action)>
+              : detail::_switch_<Cases, Action>
+            {};
+        }
     }
 }
 

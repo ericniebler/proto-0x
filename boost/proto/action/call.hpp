@@ -111,12 +111,15 @@ namespace boost
             };
         }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // Handle callable actions
-        template<typename Ret, typename ...Actions>
-        struct action<Ret(Actions...)>
-          : detail::_call<Ret, Actions...>
-        {};
+        namespace extension
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            // Handle callable actions
+            template<typename Ret, typename ...Actions>
+            struct action_impl<Ret(Actions...)>
+              : detail::_call<Ret, Actions...>
+            {};
+        }
     }
 }
 

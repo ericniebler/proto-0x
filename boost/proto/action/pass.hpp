@@ -120,25 +120,28 @@ namespace boost
         struct pass
         {};
 
-        template<typename ...Actions>
-        struct action<pass(Actions...)>
-          : detail::_pass_<pass(Actions...)>
-        {};
+        namespace extension
+        {
+            template<typename ...Actions>
+            struct action_impl<pass(Actions...)>
+              : detail::_pass_<pass(Actions...)>
+            {};
 
-        template<typename ...Actions>
-        struct action<pass(Actions......)>
-          : detail::_pass_<pass(Actions......)>
-        {};
+            template<typename ...Actions>
+            struct action_impl<pass(Actions......)>
+              : detail::_pass_<pass(Actions......)>
+            {};
 
-        template<typename Tag, typename ...ActiveGrammars>
-        struct action<case_(Tag(ActiveGrammars...), pass)>
-          : detail::_pass_<pass(ActiveGrammars...)>
-        {};
+            template<typename Tag, typename ...ActiveGrammars>
+            struct action_impl<case_(Tag(ActiveGrammars...), pass)>
+              : detail::_pass_<pass(ActiveGrammars...)>
+            {};
 
-        template<typename Tag, typename ...ActiveGrammars>
-        struct action<case_(Tag(ActiveGrammars......), pass)>
-          : detail::_pass_<pass(ActiveGrammars......)>
-        {};
+            template<typename Tag, typename ...ActiveGrammars>
+            struct action_impl<case_(Tag(ActiveGrammars......), pass)>
+              : detail::_pass_<pass(ActiveGrammars......)>
+            {};
+        }
     }
 }
 

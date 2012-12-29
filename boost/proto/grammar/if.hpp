@@ -17,11 +17,18 @@ namespace boost
 {
     namespace proto
     {
-        // Handle proto::if_ in a matching context
-        template<typename Expr, typename If>
-        struct matches<Expr, proto::if_(If)>
-          : detail::eval_bool_action_<If, Expr>
-        {};
+        namespace extension
+        {
+            // Handle proto::if_ in a matching context
+            template<typename If>
+            struct grammar_impl<proto::if_(If)>
+            {
+                template<typename Expr>
+                struct apply
+                  : detail::eval_bool_action_<If, Expr>
+                {};
+            };
+        }
     }
 }
 

@@ -170,17 +170,20 @@ namespace boost
         struct construct
         {};
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // action
-        template<typename Type, typename ...Actions>
-        struct action<construct(Type(*)(Actions...))>
-          : detail::_construct<Type, Actions...>
-        {};
+        namespace extension
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            // action_impl
+            template<typename Type, typename ...Actions>
+            struct action_impl<construct(Type(*)(Actions...))>
+              : detail::_construct<Type, Actions...>
+            {};
 
-        template<typename Type, typename ...Actions>
-        struct action<construct(Type(*)(Actions......))>
-          : detail::_construct_unpack<Type, Actions...>
-        {};
+            template<typename Type, typename ...Actions>
+            struct action_impl<construct(Type(*)(Actions......))>
+              : detail::_construct_unpack<Type, Actions...>
+            {};
+        }
     }
 }
 

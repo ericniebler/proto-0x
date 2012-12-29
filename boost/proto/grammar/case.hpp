@@ -12,15 +12,23 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/tags.hpp>
 #include <boost/proto/matches.hpp>
+#include <boost/proto/grammar/grammar.hpp>
 
 namespace boost
 {
     namespace proto
     {
-        template<typename Expr, typename Grammar, typename ...Actions>
-        struct matches<Expr, proto::case_(Grammar, Actions...)>
-          : matches<Expr, Grammar>
-        {};
+        namespace extension
+        {
+            template<typename Grammar, typename ...Actions>
+            struct grammar_impl<proto::case_(Grammar, Actions...)>
+            {
+                template<typename Expr>
+                struct apply
+                  : matches<Expr, Grammar>
+                {};
+            };
+        }
     }
 }
 

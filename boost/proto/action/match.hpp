@@ -48,18 +48,20 @@ namespace boost
             };
         }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // action
-        template<typename ...ActiveGrammars>
-        struct action<match(ActiveGrammars...)>
-          : detail::_match<ActiveGrammars...>
-          , grammar<match(ActiveGrammars...)>
+        namespace extension
         {
-            static_assert(
-                utility::logical_ops::and_(detail::is_case_stmt_<ActiveGrammars>::value...)
-              , "Expected case_ statement"
-            );
-        };
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            // action_impl
+            template<typename ...ActiveGrammars>
+            struct action_impl<match(ActiveGrammars...)>
+              : detail::_match<ActiveGrammars...>
+            {
+                static_assert(
+                    utility::logical_ops::and_(detail::is_case_stmt_<ActiveGrammars>::value...)
+                  , "Expected case_ statement"
+                );
+            };
+        }
     }
 }
 

@@ -46,10 +46,13 @@ namespace boost
         struct block
         {};
 
-        template<typename... Actions>
-        struct action<block(Actions...)>
-          : detail::_block<Actions...>
-        {};
+        namespace extension
+        {
+            template<typename... Actions>
+            struct action_impl<block(Actions...)>
+              : detail::_block<Actions...>
+            {};
+        }
     }
 }
 

@@ -94,15 +94,18 @@ namespace boost
             };
         }
 
-        template<typename If, typename Then>
-        struct action<if_(If, Then)>
-          : detail::_if_<If, Then>
-        {};
+        namespace extension
+        {
+            template<typename If, typename Then>
+            struct action_impl<if_(If, Then)>
+              : detail::_if_<If, Then>
+            {};
 
-        template<typename If, typename Then, typename Else>
-        struct action<if_(If, Then, Else)>
-          : detail::_if_<If, Then, Else>
-        {};
+            template<typename If, typename Then, typename Else>
+            struct action_impl<if_(If, Then, Else)>
+              : detail::_if_<If, Then, Else>
+            {};
+        }
     }
 }
 

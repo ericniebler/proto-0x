@@ -32,6 +32,38 @@ namespace boost
                     )
                 >
             {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // normalize_action_
+            template<typename T, typename Enable = void>
+            struct normalize_action_
+            {
+                using type = T;
+            };
+
+            template<typename Ret, typename ...Args>
+            struct normalize_action_<Ret(Args...), utility::always_void<typename Ret::proto_action_type>>
+            {
+                using type = typename Ret::proto_action_type(Args...);
+            };
+
+            template<typename Ret, typename ...Args>
+            struct normalize_action_<Ret(Args......), utility::always_void<typename Ret::proto_action_type>>
+            {
+                using type = typename Ret::proto_action_type(Args......);
+            };
+        }
+
+        namespace extension
+        {
+            template<typename Action>
+            struct action_impl
+            {
+                static_assert(
+                    utility::never<Action>::value
+                  , "Unknown action pattern used in proto::action"
+                );
+            };
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,19 +83,32 @@ namespace boost
         // action
         template<typename ActionOrActiveGrammar>
         struct action
-          : grammar<ActionOrActiveGrammar>
+          : ActionOrActiveGrammar
+        {};
+
+        template<typename Ret, typename ...Args>
+        struct action<Ret(Args...)>
+          : action_base
+          , grammar<Ret(Args...)>
         {
-            template<typename ...Args, typename Action = ActionOrActiveGrammar>
-            auto operator()(Args &&... args) const
+            template<typename ...Args2, typename A = typename detail::normalize_action_<Ret(Args...)>::type>
+            auto operator()(Args2 &&... args2) const
             BOOST_PROTO_AUTO_RETURN(
-                BOOST_PROTO_TRY_CALL(Action())(static_cast<Args &&>(args)...)
+                BOOST_PROTO_TRY_CALL(extension::action_impl<A>())(static_cast<Args2 &&>(args2)...)
             )
         };
 
-        template<typename T>
-        struct action<action<T>>
-          : action<T>
-        {};
+        template<typename Ret, typename ...Args>
+        struct action<Ret(Args......)>
+          : action_base
+          , grammar<Ret(Args......)>
+        {
+            template<typename ...Args2, typename A = typename detail::normalize_action_<Ret(Args......)>::type>
+            auto operator()(Args2 &&... args2) const
+            BOOST_PROTO_AUTO_RETURN(
+                BOOST_PROTO_TRY_CALL(extension::action_impl<A>())(static_cast<Args2 &&>(args2)...)
+            )
+        };
 
         template<typename Ret, typename ...Args>
         struct action<Ret(*)(Args...)>

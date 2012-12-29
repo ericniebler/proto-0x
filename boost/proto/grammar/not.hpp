@@ -18,14 +18,21 @@ namespace boost
 {
     namespace proto
     {
-        // Handle proto::not_
-        template<typename Expr, typename BoolAction>
-        struct matches<Expr, proto::not_(BoolAction)>
-          : std::integral_constant<
-                bool
-              , !detail::eval_bool_action_<BoolAction, Expr>::value
-            >
-        {};
+        namespace extension
+        {
+            // Handle proto::not_
+            template<typename BoolAction>
+            struct grammar_impl<proto::not_(BoolAction)>
+            {
+                template<typename Expr>
+                struct apply
+                  : std::integral_constant<
+                        bool
+                      , !detail::eval_bool_action_<BoolAction, Expr>::value
+                    >
+                {};
+            };
+        }
     }
 }
 

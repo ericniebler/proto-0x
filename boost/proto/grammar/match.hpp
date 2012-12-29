@@ -30,11 +30,18 @@ namespace boost
             };
         }
 
-        // Handle proto::match
-        template<typename Expr, typename ...Grammars>
-        struct matches<Expr, proto::match(Grammars...)>
-          : utility::or_<detail::matches_wrap_<Expr, Grammars>...>
-        {};
+        namespace extension
+        {
+            // Handle proto::match
+            template<typename ...Grammars>
+            struct grammar_impl<proto::match(Grammars...)>
+            {
+                template<typename Expr>
+                struct apply
+                  : utility::or_<detail::matches_wrap_<Expr, Grammars>...>
+                {};
+            };
+        }
     }
 }
 

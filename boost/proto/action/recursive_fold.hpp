@@ -164,15 +164,18 @@ namespace boost
         struct reverse_recursive_fold
         {};
 
-        template<typename Seq, typename State0, typename Fun>
-        struct action<recursive_fold(Seq, State0, Fun)>
-          : detail::_recursive_fold<Seq, State0, Fun>
-        {};
+        namespace extension
+        {
+            template<typename Seq, typename State0, typename Fun>
+            struct action_impl<recursive_fold(Seq, State0, Fun)>
+              : detail::_recursive_fold<Seq, State0, Fun>
+            {};
 
-        template<typename Seq, typename State0, typename Fun>
-        struct action<reverse_recursive_fold(Seq, State0, Fun)>
-          : detail::_reverse_recursive_fold<Seq, State0, Fun>
-        {};
+            template<typename Seq, typename State0, typename Fun>
+            struct action_impl<reverse_recursive_fold(Seq, State0, Fun)>
+              : detail::_reverse_recursive_fold<Seq, State0, Fun>
+            {};
+        }
     }
 }
 

@@ -171,11 +171,14 @@ namespace boost
             };
         }
 
-        // Handle actions with pack expansions
-        template<typename Ret, typename ...Actions>
-        struct action<Ret(Actions......)>
-          : detail::_unpack<Ret, Actions...>
-        {};
+        namespace extension
+        {
+            // Handle actions with pack expansions
+            template<typename Ret, typename ...Actions>
+            struct action_impl<Ret(Actions......)>
+              : detail::_unpack<Ret, Actions...>
+            {};
+        }
     }
 }
 

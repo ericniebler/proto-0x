@@ -11,17 +11,25 @@
 
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/action/action.hpp>
+#include <boost/proto/grammar/grammar.hpp>
 #include <boost/proto/utility.hpp>
 
 namespace boost
 {
     namespace proto
     {
-        // Handle proto::and_
-        template<typename Expr, typename ...BoolActions>
-        struct matches<Expr, proto::and_(BoolActions...)>
-          : utility::and_<detail::eval_bool_action_<BoolActions, Expr>...>
-        {};
+        namespace extension
+        {
+            // Handle proto::and_
+            template<typename ...BoolActions>
+            struct grammar_impl<proto::and_(BoolActions...)>
+            {
+                template<typename Expr>
+                struct apply
+                  : utility::and_<detail::eval_bool_action_<BoolActions, Expr>...>
+                {};
+            };
+        }
     }
 }
 

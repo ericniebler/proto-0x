@@ -11,6 +11,7 @@
 
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/action/action.hpp>
+#include <boost/proto/grammar/grammar.hpp>
 
 namespace boost
 {
@@ -83,12 +84,19 @@ namespace boost
         /// \endcode
         struct _
           : basic_action<_>
+          , basic_grammar<_>
         {
             template<typename Expr, typename ...Rest>
             auto operator()(Expr && e, Rest &&...) const
             BOOST_PROTO_AUTO_RETURN(
                 static_cast<Expr &&>(e)
             )
+
+            // Makes _ a basic grammar element:
+            template<typename Expr>
+            struct apply
+              : std::true_type
+            {};
         };
     }
 }

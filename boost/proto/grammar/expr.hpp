@@ -280,37 +280,56 @@ namespace boost
             {};
         }
 
-        template<typename Expr, typename Tag, typename ...Grammars>
-        struct matches<Expr, Tag(Grammars...)>
-          : detail::matches_expr_<
-                typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
-              , Tag(Grammars...)
-            >
-        {};
+        namespace extension
+        {
+            template<typename Tag, typename ...Grammars>
+            struct grammar_impl<expr_tag<Tag>(Grammars...)>
+            {
+                template<typename Expr>
+                struct apply
+                  : detail::matches_expr_<
+                        typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
+                      , Tag(Grammars...)
+                    >
+                {};
+            };
 
-        template<typename Expr, typename Tag, typename ...Grammars>
-        struct matches<Expr, Tag(Grammars......)>
-          : detail::matches_expr_<
-                typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
-              , Tag(Grammars......)
-            >
-        {};
+            template<typename Tag, typename ...Grammars>
+            struct grammar_impl<expr_tag<Tag>(Grammars......)>
+            {
+                template<typename Expr>
+                struct apply
+                  : detail::matches_expr_<
+                        typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
+                      , Tag(Grammars......)
+                    >
+                {};
+            };
 
-        template<typename Expr, typename ...Children>
-        struct matches<Expr, _(Children...)>
-          : detail::matches_expr_<
-                typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
-              , _(Children...)
-            >
-        {};
+            template<typename ...Children>
+            struct grammar_impl<_(Children...)>
+            {
+                template<typename Expr>
+                struct apply
+                  : detail::matches_expr_<
+                        typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
+                      , _(Children...)
+                    >
+                {};
+            };
 
-        template<typename Expr, typename ...Children>
-        struct matches<Expr, _(Children......)>
-          : detail::matches_expr_<
-                typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
-              , _(Children......)
-            >
-        {};
+            template<typename ...Children>
+            struct grammar_impl<_(Children......)>
+            {
+                template<typename Expr>
+                struct apply
+                  : detail::matches_expr_<
+                        typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
+                      , _(Children......)
+                    >
+                {};
+            };
+        }
     }
 }
 

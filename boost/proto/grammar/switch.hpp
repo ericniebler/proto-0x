@@ -21,22 +21,33 @@ namespace boost
 {
     namespace proto
     {
-        // Handle proto::switch_
-        template<typename Expr, typename Cases>
-        struct matches<Expr, proto::switch_(Cases)>
-          : matches<
-                Expr
-              , typename Cases::template case_<typename tag_of<Expr>::type>
-            >
-        {};
+        namespace extension
+        {
+            // Handle proto::switch_
+            template<typename Cases>
+            struct grammar_impl<proto::switch_(Cases)>
+            {
+                template<typename Expr>
+                struct apply
+                  : matches<
+                        Expr
+                      , typename Cases::template case_<typename tag_of<Expr>::type>
+                    >
+                {};
+            };
 
-        template<typename Expr, typename Cases, typename Action>
-        struct matches<Expr, proto::switch_(Cases, Action)>
-          : matches<
-                Expr
-              , typename Cases::template case_<decltype(action<Action>()(std::declval<Expr>()))>
-            >
-        {};
+            template<typename Cases, typename Action>
+            struct grammar_impl<proto::switch_(Cases, Action)>
+            {
+                template<typename Expr>
+                struct apply
+                  : matches<
+                        Expr
+                      , typename Cases::template case_<decltype(action<Action>()(std::declval<Expr>()))>
+                    >
+                {};
+            };
+        }
     }
 }
 

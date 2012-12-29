@@ -33,6 +33,13 @@ namespace boost
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
+            // always
+            template<typename ...T>
+            struct always
+              : std::true_type
+            {};
+
+            ////////////////////////////////////////////////////////////////////////////////////////
             // static_const
             template<typename T>
             struct static_const
@@ -42,6 +49,11 @@ namespace boost
 
             template<typename T>
             constexpr T static_const<T>::value;
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // always_void
+            template<typename ...T>
+            using always_void = void;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // ignore

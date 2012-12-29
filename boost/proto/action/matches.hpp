@@ -37,12 +37,15 @@ namespace boost
         struct matches_
         {};
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // action
-        template<typename Grammar>
-        struct action<matches_(Grammar)>
-          : detail::_matches_<Grammar>
-        {};
+        namespace extension
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            // action_impl
+            template<typename Grammar>
+            struct action_impl<matches_(Grammar)>
+              : detail::_matches_<Grammar>
+            {};
+        }
     }
 }
 
