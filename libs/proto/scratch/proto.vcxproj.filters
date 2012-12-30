@@ -252,6 +252,12 @@
     <ClInclude Include="..\..\..\boost\proto\action\and.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\placeholders.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\grammar\placeholders.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

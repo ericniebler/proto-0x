@@ -384,7 +384,7 @@ namespace boost
 
         struct _env;
 
-        typedef _env_var<data_type> _data;
+        struct _data;
 
         struct _value;
 

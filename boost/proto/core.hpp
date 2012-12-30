@@ -21,6 +21,7 @@
 #include <boost/proto/literals.hpp>
 #include <boost/proto/matches.hpp>
 #include <boost/proto/operators.hpp>
+#include <boost/proto/placeholders.hpp>
 #include <boost/proto/tags.hpp>
 #include <boost/proto/utility.hpp>
 #include <boost/proto/virtual_member.hpp>

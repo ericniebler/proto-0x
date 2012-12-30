@@ -16,6 +16,7 @@
 #include <cstddef>
 #include <functional>
 #include <type_traits>
+#include <boost/get_pointer.hpp>
 #include <boost/utility/addressof.hpp>
 #include <boost/proto/proto_fwd.hpp>
 

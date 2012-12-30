@@ -13,7 +13,6 @@
 #include <utility>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/punctuation/comma.hpp>
-#include <boost/get_pointer.hpp>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/children.hpp>
 #include <boost/proto/matches.hpp>
@@ -250,7 +249,7 @@ namespace boost
 
         template<>
         struct op<if_else_>
-          : function
+          : if_else_
         {};
 
         template<>

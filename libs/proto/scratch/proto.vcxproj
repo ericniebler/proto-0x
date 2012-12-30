@@ -117,11 +117,13 @@
     <ClInclude Include="..\..\..\boost\proto\grammar\match.hpp" />
     <ClInclude Include="..\..\..\boost\proto\grammar\not.hpp" />
     <ClInclude Include="..\..\..\boost\proto\grammar\or.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\grammar\placeholders.hpp" />
     <ClInclude Include="..\..\..\boost\proto\grammar\switch.hpp" />
     <ClInclude Include="..\..\..\boost\proto\literals.hpp" />
     <ClInclude Include="..\..\..\boost\proto\make_expr.hpp" />
     <ClInclude Include="..\..\..\boost\proto\matches.hpp" />
     <ClInclude Include="..\..\..\boost\proto\operators.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\placeholders.hpp" />
     <ClInclude Include="..\..\..\boost\proto\proto.hpp" />
     <ClInclude Include="..\..\..\boost\proto\proto_fwd.hpp" />
     <ClInclude Include="..\..\..\boost\proto\tags.hpp" />
