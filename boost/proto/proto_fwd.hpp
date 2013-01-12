@@ -104,6 +104,9 @@ namespace boost
 
             template<typename Ignored = decltype(nullptr)>
             struct any;
+
+            template<typename Expr>
+            struct flat_view;
         }
 
         namespace utility
