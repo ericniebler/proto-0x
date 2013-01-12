@@ -12,7 +12,6 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/action/action.hpp>
 #include <boost/proto/action/block.hpp>
-#include <boost/proto/grammar/grammar.hpp>
 
 namespace boost
 {

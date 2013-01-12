@@ -121,9 +121,9 @@ namespace boost
             template<typename Domain, typename Grammar, typename SuperDomain>
             struct domain
             {
-                typedef Domain          proto_domain_type;
-                typedef Grammar         proto_grammar_type;
-                typedef SuperDomain     proto_super_domain_type;
+                using proto_domain_type = Domain         ;
+                using proto_grammar_type = Grammar        ;
+                using proto_super_domain_type = SuperDomain    ;
 
                 // Define this in your derived domain class to control how
                 // objects are stored within the terminals of your domain.
@@ -184,19 +184,19 @@ namespace boost
         template<typename Expr>
         struct domain_of
         {
-            typedef typename Expr::proto_domain_type type;
+            using type = typename Expr::proto_domain_type;
         };
 
         template<typename Expr>
         struct domain_of<Expr &>
         {
-            typedef typename Expr::proto_domain_type type;
+            using type = typename Expr::proto_domain_type;
         };
 
         template<typename Expr>
         struct domain_of<Expr &&>
         {
-            typedef typename Expr::proto_domain_type type;
+            using type = typename Expr::proto_domain_type;
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////////

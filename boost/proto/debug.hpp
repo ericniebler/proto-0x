@@ -123,7 +123,7 @@ namespace boost
                 void operator()(E const &e) const
                 {
                     using namespace hidden_detail_;
-                    typedef typename tag_of<E>::type tag;
+                    using tag = typename tag_of<E>::type;
                     this->sout_.width(this->depth_);
                     this->sout_ << (this->first_ ? "" : ", ");
                     this->sout_ << tag() << "(" << proto::value(e) << ")\n";
@@ -134,7 +134,7 @@ namespace boost
                 void operator()(E const &e) const
                 {
                     using namespace hidden_detail_;
-                    typedef typename tag_of<E>::type tag;
+                    using tag = typename tag_of<E>::type;
                     this->sout_.width(this->depth_);
                     this->sout_ << (this->first_ ? "" : ", ");
                     this->sout_ << tag() << "(\n";

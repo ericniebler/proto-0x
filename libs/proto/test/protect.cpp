@@ -18,7 +18,7 @@ struct S
 template<typename T>
 struct identity
 {
-    typedef T type;
+    using type = T;
 };
 
 struct Test

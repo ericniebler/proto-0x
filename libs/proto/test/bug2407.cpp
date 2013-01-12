@@ -36,7 +36,7 @@ template<class E>
 struct e
   : proto::basic_expr<E, d>
 {
-    typedef proto::basic_expr<E, d> proto_basic_expr_type;
+    using proto_basic_expr_type = proto::basic_expr<E, d>;
     static_assert(proto::matches<proto_basic_expr_type, g>::value, "");
 
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(e);

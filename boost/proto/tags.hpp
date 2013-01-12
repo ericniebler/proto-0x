@@ -35,7 +35,7 @@ namespace boost
 
             struct expr_tag_base
             {
-                typedef expr_tag_tag proto_tag_type;
+                using proto_tag_type = expr_tag_tag;
             };
 
             template<typename Tag, typename IsTerminal>
@@ -43,8 +43,8 @@ namespace boost
               : expr_tag_base
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr_tag);
-                typedef IsTerminal  proto_is_terminal_type;
-                typedef expr_tag<Tag> proto_grammar_type;
+                using proto_is_terminal_type = IsTerminal ;
+                using proto_grammar_type = expr_tag<Tag>;
             };
 
             /// Tag type for terminals; aka, leaves in the expression tree.
@@ -651,19 +651,19 @@ namespace boost
         template<typename T>
         struct tag_of
         {
-            typedef typename T::proto_tag_type type;
+            using type = typename T::proto_tag_type;
         };
 
         template<typename T>
         struct tag_of<T &>
         {
-            typedef typename T::proto_tag_type type;
+            using type = typename T::proto_tag_type;
         };
 
         template<typename T>
         struct tag_of<T &&>
         {
-            typedef typename T::proto_tag_type type;
+            using type = typename T::proto_tag_type;
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////////

@@ -145,7 +145,7 @@ namespace boost
             template<typename Env, typename Key>
             struct env_var
             {
-                typedef decltype(functional::env_var<Key>()(std::declval<Env>())) type;
+                using type = decltype(functional::env_var<Key>()(std::declval<Env>()));
             };
         }
 

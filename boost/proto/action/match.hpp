@@ -11,7 +11,6 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/action/action.hpp>
 #include <boost/proto/action/case.hpp>
-#include <boost/proto/grammar/grammar.hpp>
 #include <boost/proto/grammar/match.hpp>
 
 namespace boost

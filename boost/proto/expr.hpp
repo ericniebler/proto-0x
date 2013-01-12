@@ -61,7 +61,7 @@ namespace boost
             {
             private:
                 struct proto_smart_bool { int member; };
-                typedef int proto_smart_bool::*unspecified_bool_type;
+                using unspecified_bool_type = int proto_smart_bool::*;
 
             public:
                 inline operator unspecified_bool_type() const
@@ -79,7 +79,7 @@ namespace boost
             {
             private:
                 struct proto_smart_bool { int member; };
-                typedef int proto_smart_bool::*unspecified_bool_type;
+                using unspecified_bool_type = int proto_smart_bool::*;
 
             public:
                 inline operator unspecified_bool_type() const
@@ -97,7 +97,7 @@ namespace boost
             {
             private:
                 struct proto_smart_bool { int member; };
-                typedef int proto_smart_bool::*unspecified_bool_type;
+                using unspecified_bool_type = int proto_smart_bool::*;
 
             public:
                 inline operator unspecified_bool_type() const
@@ -116,7 +116,7 @@ namespace boost
             {
             private:
                 struct proto_smart_bool { int member; };
-                typedef int proto_smart_bool::*unspecified_bool_type;
+                using unspecified_bool_type = int proto_smart_bool::*;
 
             public:
                 inline operator unspecified_bool_type() const
@@ -137,7 +137,7 @@ namespace boost
             {
             private:
                 struct proto_smart_bool { int member; };
-                typedef int proto_smart_bool::*unspecified_bool_type;
+                using unspecified_bool_type = int proto_smart_bool::*;
 
             public:
                 inline operator unspecified_bool_type() const
@@ -235,7 +235,7 @@ namespace boost
                 )                                                                                   \
             {}                                                                                      \
                                                                                                     \
-            typedef int boost_proto_inherited_ctors ## __LINE__                                     \
+            using boost_proto_inherited_ctors ## __LINE__ = int                                     \
             /**/
 
         namespace exprs
@@ -578,7 +578,7 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // constructors
                 //using basic_expr<ExprDesc, Domain>::basic_expr;
-                typedef basic_expr<ExprDesc, Domain> proto_base_expr_type;
+                using proto_base_expr_type = basic_expr<ExprDesc, Domain>;
                 BOOST_PROTO_INHERIT_EXPR_CTORS(expr, proto_base_expr_type);
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -592,25 +592,25 @@ namespace boost
             template<typename Expr, std::size_t N>
             struct child
             {
-                typedef decltype(proto::child<N>(std::declval<Expr>())) type;
+                using type = decltype(proto::child<N>(std::declval<Expr>()));
             };
 
             template<typename Expr>
             struct left
             {
-                typedef decltype(proto::left(std::declval<Expr>())) type;
+                using type = decltype(proto::left(std::declval<Expr>()));
             };
 
             template<typename Expr>
             struct right
             {
-                typedef decltype(proto::right(std::declval<Expr>())) type;
+                using type = decltype(proto::right(std::declval<Expr>()));
             };
 
             template<typename Expr>
             struct value
             {
-                typedef decltype(proto::value(std::declval<Expr>())) type;
+                using type = decltype(proto::value(std::declval<Expr>()));
             };
         }
 
@@ -620,24 +620,24 @@ namespace boost
         struct is_expr
           : std::is_base_of<expr_base, T>
         {
-            typedef is_expr type;
-            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+            using type = is_expr;
+            using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
         };
 
         template<typename T>
         struct is_expr<T &>
           : std::is_base_of<expr_base, T>
         {
-            typedef is_expr type;
-            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+            using type = is_expr;
+            using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
         };
 
         template<typename T>
         struct is_expr<T &&>
           : std::is_base_of<expr_base, T>
         {
-            typedef is_expr type;
-            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+            using type = is_expr;
+            using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -646,24 +646,24 @@ namespace boost
         struct is_terminal
           : Expr::proto_is_terminal_type
         {
-            typedef is_terminal type;
-            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+            using type = is_terminal;
+            using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
         };
 
         template<typename Expr>
         struct is_terminal<Expr &>
           : Expr::proto_is_terminal_type
         {
-            typedef is_terminal type;
-            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+            using type = is_terminal;
+            using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
         };
 
         template<typename Expr>
         struct is_terminal<Expr &&>
           : Expr::proto_is_terminal_type
         {
-            typedef is_terminal type;
-            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+            using type = is_terminal;
+            using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -672,24 +672,24 @@ namespace boost
         struct arity_of
           : Expr::proto_arity
         {
-            typedef arity_of type;
-            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+            using type = arity_of;
+            using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
         };
 
         template<typename Expr>
         struct arity_of<Expr &>
           : Expr::proto_arity
         {
-            typedef arity_of type;
-            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+            using type = arity_of;
+            using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
         };
 
         template<typename Expr>
         struct arity_of<Expr &&>
           : Expr::proto_arity
         {
-            typedef arity_of type;
-            typedef mpl::integral_c_tag tag; // HACK until mpl supports std::integral_constant
+            using type = arity_of;
+            using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////////

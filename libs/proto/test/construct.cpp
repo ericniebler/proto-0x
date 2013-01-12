@@ -28,7 +28,7 @@ namespace test_make
     template<typename T>
     struct careful
     {
-        typedef typename T::not_there not_there;
+        using not_there = typename T::not_there;
     };
 
     // Test that when no substitution is done, we don't instantiate templates

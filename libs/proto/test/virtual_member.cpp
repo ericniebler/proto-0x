@@ -34,7 +34,7 @@ struct MyExpr
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(MyExpr);
 
-    typedef proto::basic_expr<ExprDesc, MyDomain> proto_basic_expr_type;
+    using proto_basic_expr_type = proto::basic_expr<ExprDesc, MyDomain>;
     BOOST_PROTO_INHERIT_EXPR_CTORS(MyExpr, proto_basic_expr_type);
 
     BOOST_PROTO_EXTENDS_MEMBERS(

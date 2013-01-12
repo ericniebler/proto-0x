@@ -78,7 +78,7 @@ struct lambda_expr
 
     using proto::expr_assign<lambda_expr, lambda_domain>::operator=;
     //using proto::basic_expr<ExprDesc, lambda_domain>::basic_expr;
-    typedef proto::basic_expr<ExprDesc, lambda_domain> proto_basic_expr_type;
+    using proto_basic_expr_type = proto::basic_expr<ExprDesc, lambda_domain>;
     BOOST_PROTO_INHERIT_EXPR_CTORS(lambda_expr, proto_basic_expr_type);
 
     template<typename ...T>

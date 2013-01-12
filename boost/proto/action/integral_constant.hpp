@@ -28,8 +28,8 @@ namespace boost
             }
         };
 
-        typedef _integral_constant<bool, true> _true;
-        typedef _integral_constant<bool, false> _false;
+        using _true = _integral_constant<bool, true>;
+        using _false = _integral_constant<bool, false>;
     }
 }
 

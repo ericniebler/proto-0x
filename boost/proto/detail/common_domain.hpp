@@ -35,7 +35,7 @@ namespace boost
             struct domain_
               : domain_<typename Domain::proto_super_domain_type>
             {
-                typedef Domain type;
+                using type = Domain;
                 using domain_<typename Domain::proto_super_domain_type>::deduce;
                 static Domain deduce(domain_<Domain>*);
             };
@@ -43,7 +43,7 @@ namespace boost
             template<>
             struct domain_<not_a_domain>
             {
-                typedef not_a_domain type;
+                using type = not_a_domain;
                 static not_a_domain deduce(void*);
             };
 
@@ -66,38 +66,38 @@ namespace boost
             >
             struct common_domain2
             {
-                typedef decltype(domain_<D0>::deduce((domain_<D1>*)0)) type;
+                using type = decltype(domain_<D0>::deduce((domain_<D1>*)0));
                 BOOST_PROTO_ASSERT_VALID_DOMAIN(type);
             };
 
             template<typename D0, typename D1>
             struct common_domain2<D0, D1, 2>
             {
-                typedef D1 type;
+                using type = D1;
             };
 
             template<typename D0, typename D1>
             struct common_domain2<D0, D1, 3>
             {
-                typedef D0 type;
+                using type = D0;
             };
 
             template<typename D0>
             struct common_domain2<D0, default_domain, 4>
             {
-                typedef D0 type;
+                using type = D0;
             };
 
             template<typename D1>
             struct common_domain2<default_domain, D1, 4>
             {
-                typedef D1 type;
+                using type = D1;
             };
 
             template<>
             struct common_domain2<default_domain, default_domain, 4>
             {
-                typedef default_domain type;
+                using type = default_domain;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -108,7 +108,7 @@ namespace boost
             template<typename D0>
             struct common_domain<D0>
             {
-                typedef D0 type;
+                using type = D0;
             };
 
             template<typename D0, typename D1>

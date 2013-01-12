@@ -27,26 +27,32 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // nested_type_
-            template<typename T>
-            typename T::type nested_type_(int);
+            template<typename T, typename Enable = void>
+            struct nested_type_
+            {
+                using type = T;
+            };
 
             template<typename T>
-            T nested_type_(long);
+            struct nested_type_<T, utility::always_void<typename T::type>>
+            {
+                using type = typename T::type;
+            };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // invoke_if_
             template<typename T, bool Applied>
             struct invoke_if_
             {
-                typedef decltype(detail::nested_type_<T>(1)) type;
-                typedef std::true_type applied;
+                using type = typename nested_type_<T>::type;
+                using applied = std::true_type;
             };
 
             template<typename T>
             struct invoke_if_<T, false>
             {
-                typedef T type;
-                typedef std::false_type applied;
+                using type = T;
+                using applied = std::false_type;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -54,15 +60,15 @@ namespace boost
             template<bool IsAction, typename R, typename ...Args>
             struct make_3_
             {
-                typedef decltype(utility::by_val()(action<R>()(std::declval<Args>()...))) type;
-                typedef std::true_type applied;
+                using type = decltype(utility::by_val()(action<R>()(std::declval<Args>()...)));
+                using applied = std::true_type;
             };
 
             template<typename R, typename ...Args>
             struct make_3_<false, R, Args...>
             {
-                typedef R type;
-                typedef std::false_type applied;
+                using type = R;
+                using applied = std::false_type;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -77,8 +83,8 @@ namespace boost
             template<typename R, typename ...A, typename ...Args>
             struct make_2_<R(A...), Args...>
             {
-                typedef decltype(utility::by_val()(action<R(A...)>()(std::declval<Args>()...))) type;
-                typedef std::true_type applied;
+                using type = decltype(utility::by_val()(action<R(A...)>()(std::declval<Args>()...)));
+                using applied = std::true_type;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -99,27 +105,26 @@ namespace boost
             template<typename R, int I, typename ...Args>
             struct make_1_<_protect<R, I>, Args...>
             {
-                typedef _protect<R, I> type;
-                typedef std::false_type applied;
+                using type = _protect<R, I>;
+                using applied = std::false_type;
             };
 
             template<typename R, typename ...Args>
             struct make_1_<noinvoke<R>, Args...>
             {
-                typedef R type;
-                typedef std::false_type applied;
+                using type = R;
+                using applied = std::false_type;
             };
 
             template<template<typename...> class R, typename ...A, typename ...Args>
             struct make_1_<noinvoke<R<A...>>, Args...>
             {
-                typedef R<typename make_2_<A, Args...>::type...> type;
-                typedef
+                using type = R<typename make_2_<A, Args...>::type...>;
+                using applied =
                     std::integral_constant<
                         bool
                       , utility::logical_ops::or_(make_2_<A, Args...>::applied::value...)
-                    >
-                applied;
+                    >;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////

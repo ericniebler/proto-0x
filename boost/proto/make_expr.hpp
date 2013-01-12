@@ -35,7 +35,7 @@ namespace boost
             template<typename Domain, typename ...T>
             struct get_common_domain_impl
             {
-                typedef Domain type;
+                using type = Domain;
             };
 
             template<typename ...T>
@@ -146,13 +146,13 @@ namespace boost
                 template<typename Domain, typename T>
                 struct as_expr
                 {
-                    typedef decltype(domains::as_expr<Domain>(std::declval<T>())) type;
+                    using type = decltype(domains::as_expr<Domain>(std::declval<T>()));
                 };
 
                 template<typename Domain, typename Tag, typename ...T>
                 struct make_expr
                 {
-                    typedef decltype(domains::make_expr<Domain>(Tag(), std::declval<T>()...)) type;
+                    using type = decltype(domains::make_expr<Domain>(Tag(), std::declval<T>()...));
                 };
             }
         }
@@ -202,13 +202,13 @@ namespace boost
             template<typename T>
             struct as_expr
             {
-                typedef decltype(proto::as_expr(std::declval<T>())) type;
+                using type = decltype(proto::as_expr(std::declval<T>()));
             };
 
             template<typename Tag, typename ...T>
             struct make_expr
             {
-                typedef decltype(proto::make_expr(Tag(), std::declval<T>()...)) type;
+                using type = decltype(proto::make_expr(Tag(), std::declval<T>()...));
             };
         }
     }

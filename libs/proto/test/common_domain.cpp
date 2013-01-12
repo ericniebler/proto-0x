@@ -5,7 +5,7 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#define BOOST_PROTO_ASSERT_VALID_DOMAIN(DOM) typedef DOM DOM ## _
+#define BOOST_PROTO_ASSERT_VALID_DOMAIN(DOM) using DOM ## _ = DOM
 
 #include <type_traits>
 #include <boost/proto/proto.hpp>

@@ -24,7 +24,6 @@
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/utility.hpp>
-#include <boost/proto/action/action.hpp>
 
 // Must be greater than or equal to 1. (1 means don't do loop unrolling.)
 #ifndef BOOST_PROTO_ARGS_UNROLL_MAX
@@ -91,11 +90,11 @@ namespace boost
                     return false;
                 }
 
-                typedef std::integral_constant<std::size_t, 0> proto_size;
+                using proto_size = std::integral_constant<std::size_t, 0>;
             };
 
             #define INIT(Z, N, D) proto_child ## N(static_cast< U ## N && >( u ## N ))
-            #define MEMBERS(Z, N, D) typedef T ## N proto_child_type ## N; T ## N proto_child ## N;
+            #define MEMBERS(Z, N, D) using proto_child_type ## N = T ## N; T ## N proto_child ## N;
             #define NOEXCEPT(Z, N, D) noexcept(T ## N(static_cast< U ## N && >( u ## N ))) &&
             #define EQUAL_TO(Z, N, D) static_cast<bool>(proto_child ## N == that. proto_child ## N) &&
             #define INVOKE(Z, N, D) f(D.proto_child ## N);
@@ -105,7 +104,7 @@ namespace boost
             struct children<BOOST_PP_ENUM_PARAMS(N, T)>                                             \
             {                                                                                       \
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(children);                                        \
-                typedef std::integral_constant<std::size_t, N> proto_size;                          \
+                using proto_size = std::integral_constant<std::size_t, N>;                          \
                 BOOST_PP_REPEAT(N, MEMBERS, ~)                                                      \
                                                                                                     \
                 template<BOOST_PP_ENUM_PARAMS(N, typename U) DISABLE_COPY_IF(children, N, U0)>      \
@@ -130,7 +129,7 @@ namespace boost
             template<typename Children>                                                             \
             struct children_element<BOOST_PP_DEC(N), Children>                                      \
             {                                                                                       \
-                typedef typename Children::BOOST_PP_CAT(proto_child_type, BOOST_PP_DEC(N)) type;    \
+                using type = typename Children::BOOST_PP_CAT(proto_child_type, BOOST_PP_DEC(N));    \
             };                                                                                      \
                                                                                                     \
             template<BOOST_PP_ENUM_PARAMS(N, typename T), typename F>                               \
@@ -163,9 +162,9 @@ namespace boost
             struct children<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, T), Tail...>
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(children);
-                typedef std::integral_constant<std::size_t, BOOST_PROTO_ARGS_UNROLL_MAX + sizeof...(Tail)> proto_size;
+                using proto_size = std::integral_constant<std::size_t, BOOST_PROTO_ARGS_UNROLL_MAX + sizeof...(Tail)>;
                 BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, MEMBERS, ~)
-                typedef children<Tail...> proto_children_tail_type;
+                using proto_children_tail_type = children<Tail...>;
                 children<Tail...> proto_children_tail;
 
                 template<BOOST_PP_ENUM_PARAMS(BOOST_PROTO_ARGS_UNROLL_MAX, typename U), typename ...Rest
@@ -210,9 +209,9 @@ namespace boost
                 );
 
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(children);
-                typedef std::integral_constant<std::size_t, 2> proto_size;
-                typedef A proto_child_type0;
-                typedef B proto_child_type1;
+                using proto_size = std::integral_constant<std::size_t, 2>;
+                using proto_child_type0 = A;
+                using proto_child_type1 = B;
                 B proto_child1;
 
                 template<typename T, BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<children, T>::value))>

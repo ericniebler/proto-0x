@@ -26,25 +26,25 @@ namespace boost
             template<std::size_t I, typename BasicAction>
             struct expand_pattern_2_
             {
-                typedef BasicAction type;
+                using type = BasicAction;
             };
 
             template<std::size_t I, typename Action>
             struct expand_pattern_2_<I, pack(Action)>
             {
-                typedef proto::_child<I> type(Action);
+                using type = proto::_child<I>(Action);
             };
 
             template<typename Action>
             struct expand_pattern_2_<(std::size_t)-1, pack(Action)>
             {
-                typedef proto::_value type(Action);
+                using type = proto::_value(Action);
             };
 
             template<std::size_t I, typename Ret, typename ...Actions>
             struct expand_pattern_2_<I, Ret(Actions...)>
             {
-                typedef Ret type(typename expand_pattern_2_<I, Actions>::type...);
+                using type = Ret(typename expand_pattern_2_<I, Actions>::type...);
             };
 
             template<std::size_t I, typename Ret, typename ...Actions>
@@ -75,7 +75,7 @@ namespace boost
             template<typename UnpackingPattern, typename Actions = void()>
             struct collect_pack_actions_
             {
-                typedef Actions type;
+                using type = Actions;
             };
 
             // Note: Do *NOT* recurse into vararg functions. Those are nested pack actions,
@@ -96,7 +96,7 @@ namespace boost
             template<typename Action, typename ...Actions>
             struct collect_pack_actions_<pack(Action), void(Actions...)>
             {
-                typedef void type(Actions..., action<Action>);
+                using type = void(Actions..., action<Action>);
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -131,16 +131,16 @@ namespace boost
             template<typename Head, typename...Tail, typename ...Args>
             struct compute_indices_1_<void(Head, Tail...), Args...>
             {
-                typedef arity_of<decltype(Head()(std::declval<Args>()...))> arity;
-                typedef compute_indices_1_<void(Tail...), Args...> tail;
-                typedef typename compute_indices_2_<arity::value, tail::arity::value>::type type;
+                using arity = arity_of<decltype(Head()(std::declval<Args>()...))>;
+                using tail = compute_indices_1_<void(Tail...), Args...>;
+                using type = typename compute_indices_2_<arity::value, tail::arity::value>::type;
             };
 
             template<typename Head, typename ...Args>
             struct compute_indices_1_<void(Head), Args...>
             {
-                typedef arity_of<decltype(Head()(std::declval<Args>()...))> arity;
-                typedef typename compute_indices_2_<arity::value>::type type;
+                using arity = arity_of<decltype(Head()(std::declval<Args>()...))>;
+                using type = typename compute_indices_2_<arity::value>::type;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -152,11 +152,10 @@ namespace boost
               // collect_pack_actions_, and specialized on void(action<_>) to have a more
               // optimal implementation.
             {
-                typedef
+                using actions_type =
                     typename collect_pack_actions_<
                         typename utility::result_of::back<Actions...>::type
-                    >::type
-                actions_type;
+                    >::type;
 
                 template<typename ...Args>
                 auto operator()(Args &&... args) const

@@ -46,7 +46,7 @@ struct Test2
 template<typename T, typename U>
 struct select2nd
 {
-    typedef U type;
+    using type = U;
 };
 
 struct Test3
@@ -71,7 +71,7 @@ struct Test3
 
 void test_noinvoke()
 {
-    typedef proto::literal<int> Int;
+    using Int = proto::literal<int>;
     Int i {42};
 
     static_assert(

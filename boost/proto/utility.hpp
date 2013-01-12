@@ -74,14 +74,14 @@ namespace boost
             struct or_
               : std::false_type
             {
-                typedef none which;
+                using which = none;
             };
 
             template<typename Head, typename ...Tail>
             struct or_<true, Head, Tail...>
               : std::true_type
             {
-                typedef Head which; // which predicate succeeded?
+                using which = Head; // which predicate succeeded?
             };
 
             template<typename Head, typename Next, typename ...Tail>
@@ -98,7 +98,7 @@ namespace boost
             struct or_
               : std::false_type
             {
-                typedef detail::none which;
+                using which = detail::none;
             };
 
             template<typename Head, typename ...T>
@@ -113,14 +113,14 @@ namespace boost
             struct and_
               : std::true_type
             {
-                typedef none which;
+                using which = none;
             };
 
             template<typename Head, typename ...Tail>
             struct and_<false, Head, Tail...>
               : std::false_type
             {
-                typedef Head which; // which predicate failed?
+                using which = Head; // which predicate failed?
             };
 
             template<typename Head, typename Next, typename ...Tail>
@@ -137,7 +137,7 @@ namespace boost
             struct and_
               : std::true_type
             {
-                typedef detail::none which;
+                using which = detail::none;
             };
 
             template<typename Head, typename ...T>
@@ -166,7 +166,7 @@ namespace boost
             template<typename T>
             struct no_decay
             {
-                typedef T type;
+                using type = T;
             };
 
             template<typename Ignored>
@@ -195,7 +195,7 @@ namespace boost
             template<std::size_t...N1, std::size_t...N2>
             struct append_indices<utility::indices<N1...>, utility::indices<N2...>>
             {
-                typedef utility::indices<N1..., (sizeof...(N1) + N2)...> type;
+                using type = utility::indices<N1..., (sizeof...(N1) + N2)...>;
             };
 
             // generate indices [0,N) in O(log(N)) time
@@ -210,13 +210,13 @@ namespace boost
             template<>
             struct make_indices<0>
             {
-                typedef utility::indices<> type;
+                using type = utility::indices<>;
             };
 
             template<>
             struct make_indices<1>
             {
-                typedef utility::indices<0> type;
+                using type = utility::indices<0>;
             };
         }
 
@@ -376,19 +376,19 @@ namespace boost
             template<template<typename...> class List, typename ...As, typename T0>
             struct pop_back_<List<As...>, T0>
             {
-                typedef List<As...> type;
+                using type = List<As...>;
             };
 
             template<template<typename...> class List, typename ...As, typename T0, typename T1>
             struct pop_back_<List<As...>, T0, T1>
             {
-                typedef List<As..., T0> type;
+                using type = List<As..., T0>;
             };
 
             template<template<typename...> class List, typename ...As, typename T0, typename T1, typename T2>
             struct pop_back_<List<As...>, T0, T1, T2>
             {
-                typedef List<As..., T0, T1> type;
+                using type = List<As..., T0, T1>;
             };
 
             template<template<typename...> class List, typename ...As, typename T0, typename T1, typename T2, typename... Tail>
@@ -399,19 +399,19 @@ namespace boost
             template<typename Ret, typename ...As, typename T0>
             struct pop_back_<Ret(As...), T0>
             {
-                typedef Ret type(As...);
+                using type = Ret(As...);
             };
 
             template<typename Ret, typename ...As, typename T0, typename T1>
             struct pop_back_<Ret(As...), T0, T1>
             {
-                typedef Ret type(As..., T0);
+                using type = Ret(As..., T0);
             };
 
             template<typename Ret, typename ...As, typename T0, typename T1, typename T2>
             struct pop_back_<Ret(As...), T0, T1, T2>
             {
-                typedef Ret type(As..., T0, T1);
+                using type = Ret(As..., T0, T1);
             };
 
             template<typename Ret, typename ...As, typename T0, typename T1, typename T2, typename... Tail>
@@ -448,25 +448,25 @@ namespace boost
             >
             struct concat<T0<List...>, T1<Rest...>>
             {
-                typedef T0<List..., Rest...> type;
+                using type = T0<List..., Rest...>;
             };
 
             template<typename Ret0, typename ...List, template<typename...> class T1, typename ...Rest>
             struct concat<Ret0(List...), T1<Rest...>>
             {
-                typedef Ret0 type(List..., Rest...);
+                using type = Ret0(List..., Rest...);
             };
 
             template<template<typename...> class T0, typename ...List, typename Ret1, typename ...Rest>
             struct concat<T0<List...>, Ret1(Rest...)>
             {
-                typedef T0<List..., Rest...> type;
+                using type = T0<List..., Rest...>;
             };
 
             template<typename Ret0, typename ...List, typename Ret1, typename ...Rest>
             struct concat<Ret0(List...), Ret1(Rest...)>
             {
-                typedef Ret0 type(List..., Rest...);
+                using type = Ret0(List..., Rest...);
             };
 
             // Generate lists<_,_,_,..._> with N arguments in O(log N)
@@ -481,19 +481,19 @@ namespace boost
             template<typename T, typename List>
             struct list_of<0, T, List>
             {
-                typedef List type;
+                using type = List;
             };
 
             template<typename T, template<typename...> class List>
             struct list_of<1, T, List<>>
             {
-                typedef List<T> type;
+                using type = List<T>;
             };
 
             template<typename T, typename R>
             struct list_of<1, T, R()>
             {
-                typedef R type(T);
+                using type = R(T);
             };
 
             template<std::size_t I, typename T, typename List>
@@ -514,7 +514,7 @@ namespace boost
             struct rvalue_reference_wrapper
             {
                 T && value;
-                typedef T type;
+                using type = T;
 
                 constexpr rvalue_reference_wrapper(T && t) noexcept
                   : value(static_cast<T &&>(t))
@@ -692,9 +692,7 @@ namespace boost
 
                 virtual void what() const noexcept
                 {
-                    typedef
-                        decltype(std::declval<Fun>()(std::declval<Args>()...))
-                    error_message;
+                    using error_message = decltype(std::declval<Fun>()(std::declval<Args>()...));
                 }
             };
 

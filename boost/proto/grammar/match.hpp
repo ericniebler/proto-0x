@@ -26,7 +26,7 @@ namespace boost
             struct matches_wrap_
               : matches<Expr, Grammar>
             {
-                typedef Grammar proto_grammar_type;
+                using proto_grammar_type = Grammar;
             };
         }
 

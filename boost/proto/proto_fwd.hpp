@@ -93,13 +93,13 @@ namespace boost
             template<typename T>
             struct rvalue_type
             {
-                typedef T && type;
+                using type = T &&;
             };
 
             template<>
             struct rvalue_type<void>
             {
-                typedef void type;
+                using type = void;
             };
 
             template<typename Ignored = decltype(nullptr)>
@@ -115,7 +115,7 @@ namespace boost
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // any
-            typedef detail::any<> any;
+            using any = detail::any<>;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // static_const
@@ -234,7 +234,7 @@ namespace boost
 
         namespace domains
         {
-            typedef detail::not_a_domain no_super_domain;
+            using no_super_domain = detail::not_a_domain;
 
             struct deduce_domain;
 
@@ -391,8 +391,8 @@ namespace boost
         template<std::size_t N>
         struct _child;
 
-        typedef _child<0> _left;
-        typedef _child<1> _right;
+        using _left = _child<0>;
+        using _right = _child<1>;
 
         template<typename T>
         struct is_action;

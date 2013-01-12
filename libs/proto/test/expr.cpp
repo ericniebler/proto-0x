@@ -17,8 +17,8 @@ using proto::_;
 // Test that simple proto expressions are trivial.
 // Note: expressions that store references are not, and cannot be, trivial because
 // they are not default constructable.
-typedef proto::literal<int> int_;
-typedef proto::literal<std::string> string_;
+using int_ = proto::literal<int>;
+using string_ = proto::literal<std::string>;
 static_assert(std::is_trivial<decltype(int_())>::value, "not trivial!");
 static_assert(std::is_trivial<decltype(int_()(3.14))>::value, "not trivial!");
 
@@ -43,7 +43,7 @@ struct MyExpr
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(MyExpr);
 
     //using proto::basic_expr<ExprDesc, MyDomain>::basic_expr;
-    typedef proto::basic_expr<ExprDesc, MyDomain> proto_basic_expr_type;
+    using proto_basic_expr_type = proto::basic_expr<ExprDesc, MyDomain>;
     BOOST_PROTO_INHERIT_EXPR_CTORS(MyExpr, proto_basic_expr_type);
 
     using proto::expr_assign<MyExpr, MyDomain>::operator=;
@@ -59,7 +59,7 @@ void test_expr()
     constexpr int_ i_(42);
 
     // Quick test for big expression nodes (>10 children)
-    typedef proto::expr<proto::function(int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_)> ints_;
+    using ints_ = proto::expr<proto::function(int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_, int_)>;
     ints_ is(p,p,p,p,p,p,p,p,p,p,p,p,p,p);
     p = proto::child<13>(is);
 
@@ -94,7 +94,7 @@ void test_expr()
     static_assert(sizeof(proto::expr<proto::function()>) == 1, "size of empty expr is not 1");
 
     // This should fail to compile:
-    //typedef int_ const cint_;
+    //using cint_ = int_ const;
     //cint_(42)[p];
 
     constexpr My::terminal<int> iii_(42);
@@ -121,7 +121,7 @@ void test_expr()
     BOOST_CHECK(!b1);
 
     // test for nothrow operations
-    typedef proto::exprs::not_equal_to<int_, int_> int_ne_int;
+    using int_ne_int = proto::exprs::not_equal_to<int_, int_>;
     int_ne_int inei(int_(42), int_(42));
     constexpr int_ne_int cinei(int_(42), int_(42));
     static_assert(noexcept(int_ne_int()), "not noexcept default constructor");

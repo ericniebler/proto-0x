@@ -37,10 +37,10 @@ namespace boost
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr_iterator);
 
-                typedef Expr expr_type;
+                using expr_type = Expr;
                 static constexpr std::size_t index = Pos;
-                typedef fusion::random_access_traversal_tag category;
-                typedef proto_expr_iterator fusion_tag;
+                using category = fusion::random_access_traversal_tag;
+                using fusion_tag = proto_expr_iterator;
 
                 explicit expr_iterator(Expr &e)
                   : expr_(e)
@@ -54,9 +54,9 @@ namespace boost
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(flat_view);
 
-                typedef Expr expr_type;
-                typedef fusion::forward_traversal_tag category;
-                typedef proto_flat_view fusion_tag;
+                using expr_type = Expr;
+                using category = fusion::forward_traversal_tag;
+                using fusion_tag = proto_flat_view;
 
                 explicit flat_view(Expr &e)
                   : expr_(e)
@@ -109,7 +109,7 @@ namespace boost
             template<typename Expr>
             struct flatten<Expr &>
             {
-                typedef detail::flat_view<Expr> type;
+                using type = detail::flat_view<Expr>;
             };
         }
 
@@ -140,7 +140,7 @@ namespace boost
                 template<typename This, typename Expr>
                 struct result<This(Expr &)>
                 {
-                    typedef proto::detail::flat_view<Expr> type;
+                    using type = proto::detail::flat_view<Expr>;
                 };
 
                 template<typename Expr>
@@ -256,12 +256,11 @@ namespace boost
                 >
                 struct apply
                 {
-                    typedef
+                    using type =
                         typename proto::result_of::child<
                             typename Iterator::expr_type &
                           , (std::size_t)Iterator::index
-                        >::type
-                    type;
+                        >::type;
 
                     static type call(Iterator const &iter)
                     {
@@ -272,11 +271,10 @@ namespace boost
                 template<typename Iterator>
                 struct apply<Iterator, 0>
                 {
-                    typedef
+                    using type =
                         typename proto::result_of::value<
                             typename Iterator::expr_type &
-                        >::type
-                    type;
+                        >::type;
 
                     static type call(Iterator const &iter)
                     {
@@ -309,12 +307,11 @@ namespace boost
                       , "Cannot advance past the end of the sequence"
                     );
 
-                    typedef
+                    using type =
                         proto::detail::expr_iterator<
                             typename Iterator::expr_type
                           , (std::size_t)signed_index
-                        >
-                    type;
+                        >;
 
                     static type call(Iterator const &iter)
                     {
@@ -377,7 +374,7 @@ namespace boost
                 template<typename Sequence>
                 struct apply
                 {
-                    typedef random_access_traversal_tag type;
+                    using type = random_access_traversal_tag;
                 };
             };
 
@@ -402,12 +399,11 @@ namespace boost
                 template<typename Sequence>
                 struct apply
                 {
-                    typedef
+                    using type =
                         proto::detail::expr_iterator<
                             Sequence
                           , 0
-                        >
-                    type;
+                        >;
 
                     static type call(Sequence &seq)
                     {
@@ -425,12 +421,11 @@ namespace boost
                 template<typename Sequence>
                 struct apply
                 {
-                    typedef
+                    using type =
                         proto::detail::expr_iterator<
                             Sequence
                           , Sequence::proto_size::value
-                        >
-                    type;
+                        >;
 
                     static type call(Sequence &seq)
                     {
@@ -464,12 +459,11 @@ namespace boost
                 >
                 struct apply
                 {
-                    typedef
+                    using type =
                         typename proto::result_of::child<
                             Sequence &
                           , (std::size_t)Index::value
-                        >::type
-                    type;
+                        >::type;
 
                     static type call(Sequence &seq)
                     {
@@ -480,11 +474,10 @@ namespace boost
                 template<typename Sequence, typename Index>
                 struct apply<Sequence, Index, 0>
                 {
-                    typedef
+                    using type =
                         typename proto::result_of::value<
                             Sequence &
-                        >::type
-                    type;
+                        >::type;
 
                     static type call(Sequence &seq)
                     {
@@ -514,14 +507,13 @@ namespace boost
                 template<typename Sequence>
                 struct apply
                 {
-                    typedef typename Sequence::expr_type::proto_tag_type proto_tag_type;
+                    using proto_tag_type = typename Sequence::expr_type::proto_tag_type;
 
-                    typedef
+                    using type =
                         fusion::transform_view<
                             typename Sequence::expr_type
                           , proto::detail::as_element<proto_tag_type>
-                        >
-                    type;
+                        >;
 
                     static type call(Sequence &sequence)
                     {
@@ -536,7 +528,7 @@ namespace boost
                 template<typename Sequence>
                 struct apply
                 {
-                    typedef forward_traversal_tag type;
+                    using type = forward_traversal_tag;
                 };
             };
 
@@ -578,13 +570,13 @@ namespace boost
         template<typename ExprDesc, typename Domain>
         struct sequence_tag<proto::expr<ExprDesc, Domain>>
         {
-            typedef fusion::fusion_sequence_tag type;
+            using type = fusion::fusion_sequence_tag;
         };
 
         template<typename ExprDesc, typename Domain>
         struct sequence_tag<proto::basic_expr<ExprDesc, Domain>>
         {
-            typedef fusion::fusion_sequence_tag type;
+            using type = fusion::fusion_sequence_tag;
         };
     }
 }

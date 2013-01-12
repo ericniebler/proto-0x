@@ -13,8 +13,8 @@ namespace mpl = boost::mpl;
 namespace proto = boost::proto;
 using proto::_;
 
-typedef proto::literal<int> int_;
-typedef proto::literal<std::string> string_;
+using int_ = proto::literal<int>;
+using string_ = proto::literal<std::string>;
 struct MyIntWrap : int_ {};
 
 void test_matches()

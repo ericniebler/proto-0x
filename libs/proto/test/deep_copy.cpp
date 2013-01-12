@@ -94,7 +94,7 @@ template<typename ExprDesc>
 struct Expr
   : proto::basic_expr<ExprDesc, Domain>
 {
-    typedef proto::basic_expr<ExprDesc, Domain> proto_basic_expr_type;
+    using proto_basic_expr_type = proto::basic_expr<ExprDesc, Domain>;
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(Expr);
     BOOST_PROTO_INHERIT_EXPR_CTORS(Expr, proto_basic_expr_type);
 };
