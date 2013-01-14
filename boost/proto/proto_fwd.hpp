@@ -260,19 +260,25 @@ namespace boost
             namespace functional
             {
                 template<typename Domain>
+                struct as_expr;
+
+                template<typename Domain>
                 struct make_expr;
 
                 template<typename Domain>
-                struct as_expr;
+                struct unpack_expr;
             }
 
             namespace result_of
             {
+                template<typename Domain, typename T>
+                struct as_expr;
+
                 template<typename Domain, typename Tag, typename ...T>
                 struct make_expr;
 
-                template<typename Domain, typename T>
-                struct as_expr;
+                template<typename Domain, typename Tag, typename Seq>
+                struct unpack_expr;
             }
         }
 
@@ -286,9 +292,11 @@ namespace boost
 
         namespace functional
         {
+            struct as_expr;
+
             struct make_expr;
 
-            struct as_expr;
+            struct unpack_expr;
 
             template<typename Key>
             struct env_var;
@@ -296,11 +304,14 @@ namespace boost
 
         namespace result_of
         {
+            template<typename T>
+            struct as_expr;
+
             template<typename Tag, typename ...T>
             struct make_expr;
 
-            template<typename T>
-            struct as_expr;
+            template<typename Tag, typename Seq>
+            struct unpack_expr;
 
             template<typename Env, typename Key>
             struct env_var;

@@ -27,6 +27,7 @@ test-suite "proto"
         [ run fold.cpp ]
         [ run let.cpp ]
         [ run logical_ops.cpp ]
+        [ run make_expr.cpp ]
         [ run matches.cpp ]
         [ run mem_fun.cpp ]
         [ run noinvoke.cpp ]

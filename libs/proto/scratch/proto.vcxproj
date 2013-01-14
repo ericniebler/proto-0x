@@ -127,6 +127,7 @@
     <ClInclude Include="..\..\..\boost\proto\proto.hpp" />
     <ClInclude Include="..\..\..\boost\proto\proto_fwd.hpp" />
     <ClInclude Include="..\..\..\boost\proto\tags.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\unpack_expr.hpp" />
     <ClInclude Include="..\..\..\boost\proto\utility.hpp" />
     <ClInclude Include="..\..\..\boost\proto\virtual_member.hpp" />
     <ClInclude Include="..\test\unit_test.hpp">
@@ -196,6 +197,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\test\logical_ops.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\test\make_expr.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>

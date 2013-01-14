@@ -9,6 +9,10 @@
 #ifndef BOOST_PROTO_MAKE_EXPR_HPP_INCLUDED
 #define BOOST_PROTO_MAKE_EXPR_HPP_INCLUDED
 
+#include <boost/fusion/include/begin.hpp>
+#include <boost/fusion/include/end.hpp>
+#include <boost/fusion/include/deref.hpp>
+#include <boost/fusion/include/equal_to.hpp>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/children.hpp>
 #include <boost/proto/tags.hpp>

@@ -258,6 +258,9 @@
     <ClInclude Include="..\..\..\boost\proto\grammar\placeholders.hpp">
       <Filter>Proto Files\grammar</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\unpack_expr.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -327,6 +330,9 @@
       <Filter>Test Files</Filter>
     </ClCompile>
     <ClCompile Include="..\test\logical_ops.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\make_expr.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
   </ItemGroup>
