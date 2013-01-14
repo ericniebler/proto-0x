@@ -25,6 +25,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/children.hpp>
 #include <boost/proto/expr.hpp>
+#include <boost/proto/unpack_expr.hpp>
 
 namespace boost
 {
@@ -38,12 +39,16 @@ namespace boost
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr_iterator);
 
-                using expr_type = Expr;
                 static constexpr std::size_t index = Pos;
+                using expr_type = Expr;
                 using category = fusion::random_access_traversal_tag;
-                using fusion_tag = proto_expr_iterator;
+                using fusion_tag =
+                    proto_expr_iterator<
+                        typename Expr::proto_tag_type
+                      , typename Expr::proto_domain_type
+                    >;
 
-                explicit expr_iterator(Expr &e)
+                explicit expr_iterator(Expr &e) noexcept
                   : expr_(e)
                 {}
 
@@ -91,7 +96,11 @@ namespace boost
 
                 using expr_type = Expr;
                 using category = fusion::forward_traversal_tag;
-                using fusion_tag = proto_flat_view;
+                using fusion_tag =
+                    proto_flat_view<
+                        typename Expr::proto_tag_type
+                      , typename Expr::proto_domain_type
+                    >;
                 using segments_type =
                     typename fusion::result_of::as_list<
                         typename fusion::result_of::transform<
@@ -204,8 +213,8 @@ namespace boost
             template<typename Tag>
             struct is_sequence_impl;
 
-            template<>
-            struct is_sequence_impl<proto::proto_flat_view>
+            template<typename Tag, typename Domain>
+            struct is_sequence_impl<proto::proto_flat_view<Tag, Domain>>
             {
                 template<typename Sequence>
                 struct apply
@@ -213,8 +222,8 @@ namespace boost
                 {};
             };
 
-            template<>
-            struct is_sequence_impl<proto::proto_expr>
+            template<typename Tag, typename Domain>
+            struct is_sequence_impl<proto::proto_expr<Tag, Domain>>
             {
                 template<typename Sequence>
                 struct apply
@@ -225,8 +234,8 @@ namespace boost
             template<typename Tag>
             struct is_view_impl;
 
-            template<>
-            struct is_view_impl<proto::proto_flat_view>
+            template<typename Tag, typename Domain>
+            struct is_view_impl<proto::proto_flat_view<Tag, Domain>>
             {
                 template<typename Sequence>
                 struct apply
@@ -234,8 +243,8 @@ namespace boost
                 {};
             };
 
-            template<>
-            struct is_view_impl<proto::proto_expr>
+            template<typename Tag, typename Domain>
+            struct is_view_impl<proto::proto_expr<Tag, Domain>>
             {
                 template<typename Sequence>
                 struct apply
@@ -246,20 +255,23 @@ namespace boost
             template<typename Tag>
             struct value_of_impl;
 
-            template<>
-            struct value_of_impl<proto::proto_expr_iterator>
+            template<typename Tag, typename Domain>
+            struct value_of_impl<proto::proto_expr_iterator<Tag, Domain>>
             {
                 template<typename Iterator>
                 struct apply
-                  : proto::exprs::children_element<Iterator::index, typename Iterator::expr_type::proto_children_type>
+                  : proto::exprs::children_element<
+                        Iterator::index
+                      , typename Iterator::expr_type::proto_children_type
+                    >
                 {};
             };
 
             template<typename Tag>
             struct deref_impl;
 
-            template<>
-            struct deref_impl<proto::proto_expr_iterator>
+            template<typename Tag, typename Domain>
+            struct deref_impl<proto::proto_expr_iterator<Tag, Domain>>
             {
                 template<
                     typename Iterator
@@ -297,8 +309,8 @@ namespace boost
             template<typename Tag>
             struct advance_impl;
 
-            template<>
-            struct advance_impl<proto::proto_expr_iterator>
+            template<typename Tag, typename Domain>
+            struct advance_impl<proto::proto_expr_iterator<Tag, Domain>>
             {
                 template<typename Iterator, typename N>
                 struct apply
@@ -334,8 +346,8 @@ namespace boost
             template<typename Tag>
             struct distance_impl;
 
-            template<>
-            struct distance_impl<proto::proto_expr_iterator>
+            template<typename Tag, typename Domain>
+            struct distance_impl<proto::proto_expr_iterator<Tag, Domain>>
             {
                 template<typename IteratorFrom, typename IteratorTo>
                 struct apply
@@ -349,12 +361,12 @@ namespace boost
             template<typename Tag>
             struct next_impl;
 
-            template<>
-            struct next_impl<proto::proto_expr_iterator>
+            template<typename Tag, typename Domain>
+            struct next_impl<proto::proto_expr_iterator<Tag, Domain>>
             {
                 template<typename Iterator>
                 struct apply
-                  : advance_impl<proto::proto_expr_iterator>::template apply<
+                  : advance_impl<proto::proto_expr_iterator<Tag, Domain>>::template apply<
                         Iterator
                       , std::integral_constant<int, 1>
                     >
@@ -364,12 +376,12 @@ namespace boost
             template<typename Tag>
             struct prior_impl;
 
-            template<>
-            struct prior_impl<proto::proto_expr_iterator>
+            template<typename Tag, typename Domain>
+            struct prior_impl<proto::proto_expr_iterator<Tag, Domain>>
             {
                 template<typename Iterator>
                 struct apply
-                  : advance_impl<proto::proto_expr_iterator>::template apply<
+                  : advance_impl<proto::proto_expr_iterator<Tag, Domain>>::template apply<
                         Iterator
                       , std::integral_constant<int, -1>
                     >
@@ -379,8 +391,8 @@ namespace boost
             template<typename Tag>
             struct category_of_impl;
 
-            template<>
-            struct category_of_impl<proto::proto_expr>
+            template<typename Tag, typename Domain>
+            struct category_of_impl<proto::proto_expr<Tag, Domain>>
             {
                 template<typename Sequence>
                 struct apply
@@ -392,8 +404,8 @@ namespace boost
             template<typename Tag>
             struct size_impl;
 
-            template<>
-            struct size_impl<proto::proto_expr>
+            template<typename Tag, typename Domain>
+            struct size_impl<proto::proto_expr<Tag, Domain>>
             {
                 template<typename Sequence>
                 struct apply
@@ -404,8 +416,8 @@ namespace boost
             template<typename Tag>
             struct begin_impl;
 
-            template<>
-            struct begin_impl<proto::proto_expr>
+            template<typename Tag, typename Domain>
+            struct begin_impl<proto::proto_expr<Tag, Domain>>
             {
                 template<typename Sequence>
                 struct apply
@@ -426,8 +438,8 @@ namespace boost
             template<typename Tag>
             struct end_impl;
 
-            template<>
-            struct end_impl<proto::proto_expr>
+            template<typename Tag, typename Domain>
+            struct end_impl<proto::proto_expr<Tag, Domain>>
             {
                 template<typename Sequence>
                 struct apply
@@ -448,8 +460,8 @@ namespace boost
             template<typename Tag>
             struct value_at_impl;
 
-            template<>
-            struct value_at_impl<proto::proto_expr>
+            template<typename Tag, typename Domain>
+            struct value_at_impl<proto::proto_expr<Tag, Domain>>
             {
                 template<typename Sequence, typename Index>
                 struct apply
@@ -460,8 +472,8 @@ namespace boost
             template<typename Tag>
             struct at_impl;
 
-            template<>
-            struct at_impl<proto::proto_expr>
+            template<typename Tag, typename Domain>
+            struct at_impl<proto::proto_expr<Tag, Domain>>
             {
                 template<
                     typename Sequence
@@ -498,10 +510,53 @@ namespace boost
             };
 
             template<typename Tag>
+            struct convert_impl;
+
+            template<typename Tag, typename Domain>
+            struct convert_impl<proto::proto_expr<Tag, Domain>>
+            {
+                template<typename Sequence>
+                struct apply
+                {
+                    using type =
+                        typename proto::domains::result_of::unpack_expr<
+                            Domain
+                          , Tag
+                          , Sequence &
+                        >::type;
+
+                    static type call(Sequence& seq)
+                    {
+                        return proto::domains::unpack_expr<Domain>(Tag(), seq);
+                    }
+                };
+            };
+
+            template<typename Tag, typename Domain>
+            struct convert_impl<proto::proto_flat_view<Tag, Domain>>
+            {
+                template<typename Sequence>
+                struct apply
+                {
+                    using type =
+                        typename proto::domains::result_of::unpack_expr<
+                            Domain
+                          , Tag
+                          , Sequence &
+                        >::type;
+
+                    static type call(Sequence & seq)
+                    {
+                        return proto::domains::unpack_expr<Domain>(Tag(), seq);
+                    }
+                };
+            };
+
+            template<typename Tag>
             struct is_segmented_impl;
 
-            template<>
-            struct is_segmented_impl<proto::proto_flat_view>
+            template<typename Tag, typename Domain>
+            struct is_segmented_impl<proto::proto_flat_view<Tag, Domain>>
             {
                 template<typename Iterator>
                 struct apply
@@ -512,8 +567,8 @@ namespace boost
             template<typename Tag>
             struct segments_impl;
 
-            template<>
-            struct segments_impl<proto::proto_flat_view>
+            template<typename Tag, typename Domain>
+            struct segments_impl<proto::proto_flat_view<Tag, Domain>>
             {
                 template<typename Sequence>
                 struct apply
@@ -527,8 +582,8 @@ namespace boost
                 };
             };
 
-            template<>
-            struct category_of_impl<proto::proto_flat_view>
+            template<typename Tag, typename Domain>
+            struct category_of_impl<proto::proto_flat_view<Tag, Domain>>
             {
                 template<typename Sequence>
                 struct apply

@@ -414,7 +414,7 @@ namespace boost
                       , detail::is_terminal_tag<Tag>::value ? 0 : sizeof...(Children)
                     >;
 
-                using fusion_tag                = proto_expr; ///< For Fusion
+                using fusion_tag                    = proto_expr<Tag, proto_domain_type>; ///< For Fusion
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // constructors
