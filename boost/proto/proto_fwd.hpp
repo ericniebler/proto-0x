@@ -119,6 +119,8 @@ namespace boost
 
             template<typename T>
             using as_action_ = typename as_action_impl_<T>::type;
+
+            struct def_base;
         }
 
         namespace utility
@@ -423,9 +425,6 @@ namespace boost
         template<typename T>
         struct is_action;
 
-        //template<typename T>
-        //struct action;
-
         template<typename T, T Value>
         struct _integral_constant;
 
@@ -502,9 +501,6 @@ namespace boost
 
         template<typename Grammar>
         struct basic_grammar;
-
-        //template<typename Grammar>
-        //struct grammar;
 
         template<typename Grammar>
         struct is_grammar;

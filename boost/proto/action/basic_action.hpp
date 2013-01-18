@@ -18,11 +18,6 @@ namespace boost
 {
     namespace proto
     {
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // action_base
-        struct action_base
-        {};
-
         namespace detail
         {
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -72,30 +67,15 @@ namespace boost
             template<typename Ret, typename ...Args>
             struct as_action_impl_<Ret(Args...)>
             {
-                using A0 = typename normalize_action_<Ret(Args...)>::type;
-                struct A1 : extension::action_impl<A0>, action_base {};
                 using type =
-                    typename std::conditional<
-                        std::is_base_of<not_an_action, A1>::value
-                      , extension::action_impl<A0>
-                      , A1
-                    >::type;
+                    extension::action_impl<typename normalize_action_<Ret(Args...)>::type>;
             };
 
             template<typename Ret, typename ...Args>
             struct as_action_impl_<Ret(Args......)>
             {
-                using A0 = typename normalize_action_<Ret(Args......)>::type;
-                struct A1 : extension::action_impl<A0>, action_base {};
                 using type =
-                    typename std::conditional<
-                        // BUGBUG this is forcing early instantiation, leading to circular
-                        // template instantiation errors. Rethink how def works, and how
-                        // is_action works.
-                        std::is_base_of<A1, not_an_action>::value
-                      , extension::action_impl<A0>
-                      , A1
-                    >::type;
+                    extension::action_impl<typename normalize_action_<Ret(Args......)>::type>;
             };
 
             template<typename Ret, typename ...Args>
@@ -133,8 +113,13 @@ namespace boost
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
+        // action_base
+        struct action_base
+        {};
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
         // basic_action
-        // CRTP base class for all actions
+        // CRTP base class for all primitive actions
         template<typename Action>
         struct basic_action
           : action_base
@@ -144,7 +129,14 @@ namespace boost
         // is_action
         template<typename T>
         struct is_action
-          : std::is_base_of<action_base, detail::as_action_<T>>
+          : std::integral_constant<
+                bool
+              , std::is_base_of<action_base, T>::value ||
+                (
+                    std::is_base_of<detail::def_base, T>::value &&
+                   !std::is_base_of<detail::not_an_action, T>::value
+                )
+            >
         {};
 
         template<typename T>
@@ -155,6 +147,32 @@ namespace boost
         template<typename T>
         struct is_action<T &&>
           : is_action<T>
+        {};
+
+        template<typename Ret, typename ...Args>
+        struct is_action<Ret(Args...)>
+          : std::integral_constant<
+                bool
+              , !std::is_base_of<detail::not_an_action, detail::as_action_<Ret(Args...)>>::value
+            >
+        {};
+
+        template<typename Ret, typename ...Args>
+        struct is_action<Ret(Args......)>
+          : std::integral_constant<
+                bool
+              , !std::is_base_of<detail::not_an_action, detail::as_action_<Ret(Args......)>>::value
+            >
+        {};
+
+        template<typename Ret, typename ...Args>
+        struct is_action<Ret(*)(Args...)>
+          : is_action<Ret(Args...)>
+        {};
+
+        template<typename Ret, typename ...Args>
+        struct is_action<Ret(*)(Args......)>
+          : is_action<Ret(Args......)>
         {};
     }
 }

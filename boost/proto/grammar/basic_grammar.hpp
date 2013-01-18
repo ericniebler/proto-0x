@@ -17,11 +17,6 @@ namespace boost
 {
     namespace proto
     {
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // grammar_base
-        struct grammar_base
-        {};
-
         namespace detail
         {
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -57,27 +52,15 @@ namespace boost
             template<typename Ret, typename ...Args>
             struct as_grammar_impl_<Ret(Args...)>
             {
-                using G0 = typename normalize_grammar_<Ret(Args...)>::type;
-                struct G1 : extension::grammar_impl<G0>, grammar_base {};
                 using type =
-                    typename std::conditional<
-                        std::is_base_of<not_a_grammar, G1>::value
-                      , extension::grammar_impl<G0>
-                      , G1
-                    >::type;
+                    extension::grammar_impl<typename normalize_grammar_<Ret(Args...)>::type>;
             };
 
             template<typename Ret, typename ...Args>
             struct as_grammar_impl_<Ret(Args......)>
             {
-                using G0 = typename normalize_grammar_<Ret(Args......)>::type;
-                struct G1 : extension::grammar_impl<G0>, grammar_base {};
                 using type =
-                    typename std::conditional<
-                        std::is_base_of<G1, not_a_grammar>::value
-                      , extension::grammar_impl<G0>
-                      , G1
-                    >::type;
+                    extension::grammar_impl<typename normalize_grammar_<Ret(Args......)>::type>;
             };
 
             template<typename Ret, typename ...Args>
@@ -115,62 +98,30 @@ namespace boost
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
+        // grammar_base
+        struct grammar_base
+        {};
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
         // basic_grammar
-        // CRTP base class for all grammars
+        // CRTP base class for all primitive grammars
         template<typename Grammar>
         struct basic_grammar
           : grammar_base
         {};
 
-        //////////////////////////////////////////////////////////////////////////////////////////////
-        //// grammar
-        //template<typename Grammar>
-        //struct grammar
-        //  : Grammar
-        //{};
-
-        //template<typename Grammar>
-        //struct grammar<grammar<Grammar>>
-        //  : Grammar
-        //{};
-
-        //template<typename Ret, typename ...Args>
-        //struct grammar<Ret(Args...)>
-        //  : grammar_base
-        //{
-        //    struct foo : extension::grammar_impl<typename detail::normalize_grammar_<Ret(Args...)>::type> {};
-        //    static_assert(!std::is_base_of<detail::not_a_grammar, foo>::value, "");
-
-        //    template<typename Expr, typename G = typename detail::normalize_grammar_<Ret(Args...)>::type>
-        //    using apply = typename extension::grammar_impl<G>::template apply<Expr>;
-        //};
-
-        //template<typename Ret, typename ...Args>
-        //struct grammar<Ret(Args......)>
-        //  : grammar_base
-        //{
-        //    struct foo : extension::grammar_impl<typename detail::normalize_grammar_<Ret(Args......)>::type> {};
-        //    static_assert(!std::is_base_of<detail::not_a_grammar, foo>::value, "");
-
-        //    template<typename Expr, typename G = typename detail::normalize_grammar_<Ret(Args......)>::type>
-        //    using apply = typename extension::grammar_impl<G>::template apply<Expr>;
-        //};
-
-        //template<typename Ret, typename ...Args>
-        //struct grammar<Ret(*)(Args...)>
-        //  : grammar<Ret(Args...)>
-        //{};
-
-        //template<typename Ret, typename ...Args>
-        //struct grammar<Ret(*)(Args......)>
-        //  : grammar<Ret(Args......)>
-        //{};
-
         ////////////////////////////////////////////////////////////////////////////////////////////
         // is_grammar
         template<typename T>
         struct is_grammar
-          : std::is_base_of<grammar_base, detail::as_grammar_<T>>
+          : std::integral_constant<
+                bool
+              , std::is_base_of<grammar_base, T>::value ||
+                (
+                    std::is_base_of<detail::def_base, T>::value &&
+                   !std::is_base_of<detail::not_a_grammar, T>::value
+                )
+            >
         {};
 
         template<typename T>
@@ -181,6 +132,32 @@ namespace boost
         template<typename T>
         struct is_grammar<T &&>
           : is_grammar<T>
+        {};
+
+        template<typename Ret, typename ...Args>
+        struct is_grammar<Ret(Args...)>
+          : std::integral_constant<
+                bool
+              , !std::is_base_of<detail::not_a_grammar, detail::as_grammar_<Ret(Args...)>>::value
+            >
+        {};
+
+        template<typename Ret, typename ...Args>
+        struct is_grammar<Ret(Args......)>
+          : std::integral_constant<
+                bool
+              , !std::is_base_of<detail::not_a_grammar, detail::as_grammar_<Ret(Args......)>>::value
+            >
+        {};
+
+        template<typename Ret, typename ...Args>
+        struct is_grammar<Ret(*)(Args...)>
+          : is_grammar<Ret(Args...)>
+        {};
+
+        template<typename Ret, typename ...Args>
+        struct is_grammar<Ret(*)(Args......)>
+          : is_grammar<Ret(Args......)>
         {};
     }
 }

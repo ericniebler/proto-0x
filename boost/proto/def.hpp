@@ -2,7 +2,7 @@
 // def.hpp
 // Helpers for building Proto grammars and actions.
 //
-//  Copyright 2012 Eric Niebler. Distributed under the Boost
+//  Copyright 2013 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
@@ -18,10 +18,18 @@ namespace boost
 {
     namespace proto
     {
+        namespace detail
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////
+            struct def_base
+            {};
+        }
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         template<typename T>
         struct def
-          : detail::as_grammar_<T>
+          : detail::def_base
+          , detail::as_grammar_<T>
           , detail::as_action_<T>
         {
             static_assert(

@@ -5,8 +5,8 @@ A Grab-Bag of Miscellaneous Thoughts
     + It doesn't invoke `some_action<>`. Should it? With what semantics? Is it right to be looking
       for a nested `::type` after substitution, or should it be checking for action-ness instead
       (or in addtion to)? What would that break?
-	+ Answer: it is technically not OK to test `some_action<int>` for action-ness if there were
-	  no substitutions because it may not actually instantiate properly. See `careful` test in
+    + Answer: it is technically not OK to test `some_action<int>` for action-ness if there were
+      no substitutions because it may not actually instantiate properly. See `careful` test in
       test/construct.cpp
 
 * Rethink the need for a separate `construct` action entirely. It makes examples ugly and verbose.
@@ -18,7 +18,7 @@ A Grab-Bag of Miscellaneous Thoughts
   if the domain captures child nodes by reference!
     - How about this:
 
-```c++
+```cpp
 struct unary_plus
 {
     template<typename T, BOOST_PROTO_ENABLE_IF(is_expr<decltype(+declval<T>())>::value)>
@@ -61,3 +61,5 @@ struct unary_plus
   reference.
 
 * Oh hell, rename `construct` back to `make`. What was I thinking?
+
+* Implementation of `unpack_expr` could probably use `fusion::invoke_function_object`.
