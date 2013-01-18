@@ -30,7 +30,7 @@ struct do_eval
 };
 
 struct eval
-  : proto::action<
+  : proto::def<
         proto::match(
             proto::case_(proto::terminal(_),
                 proto::_value
@@ -57,7 +57,7 @@ void test_call_pack()
 }
 
 struct make_pair
-  : proto::action<proto::construct(std::pair<int, int>(proto::_value(proto::pack(_))...))>
+  : proto::def<proto::construct(std::pair<int, int>(proto::_value(proto::pack(_))...))>
 {};
 
 void test_make_pack()
@@ -97,7 +97,7 @@ struct front
 
 // Test expanding multiple packs in parallel
 struct accept_pairs
-  : proto::action<
+  : proto::def<
         do_accept_pairs(
             proto::_data
           , proto::functional::make_pair(
@@ -110,7 +110,7 @@ struct accept_pairs
 
 // Test expanding multiple packs in parallel *and* a nested pack expansion.
 struct accept_pairs_2
-  : proto::action<
+  : proto::def<
         do_accept_pairs(
             proto::_data
           , proto::functional::make_pair(

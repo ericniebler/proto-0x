@@ -11,7 +11,7 @@
 
 #include <utility>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 
 namespace boost
 {
@@ -29,7 +29,7 @@ namespace boost
                 template<typename ...Args>
                 auto operator()(Args &&...args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    env_var_tag<Local>() = action<Action>()(static_cast<Args &&>(args)...)
+                    env_var_tag<Local>() = as_action_<Action>()(static_cast<Args &&>(args)...)
                 )
             };
 
@@ -43,7 +43,7 @@ namespace boost
                 template<typename Expr>
                 auto operator()(Expr &&expr) const
                 BOOST_PROTO_AUTO_RETURN(
-                    action<Action>()(
+                    as_action_<Action>()(
                         static_cast<Expr &&>(expr)
                       , proto::make_env(eval_local<Locals>()(static_cast<Expr &&>(expr))...)
                     )
@@ -52,7 +52,7 @@ namespace boost
                 template<typename Expr, typename Env, typename ...Rest>
                 auto operator()(Expr &&expr, Env &&env, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
-                    action<Action>()(
+                    as_action_<Action>()(
                         static_cast<Expr &&>(expr)
                       , proto::make_env(
                             static_cast<Env &&>(env)

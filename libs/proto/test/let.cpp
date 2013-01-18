@@ -27,7 +27,7 @@ struct once
 int once::ctors = 0;
 
 struct LetCallOnce
-  : proto::action<
+  : proto::def<
         proto::let(
             _a(proto::construct(once()))
           , proto::functional::make_pair(_a, _a)
@@ -46,7 +46,7 @@ void test_let_call_once()
 // test_let_construct_action
 //  verify that let works with object transforms.
 struct LetConstructAction
-  : proto::action<
+  : proto::def<
         proto::let(
             _a(proto::_int<42>)
           , proto::construct(std::pair<_a, _a>(_a, _a))
@@ -70,7 +70,7 @@ struct MyData
 {};
 
 struct LetData
-  : proto::action<
+  : proto::def<
         proto::let(
             _a(proto::_int<42>)
           , proto::construct(std::pair<MyData, _a>(MyData, _a))
@@ -91,7 +91,7 @@ void test_let_data()
 // test_let_scope
 //  verify that the local variables are scoped properly.
 struct LetScope
-  : proto::action<
+  : proto::def<
         proto::let(
             _a(proto::_value)
           , proto::functional::make_pair(
@@ -119,7 +119,7 @@ void test_let_scope()
 // test_let_scope2
 //  verify that the local variables are scoped properly.
 struct LetScope2
-  : proto::action<
+  : proto::def<
         proto::let(
             _a(proto::_value)
           , proto::functional::make_pair(

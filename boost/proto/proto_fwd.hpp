@@ -107,6 +107,18 @@ namespace boost
 
             template<typename Expr>
             struct flat_view;
+
+            template<typename T>
+            struct as_grammar_impl_;
+
+            template<typename T>
+            using as_grammar_ = typename as_grammar_impl_<T>::type;
+
+            template<typename T>
+            struct as_action_impl_;
+
+            template<typename T>
+            using as_action_ = typename as_action_impl_<T>::type;
         }
 
         namespace utility
@@ -411,8 +423,8 @@ namespace boost
         template<typename T>
         struct is_action;
 
-        template<typename T>
-        struct action;
+        //template<typename T>
+        //struct action;
 
         template<typename T, T Value>
         struct _integral_constant;
@@ -483,23 +495,26 @@ namespace boost
         //constexpr int N = (std::numeric_limits<int>::max() >> 10);
         constexpr int N = (INT_MAX >> 10);
 
+        template<typename T>
+        struct def;
+
         struct grammar_base;
 
         template<typename Grammar>
         struct basic_grammar;
 
-        template<typename Grammar>
-        struct grammar;
+        //template<typename Grammar>
+        //struct grammar;
 
         template<typename Grammar>
         struct is_grammar;
 
         namespace extension
         {
-            template<typename Grammar>
+            template<typename Grammar, typename Enable = void>
             struct grammar_impl;
 
-            template<typename Grammar>
+            template<typename Grammar, typename Enable = void>
             struct action_impl;
         }
 

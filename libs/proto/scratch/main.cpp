@@ -5,6 +5,39 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <iostream>
+void done();
+
+//#include <boost/assert.hpp>
+//#include <boost/proto/proto.hpp>
+//namespace proto = boost::proto;
+//
+//template<typename T> //, int I = 0>
+//struct some_action
+//  : proto::basic_action<some_action<T>>
+//{
+//    template<typename ...Ts>
+//    int operator()(Ts &&...) const noexcept
+//    {
+//        return 42;
+//    }
+//};
+//
+//template<typename T>
+//struct foo
+//{};
+//
+//int main()
+//{
+//    using namespace proto::literals;
+//    //foo<int> f = proto::def<proto::construct(foo<some_action<int>>())>()(2_et);
+//    //foo<int> f = proto::def<proto::construct(foo<proto::apply(proto::construct(some_action<int>()))>())>()(2_et);
+//    int i = proto::value(2_et);
+//    BOOST_ASSERT(i == 2);
+//    done();
+//}
+
+
 //*
 #include <cstdio>
 #include <utility>
@@ -33,7 +66,7 @@ template<std::size_t I>
 using placeholder_c = placeholder<std::integral_constant<std::size_t, I>>;
 
 struct lambda_eval
-  : proto::action<
+  : proto::def<
         proto::match(
             proto::case_( proto::terminal(placeholder<_>),
                 proto::apply(proto::construct(proto::_env_var<proto::_value>()))
@@ -122,6 +155,7 @@ int main()
     void done();
     done();
 }
+//*/
 
 void done()
 {
@@ -129,4 +163,3 @@ void done()
     std::cout << "CTRL+D to end...";
     std::cin >> ch;
 }
-//*/

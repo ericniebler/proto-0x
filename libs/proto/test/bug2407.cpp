@@ -16,7 +16,7 @@ template<class E>
 struct e;
 
 struct g
-  : proto::grammar<
+  : proto::def<
         proto::match(
             proto::terminal(int)
           , proto::plus(g, g)

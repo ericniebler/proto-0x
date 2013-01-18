@@ -12,7 +12,7 @@
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/tags.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 
 namespace boost
 {
@@ -82,13 +82,13 @@ namespace boost
             struct _if_
               : basic_action<_if_<If, Then, Else>>
             {
-                template<typename ...Args>
+                template<typename ...Args, typename Then_ = Then, typename Else_ = Else>
                 auto operator()(Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
                     typename std::conditional<
                         eval_bool_action_<If, Args...>::value
-                      , action<Then>
-                      , action<Else>
+                      , as_action_<Then_>
+                      , as_action_<Else_>
                     >::type()(static_cast<Args &&>(args)...)
                 )
             };

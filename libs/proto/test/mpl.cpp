@@ -31,11 +31,10 @@ template<class E>
 struct my_expr
   : proto::expr<E, my_domain>
 {
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(my_expr);
+    using tag = fusion::fusion_sequence_tag;
     using proto_basic_expr_type = proto::expr<E, my_domain>;
+    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(my_expr);
     BOOST_PROTO_INHERIT_EXPR_CTORS(my_expr, proto_basic_expr_type);
-
-    typedef fusion::fusion_sequence_tag tag;
 };
 
 // Test that we can call mpl algorithms on proto expression types, and get proto expression types back

@@ -67,7 +67,7 @@ void test_virtual_members()
 
     // Check that member expressions match their grammars
     struct G
-      : proto::action<
+      : proto::def<
             proto::match(
                 proto::case_(
                     proto::member(proto::terminal(int), proto::terminal(foo_tag))
@@ -80,7 +80,7 @@ void test_virtual_members()
     proto::assert_matches<G>(xxx.foo);
 
     // Check that the pass-through basic_action handles virtual members correctly.
-    My::member<My::terminal<int>, proto::literal<foo_tag>> tx = proto::action<G>()(xxx.foo);
+    My::member<My::terminal<int>, proto::literal<foo_tag>> tx = G()(xxx.foo);
     BOOST_PROTO_IGNORE_UNUSED(tx);
 }
 

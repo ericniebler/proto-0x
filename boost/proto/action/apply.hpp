@@ -12,7 +12,7 @@
 
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/utility.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 #include <boost/proto/action/call.hpp>
 #include <boost/proto/utility.hpp>
 
@@ -30,7 +30,7 @@ namespace boost
                 auto operator()(Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
                     BOOST_PROTO_TRY_CALL(detail::call_1_<Actions...>())(
-                        action<Fun>()(static_cast<Args &&>(args)...)
+                        as_action_<Fun>()(static_cast<Args &&>(args)...)
                       , static_cast<Args &&>(args)...
                     )
                 )

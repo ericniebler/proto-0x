@@ -121,7 +121,7 @@ void test_unpack_expr_functional()
 
 // Turn all terminals held by reference into ones held by value
 struct ByVal
-  : proto::action<
+  : proto::def<
         proto::match(
             proto::case_(
                 proto::terminal(proto::_)
@@ -137,7 +137,7 @@ struct ByVal
 
 // Turn all terminals held by value into ones held by reference (not safe in general)
 struct ByRef
-  : proto::action<
+  : proto::def<
         proto::match(
             proto::case_(
                 proto::terminal(proto::_)
@@ -153,7 +153,7 @@ struct ByRef
 
 // turn all proto::plus nodes to minus nodes:
 struct Minus
-  : proto::action<
+  : proto::def<
         proto::match(
             proto::case_(
                 proto::terminal(proto::_)
@@ -168,7 +168,7 @@ struct Minus
 {};
 
 struct Square
-  : proto::action<
+  : proto::def<
         proto::match(
             proto::case_(
                 proto::terminal(proto::_)
@@ -223,7 +223,7 @@ constexpr proto::expr<proto::terminal(dot_impl)> dot{};
 
 // convert length(a) < length(b) to dot(a,a) < dot(b,b)
 struct Convert
-  : proto::action<
+  : proto::def<
         proto::match(
             proto::case_(
                 proto::less(

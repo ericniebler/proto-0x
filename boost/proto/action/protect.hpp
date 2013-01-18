@@ -11,7 +11,7 @@
 #define BOOST_PROTO_ACTION_PROTECT_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 
 namespace boost
 {
@@ -60,27 +60,7 @@ namespace boost
         /// when used as a basic_action.
         template<typename T, int I>
         struct _protect
-          : T
-        {};
-
-        template<typename R, typename...Args, int I>
-        struct _protect<R(Args...), I>
-          : action<R(Args...)>
-        {};
-
-        template<typename R, typename...Args, int I>
-        struct _protect<R(*)(Args...), I>
-          : action<R(Args...)>
-        {};
-
-        template<typename R, typename...Args, int I>
-        struct _protect<R(Args......), I>
-          : action<R(Args......)>
-        {};
-
-        template<typename R, typename...Args, int I>
-        struct _protect<R(*)(Args......), I>
-          : action<R(Args......)>
+          : detail::as_action_<T>
         {};
     }
 }

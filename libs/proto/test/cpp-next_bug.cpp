@@ -38,7 +38,7 @@ namespace linear_algebra
     // into a subscript expression, using the
     // state as the RHS.
     struct Distribute
-      : proto::action<
+      : proto::def<
             proto::match(
                 proto::case_(
                     proto::terminal(_)
@@ -53,7 +53,7 @@ namespace linear_algebra
     {};
 
     struct Optimize
-      : proto::action<
+      : proto::def<
             proto::match(
                 proto::case_(
                     proto::subscript(Distribute, proto::terminal(_))

@@ -12,7 +12,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/matches.hpp>
 #include <boost/proto/make_expr.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 #include <boost/proto/action/switch.hpp>
 #include <boost/proto/action/pass.hpp>
 
@@ -26,7 +26,7 @@ namespace boost
             {
                 template<typename Tag, bool IsTerminal = Tag::proto_is_terminal_type::value>
                 struct case_
-                  : proto::action<proto::pass(proto::_deep_copy...)>
+                  : as_action_<proto::pass(proto::_deep_copy...)>
                 {};
 
                 template<typename Tag>
@@ -50,7 +50,7 @@ namespace boost
         // A BasicAction that replaces all nodes stored by reference with
         // nodes stored by value.
         struct _deep_copy
-          : action<switch_(detail::_deep_copy_cases)>
+          : detail::as_action_<switch_(detail::_deep_copy_cases)>
         {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////

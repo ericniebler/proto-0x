@@ -10,7 +10,7 @@
 
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/tags.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 
 namespace boost
 {
@@ -47,9 +47,9 @@ namespace boost
                 template<typename ...Args>
                 auto operator()(Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    action<
+                    as_action_<
                         typename Cases::template case_<
-                            decltype(action<Action>()(static_cast<Args &&>(args)...))
+                            decltype(as_action_<Action>()(static_cast<Args &&>(args)...))
                         >
                     >()(static_cast<Args &&>(args)...)
                 )
@@ -64,7 +64,7 @@ namespace boost
                 template<typename Expr, typename ...Rest>
                 auto operator()(Expr && e, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
-                    action<
+                    as_action_<
                         typename Cases::template case_<
                             typename proto::tag_of<Expr>::type
                         >

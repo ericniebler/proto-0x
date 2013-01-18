@@ -16,7 +16,7 @@
 #include <boost/fusion/include/prior.hpp>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/fusion.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 #include <boost/proto/action/env.hpp>
 
 namespace boost
@@ -40,7 +40,7 @@ namespace boost
                         fusion::next(cur)
                       , end
                       , static_cast<Env &&>(env)
-                      , action<Fun>()(
+                      , as_action_<Fun>()(
                             fusion::deref(cur)
                           , static_cast<Env &&>(env)
                           , state
@@ -83,7 +83,7 @@ namespace boost
                         cur
                       , fusion::prior(end)
                       , static_cast<Env &&>(env)
-                      , action<Fun>()(
+                      , as_action_<Fun>()(
                             fusion::deref(fusion::prior(end))
                           , static_cast<Env &&>(env)
                           , state
@@ -128,9 +128,9 @@ namespace boost
                 auto operator()(E && e) const
                 BOOST_PROTO_AUTO_RETURN(
                     fold_impl_<Fun>::fold_1_(
-                        action<Sequence>()(static_cast<E &&>(e))
+                        as_action_<Sequence>()(static_cast<E &&>(e))
                       , empty_env()
-                      , action<State0>()(static_cast<E &&>(e))
+                      , as_action_<State0>()(static_cast<E &&>(e))
                     )
                 )
 
@@ -138,9 +138,9 @@ namespace boost
                 auto operator()(E && e, D && d) const
                 BOOST_PROTO_AUTO_RETURN(
                     fold_impl_<Fun>::fold_1_(
-                        action<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d))
+                        as_action_<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d))
                       , static_cast<D &&>(d)
-                      , action<State0>()(static_cast<E &&>(e), static_cast<D &&>(d))
+                      , as_action_<State0>()(static_cast<E &&>(e), static_cast<D &&>(d))
                     )
                 )
 
@@ -148,9 +148,9 @@ namespace boost
                 auto operator()(E && e, D && d, S && s, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
                     fold_impl_<Fun>::fold_1_(
-                        action<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                        as_action_<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
                       , static_cast<D &&>(d)
-                      , action<State0>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                      , as_action_<State0>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
                       , static_cast<Rest &&>(rest)...
                     )
                 )
@@ -168,9 +168,9 @@ namespace boost
                 auto operator()(E && e) const
                 BOOST_PROTO_AUTO_RETURN(
                     fold_impl_<Fun>::reverse_fold_1_(
-                        action<Sequence>()(static_cast<E &&>(e))
+                        as_action_<Sequence>()(static_cast<E &&>(e))
                       , empty_env()
-                      , action<State0>()(static_cast<E &&>(e))
+                      , as_action_<State0>()(static_cast<E &&>(e))
                     )
                 )
 
@@ -178,9 +178,9 @@ namespace boost
                 auto operator()(E && e, D && d) const
                 BOOST_PROTO_AUTO_RETURN(
                     fold_impl_<Fun>::reverse_fold_1_(
-                        action<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d))
+                        as_action_<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d))
                       , static_cast<D &&>(d)
-                      , action<State0>()(static_cast<E &&>(e), static_cast<D &&>(d))
+                      , as_action_<State0>()(static_cast<E &&>(e), static_cast<D &&>(d))
                     )
                 )
 
@@ -188,9 +188,9 @@ namespace boost
                 auto operator()(E && e, D && d, S && s, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
                     fold_impl_<Fun>::reverse_fold_1_(
-                        action<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                        as_action_<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
                       , static_cast<D &&>(d)
-                      , action<State0>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                      , as_action_<State0>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
                       , static_cast<Rest &&>(rest)...
                     )
                 )

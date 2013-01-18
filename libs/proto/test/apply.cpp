@@ -27,7 +27,7 @@ namespace
 }
 
 struct eval_unpack
-  : proto::action<
+  : proto::def<
         proto::apply(
             proto::_env_var<fN<0>>
           , proto::apply(proto::_env_var<fN<1>>, proto::pack(_))...
@@ -73,7 +73,7 @@ void test_apply()
     proto::literal<int> i{0};
 
     // 0^2 + 1^2 + 2^2 + 3^2 = 0+1+4+9 = 14
-    proto::action<square(proto::_value)> square_;
+    proto::def<square(proto::_value)> square_;
     int sum_of_squares = unpack(i(1,2,3), sum(), square_);
     BOOST_CHECK_EQUAL(sum_of_squares, 14);
 }

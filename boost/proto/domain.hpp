@@ -15,8 +15,8 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/make_expr.hpp>
 #include <boost/proto/matches.hpp>
-#include <boost/proto/action/action.hpp>
-#include <boost/proto/grammar/grammar.hpp>
+#include <boost/proto/action/basic_action.hpp>
+#include <boost/proto/grammar/basic_grammar.hpp>
 #include <boost/proto/grammar/not.hpp>
 #include <boost/proto/grammar/expr.hpp>
 #include <boost/proto/action/matches.hpp>
@@ -27,11 +27,6 @@ namespace boost
     {
         namespace detail
         {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // not_a_grammar
-            struct not_a_grammar
-            {};
-
             ////////////////////////////////////////////////////////////////////////////////////////
             // not_a_domain
             struct not_a_domain
@@ -154,7 +149,7 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // default_grammar
             struct default_grammar
-              : grammar<not_(matches_(address_of(_)))>
+              : detail::as_grammar_<not_(matches_(address_of(_)))>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////

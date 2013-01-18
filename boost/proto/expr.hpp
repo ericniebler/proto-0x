@@ -19,7 +19,7 @@
 #include <boost/proto/tags.hpp>
 #include <boost/proto/utility.hpp>
 #include <boost/proto/detail/compressed_pair.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 
 namespace boost
 {

@@ -13,6 +13,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/children.hpp>
 #include <boost/proto/custom.hpp>
+#include <boost/proto/def.hpp>
 #include <boost/proto/domain.hpp>
 #include <boost/proto/deep_copy.hpp>
 #include <boost/proto/expr.hpp>

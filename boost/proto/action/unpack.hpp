@@ -12,7 +12,7 @@
 #include <cstddef>
 #include <utility>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 #include <boost/proto/utility.hpp>
 
 namespace boost
@@ -96,7 +96,7 @@ namespace boost
             template<typename Action, typename ...Actions>
             struct collect_pack_actions_<pack(Action), void(Actions...)>
             {
-                using type = void(Actions..., action<Action>);
+                using type = void(Actions..., as_action_<Action>);
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -149,7 +149,7 @@ namespace boost
             struct _unpack
               : basic_action<_unpack<Ret, Actions...>>
               // TODO: move implementation into _unpack_impl that is parameterized on result of
-              // collect_pack_actions_, and specialized on void(action<_>) to have a more
+              // collect_pack_actions_, and specialized on void(as_action_<_>) to have a more
               // optimal implementation.
             {
                 using actions_type =
@@ -160,7 +160,7 @@ namespace boost
                 template<typename ...Args>
                 auto operator()(Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    action<
+                    as_action_<
                         typename expand_pattern_1_<
                             typename compute_indices_1_<actions_type, Args...>::type
                           , Ret(Actions......)

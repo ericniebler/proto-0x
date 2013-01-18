@@ -14,8 +14,8 @@
 #include <boost/proto/tags.hpp>
 #include <boost/proto/matches.hpp>
 #include <boost/proto/utility.hpp>
-#include <boost/proto/action/action.hpp>
-#include <boost/proto/grammar/grammar.hpp>
+#include <boost/proto/action/basic_action.hpp>
+#include <boost/proto/grammar/basic_grammar.hpp>
 
 namespace boost
 {
@@ -43,7 +43,7 @@ namespace boost
                 struct apply
                   : matches<
                         Expr
-                      , typename Cases::template case_<decltype(action<Action>()(std::declval<Expr>()))>
+                      , typename Cases::template case_<decltype(detail::as_action_<Action>()(std::declval<Expr>()))>
                     >
                 {};
             };

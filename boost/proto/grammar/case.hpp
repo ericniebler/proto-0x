@@ -12,7 +12,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/tags.hpp>
 #include <boost/proto/matches.hpp>
-#include <boost/proto/grammar/grammar.hpp>
+#include <boost/proto/grammar/basic_grammar.hpp>
 
 namespace boost
 {

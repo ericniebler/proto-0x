@@ -17,7 +17,7 @@
 #include <boost/proto/children.hpp>
 #include <boost/proto/matches.hpp>
 #include <boost/proto/utility.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 #include <boost/proto/action/case.hpp>
 #include <boost/proto/grammar/case.hpp>
 #include <boost/proto/grammar/not.hpp>
@@ -62,12 +62,12 @@ namespace boost
             // _eval_case
             template<typename ActiveGrammar, typename Tag>
             struct _eval_case
-              : action<case_(not_(matches_(_)), _eval_unknown)>
+              : as_action_<case_(not_(matches_(_)), _eval_unknown)>
             {};
 
             template<typename ActiveGrammar>
             struct _eval_case<ActiveGrammar, terminal>
-              : action<case_(terminal(_), _value)>
+              : as_action_<case_(terminal(_), _value)>
             {};
         }
 
@@ -86,7 +86,7 @@ namespace boost
                 auto impl(utility::indices<I...>, Expr && expr, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
                     BOOST_PROTO_TRY_CALL(op<Tag>())(
-                        action<Action>()(
+                        as_action_<Action>()(
                             proto::child<I>(static_cast<Expr &&>(expr))
                           , static_cast<Rest &&>(rest)...
                         )...
@@ -116,11 +116,11 @@ namespace boost
                 template<typename Expr, typename ...Rest>
                 auto operator()(Expr && expr, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
-                    action<ActiveGrammar>()(
+                    as_action_<ActiveGrammar>()(
                         proto::child<0>(static_cast<Expr &&>(expr))
                       , static_cast<Rest &&>(rest)...
                     )
-                 || action<ActiveGrammar>()(
+                 || as_action_<ActiveGrammar>()(
                         proto::child<1>(static_cast<Expr &&>(expr))
                       , static_cast<Rest &&>(rest)...
                     )
@@ -134,11 +134,11 @@ namespace boost
                 template<typename Expr, typename ...Rest>
                 auto operator()(Expr && expr, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
-                    action<ActiveGrammar>()(
+                    as_action_<ActiveGrammar>()(
                         proto::child<0>(static_cast<Expr &&>(expr))
                       , static_cast<Rest &&>(rest)...
                     )
-                 && action<ActiveGrammar>()(
+                 && as_action_<ActiveGrammar>()(
                         proto::child<1>(static_cast<Expr &&>(expr))
                       , static_cast<Rest &&>(rest)...
                     )
@@ -152,15 +152,15 @@ namespace boost
                 template<typename Expr, typename ...Rest>
                 auto operator()(Expr && expr, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
-                    action<ActiveGrammar>()(
+                    as_action_<ActiveGrammar>()(
                         proto::child<0>(static_cast<Expr &&>(expr))
                       , static_cast<Rest &&>(rest)...
                     )
-                  ? action<ActiveGrammar>()(
+                  ? as_action_<ActiveGrammar>()(
                         proto::child<1>(static_cast<Expr &&>(expr))
                       , static_cast<Rest &&>(rest)...
                     )
-                  : action<ActiveGrammar>()(
+                  : as_action_<ActiveGrammar>()(
                         proto::child<2>(static_cast<Expr &&>(expr))
                       , static_cast<Rest &&>(rest)...
                     )
@@ -178,7 +178,7 @@ namespace boost
         {                                                                                           \
             template<typename ActiveGrammar>                                                        \
             struct _eval_case<ActiveGrammar, TAG>                                                   \
-              : action<case_(TAG(ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)>                   \
+              : as_action_<case_(TAG(ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)>               \
             {};                                                                                     \
         }                                                                                           \
         /**/
@@ -193,7 +193,7 @@ namespace boost
         {                                                                                           \
             template<typename ActiveGrammar>                                                        \
             struct _eval_case<ActiveGrammar, TAG>                                                   \
-              : action<case_(TAG(ActiveGrammar, ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)>    \
+              : as_action_<case_(TAG(ActiveGrammar, ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)>\
             {};                                                                                     \
         }                                                                                           \
         /**/
@@ -261,12 +261,12 @@ namespace boost
         {
             template<typename ActiveGrammar>
             struct _eval_case<ActiveGrammar, if_else_>
-              : action<case_(if_else_(ActiveGrammar, ActiveGrammar, ActiveGrammar), _op_unpack<if_else_, ActiveGrammar>)>
+              : as_action_<case_(if_else_(ActiveGrammar, ActiveGrammar, ActiveGrammar), _op_unpack<if_else_, ActiveGrammar>)>
             {};
 
             template<typename ActiveGrammar>
             struct _eval_case<ActiveGrammar, function>
-              : action<case_(function(ActiveGrammar...), _op_unpack<function, ActiveGrammar>)>
+              : as_action_<case_(function(ActiveGrammar...), _op_unpack<function, ActiveGrammar>)>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -285,7 +285,7 @@ namespace boost
         // _eval
         template<typename ActiveGrammar>
         struct _eval
-          : action<switch_(detail::_eval_cases<ActiveGrammar>)>
+          : detail::as_action_<switch_(detail::_eval_cases<ActiveGrammar>)>
         {};
 
         ////////////////////////////////////////////////////////////////////////////////////////////

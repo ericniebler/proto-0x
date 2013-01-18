@@ -10,7 +10,7 @@
 
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 
 namespace boost
 {
@@ -40,15 +40,18 @@ namespace boost
                 template<typename ...Args>
                 auto operator()(Args &&...args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    logical_not_()(proto::action<BoolAction>()(static_cast<Args &&>(args)...))
+                    logical_not_()(as_action_<BoolAction>()(static_cast<Args &&>(args)...))
                 )
             };
         }
 
-        template<typename BoolAction>
-        struct action<not_(BoolAction)>
-          : detail::_not_<BoolAction>
-        {};
+        namespace extension
+        {
+            template<typename BoolAction>
+            struct action_impl<not_(BoolAction)>
+              : detail::_not_<BoolAction>
+            {};
+        }
     }
 }
 

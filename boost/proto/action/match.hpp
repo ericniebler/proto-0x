@@ -9,7 +9,7 @@
 #define BOOST_PROTO_ACTION_MATCH_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 #include <boost/proto/action/case.hpp>
 #include <boost/proto/grammar/match.hpp>
 
@@ -36,7 +36,7 @@ namespace boost
                 template<typename Expr, typename ...Rest>
                 auto operator()(Expr && e, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
-                    action<
+                    as_action_<
                         // This relies on details of how proto::match's grammar behavior is implemented.
                         typename matches<Expr, proto::match(ActiveGrammars...)>::which::proto_grammar_type
                     >()(
@@ -53,13 +53,12 @@ namespace boost
             // action_impl
             template<typename ...ActiveGrammars>
             struct action_impl<match(ActiveGrammars...)>
-              : detail::_match<ActiveGrammars...>
-            {
-                static_assert(
+              : std::conditional<
                     utility::logical_ops::and_(detail::is_case_stmt_<ActiveGrammars>::value...)
-                  , "Expected case_ statement"
-                );
-            };
+                  , detail::_match<ActiveGrammars...>
+                  , not_an_action<match(ActiveGrammars...)>
+                >::type
+            {};
         }
     }
 }

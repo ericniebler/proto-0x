@@ -9,7 +9,7 @@
 #ifndef BOOST_PROTO_GRAMMAR_HPP_INCLUDED
 #define BOOST_PROTO_GRAMMAR_HPP_INCLUDED
 
-#include <boost/proto/grammar/grammar.hpp>
+#include <boost/proto/grammar/basic_grammar.hpp>
 #include <boost/proto/grammar/and.hpp>
 #include <boost/proto/grammar/case.hpp>
 #include <boost/proto/grammar/expr.hpp>

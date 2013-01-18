@@ -9,7 +9,7 @@
 #ifndef BOOST_PROTO_ACTION_HPP_INCLUDED
 #define BOOST_PROTO_ACTION_HPP_INCLUDED
 
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 #include <boost/proto/action/and.hpp>
 #include <boost/proto/action/block.hpp>
 #include <boost/proto/action/apply.hpp>

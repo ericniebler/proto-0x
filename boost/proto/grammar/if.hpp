@@ -10,8 +10,8 @@
 #define BOOST_PROTO_GRAMMAR_IF_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/action.hpp>
-#include <boost/proto/grammar/grammar.hpp>
+#include <boost/proto/action/basic_action.hpp>
+#include <boost/proto/grammar/basic_grammar.hpp>
 
 namespace boost
 {

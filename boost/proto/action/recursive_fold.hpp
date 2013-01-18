@@ -13,7 +13,8 @@
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/matches.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
+#include <boost/proto/action/if.hpp>
 #include <boost/proto/action/fold.hpp>
 
 namespace boost
@@ -33,7 +34,7 @@ namespace boost
 
             template<typename Tag, typename Fun>
             struct _recursive_fold_
-              : action<
+              : as_action_<
                     if_(
                         _has_tag<Tag>
                       , fold(_, _state, _recursive_fold_<Tag, Fun>)
@@ -44,7 +45,7 @@ namespace boost
 
             template<typename Tag, typename Fun>
             struct _reverse_recursive_fold_
-              : action<
+              : as_action_<
                     if_(
                         _has_tag<Tag>
                       , reverse_fold(_, _state, _reverse_recursive_fold_<Tag, Fun>)
@@ -92,7 +93,7 @@ namespace boost
                 template<typename E, typename ...Rest>
                 auto operator()(E && e, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
-                    action<
+                    as_action_<
                         fold(
                             Sequence
                           , State0
@@ -144,7 +145,7 @@ namespace boost
                 template<typename E, typename ...Rest>
                 auto operator()(E && e, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
-                    action<
+                    as_action_<
                         reverse_fold(
                             Sequence
                           , State0

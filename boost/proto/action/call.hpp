@@ -14,7 +14,7 @@
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/utility.hpp>
 #include <boost/proto/tags.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 #include <boost/proto/action/protect.hpp>
 #include <boost/proto/action/env.hpp>
 
@@ -75,10 +75,10 @@ namespace boost
                 BOOST_PROTO_AUTO_RETURN(
                     BOOST_PROTO_TRY_CALL(call_2_<
                         (sizeof...(Args) <= sizeof...(Actions))
-                      , decltype(action<Actions>()(static_cast<Args &&>(args)...))...
+                      , decltype(as_action_<Actions>()(static_cast<Args &&>(args)...))...
                     >())(
                         static_cast<Action &&>(act)
-                      , action<Actions>()(static_cast<Args &&>(args)...)...
+                      , as_action_<Actions>()(static_cast<Args &&>(args)...)...
                       , static_cast<Args &&>(args)...
                     )
                 )
@@ -92,7 +92,7 @@ namespace boost
                 auto operator()(Fun &&fun, Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
                     BOOST_PROTO_TRY_CALL(static_cast<Fun &&>(fun))(
-                        action<Actions>()(static_cast<Args &&>(args)...)...
+                        as_action_<Actions>()(static_cast<Args &&>(args)...)...
                     )
                 )
             };

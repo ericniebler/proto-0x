@@ -11,7 +11,7 @@
 
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 #include <boost/proto/utility.hpp>
 
 namespace boost

@@ -10,7 +10,7 @@
 #define BOOST_PROTO_ACTION_CASE_HPP_INCLUDED
 
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 #include <boost/proto/action/block.hpp>
 
 namespace boost
@@ -28,7 +28,7 @@ namespace boost
 
             template<typename Grammar, typename Action>
             struct action_impl<case_(Grammar, Action)>
-              : action<Action>
+              : detail::as_action_<Action>
             {};
 
             // These two are defined in pass.hpp

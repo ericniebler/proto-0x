@@ -117,9 +117,6 @@
     <ClInclude Include="..\..\..\boost\proto\custom.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\grammar\grammar.hpp">
-      <Filter>Proto Files\grammar</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\grammar.hpp">
       <Filter>Proto Files</Filter>
     </ClInclude>
@@ -184,9 +181,6 @@
       <Filter>Proto Files\action</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\action\switch.hpp">
-      <Filter>Proto Files\action</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\action\action.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\grammar\expr.hpp">
@@ -260,6 +254,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\unpack_expr.hpp">
       <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\def.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\not.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\basic_action.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\grammar\basic_grammar.hpp">
+      <Filter>Proto Files\grammar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

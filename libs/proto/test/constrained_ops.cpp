@@ -18,7 +18,7 @@ using term = proto::literal<int>;
 struct equation;
 
 struct addition:
-    proto::grammar<
+    proto::def<
         proto::match(
             proto::terminal(proto::_)
           , proto::plus(addition, addition)
@@ -27,8 +27,7 @@ struct addition:
 {};
 
 struct equation:
-    proto::grammar
-    <
+    proto::def<
         proto::equal_to(addition, addition)
     >
 {};
@@ -37,8 +36,7 @@ template<class ExprDesc>
 struct extension;
 
 struct my_domain:
-    proto::domain
-    <
+    proto::domain<
          my_domain,
          equation,
          proto::default_domain
@@ -53,8 +51,7 @@ template<class ExprDesc>
 struct lhs_extension;
 
 struct my_lhs_domain:
-    proto::domain
-    <
+    proto::domain<
         my_lhs_domain,
         addition,
         my_domain
@@ -69,8 +66,7 @@ template<class ExprDesc>
 struct rhs_extension;
 
 struct my_rhs_domain:
-    proto::domain
-    <
+    proto::domain<
         my_rhs_domain,
         addition,
         my_domain

@@ -10,7 +10,7 @@
 
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/matches.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 
 namespace boost
 {

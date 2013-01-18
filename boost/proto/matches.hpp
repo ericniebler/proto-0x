@@ -14,8 +14,8 @@
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/utility.hpp>
-#include <boost/proto/action/action.hpp>
-#include <boost/proto/grammar/grammar.hpp>
+#include <boost/proto/action/basic_action.hpp>
+#include <boost/proto/grammar/basic_grammar.hpp>
 
 namespace boost
 {
@@ -86,7 +86,7 @@ namespace boost
         ///     such that \c Ax lambda-matches \c Bx
         template<typename Expr, typename Grammar>
         struct matches
-          : grammar<Grammar>::template apply<Expr>
+          : detail::as_grammar_<Grammar>::template apply<Expr>
         {};
 
         template<typename T>

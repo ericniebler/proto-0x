@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// make.hpp
+// construct.cpp
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
@@ -13,7 +13,7 @@ namespace mpl = boost::mpl;
 namespace proto = boost::proto;
 using proto::_;
 
-namespace test_make
+namespace test_construct
 {
     template<typename T>
     struct type2type {};
@@ -33,10 +33,10 @@ namespace test_make
 
     // Test that when no substitution is done, we don't instantiate templates
     struct MakeTest1
-      : proto::action< proto::construct( type2type< careful<int> >() ) >
+      : proto::def< proto::construct( type2type< careful<int> >() ) >
     {};
 
-    void make_test1()
+    void construct_test1()
     {
         proto::literal<int> i{42};
         type2type< careful<int> > res = MakeTest1()(i);
@@ -46,10 +46,10 @@ namespace test_make
     // Test that when substitution is done, and there is no nested ::type
     // typedef, the result is the wrapper
     struct MakeTest2
-      : proto::action< proto::construct( wrapper< proto::_value >() ) >
+      : proto::def< proto::construct( wrapper< proto::_value >() ) >
     {};
 
-    void make_test2()
+    void construct_test2()
     {
         proto::literal<int> i{42};
         wrapper<int> res = MakeTest2()(i);
@@ -59,10 +59,10 @@ namespace test_make
     // Test that when substitution is done, and there is no nested ::type
     // typedef, the result is the wrapper
     struct MakeTest3
-      : proto::action< proto::construct( wrapper< proto::_value >(proto::_value) ) >
+      : proto::def< proto::construct( wrapper< proto::_value >(proto::_value) ) >
     {};
 
-    void make_test3()
+    void construct_test3()
     {
         proto::literal<int> i{42};
         wrapper<int> res = MakeTest3()(i);
@@ -72,10 +72,10 @@ namespace test_make
     // Test that when substitution is done, and there is a nested ::type
     // typedef, the result is that type.
     struct MakeTest4
-      : proto::action< proto::construct( mpl::identity< proto::_value >(proto::_value) ) >
+      : proto::def< proto::construct( mpl::identity< proto::_value >(proto::_value) ) >
     {};
 
-    void make_test4()
+    void construct_test4()
     {
         proto::literal<int> i{42};
         int res = MakeTest4()(i);
@@ -83,10 +83,10 @@ namespace test_make
     }
 
     struct MakeTest5
-      : proto::action< proto::construct( wrapper< proto::_state(_, proto::_env, proto::_state) >(proto::_state(_)) ) >
+      : proto::def< proto::construct( wrapper< proto::_state(_, proto::_env, proto::_state) >(proto::_state(_)) ) >
     {};
 
-    void make_test5()
+    void construct_test5()
     {
         proto::literal<int> i{42};
         wrapper<int> res = MakeTest5()(i, proto::empty_env(), 43);
@@ -95,10 +95,10 @@ namespace test_make
 
     using proto::utility::identity;
     struct MakeTest6
-      : proto::action< proto::construct( wrapper< identity(proto::_state) >(proto::_state(_)) ) >
+      : proto::def< proto::construct( wrapper< identity(proto::_state) >(proto::_state(_)) ) >
     {};
 
-    void make_test6()
+    void construct_test6()
     {
         proto::literal<int> i{42};
         wrapper<int> res = MakeTest6()(i, proto::empty_env(), 43);
@@ -106,10 +106,10 @@ namespace test_make
     }
 
     struct MakeTest7
-      : proto::action< proto::construct( wrapper< proto::construct( int(proto::_state) ) >(proto::_state(_)) ) >
+      : proto::def< proto::construct( wrapper< proto::construct( int(proto::_state) ) >(proto::_state(_)) ) >
     {};
 
-    void make_test7()
+    void construct_test7()
     {
         proto::literal<int> i{42};
         wrapper<int> res = MakeTest7()(i, proto::empty_env(), 43);
@@ -126,10 +126,10 @@ namespace test_make
     };
 
     struct MakeTest8
-      : proto::action< proto::construct( wrapper< tfx(_, _) >(_) ) >
+      : proto::def< proto::construct( wrapper< tfx(_, _) >(_) ) >
     {};
 
-    void make_test8()
+    void construct_test8()
     {
         proto::literal<int> i{42};
         wrapper<proto::literal<int>> res = MakeTest8()(i);
@@ -143,16 +143,16 @@ using namespace boost::unit_test;
 //
 test_suite* init_unit_test_suite( int argc, char* argv[] )
 {
-    test_suite *test = BOOST_TEST_SUITE("test the make basic_action");
+    test_suite *test = BOOST_TEST_SUITE("test the construct basic_action");
 
-    test->add(BOOST_TEST_CASE(&test_make::make_test1));
-    test->add(BOOST_TEST_CASE(&test_make::make_test2));
-    test->add(BOOST_TEST_CASE(&test_make::make_test3));
-    test->add(BOOST_TEST_CASE(&test_make::make_test4));
-    test->add(BOOST_TEST_CASE(&test_make::make_test5));
-    test->add(BOOST_TEST_CASE(&test_make::make_test6));
-    test->add(BOOST_TEST_CASE(&test_make::make_test7));
-    test->add(BOOST_TEST_CASE(&test_make::make_test8));
+    test->add(BOOST_TEST_CASE(&test_construct::construct_test1));
+    test->add(BOOST_TEST_CASE(&test_construct::construct_test2));
+    test->add(BOOST_TEST_CASE(&test_construct::construct_test3));
+    test->add(BOOST_TEST_CASE(&test_construct::construct_test4));
+    test->add(BOOST_TEST_CASE(&test_construct::construct_test5));
+    test->add(BOOST_TEST_CASE(&test_construct::construct_test6));
+    test->add(BOOST_TEST_CASE(&test_construct::construct_test7));
+    test->add(BOOST_TEST_CASE(&test_construct::construct_test8));
 
     return test;
 }

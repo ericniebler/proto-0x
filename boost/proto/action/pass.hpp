@@ -16,7 +16,7 @@
 #include <boost/proto/children.hpp>
 #include <boost/proto/make_expr.hpp>
 #include <boost/proto/utility.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 
 namespace boost
 {
@@ -29,7 +29,7 @@ namespace boost
 
             template<typename Action, typename Enable = void>
             struct as_pass_action_
-              : proto::action<Action>
+              : as_action_<Action>
             {};
 
             template<typename Tag, typename ...Grammars>

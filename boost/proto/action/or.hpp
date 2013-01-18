@@ -10,7 +10,7 @@
 
 #include <type_traits>
 #include <boost/proto/proto_fwd.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 
 namespace boost
 {
@@ -66,7 +66,7 @@ namespace boost
                 template<typename ...Args>
                 auto operator()(Args &&...args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    fold_or_::call(proto::action<BoolActions>()(static_cast<Args &&>(args)...)...)
+                    fold_or_::call(as_action_<BoolActions>()(static_cast<Args &&>(args)...)...)
                 )
             };
         }

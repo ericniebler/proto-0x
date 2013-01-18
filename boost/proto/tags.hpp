@@ -11,7 +11,7 @@
 
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/utility.hpp>
-#include <boost/proto/action/action.hpp>
+#include <boost/proto/action/basic_action.hpp>
 
 namespace boost
 {
@@ -43,7 +43,7 @@ namespace boost
               : expr_tag_base
             {
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr_tag);
-                using proto_is_terminal_type = IsTerminal ;
+                using proto_is_terminal_type = IsTerminal;
                 using proto_grammar_type = expr_tag<Tag>;
             };
 
