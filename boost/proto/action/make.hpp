@@ -1,13 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// construct.hpp
-// Implementation of the construct action.
+// make.hpp
+// Implementation of the make action.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_ACTION_CONSTRUCT_HPP_INCLUDED
-#define BOOST_PROTO_ACTION_CONSTRUCT_HPP_INCLUDED
+#ifndef BOOST_PROTO_ACTION_MAKE_HPP_INCLUDED
+#define BOOST_PROTO_ACTION_MAKE_HPP_INCLUDED
 
 #include <utility>
 #include <type_traits>
@@ -23,7 +23,7 @@ namespace boost
         namespace detail
         {
             template<typename R, typename ...Args>
-            struct construct_1_;
+            struct make_1_;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // nested_type_
@@ -56,81 +56,81 @@ namespace boost
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // construct_3_
+            // make_3_
             template<bool IsAction, typename R, typename ...Args>
-            struct construct_3_
+            struct make_3_
             {
                 using type = decltype(utility::by_val()(as_action_<R>()(std::declval<Args>()...)));
                 using applied = std::true_type;
             };
 
             template<typename R, typename ...Args>
-            struct construct_3_<false, R, Args...>
+            struct make_3_<false, R, Args...>
             {
                 using type = R;
                 using applied = std::false_type;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // construct_2_
+            // make_2_
             template<typename R, typename ...Args>
-            struct construct_2_
-              : construct_1_<R, Args...>
+            struct make_2_
+              : make_1_<R, Args...>
             {
                 static_assert(!std::is_pointer<R>::value, "ptr to function?");
             };
 
             template<typename R, typename ...A, typename ...Args>
-            struct construct_2_<R(A...), Args...>
+            struct make_2_<R(A...), Args...>
             {
                 using type = decltype(utility::by_val()(as_action_<R(A...)>()(std::declval<Args>()...)));
                 using applied = std::true_type;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // construct_1_
+            // make_1_
             template<typename R, typename ...Args>
-            struct construct_1_
-              : construct_3_<is_action<R>::value, R, Args...>
+            struct make_1_
+              : make_3_<is_action<R>::value, R, Args...>
             {};
 
             template<template<typename...> class R, typename ...A, typename ...Args>
-            struct construct_1_<R<A...>, Args...>
+            struct make_1_<R<A...>, Args...>
               : invoke_if_<
-                    R<typename construct_2_<A, Args...>::type...>
-                  , utility::logical_ops::or_(construct_2_<A, Args...>::applied::value...)
+                    R<typename make_2_<A, Args...>::type...>
+                  , utility::logical_ops::or_(make_2_<A, Args...>::applied::value...)
                 >
             {};
 
             template<typename R, int I, typename ...Args>
-            struct construct_1_<_protect<R, I>, Args...>
+            struct make_1_<_protect<R, I>, Args...>
             {
                 using type = _protect<R, I>;
                 using applied = std::false_type;
             };
 
             template<typename R, typename ...Args>
-            struct construct_1_<noinvoke<R>, Args...>
+            struct make_1_<noinvoke<R>, Args...>
             {
                 using type = R;
                 using applied = std::false_type;
             };
 
             template<template<typename...> class R, typename ...A, typename ...Args>
-            struct construct_1_<noinvoke<R<A...>>, Args...>
+            struct make_1_<noinvoke<R<A...>>, Args...>
             {
-                using type = R<typename construct_2_<A, Args...>::type...>;
+                using type = R<typename make_2_<A, Args...>::type...>;
                 using applied =
                     std::integral_constant<
                         bool
-                      , utility::logical_ops::or_(construct_2_<A, Args...>::applied::value...)
+                      , utility::logical_ops::or_(make_2_<A, Args...>::applied::value...)
                     >;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // construct_
+            // make_
             template<typename Type>
-            struct construct_
+            struct make_
             {
                 template<typename ...Args>
                 auto operator()(Args &&... args) const
@@ -140,39 +140,39 @@ namespace boost
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // _construct
+            // _make
             template<typename Type, typename ...Actions>
-            struct _construct
-              : basic_action<_construct<Type, Actions...>>
+            struct _make
+              : basic_action<_make<Type, Actions...>>
             {
                 template<
                     typename ...Args
-                  , typename X = typename detail::construct_1_<Type, Args...>::type
+                  , typename X = typename detail::make_1_<Type, Args...>::type
                 >
                 auto operator()(Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    as_action_<detail::construct_<X>(Actions...)>()(static_cast<Args &&>(args)...)
+                    as_action_<detail::make_<X>(Actions...)>()(static_cast<Args &&>(args)...)
                 )
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // _construct_unpack
+            // _make_unpack
             template<typename Type, typename ...Actions>
-            struct _construct_unpack
-              : basic_action<_construct_unpack<Type, Actions...>>
+            struct _make_unpack
+              : basic_action<_make_unpack<Type, Actions...>>
             {
                 template<
                     typename ...Args
-                  , typename X = typename detail::construct_1_<Type, Args...>::type
+                  , typename Obj = typename detail::make_1_<Type, Args...>::type
                 >
                 auto operator()(Args &&... args) const
                 BOOST_PROTO_AUTO_RETURN(
-                    as_action_<detail::construct_<X>(Actions......)>()(static_cast<Args &&>(args)...)
+                    as_action_<detail::make_<Obj>(Actions......)>()(static_cast<Args &&>(args)...)
                 )
             };
         }
 
-        struct construct
+        struct make
         {};
 
         namespace extension
@@ -180,13 +180,13 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////////
             // action_impl
             template<typename Type, typename ...Actions>
-            struct action_impl<construct(Type(*)(Actions...))>
-              : detail::_construct<Type, Actions...>
+            struct action_impl<make(Type(*)(Actions...))>
+              : detail::_make<Type, Actions...>
             {};
 
             template<typename Type, typename ...Actions>
-            struct action_impl<construct(Type(*)(Actions......))>
-              : detail::_construct_unpack<Type, Actions...>
+            struct action_impl<make(Type(*)(Actions......))>
+              : detail::_make_unpack<Type, Actions...>
             {};
         }
     }

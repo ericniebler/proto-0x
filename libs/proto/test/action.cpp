@@ -89,11 +89,11 @@ struct _my_expr
 void test_action_2()
 {
     proto::literal<int> i{42};
-    S<int> s0 = proto::def<proto::construct(S<proto::_state>())>()(i, proto::empty_env(), 42);
-    S<int> s1 = proto::def<proto::construct(S<proto::_state()>())>()(i, proto::empty_env(), 42);
-    S<int> s2 = proto::def<proto::construct(S<proto::_state(_my_expr)>())>()(i, proto::empty_env(), 42);
-    S<int> s3 = proto::def<proto::construct(S<proto::_state(_my_expr, proto::_env)>())>()(i, proto::data = 55, 42);
-    S<int> s4 = proto::def<proto::construct(S<proto::_state(_my_expr, proto::_env, proto::_state)>())>()(i, proto::data = 55, 42);
+    S<int> s0 = proto::def<proto::make(S<proto::_state>())>()(i, proto::empty_env(), 42);
+    S<int> s1 = proto::def<proto::make(S<proto::_state()>())>()(i, proto::empty_env(), 42);
+    S<int> s2 = proto::def<proto::make(S<proto::_state(_my_expr)>())>()(i, proto::empty_env(), 42);
+    S<int> s3 = proto::def<proto::make(S<proto::_state(_my_expr, proto::_env)>())>()(i, proto::data = 55, 42);
+    S<int> s4 = proto::def<proto::make(S<proto::_state(_my_expr, proto::_env, proto::_state)>())>()(i, proto::data = 55, 42);
     BOOST_PROTO_IGNORE_UNUSED(s0, s1, s2, s3, s4);
 }
 

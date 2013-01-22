@@ -13,7 +13,7 @@ using proto::_;
 
 struct Test
   : proto::def<
-        proto::construct(
+        proto::make(
             proto::noinvoke<
                 // This remove_pointer invocation is bloked by noinvoke
                 std::remove_pointer<
@@ -29,7 +29,7 @@ struct Test2
   : proto::def<
         // This add_pointer gets invoked because a substitution takes place
         // within it.
-        proto::construct(
+        proto::make(
             std::add_pointer<
                 proto::noinvoke<
                     // This remove_pointer invocation is bloked by noinvoke
@@ -53,7 +53,7 @@ struct Test3
   : proto::def<
         // This add_pointer gets invoked because a substitution takes place
         // within it.
-        proto::construct(
+        proto::make(
             select2nd<
                 void
               , proto::noinvoke<

@@ -232,12 +232,12 @@ struct Convert
                 )
               , proto::less(
                     proto::function(
-                        proto::terminal(proto::construct(dot_impl()))
+                        proto::terminal(proto::make(dot_impl()))
                       , proto::_child<1>(proto::_child<0>)
                       , proto::_child<1>(proto::_child<0>)
                     )
                   , proto::function(
-                        proto::terminal(proto::construct(dot_impl()))
+                        proto::terminal(proto::make(dot_impl()))
                       , proto::_child<1>(proto::_child<1>)
                       , proto::_child<1>(proto::_child<1>)
                     )

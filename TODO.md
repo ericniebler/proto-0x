@@ -60,6 +60,4 @@ struct unary_plus
 * Everyplace where we directly return an rvalue reference is potentially creating a dangling
   reference.
 
-* Oh hell, rename `construct` back to `make`. What was I thinking?
-
 * Implementation of `unpack_expr` could probably use `fusion::invoke_function_object`.

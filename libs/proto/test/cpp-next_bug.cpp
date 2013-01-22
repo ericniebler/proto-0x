@@ -57,7 +57,7 @@ namespace linear_algebra
             proto::match(
                 proto::case_(
                     proto::subscript(Distribute, proto::terminal(_))
-                  , Distribute(proto::_left, proto::construct(proto::empty_env()), proto::_right)
+                  , Distribute(proto::_left, proto::make(proto::empty_env()), proto::_right)
                 )
               , proto::case_(
                     proto::plus(Optimize, Optimize)

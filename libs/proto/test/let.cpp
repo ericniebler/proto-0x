@@ -29,7 +29,7 @@ int once::ctors = 0;
 struct LetCallOnce
   : proto::def<
         proto::let(
-            _a(proto::construct(once()))
+            _a(proto::make(once()))
           , proto::functional::make_pair(_a, _a)
         )
     >
@@ -43,21 +43,21 @@ void test_let_call_once()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// test_let_construct_action
+// test_let_make_action
 //  verify that let works with object transforms.
-struct LetConstructAction
+struct LetMakeAction
   : proto::def<
         proto::let(
             _a(proto::_int<42>)
-          , proto::construct(std::pair<_a, _a>(_a, _a))
+          , proto::make(std::pair<_a, _a>(_a, _a))
         )
     >
 {};
 
-void test_let_construct_action()
+void test_let_make_action()
 {
     proto::literal<int> i(0);
-    std::pair<int, int> p = LetConstructAction()(i);
+    std::pair<int, int> p = LetMakeAction()(i);
     BOOST_CHECK_EQUAL(42, p.first);
     BOOST_CHECK_EQUAL(42, p.second);
 }
@@ -73,7 +73,7 @@ struct LetData
   : proto::def<
         proto::let(
             _a(proto::_int<42>)
-          , proto::construct(std::pair<MyData, _a>(MyData, _a))
+          , proto::make(std::pair<MyData, _a>(MyData, _a))
         )
     >
 {};
@@ -152,7 +152,7 @@ test_suite* init_unit_test_suite( int argc, char* argv[] )
     test_suite *test = BOOST_TEST_SUITE("test let basic action");
 
     test->add(BOOST_TEST_CASE(&test_let_call_once));
-    test->add(BOOST_TEST_CASE(&test_let_construct_action));
+    test->add(BOOST_TEST_CASE(&test_let_make_action));
     test->add(BOOST_TEST_CASE(&test_let_data));
     test->add(BOOST_TEST_CASE(&test_let_scope));
     test->add(BOOST_TEST_CASE(&test_let_scope2));

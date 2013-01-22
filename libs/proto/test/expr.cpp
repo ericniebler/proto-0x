@@ -16,7 +16,7 @@ using proto::_;
 
 // Test that simple proto expressions are trivial.
 // Note: expressions that store references are not, and cannot be, trivial because
-// they are not default constructable.
+// they are not default makeable.
 using int_ = proto::literal<int>;
 using string_ = proto::literal<std::string>;
 static_assert(std::is_trivial<decltype(int_())>::value, "not trivial!");
@@ -124,14 +124,14 @@ void test_expr()
     using int_ne_int = proto::exprs::not_equal_to<int_, int_>;
     int_ne_int inei(int_(42), int_(42));
     constexpr int_ne_int cinei(int_(42), int_(42));
-    static_assert(noexcept(int_ne_int()), "not noexcept default constructor");
-    static_assert(noexcept(int_ne_int(cinei)), "not noexcept copy constructor");
-    static_assert(noexcept(int_ne_int(int_ne_int())), "not noexcept move constructor");
+    static_assert(noexcept(int_ne_int()), "not noexcept default makeor");
+    static_assert(noexcept(int_ne_int(cinei)), "not noexcept copy makeor");
+    static_assert(noexcept(int_ne_int(int_ne_int())), "not noexcept move makeor");
     static_assert(noexcept(inei = cinei), "not noexcept copy assign");
     static_assert(noexcept(inei = int_ne_int()), "not noexcept move assign");
 
     // Verify that the constexpr ctors can be called even when the
-    // contained objects have non-constexpr constructors
+    // contained objects have non-constexpr makeors
     string_ str("hellohellohellohellohellohellohellohello!");
 }
 

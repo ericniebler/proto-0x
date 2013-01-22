@@ -26,27 +26,27 @@ struct Test
 {};
 
 struct Test0
-  : proto::def<proto::construct(proto::_protect<_>())>
+  : proto::def<proto::make(proto::_protect<_>())>
 {};
 
 struct Test1
-  : proto::def<proto::construct(identity<proto::_protect<_>>())>
+  : proto::def<proto::make(identity<proto::_protect<_>>())>
 {};
 
 struct Test2
-  : proto::def<proto::construct(S<proto::_protect<_>>())>
+  : proto::def<proto::make(S<proto::_protect<_>>())>
 {};
 
 struct Test3
-  : proto::def<proto::construct(identity<proto::_protect<identity<_>()>>())>
+  : proto::def<proto::make(identity<proto::_protect<identity<_>()>>())>
 {};
 
 struct Test4
-  : proto::def<proto::construct(S<proto::_protect<S<_>()>>())>
+  : proto::def<proto::make(S<proto::_protect<S<_>()>>())>
 {};
 
 struct Test5
-  : proto::def<proto::construct(identity<proto::_protect<identity<identity<_>>()>>())>
+  : proto::def<proto::make(identity<proto::_protect<identity<identity<_>>()>>())>
 {};
 
 void test_protect()

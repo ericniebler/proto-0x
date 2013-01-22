@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // protect.hpp
 // Keep a basic_action from being applied when building the return type of
-// proto::construct.
+// proto::make.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
@@ -52,7 +52,7 @@ namespace boost
         /// \code
         /// // OK: replace anything with Bar<_protect<_> >()
         /// struct Foo
-        ///   : proto::when<_, proto::construct( Bar<_protect<_> >() ) >
+        ///   : proto::when<_, proto::make( Bar<_protect<_> >() ) >
         /// {};
         /// \endcode
         ///

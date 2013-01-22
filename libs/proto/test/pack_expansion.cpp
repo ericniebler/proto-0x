@@ -36,8 +36,8 @@ struct eval
                 proto::_value
             )
           , proto::case_(_,
-                // could use _tag_of here, but construct is a nice test case.
-                do_eval(proto::construct(proto::tag_of<_>()), eval(proto::pack(_))...)
+                // could use _tag_of here, but make is a nice test case.
+                do_eval(proto::make(proto::tag_of<_>()), eval(proto::pack(_))...)
             )
         )
     >
@@ -57,7 +57,7 @@ void test_call_pack()
 }
 
 struct make_pair
-  : proto::def<proto::construct(std::pair<int, int>(proto::_value(proto::pack(_))...))>
+  : proto::def<proto::make(std::pair<int, int>(proto::_value(proto::pack(_))...))>
 {};
 
 void test_make_pack()

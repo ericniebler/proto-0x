@@ -42,15 +42,15 @@ static_assert(proto::is_action<proto::match(proto::case_(proto::terminal(int), p
 
 struct Action
   : proto::def<
-        proto::fold(_, proto::construct(int()), proto::_state)
+        proto::fold(_, proto::make(int()), proto::_state)
     >
 {};
 
 static_assert(!proto::is_grammar<Action>::value, "");
 static_assert(proto::is_action<Action>::value, "");
 
-static_assert(!proto::is_grammar<proto::fold(_, proto::construct(int()), proto::_state)>::value, "");
-static_assert(proto::is_action<proto::fold(_, proto::construct(int()), proto::_state)>::value, "");
+static_assert(!proto::is_grammar<proto::fold(_, proto::make(int()), proto::_state)>::value, "");
+static_assert(proto::is_action<proto::fold(_, proto::make(int()), proto::_state)>::value, "");
 
 static_assert(proto::is_grammar<_>::value, "");
 static_assert(proto::is_action<_>::value, "");

@@ -58,6 +58,7 @@ namespace boost
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
+            // as_action_impl_
             template<typename T>
             struct as_action_impl_
             {

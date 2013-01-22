@@ -14,13 +14,13 @@
 #include <boost/proto/action/block.hpp>
 #include <boost/proto/action/apply.hpp>
 #include <boost/proto/action/call.hpp>
-#include <boost/proto/action/construct.hpp>
 #include <boost/proto/action/env.hpp>
 #include <boost/proto/action/eval.hpp>
 #include <boost/proto/action/fold.hpp>
 #include <boost/proto/action/if.hpp>
 #include <boost/proto/action/integral_constant.hpp>
 #include <boost/proto/action/let.hpp>
+#include <boost/proto/action/make.hpp>
 #include <boost/proto/action/match.hpp>
 #include <boost/proto/action/matches.hpp>
 #include <boost/proto/action/not.hpp>

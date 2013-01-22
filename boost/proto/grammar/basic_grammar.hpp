@@ -43,6 +43,8 @@ namespace boost
                 using type = typename Ret::proto_grammar_type(Args......);
             };
 
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // as_grammar_impl_
             template<typename T>
             struct as_grammar_impl_
             {

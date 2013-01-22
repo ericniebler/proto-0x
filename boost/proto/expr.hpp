@@ -150,8 +150,8 @@ namespace boost
         }
 
         ////////////////////////////////////////////////////////////////////////////////////
-        // constructors
-        // This will no longer be needed once clang implements inheriting constructors
+        // makeors
+        // This will no longer be needed once clang implements inheriting makeors
         #define BOOST_PROTO_INHERIT_EXPR_CTORS(EXPR, BASE)                                          \
             using typename BASE::proto_tag_type;                                                    \
             using typename BASE::proto_children_type;                                               \
@@ -417,7 +417,7 @@ namespace boost
                 using fusion_tag                    = proto_expr<Tag, proto_domain_type>; ///< For Fusion
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // constructors
+                // makeors
                 constexpr basic_expr(Tag tag, proto_children_type args)
                     noexcept(
                         noexcept(
@@ -576,7 +576,7 @@ namespace boost
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr);
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // constructors
+                // makeors
                 //using basic_expr<ExprDesc, Domain>::basic_expr;
                 using proto_base_expr_type = basic_expr<ExprDesc, Domain>;
                 BOOST_PROTO_INHERIT_EXPR_CTORS(expr, proto_base_expr_type);

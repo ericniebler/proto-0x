@@ -30,8 +30,8 @@ void done();
 //int main()
 //{
 //    using namespace proto::literals;
-//    //foo<int> f = proto::def<proto::construct(foo<some_action<int>>())>()(2_et);
-//    //foo<int> f = proto::def<proto::construct(foo<proto::apply(proto::construct(some_action<int>()))>())>()(2_et);
+//    //foo<int> f = proto::def<proto::make(foo<some_action<int>>())>()(2_et);
+//    //foo<int> f = proto::def<proto::make(foo<proto::apply(proto::make(some_action<int>()))>())>()(2_et);
 //    int i = proto::value(2_et);
 //    BOOST_ASSERT(i == 2);
 //    done();
@@ -69,7 +69,7 @@ struct lambda_eval
   : proto::def<
         proto::match(
             proto::case_( proto::terminal(placeholder<_>),
-                proto::apply(proto::construct(proto::_env_var<proto::_value>()))
+                proto::apply(proto::make(proto::_env_var<proto::_value>()))
             )
           , proto::case_( proto::terminal(_),
                 proto::_value

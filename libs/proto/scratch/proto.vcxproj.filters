@@ -126,9 +126,6 @@
     <ClInclude Include="..\..\..\boost\proto\action\call.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\boost\proto\action\construct.hpp">
-      <Filter>Proto Files\action</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\boost\proto\action\env.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
@@ -267,6 +264,9 @@
     <ClInclude Include="..\..\..\boost\proto\grammar\basic_grammar.hpp">
       <Filter>Proto Files\grammar</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\boost\proto\action\make.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -320,9 +320,6 @@
     <ClCompile Include="..\test\apply.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\test\construct.cpp">
-      <Filter>Test Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\test\action.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
@@ -345,6 +342,9 @@
       <Filter>Test Files</Filter>
     </ClCompile>
     <ClCompile Include="..\test\def.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\make.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
   </ItemGroup>

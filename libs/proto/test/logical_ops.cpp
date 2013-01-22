@@ -14,8 +14,8 @@ namespace proto = boost::proto;
 using proto::_;
 
 using int_ = proto::literal<int>;
-using cttrue_ = proto::construct(std::true_type());
-using ctfalse_ = proto::construct(std::false_type());
+using cttrue_ = proto::make(std::true_type());
+using ctfalse_ = proto::make(std::false_type());
 using true_ = proto::_true;
 using false_ = proto::_false;
 

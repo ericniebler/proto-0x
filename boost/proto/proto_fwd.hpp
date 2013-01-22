@@ -44,13 +44,13 @@
 #define BOOST_PROTO_ENABLE_IF_VALID_EXPR(...)                                                       \
     decltype(static_cast<void>(__VA_ARGS__)) *& = boost::proto::detail::enabler
 
-// For adding defaulted default, copy and move constructors, and move/copy assign.
+// For adding defaulted default, copy and move makeors, and move/copy assign.
 #define BOOST_PROTO_REGULAR_TRIVIAL_CLASS(CLASS)                                                    \
     CLASS() = default; /*required for the type to be trivial!*/                                     \
     CLASS(CLASS const &) = default; /* memberwise copy */                                           \
     CLASS(CLASS &&) = default; /* member-wise move */                                               \
     /* These would otherwise be deleted because we */                                               \
-    /* declared a move constructor! */                                                              \
+    /* declared a move makeor! */                                                              \
     CLASS &operator=(CLASS const &) = default; /* memberwise copy assign */                         \
     CLASS &operator=(CLASS &&) = default /* memberwise move assign */                               \
     /**/
@@ -455,7 +455,7 @@ namespace boost
 
         struct apply;
 
-        struct construct;
+        struct make;
 
         struct let;
 

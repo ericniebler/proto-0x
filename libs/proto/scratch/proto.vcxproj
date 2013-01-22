@@ -64,13 +64,13 @@
     <ClInclude Include="..\..\..\boost\proto\action\block.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\call.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\case.hpp" />
-    <ClInclude Include="..\..\..\boost\proto\action\construct.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\env.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\eval.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\fold.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\if.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\integral_constant.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\let.hpp" />
+    <ClInclude Include="..\..\..\boost\proto\action\make.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\match.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\matches.hpp" />
     <ClInclude Include="..\..\..\boost\proto\action\not.hpp" />
@@ -166,10 +166,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\test\construct.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\test\cpp-next_bug.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -203,6 +199,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\test\logical_ops.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\test\make.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
