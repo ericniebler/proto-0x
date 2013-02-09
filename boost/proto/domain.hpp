@@ -116,34 +116,26 @@ namespace boost
             template<typename Domain, typename Grammar, typename SuperDomain>
             struct domain
             {
-                using proto_domain_type = Domain         ;
-                using proto_grammar_type = Grammar        ;
-                using proto_super_domain_type = SuperDomain    ;
+                using proto_domain_type = Domain;
+                using proto_grammar_type = Grammar;
+                using proto_super_domain_type = SuperDomain;
 
                 // Define this in your derived domain class to control how
                 // objects are stored within the terminals of your domain.
-                struct store_value
-                  : utility::identity
-                {};
+                using store_value = utility::identity;
 
                 // Define this in your derived domain class to control how intermediate
                 // nodes are stored within your expressions.
-                struct store_child
-                  : utility::identity
-                {};
+                using store_child = utility::identity;
 
                 // Define this in your derived domain class to control how expressions are
                 // assembled.
-                struct make_expr
-                  : make_custom_expr<expr, Domain>
-                {};
+                using make_expr = make_custom_expr<expr, Domain>;
 
                 // Define this in your derived domain class to /really/ control how expressions are
                 // assembled. But really, you shouldn't be messing with this. Mess with make_expr
                 // instead.
-                struct make_expr_raw
-                  : detail::make_expr_raw_<Domain>
-                {};
+                using make_expr_raw = detail::make_expr_raw_<Domain>;
             };
 
             ////////////////////////////////////////////////////////////////////////////////////////
