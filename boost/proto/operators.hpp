@@ -101,7 +101,7 @@ namespace boost
 
             template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(!is_expr<T>::value)>
             auto as_basic_expr(T &&t) ->
-                basic_expr<
+                exprs::basic_expr<
                     terminal(decltype(typename Domain::store_value()(t)))
                   , Domain
                 >;
@@ -109,7 +109,7 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // expr_maker_if_2_
             template<typename ExprDesc, typename Domain
-              , typename E = basic_expr<ExprDesc, Domain>
+              , typename E = exprs::basic_expr<ExprDesc, Domain>
               , typename G = typename Domain::proto_grammar_type
               , BOOST_PROTO_ENABLE_IF(matches<E, G>::value)
             >

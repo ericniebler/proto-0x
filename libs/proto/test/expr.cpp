@@ -73,7 +73,7 @@ void test_expr()
     BOOST_PROTO_IGNORE_UNUSED(i);
 
     // sanity test for stored_value and stored_child (used by as_expr when building nodes)
-    proto::expr<proto::function(int_&, int_, int_, int_, proto::literal<char const (&)[6]> )> x = p(1, 2, 3, "hello");
+    proto::expr<proto::function(int_&, int_, int_, int_, proto::terminal(char const (&)[6]))> x = p(1, 2, 3, "hello");
     static_assert(std::is_same<decltype(proto::value(proto::child<4>(x))), char const (&)[6]>::value, "not the same!");
 
     // verify that expression nodes are Regular types.
@@ -131,8 +131,21 @@ void test_expr()
     static_assert(noexcept(inei = int_ne_int()), "not noexcept move assign");
 
     // Verify that the constexpr ctors can be called even when the
-    // contained objects have non-constexpr makeors
+    // contained objects have non-constexpr constructors
     string_ str("hellohellohellohellohellohellohellohello!");
+    BOOST_PROTO_IGNORE_UNUSED(str);
+
+    // Check that nested expressions are in the right domain:
+    static_assert(
+        std::is_same<
+            MyExpr<proto::negate(proto::terminal(int))>::proto_children_type::proto_child_type0
+          , MyExpr<proto::terminal(int)>
+        >::value
+      , ""
+    );
+    MyExpr<proto::negate(proto::terminal(int))> outer;
+    MyExpr<proto::terminal(int)> inner = proto::child<0>(outer);
+    BOOST_PROTO_IGNORE_UNUSED(inner);
 }
 
 using namespace boost::unit_test;

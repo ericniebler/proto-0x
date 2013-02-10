@@ -14,10 +14,10 @@ using proto::_;
 
 template<int I>
 struct fN
-  : proto::tags::env_var_tag<fN<I>>
+  : proto::env_var_tag<fN<I>>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(fN);
-    using proto::tags::env_var_tag<fN>::operator=;
+    using proto::env_var_tag<fN>::operator=;
 };
 
 namespace

@@ -40,9 +40,9 @@ namespace mini_lambda
     // An MPL IntegralConstant
     template<class N>
     struct placeholder
-      : proto::tags::env_var_tag<placeholder<N>>
+      : proto::env_var_tag<placeholder<N>>
     {
-        using proto::tags::env_var_tag<placeholder>::operator=;
+        using proto::env_var_tag<placeholder>::operator=;
 
         // So placeholder terminals can be pretty-printed with display_expr
         friend std::ostream & operator << (std::ostream & s, placeholder)

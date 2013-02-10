@@ -36,12 +36,10 @@ void test_pass()
     auto x = - (1_et - 2);
     proto::expr<
         proto::negate(
-            proto::expr<
-                proto::plus(
-                    proto::expr<proto::terminal(unsigned long long)>
-                  , proto::expr<proto::terminal(int)>
-                )
-            >
+            proto::plus(
+                proto::terminal(unsigned long long)
+              , proto::terminal(int)
+            )
         )
     > y = MinusToPlus()(x);
     BOOST_PROTO_IGNORE_UNUSED(y);

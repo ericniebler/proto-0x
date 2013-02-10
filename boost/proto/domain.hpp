@@ -130,7 +130,7 @@ namespace boost
 
                 // Define this in your derived domain class to control how expressions are
                 // assembled.
-                using make_expr = make_custom_expr<expr, Domain>;
+                using make_expr = make_custom_expr<exprs::expr, Domain>;
 
                 // Define this in your derived domain class to /really/ control how expressions are
                 // assembled. But really, you shouldn't be messing with this. Mess with make_expr
@@ -156,7 +156,7 @@ namespace boost
               : domain<basic_default_domain, default_grammar>
             {
                 struct make_expr
-                  : make_custom_expr<basic_expr, basic_default_domain>
+                  : make_custom_expr<exprs::basic_expr, basic_default_domain>
                 {};
             };
 

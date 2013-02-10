@@ -40,8 +40,8 @@ void test_make_expr()
     int i = 42;
     proto::expr<proto::terminal(int)> t1 = proto::make_expr(proto::terminal(), 1);
     proto::expr<proto::terminal(int &)> t2 = proto::make_expr(proto::terminal(), i);
-    proto::expr<proto::unary_plus(proto::expr<proto::terminal(int)>)> p1 = proto::make_expr(proto::unary_plus(), 1);
-    proto::expr<proto::unary_plus(proto::expr<proto::terminal(int &)>)> p2 = proto::make_expr(proto::unary_plus(), i);
+    proto::expr<proto::unary_plus(proto::terminal(int))> p1 = proto::make_expr(proto::unary_plus(), 1);
+    proto::expr<proto::unary_plus(proto::terminal(int &))> p2 = proto::make_expr(proto::unary_plus(), i);
     BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p2)), 42);
     BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p2)), &i);
     BOOST_PROTO_IGNORE_UNUSED(t1, t2, p1, p2);
@@ -61,8 +61,8 @@ void test_make_expr_functional()
     int i = 42;
     proto::expr<proto::terminal(int)> t1 = proto::functional::make_expr()(proto::terminal(), 1);
     proto::expr<proto::terminal(int &)> t2 = proto::functional::make_expr()(proto::terminal(), i);
-    proto::expr<proto::unary_plus(proto::expr<proto::terminal(int)>)> p1 = proto::functional::make_expr()(proto::unary_plus(), 1);
-    proto::expr<proto::unary_plus(proto::expr<proto::terminal(int &)>)> p2 = proto::functional::make_expr()(proto::unary_plus(), i);
+    proto::expr<proto::unary_plus(proto::terminal(int))> p1 = proto::functional::make_expr()(proto::unary_plus(), 1);
+    proto::expr<proto::unary_plus(proto::terminal(int &))> p2 = proto::functional::make_expr()(proto::unary_plus(), i);
     BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p2)), 42);
     BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p2)), &i);
     BOOST_PROTO_IGNORE_UNUSED(t1, t2, p1, p2);
@@ -82,8 +82,8 @@ void test_unpack_expr()
     int i = 42;
     proto::expr<proto::terminal(int)> t1 = proto::unpack_expr(proto::terminal(), fusion::make_tuple(1));
     proto::expr<proto::terminal(int &)> t2 = proto::unpack_expr(proto::terminal(), fusion::make_tuple(boost::ref(i)));
-    proto::expr<proto::unary_plus(proto::expr<proto::terminal(int)>)> p1 = proto::unpack_expr(proto::unary_plus(), fusion::make_tuple(1));
-    proto::expr<proto::unary_plus(proto::expr<proto::terminal(int &)>)> p2 = proto::unpack_expr(proto::unary_plus(), fusion::make_tuple(boost::ref(i)));
+    proto::expr<proto::unary_plus(proto::terminal(int))> p1 = proto::unpack_expr(proto::unary_plus(), fusion::make_tuple(1));
+    proto::expr<proto::unary_plus(proto::terminal(int &))> p2 = proto::unpack_expr(proto::unary_plus(), fusion::make_tuple(boost::ref(i)));
     BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p2)), 42);
     BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p2)), &i);
     BOOST_PROTO_IGNORE_UNUSED(t1, t2, p1, p2);
@@ -103,8 +103,8 @@ void test_unpack_expr_functional()
     int i = 42;
     proto::expr<proto::terminal(int)> t1 = proto::functional::unpack_expr()(proto::terminal(), fusion::make_tuple(1));
     proto::expr<proto::terminal(int &)> t2 = proto::functional::unpack_expr()(proto::terminal(), fusion::make_tuple(boost::ref(i)));
-    proto::expr<proto::unary_plus(proto::expr<proto::terminal(int)>)> p1 = proto::functional::unpack_expr()(proto::unary_plus(), fusion::make_tuple(1));
-    proto::expr<proto::unary_plus(proto::expr<proto::terminal(int &)>)> p2 = proto::functional::unpack_expr()(proto::unary_plus(), fusion::make_tuple(boost::ref(i)));
+    proto::expr<proto::unary_plus(proto::terminal(int))> p1 = proto::functional::unpack_expr()(proto::unary_plus(), fusion::make_tuple(1));
+    proto::expr<proto::unary_plus(proto::terminal(int &))> p2 = proto::functional::unpack_expr()(proto::unary_plus(), fusion::make_tuple(boost::ref(i)));
     BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p2)), 42);
     BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p2)), &i);
     BOOST_PROTO_IGNORE_UNUSED(t1, t2, p1, p2);
@@ -186,29 +186,29 @@ void test_make_expr_transform()
 {
     proto::expr<
         proto::plus(
-            proto::expr<proto::terminal(int)>
-          , proto::expr<proto::terminal(int)>
+            proto::terminal(int)
+          , proto::terminal(int)
         )
     > t1 = ByVal()(proto::as_expr(1) + 1);
 
     proto::expr<
         proto::plus(
-            proto::expr<proto::terminal(int &)> // BUGBUG why isn't this int const &
-          , proto::expr<proto::terminal(int &)>
+            proto::terminal(int &)  // BUGBUG why isn't this int const &
+          , proto::terminal(int &)
         )
     > t2 = ByRef()(proto::as_expr(1) + 1);
 
     proto::expr<
         proto::minus(
-            proto::expr<proto::terminal(int)>
-          , proto::expr<proto::terminal(int)>
+            proto::terminal(int)
+          , proto::terminal(int)
         )
     > t3 = Minus()(proto::as_expr(1) + 1);
 
     proto::expr<
         proto::plus(
-            proto::expr<proto::multiplies(proto::expr<proto::terminal(int)>, proto::expr<proto::terminal(int)>)>    
-          , proto::expr<proto::multiplies(proto::expr<proto::terminal(int)>, proto::expr<proto::terminal(int)>)>    
+            proto::multiplies(proto::terminal(int), proto::terminal(int))
+          , proto::multiplies(proto::terminal(int), proto::terminal(int))
         )
     > t4 = Square()(proto::as_expr(1) + 1);
 

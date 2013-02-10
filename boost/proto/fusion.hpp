@@ -628,13 +628,13 @@ namespace boost
     namespace mpl
     {
         template<typename ExprDesc, typename Domain>
-        struct sequence_tag<proto::expr<ExprDesc, Domain>>
+        struct sequence_tag<proto::exprs::expr<ExprDesc, Domain>>
         {
             using type = fusion::fusion_sequence_tag;
         };
 
         template<typename ExprDesc, typename Domain>
-        struct sequence_tag<proto::basic_expr<ExprDesc, Domain>>
+        struct sequence_tag<proto::exprs::basic_expr<ExprDesc, Domain>>
         {
             using type = fusion::fusion_sequence_tag;
         };

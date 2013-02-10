@@ -41,6 +41,7 @@ void done();
 //*
 #include <cstdio>
 #include <utility>
+#include <typeinfo>
 #include <type_traits>
 #include <boost/proto/proto.hpp>
 #include <boost/proto/debug.hpp>
@@ -50,10 +51,10 @@ using proto::_;
 
 template<typename T>
 struct placeholder
-  : proto::tags::env_var_tag<placeholder<T>>
+  : proto::env_var_tag<placeholder<T>>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(placeholder);
-    using proto::tags::env_var_tag<placeholder<T>>::operator=;
+    using proto::env_var_tag<placeholder<T>>::operator=;
 
     // So placeholder terminals can be pretty-printed with display_expr
     friend std::ostream & operator << (std::ostream & s, placeholder<T>)
@@ -96,9 +97,8 @@ struct lambda_expr;
 struct lambda_domain
   : proto::domain<lambda_domain>
 {
-    struct make_expr
-      : proto::make_custom_expr<lambda_expr>
-    {};
+    using make_expr = proto::make_custom_expr<lambda_expr>;
+    using store_child = proto::utility::by_ref;
 };
 
 template<typename ExprDesc>
@@ -143,14 +143,17 @@ int main()
     // Create a lambda
     auto fun = _1 + 42 * _2;
 
-    // pretty-print the expression
-    proto::display_expr(fun);
+    static_assert( std::is_lvalue_reference<decltype(proto::left(_1 + 42 * _2))>::value, "");
+    static_assert( std::is_lvalue_reference<decltype(proto::right(_1 + 42 * _2))>::value, "");
 
-    // Call the lambda
-    int i = fun(8, 2);
+    //// pretty-print the expression
+    //proto::display_expr(fun);
 
-    // print the result
-    std::printf("The lambda '_1 + 42 * _2' yields '%d' when called with 8 and 2.\n", i);
+    //// Call the lambda
+    //int i = fun(8, 2);
+
+    //// print the result
+    //std::printf("The lambda '_1 + 42 * _2' yields '%d' when called with 8 and 2.\n", i);
 
     void done();
     done();

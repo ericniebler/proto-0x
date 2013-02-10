@@ -46,7 +46,7 @@ namespace boost
             //  a functioning proto_equal_to, and also to allow a==b and a!=b to have implicit
             //  conversions to bool only where it makes sense to allow it.
             ////////////////////////////////////////////////////////////////////////////////////////
-            template<typename Expr, typename EnableIf = void>
+            template<typename ExprDesc, typename EnableIf = void>
             struct expr_boolean_convertible
             {};
 
@@ -55,7 +55,7 @@ namespace boost
             // of the EqualityComparible concept.
             template<typename T, typename U, typename Domain>
             struct expr_boolean_convertible<
-                basic_expr<equal_to(T, U), Domain>
+                exprs::basic_expr<equal_to(T, U), Domain>
               , typename std::enable_if<are_equality_comparible<T, U>::value>::type
             >
             {
@@ -66,14 +66,15 @@ namespace boost
             public:
                 inline operator unspecified_bool_type() const
                 BOOST_PROTO_RETURN(
-                    proto::child<0>(static_cast<basic_expr<equal_to(T, U), Domain> const &>(*this)).proto_equal_to(
-                    proto::child<1>(static_cast<basic_expr<equal_to(T, U), Domain> const &>(*this))) ? &proto_smart_bool::member : 0
+                    proto::child<0>(static_cast<exprs::basic_expr<equal_to(T, U), Domain> const &>(*this)).proto_equal_to(
+                    proto::child<1>(static_cast<exprs::basic_expr<equal_to(T, U), Domain> const &>(*this)))
+                    ? &proto_smart_bool::member : 0
                 )
             };
 
             template<typename T, typename U, typename Domain>
             struct expr_boolean_convertible<
-                basic_expr<not_equal_to(T, U), Domain>
+                exprs::basic_expr<not_equal_to(T, U), Domain>
               , typename std::enable_if<are_equality_comparible<T, U>::value>::type
             >
             {
@@ -84,14 +85,15 @@ namespace boost
             public:
                 inline operator unspecified_bool_type() const
                 BOOST_PROTO_RETURN(
-                    proto::child<0>(static_cast<basic_expr<not_equal_to(T, U), Domain> const &>(*this)).proto_equal_to(
-                    proto::child<1>(static_cast<basic_expr<not_equal_to(T, U), Domain> const &>(*this))) ? 0 : &proto_smart_bool::member
+                    proto::child<0>(static_cast<exprs::basic_expr<not_equal_to(T, U), Domain> const &>(*this)).proto_equal_to(
+                    proto::child<1>(static_cast<exprs::basic_expr<not_equal_to(T, U), Domain> const &>(*this)))
+                    ? 0 : &proto_smart_bool::member
                 )
             };
 
             template<typename T, typename Domain>
             struct expr_boolean_convertible<
-                basic_expr<logical_not(T), Domain>
+                exprs::basic_expr<logical_not(T), Domain>
               , typename std::enable_if<std::is_convertible<T, bool>::value>::type
             >
             {
@@ -102,13 +104,14 @@ namespace boost
             public:
                 inline operator unspecified_bool_type() const
                 BOOST_PROTO_RETURN(
-                    proto::child<0>(static_cast<basic_expr<logical_not(T), Domain> const &>(*this)) ? 0 : &proto_smart_bool::member
+                    proto::child<0>(static_cast<exprs::basic_expr<logical_not(T), Domain> const &>(*this))
+                    ? 0 : &proto_smart_bool::member
                 )
             };
 
             template<typename T, typename U, typename Domain>
             struct expr_boolean_convertible<
-                basic_expr<logical_and(T, U), Domain>
+                exprs::basic_expr<logical_and(T, U), Domain>
               , typename std::enable_if<
                     std::is_convertible<T, bool>::value && std::is_convertible<U, bool>::value
                 >::type
@@ -121,15 +124,15 @@ namespace boost
             public:
                 inline operator unspecified_bool_type() const
                 BOOST_PROTO_RETURN(
-                    static_cast<bool>(proto::child<0>(static_cast<basic_expr<logical_and(T, U), Domain> const &>(*this))) &&
-                    static_cast<bool>(proto::child<1>(static_cast<basic_expr<logical_and(T, U), Domain> const &>(*this)))
+                    static_cast<bool>(proto::child<0>(static_cast<exprs::basic_expr<logical_and(T, U), Domain> const &>(*this))) &&
+                    static_cast<bool>(proto::child<1>(static_cast<exprs::basic_expr<logical_and(T, U), Domain> const &>(*this)))
                     ? &proto_smart_bool::member : 0
                 )
             };
 
             template<typename T, typename U, typename Domain>
             struct expr_boolean_convertible<
-                basic_expr<logical_or(T, U), Domain>
+                exprs::basic_expr<logical_or(T, U), Domain>
               , typename std::enable_if<
                     std::is_convertible<T, bool>::value && std::is_convertible<U, bool>::value
                 >::type
@@ -142,16 +145,39 @@ namespace boost
             public:
                 inline operator unspecified_bool_type() const
                 BOOST_PROTO_RETURN(
-                    static_cast<bool>(proto::child<0>(static_cast<basic_expr<logical_or(T, U), Domain> const &>(*this))) ||
-                    static_cast<bool>(proto::child<1>(static_cast<basic_expr<logical_or(T, U), Domain> const &>(*this)))
+                    static_cast<bool>(proto::child<0>(static_cast<exprs::basic_expr<logical_or(T, U), Domain> const &>(*this))) ||
+                    static_cast<bool>(proto::child<1>(static_cast<exprs::basic_expr<logical_or(T, U), Domain> const &>(*this)))
                     ? &proto_smart_bool::member : 0
                 )
+            };
+
+            template<typename Expr, typename Domain>
+            struct as_child_
+            {
+                using type = Expr;
+            };
+
+            template<typename Tag, typename ...Children, typename Domain>
+            struct as_child_<Tag(*)(Children...), Domain>
+              : domains::result_of::make_expr<Domain, Tag, typename as_child_<Children, Domain>::type...>
+            {};
+
+            template<typename Tag, typename ...Children, typename Domain>
+            struct as_basic_expr_<Tag(Children...), Domain>
+            {
+                using type = exprs::basic_expr<Tag(typename as_child_<Children, Domain>::type...), Domain>;
+            };
+
+            template<typename Tag, typename ...Children, typename Domain>
+            struct as_expr_<Tag(Children...), Domain>
+            {
+                using type = exprs::expr<Tag(typename as_child_<Children, Domain>::type...), Domain>;
             };
         }
 
         ////////////////////////////////////////////////////////////////////////////////////
-        // makeors
-        // This will no longer be needed once clang implements inheriting makeors
+        // constructors
+        // This will no longer be needed once clang implements inheriting constructors
         #define BOOST_PROTO_INHERIT_EXPR_CTORS(EXPR, BASE)                                          \
             using typename BASE::proto_tag_type;                                                    \
             using typename BASE::proto_children_type;                                               \
@@ -383,10 +409,16 @@ namespace boost
             template<typename Tag, typename ...Children, typename Domain>
             struct basic_expr<Tag(Children...), Domain>
               : expr_base
-              , detail::expr_boolean_convertible<basic_expr<Tag(Children...), Domain>>
+              , detail::expr_boolean_convertible<
+                    basic_expr<Tag(Children...), Domain>
+                >
             {
             private:
-                using tag_and_children_type = detail::compressed_pair<Tag, exprs::children<Children...>>;
+                using tag_and_children_type =
+                    detail::compressed_pair<
+                        Tag
+                      , exprs::children<Children...>
+                    >;
                 tag_and_children_type tag_and_children_;
 
             public:
@@ -417,7 +449,7 @@ namespace boost
                 using fusion_tag                    = proto_expr<Tag, proto_domain_type>; ///< For Fusion
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // makeors
+                // constructors
                 constexpr basic_expr(Tag tag, proto_children_type args)
                     noexcept(
                         noexcept(
@@ -576,7 +608,7 @@ namespace boost
                 BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr);
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // makeors
+                // constructors
                 //using basic_expr<ExprDesc, Domain>::basic_expr;
                 using proto_base_expr_type = basic_expr<ExprDesc, Domain>;
                 BOOST_PROTO_INHERIT_EXPR_CTORS(expr, proto_base_expr_type);

@@ -44,7 +44,7 @@
 #define BOOST_PROTO_ENABLE_IF_VALID_EXPR(...)                                                       \
     decltype(static_cast<void>(__VA_ARGS__)) *& = boost::proto::detail::enabler
 
-// For adding defaulted default, copy and move makeors, and move/copy assign.
+// For adding defaulted default, copy and move constructors, and move/copy assign.
 #define BOOST_PROTO_REGULAR_TRIVIAL_CLASS(CLASS)                                                    \
     CLASS() = default; /*required for the type to be trivial!*/                                     \
     CLASS(CLASS const &) = default; /* memberwise copy */                                           \
@@ -119,6 +119,12 @@ namespace boost
 
             template<typename T>
             using as_action_ = typename as_action_impl_<T>::type;
+
+            template<typename Expr, typename Domain>
+            struct as_basic_expr_;
+
+            template<typename Expr, typename Domain>
+            struct as_expr_;
 
             struct def_base;
         }
@@ -367,15 +373,17 @@ namespace boost
         using exprs::expr_subscript;
         using exprs::expr_function;
         using exprs::expr_base;
-        using exprs::basic_expr;
-        using exprs::expr;
+
+        template<typename ExprDesc, typename Domain>
+        using basic_expr = typename detail::as_basic_expr_<ExprDesc, Domain>::type;
+
+        template<typename ExprDesc, typename Domain = default_domain>
+        using expr = typename detail::as_expr_<ExprDesc, Domain>::type;
 
         template<typename This, typename Value, typename Domain = default_domain>
         using virtual_member =
             exprs::virtual_member_<
-                // TODO:
-                // member(exprs::virtual_<This>, terminal(Value))
-                member(exprs::virtual_<This>, expr<terminal(Value)>)
+                member(exprs::virtual_<This>, exprs::expr<terminal(Value)>)
               , Domain
             >;
 
