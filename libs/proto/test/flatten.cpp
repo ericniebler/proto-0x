@@ -132,7 +132,7 @@ struct MyDomain
 template<typename ExprDesc>
 struct My
   : proto::basic_expr<ExprDesc, MyDomain>
-  , proto::expr_function<My<ExprDesc>, MyDomain>
+  , proto::expr_function<My<ExprDesc>>
 {
     using proto_basic_expr_type = proto::basic_expr<ExprDesc, MyDomain>;
     BOOST_PROTO_INHERIT_EXPR_CTORS(My, proto_basic_expr_type);

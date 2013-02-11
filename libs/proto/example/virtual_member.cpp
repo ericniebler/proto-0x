@@ -153,8 +153,8 @@ namespace mini_lambda
     template<class ExprDesc>
     struct expression
       : proto::basic_expr<ExprDesc, domain>
-      , proto::expr_assign<expression<ExprDesc>, domain>
-      , proto::expr_subscript<expression<ExprDesc>, domain>
+      , proto::expr_assign<expression<ExprDesc>>
+      , proto::expr_subscript<expression<ExprDesc>>
     {
     private:
         template<std::size_t ...I, typename ...A>
@@ -167,7 +167,7 @@ namespace mini_lambda
         using proto_basic_expr_type = proto::basic_expr<ExprDesc, domain>;
         BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expression);
         BOOST_PROTO_INHERIT_EXPR_CTORS(expression, proto_basic_expr_type);
-        using proto::expr_assign<expression, domain>::operator=;
+        using proto::expr_assign<expression>::operator=;
 
         // Use BOOST_PROTO_EXTENDS_MEMBERS() to define "virtual"
         // data members that all expressions in the mini-lambda

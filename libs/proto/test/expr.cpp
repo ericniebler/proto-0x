@@ -36,9 +36,9 @@ struct MyDomain
 template<typename ExprDesc>
 struct MyExpr
   : proto::basic_expr<ExprDesc, MyDomain>
-  , proto::expr_assign<MyExpr<ExprDesc>, MyDomain>
-  , proto::expr_subscript<MyExpr<ExprDesc>, MyDomain>
-  , proto::expr_function<MyExpr<ExprDesc>, MyDomain>
+  , proto::expr_assign<MyExpr<ExprDesc>>
+  , proto::expr_subscript<MyExpr<ExprDesc>>
+  , proto::expr_function<MyExpr<ExprDesc>>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(MyExpr);
 
@@ -46,7 +46,7 @@ struct MyExpr
     using proto_basic_expr_type = proto::basic_expr<ExprDesc, MyDomain>;
     BOOST_PROTO_INHERIT_EXPR_CTORS(MyExpr, proto_basic_expr_type);
 
-    using proto::expr_assign<MyExpr, MyDomain>::operator=;
+    using proto::expr_assign<MyExpr>::operator=;
 };
 
 using My = proto::custom<MyExpr>;

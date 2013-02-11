@@ -104,12 +104,12 @@ struct lambda_domain
 template<typename ExprDesc>
 struct lambda_expr
   : proto::basic_expr<ExprDesc, lambda_domain>
-  , proto::expr_assign<lambda_expr<ExprDesc>, lambda_domain>
-  , proto::expr_subscript<lambda_expr<ExprDesc>, lambda_domain>
+  , proto::expr_assign<lambda_expr<ExprDesc>>
+  , proto::expr_subscript<lambda_expr<ExprDesc>>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(lambda_expr);
 
-    using proto::expr_assign<lambda_expr, lambda_domain>::operator=;
+    using proto::expr_assign<lambda_expr>::operator=;
     //using proto::basic_expr<ExprDesc, lambda_domain>::basic_expr;
     using proto_basic_expr_type = proto::basic_expr<ExprDesc, lambda_domain>;
     BOOST_PROTO_INHERIT_EXPR_CTORS(lambda_expr, proto_basic_expr_type);

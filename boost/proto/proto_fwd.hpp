@@ -345,13 +345,13 @@ namespace boost
             template<std::size_t I, typename Children>
             struct children_element;
 
-            template<typename Expr, typename Domain>
+            template<typename Expr>
             struct expr_assign;
 
-            template<typename Expr, typename Domain>
+            template<typename Expr>
             struct expr_subscript;
 
-            template<typename Expr, typename Domain>
+            template<typename Expr>
             struct expr_function;
 
             struct expr_base;
