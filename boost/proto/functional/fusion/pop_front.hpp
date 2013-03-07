@@ -16,7 +16,7 @@
 #include <boost/fusion/include/pop_front.hpp>
 #include <boost/proto/proto_fwd.hpp>
 
-namespace boost { namespace proto { namespace functional
+namespace boost { namespace proto { namespace functional { namespace fusion
 {
     /// \brief A PolymorphicFunctionObject type that invokes the
     /// \c fusion::pop_front() action on its argument.
@@ -33,12 +33,14 @@ namespace boost { namespace proto { namespace functional
         template<typename Seq>
         auto operator ()(Seq &&seq) const
         BOOST_PROTO_AUTO_RETURN(
-            typename fusion::result_of::pop_front<typename std::remove_reference<Seq>::type>::type(
-                fusion::next(fusion::begin(static_cast<Seq &&>(seq)))
-              , fusion::end(static_cast<Seq &&>(seq))
+            typename boost::fusion::result_of::pop_front<
+                typename ::std::remove_reference<Seq>::type
+            >::type(
+                boost::fusion::next(boost::fusion::begin(static_cast<Seq &&>(seq)))
+              , boost::fusion::end(static_cast<Seq &&>(seq))
             )
         )
     };
-}}}
+}}}}
 
 #endif

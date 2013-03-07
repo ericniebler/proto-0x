@@ -12,7 +12,7 @@
 #include <boost/fusion/include/push_front.hpp>
 #include <boost/proto/proto_fwd.hpp>
 
-namespace boost { namespace proto { namespace functional
+namespace boost { namespace proto { namespace functional { namespace fusion
 {
     /// \brief A PolymorphicFunctionObject type that invokes the
     /// \c fusion::push_front() action on its argument.
@@ -24,9 +24,9 @@ namespace boost { namespace proto { namespace functional
         template<typename Seq, typename T>
         auto operator ()(Seq &&seq, T &&t) const
         BOOST_PROTO_AUTO_RETURN(
-            fusion::push_front(static_cast<Seq &&>(seq), static_cast<T &&>(t))
+            boost::fusion::push_front(static_cast<Seq &&>(seq), static_cast<T &&>(t))
         )
     };
-}}}
+}}}}
 
 #endif
