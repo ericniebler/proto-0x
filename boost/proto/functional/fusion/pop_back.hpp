@@ -9,13 +9,14 @@
 #ifndef BOOST_PROTO_FUNCTIONAL_FUSION_POP_BACK_HPP_INCLUDED
 #define BOOST_PROTO_FUNCTIONAL_FUSION_POP_BACK_HPP_INCLUDED
 
+#include <type_traits>
 #include <boost/fusion/include/begin.hpp>
 #include <boost/fusion/include/end.hpp>
 #include <boost/fusion/include/prior.hpp>
 #include <boost/fusion/include/pop_back.hpp>
 #include <boost/proto/proto_fwd.hpp>
 
-namespace boost { namespace proto { namespace functional
+namespace boost { namespace proto { namespace functional { namespace fusion
 {
     /// \brief A PolymorphicFunctionObject type that invokes the
     /// \c fusion::pop_back() action on its argument.
@@ -27,12 +28,14 @@ namespace boost { namespace proto { namespace functional
         template<typename Seq>
         auto operator ()(Seq &&seq) const
         BOOST_PROTO_AUTO_RETURN(
-            typename fusion::result_of::pop_back<typename std::remove_reference<Seq>::type>::type(
-                fusion::begin(static_cast<Seq &&>(seq))
-              , fusion::prior(fusion::end(static_cast<Seq &&>(seq)))
+            typename boost::fusion::result_of::pop_back<
+                typename ::std::remove_reference<Seq>::type
+            >::type(
+                boost::fusion::begin(static_cast<Seq &&>(seq))
+              , boost::fusion::prior(boost::fusion::end(static_cast<Seq &&>(seq)))
             )
         )
     };
-}}}
+}}}}
 
 #endif

@@ -100,7 +100,7 @@ struct accept_pairs
   : proto::def<
         do_accept_pairs(
             proto::_data
-          , proto::functional::make_pair(
+          , proto::functional::std::make_pair(
                 proto::_value(proto::pack(proto::_child<0>))
               , proto::_value(proto::pack(proto::_child<1>))
             )...
@@ -113,7 +113,7 @@ struct accept_pairs_2
   : proto::def<
         do_accept_pairs(
             proto::_data
-          , proto::functional::make_pair(
+          , proto::functional::std::make_pair(
                 proto::_value(proto::pack(front(proto::pack(_)...)))
               , proto::_value(proto::pack(proto::_child<1>))
             )...

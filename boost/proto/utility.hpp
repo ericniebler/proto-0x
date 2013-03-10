@@ -534,7 +534,7 @@ namespace boost
             struct get_nth_type<utility::list<Ignored...>>
             {
                 template<typename T, typename ...Us>
-                static constexpr T eval(any_pod<Ignored>..., T *, Us *...) noexcept;
+                static T eval(any_pod<Ignored>..., T *, Us *...);
             };
 
             template<typename Ignored>
@@ -544,7 +544,7 @@ namespace boost
             struct get_nth_value<utility::list<Ignored...>>
             {
                 template<typename T, typename ...Us>
-                static constexpr auto eval(detail::any<Ignored>..., T && t, Us &&...) noexcept
+                static constexpr auto eval(any<Ignored>..., T && t, Us &&...) noexcept
                     -> utility::rvalue_reference_wrapper<T>
                 {
                     return static_cast<T &&>(t);

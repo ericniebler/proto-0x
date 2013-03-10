@@ -12,7 +12,7 @@
 #include <utility>
 #include <boost/proto/proto_fwd.hpp>
 
-namespace boost { namespace proto { namespace functional
+namespace boost { namespace proto { namespace functional { namespace std
 {
     /// \brief A PolymorphicFunctionObject type that invokes the
     /// \c std::make_pair() action on its arguments.
@@ -24,7 +24,7 @@ namespace boost { namespace proto { namespace functional
         template<typename First, typename Second>
         auto operator()(First &&first, Second &&second) const
         BOOST_PROTO_AUTO_RETURN(
-            std::make_pair(std::forward<First>(first), std::forward<Second>(second))
+            ::std::make_pair(::std::forward<First>(first), ::std::forward<Second>(second))
         )
     };
 
@@ -56,6 +56,6 @@ namespace boost { namespace proto { namespace functional
         )
     };
 
-}}}
+}}}}
 
 #endif

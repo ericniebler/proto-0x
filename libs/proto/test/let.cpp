@@ -30,7 +30,7 @@ struct LetCallOnce
   : proto::def<
         proto::let(
             _a(proto::make(once()))
-          , proto::functional::make_pair(_a, _a)
+          , proto::functional::std::make_pair(_a, _a)
         )
     >
 {};
@@ -94,11 +94,11 @@ struct LetScope
   : proto::def<
         proto::let(
             _a(proto::_value)
-          , proto::functional::make_pair(
+          , proto::functional::std::make_pair(
                 _a
               , proto::let(
                     _a(proto::_state)
-                  , proto::functional::make_pair(_a, proto::_data)
+                  , proto::functional::std::make_pair(_a, proto::_data)
                 )
             )
         )
@@ -122,11 +122,11 @@ struct LetScope2
   : proto::def<
         proto::let(
             _a(proto::_value)
-          , proto::functional::make_pair(
+          , proto::functional::std::make_pair(
                 _a
               , proto::let(
                     _b(proto::_state)
-                  , proto::functional::make_pair(_a, _b)
+                  , proto::functional::std::make_pair(_a, _b)
                 )
             )
         )

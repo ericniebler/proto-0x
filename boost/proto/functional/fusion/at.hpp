@@ -12,7 +12,7 @@
 #include <boost/fusion/include/at.hpp>
 #include <boost/proto/proto_fwd.hpp>
 
-namespace boost { namespace proto { namespace functional
+namespace boost { namespace proto { namespace functional { namespace fusion
 {
     /// \brief A PolymorphicFunctionObject type that invokes the
     /// \c fusion::at() accessor on its argument.
@@ -24,9 +24,9 @@ namespace boost { namespace proto { namespace functional
         template<typename Seq, typename N>
         auto operator ()(Seq &&seq, N const &) const
         BOOST_PROTO_AUTO_RETURN(
-            fusion::at<N>(static_cast<Seq &&>(seq))
+            boost::fusion::at<N>(static_cast<Seq &&>(seq))
         )
     };
-}}}
+}}}}
 
 #endif

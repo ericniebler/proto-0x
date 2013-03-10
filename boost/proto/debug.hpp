@@ -165,7 +165,7 @@ namespace boost
                 /// \param depth The starting indentation depth for this node.
                 ///              Children nodes will be displayed at a starting
                 ///              depth of <tt>depth+4</tt>.
-                explicit display_expr(std::ostream &sout = std::cout, int depth = 0)
+                explicit display_expr(::std::ostream &sout = ::std::cout, int depth = 0)
                   : depth_(depth)
                   , sout_(sout)
                 {}
@@ -180,7 +180,7 @@ namespace boost
 
             private:
                 int depth_;
-                std::reference_wrapper<std::ostream> sout_;
+                ::std::reference_wrapper< ::std::ostream> sout_;
             };
         }
 

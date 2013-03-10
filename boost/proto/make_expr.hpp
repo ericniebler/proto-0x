@@ -76,7 +76,7 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // detail::normalize_expr
             template<typename This, typename Value, typename Domain>
-            inline auto constexpr normalize_expr(virtual_member<This, Value, Domain> && e)
+            inline constexpr auto normalize_expr(virtual_member<This, Value, Domain> && e)
             BOOST_PROTO_AUTO_RETURN(
                 // Must build a real binary expression from virtual members before the left hand
                 // side (actually the member's enclosing object) dies and we lose it forever.

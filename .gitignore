@@ -6,3 +6,8 @@
 *.sdf
 *.opensdf
 *.exe
+._*
+.\#*
+\#*
+.dir-locals.el
+bin/
