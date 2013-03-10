@@ -37,7 +37,7 @@ namespace boost
                     auto operator()(E && e, Rest &&...) const
                     BOOST_PROTO_AUTO_RETURN(
                         typename decltype(e.proto_domain())::make_expr()(
-                            static_cast<E &&>(e).proto_tag()
+                            proto::tag_of(static_cast<E &&>(e))
                           , utility::by_val()(proto::value(static_cast<E &&>(e)))
                         )
                     )

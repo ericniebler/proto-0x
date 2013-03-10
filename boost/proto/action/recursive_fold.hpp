@@ -97,7 +97,7 @@ namespace boost
                         fold(
                             Sequence
                           , State0
-                          , detail::_recursive_fold_<typename tag_of<E>::type, Fun>
+                          , detail::_recursive_fold_<typename result_of::tag_of<E>::type, Fun>
                         )
                     >()(
                         static_cast<E &&>(e)
@@ -149,7 +149,7 @@ namespace boost
                         reverse_fold(
                             Sequence
                           , State0
-                          , detail::_reverse_recursive_fold_<typename tag_of<E>::type, Fun>
+                          , detail::_reverse_recursive_fold_<typename result_of::tag_of<E>::type, Fun>
                         )
                     >()(
                         static_cast<E &&>(e)

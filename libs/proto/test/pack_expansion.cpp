@@ -37,7 +37,7 @@ struct eval
             )
           , proto::case_(_,
                 // could use _tag_of here, but make is a nice test case.
-                do_eval(proto::make(proto::tag_of<_>()), eval(proto::pack(_))...)
+                do_eval(proto::make(proto::result_of::tag_of<_>()), eval(proto::pack(_))...)
             )
         )
     >

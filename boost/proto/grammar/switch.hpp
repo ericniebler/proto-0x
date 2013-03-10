@@ -31,7 +31,7 @@ namespace boost
                 struct apply
                   : matches<
                         Expr
-                      , typename Cases::template case_<typename tag_of<Expr>::type>
+                      , typename Cases::template case_<typename result_of::tag_of<Expr>::type>
                     >
                 {};
             };

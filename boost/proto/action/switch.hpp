@@ -66,7 +66,7 @@ namespace boost
                 BOOST_PROTO_AUTO_RETURN(
                     as_action_<
                         typename Cases::template case_<
-                            typename proto::tag_of<Expr>::type
+                            typename proto::result_of::tag_of<Expr>::type
                         >
                     >()(static_cast<Expr &&>(e), static_cast<Rest &&>(rest)...)
                 )

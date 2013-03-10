@@ -50,18 +50,18 @@
     CLASS(CLASS const &) = default; /* memberwise copy */                                           \
     CLASS(CLASS &&) = default; /* member-wise move */                                               \
     /* These would otherwise be deleted because we */                                               \
-    /* declared a move makeor! */                                                              \
+    /* declared a move makeor! */                                                                   \
     CLASS &operator=(CLASS const &) = default; /* memberwise copy assign */                         \
     CLASS &operator=(CLASS &&) = default /* memberwise move assign */                               \
     /**/
 
 #define BOOST_PROTO_IGNORE_UNUSED(...)                                                              \
-    static const struct BOOST_PP_CAT(boost_proto_ignore_unused_, __LINE__)                          \
+    struct BOOST_PP_CAT(boost_proto_ignore_unused_, __LINE__)                                       \
     {                                                                                               \
-        explicit BOOST_PP_CAT(boost_proto_ignore_unused_, __LINE__)(int)                            \
-        {}                                                                                          \
-    } BOOST_PP_CAT(boost_proto_ignore_unused_var_, __LINE__){                                       \
-        (boost::proto::utility::ignore(__VA_ARGS__), 0)                                             \
+        BOOST_PP_CAT(boost_proto_ignore_unused_, __LINE__)()                                        \
+        {                                                                                           \
+            boost::proto::utility::ignore(__VA_ARGS__);                                             \
+        }                                                                                           \
     }                                                                                               \
     /**/
 
@@ -249,8 +249,11 @@ namespace boost
         using then = block;
         using else_ = block;
 
-        template<typename Expr>
-        struct tag_of;
+        namespace result_of
+        {
+            template<typename Expr>
+            struct tag_of;
+        }
 
         template<typename T>
         struct is_tag;
@@ -367,12 +370,25 @@ namespace boost
 
             template<typename Expr>
             struct virtual_;
+
+            template<typename ExprDesc, typename Domain>
+            constexpr auto tag_of(basic_expr<ExprDesc, Domain> &that) noexcept
+                -> typename basic_expr<ExprDesc, Domain>::proto_tag_type &;
+
+            template<typename ExprDesc, typename Domain>
+            constexpr auto tag_of(basic_expr<ExprDesc, Domain> const &that) noexcept
+                -> typename basic_expr<ExprDesc, Domain>::proto_tag_type const &;
+
+            template<typename ExprDesc, typename Domain>
+            constexpr auto tag_of(basic_expr<ExprDesc, Domain> &&that) noexcept
+                -> typename basic_expr<ExprDesc, Domain>::proto_tag_type &&;
         }
 
         using exprs::expr_assign;
         using exprs::expr_subscript;
         using exprs::expr_function;
         using exprs::expr_base;
+        using exprs::tag_of;
 
         template<typename ExprDesc, typename Domain>
         using basic_expr = typename detail::as_basic_expr_<ExprDesc, Domain>::type;

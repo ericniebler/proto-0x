@@ -5,40 +5,6 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <iostream>
-void done();
-
-//#include <boost/assert.hpp>
-//#include <boost/proto/proto.hpp>
-//namespace proto = boost::proto;
-//
-//template<typename T> //, int I = 0>
-//struct some_action
-//  : proto::basic_action<some_action<T>>
-//{
-//    template<typename ...Ts>
-//    int operator()(Ts &&...) const noexcept
-//    {
-//        return 42;
-//    }
-//};
-//
-//template<typename T>
-//struct foo
-//{};
-//
-//int main()
-//{
-//    using namespace proto::literals;
-//    //foo<int> f = proto::def<proto::make(foo<some_action<int>>())>()(2_et);
-//    //foo<int> f = proto::def<proto::make(foo<proto::apply(proto::make(some_action<int>()))>())>()(2_et);
-//    int i = proto::value(2_et);
-//    BOOST_ASSERT(i == 2);
-//    done();
-//}
-
-
-//*
 #include <cstdio>
 #include <utility>
 #include <typeinfo>
@@ -98,7 +64,7 @@ struct lambda_domain
   : proto::domain<lambda_domain>
 {
     using make_expr = proto::make_custom_expr<lambda_expr>;
-    using store_child = proto::utility::by_ref;
+    //using store_child = proto::utility::by_ref;
 };
 
 template<typename ExprDesc>
@@ -143,17 +109,16 @@ int main()
     // Create a lambda
     auto fun = _1 + 42 * _2;
 
-    static_assert( std::is_lvalue_reference<decltype(proto::left(_1 + 42 * _2))>::value, "");
-    static_assert( std::is_lvalue_reference<decltype(proto::right(_1 + 42 * _2))>::value, "");
+    foo::X x;
 
-    //// pretty-print the expression
-    //proto::display_expr(fun);
+    // pretty-print the expression
+    proto::display_expr(fun);
 
-    //// Call the lambda
-    //int i = fun(8, 2);
+    // Call the lambda
+    int i = fun(8, 2);
 
-    //// print the result
-    //std::printf("The lambda '_1 + 42 * _2' yields '%d' when called with 8 and 2.\n", i);
+    // print the result
+    std::printf("The lambda '_1 + 42 * _2' yields '%d' when called with 8 and 2.\n", i);
 
     void done();
     done();

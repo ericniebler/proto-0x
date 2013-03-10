@@ -143,12 +143,36 @@ namespace boost
             BOOST_PROTO_AUTO_RETURN(
                 (static_cast<basic_expr<ExprDesc, Domain> &&>(that).proto_args().proto_child0)  // extra parens are significant!
             )
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // tag_of
+            template<typename ExprDesc, typename Domain>
+            inline constexpr auto tag_of(basic_expr<ExprDesc, Domain> &that) noexcept
+                -> typename basic_expr<ExprDesc, Domain>::proto_tag_type &
+            {
+                return that.proto_tag();
+            }
+
+            template<typename ExprDesc, typename Domain>
+            inline constexpr auto tag_of(basic_expr<ExprDesc, Domain> const &that) noexcept
+                -> typename basic_expr<ExprDesc, Domain>::proto_tag_type const &
+            {
+                return that.proto_tag();
+            }
+
+            template<typename ExprDesc, typename Domain>
+            inline constexpr auto tag_of(basic_expr<ExprDesc, Domain> &&that) noexcept
+                -> typename basic_expr<ExprDesc, Domain>::proto_tag_type &&
+            {
+                return static_cast<basic_expr<ExprDesc, Domain> &&>(that).proto_tag();
+            }
         }
 
         using exprs::child;
         using exprs::left;
         using exprs::right;
         using exprs::value;
+        using exprs::tag_of;
     }
 }
 

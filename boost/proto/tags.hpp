@@ -646,25 +646,28 @@ namespace boost
         struct match
         {};
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // tag_of
-        template<typename T>
-        struct tag_of
+        namespace result_of
         {
-            using type = typename T::proto_tag_type;
-        };
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            // tag_of
+            template<typename T>
+            struct tag_of
+            {
+                using type = typename T::proto_tag_type;
+            };
 
-        template<typename T>
-        struct tag_of<T &>
-        {
-            using type = typename T::proto_tag_type;
-        };
+            template<typename T>
+            struct tag_of<T &>
+            {
+                using type = typename T::proto_tag_type;
+            };
 
-        template<typename T>
-        struct tag_of<T &&>
-        {
-            using type = typename T::proto_tag_type;
-        };
+            template<typename T>
+            struct tag_of<T &&>
+            {
+                using type = typename T::proto_tag_type;
+            };
+        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // is_tag
@@ -691,7 +694,7 @@ namespace boost
             template<typename E, typename ...Rest>
             auto operator()(E && e, Rest &&...) const
             BOOST_PROTO_AUTO_RETURN(
-                static_cast<E &&>(e).proto_tag()
+                proto::tag_of(static_cast<E &&>(e))
             )
         };
 
