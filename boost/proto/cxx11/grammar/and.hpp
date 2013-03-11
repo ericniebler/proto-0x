@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // and.hpp
-// Contains the behavior of proto::cxx11::and_ when used as a grammar element.
+// Contains the behavior of proto::and_ when used as a grammar element.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
@@ -22,7 +22,7 @@ namespace boost
         {
             namespace extension
             {
-                // Handle proto::cxx11::and_
+                // Handle proto::and_
                 template<typename ...BoolActions>
                 struct grammar_impl<proto::cxx11::and_(BoolActions...)>
                 {

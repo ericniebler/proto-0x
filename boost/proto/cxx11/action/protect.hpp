@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // protect.hpp
 // Keep a basic_action from being applied when building the return type of
-// proto::cxx11::make.
+// proto::make.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
@@ -28,7 +28,7 @@ namespace boost
             /// actions, Proto will unhelpfully find all nested actions
             /// and apply them, even if you don't want them to be applied. Consider
             /// the following basic_action, which will replace the \c _ in
-            /// <tt>Bar<_>()</tt> with <tt>proto::cxx11::terminal\<int\></tt>:
+            /// <tt>Bar<_>()</tt> with <tt>proto::terminal\<int\></tt>:
             ///
             /// \code
             /// template<typename T>
@@ -36,10 +36,10 @@ namespace boost
             /// {};
             ///
             /// struct Foo
-            ///   : proto::cxx11::when<_, Bar<_>() >
+            ///   : proto::when<_, Bar<_>() >
             /// {};
             ///
-            /// proto::cxx11::literal<int> i {0};
+            /// proto::literal<int> i {0};
             ///
             /// int main()
             /// {
@@ -49,12 +49,12 @@ namespace boost
             /// \endcode
             ///
             /// If you were actually trying to pass the \c _ basic_action to \c Bar
-            /// you can use \c proto::cxx11::_protect:
+            /// you can use \c proto::_protect:
             ///
             /// \code
             /// // OK: replace anything with Bar<_protect<_> >()
             /// struct Foo
-            ///   : proto::cxx11::when<_, proto::cxx11::make( Bar<_protect<_> >() ) >
+            ///   : proto::when<_, proto::make( Bar<_protect<_> >() ) >
             /// {};
             /// \endcode
             ///

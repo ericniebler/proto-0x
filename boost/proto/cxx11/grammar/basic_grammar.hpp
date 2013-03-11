@@ -90,7 +90,7 @@ namespace boost
                     {
                         static_assert(
                             utility::never<T>::value
-                          , "Unknown grammar pattern used in proto::cxx11::matches"
+                          , "Unknown grammar pattern used in proto::matches"
                         );
                     };
                 };

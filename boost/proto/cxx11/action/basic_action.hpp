@@ -103,7 +103,7 @@ namespace boost
                     {
                         static_assert(
                             utility::never<T>::value
-                          , "Unknown action pattern used in proto::cxx11::action"
+                          , "Unknown action pattern used in proto::action"
                         );
                         return utility::any();
                     }

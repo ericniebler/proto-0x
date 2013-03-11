@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // placeholders.hpp
-// Basic placeholder grammars, including the proto::cxx11::_ wildcard.
+// Basic placeholder grammars, including the proto::_ wildcard.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file

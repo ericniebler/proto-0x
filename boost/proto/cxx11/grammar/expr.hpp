@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // expr.hpp
-// Defines how proto::cxx11::matches works with expression patterns
+// Defines how proto::matches works with expression patterns
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file

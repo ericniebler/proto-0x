@@ -124,9 +124,9 @@ namespace boost
                 {
                     static_assert(
                         utility::never<Actions>::value
-                      , "No pack expression found in unpacking pattern. Use proto::cxx11::pack(<basic_action>) "
+                      , "No pack expression found in unpacking pattern. Use proto::pack(<basic_action>) "
                         "to designate an action that returns the expression you want to unpack; "
-                        "e.g., proto::cxx11::pack(_) unpacks the current expression."
+                        "e.g., proto::pack(_) unpacks the current expression."
                     );
                 };
 

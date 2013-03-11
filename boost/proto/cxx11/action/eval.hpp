@@ -37,7 +37,7 @@ namespace boost
                 {
                     static_assert(
                         utility::never<Tag, T...>::value
-                      , "proto::cxx11::eval doesn't know how to evaluate this expression!"
+                      , "proto::eval doesn't know how to evaluate this expression!"
                     );
                     return utility::any();
                 }
@@ -55,7 +55,7 @@ namespace boost
                     {
                         static_assert(
                             utility::never<Expr>::value
-                          , "proto::cxx11::_eval doesn't know how to evaluate this expression!"
+                          , "proto::_eval doesn't know how to evaluate this expression!"
                         );
                         return utility::any();
                     }
@@ -302,7 +302,7 @@ namespace boost
 
             namespace detail
             {
-                // Loopy indirection that allows proto::cxx11::_eval<> to be
+                // Loopy indirection that allows proto::_eval<> to be
                 // used without specifying an ActiveGrammar argument.
                 struct _eval
                   : proto::cxx11::_eval<>

@@ -26,7 +26,7 @@ namespace boost { namespace proto { inline namespace cxx11 { namespace functiona
     /// useful for defining a CallableAction like \c pop_front(_)
     /// which removes the first child from a Proto expression node.
     /// Such a basic_action might be used as the first argument to the
-    /// \c proto::cxx11::fold\<\> basic_action; that is, fold all but
+    /// \c proto::fold\<\> basic_action; that is, fold all but
     /// the first child.
     struct pop_front
     {

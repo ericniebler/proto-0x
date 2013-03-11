@@ -36,7 +36,7 @@ namespace boost
             {
                 static_assert(
                     std::is_function<T>::value
-                  , "Only use proto::cxx11::def with function types."
+                  , "Only use proto::def with function types."
                 );
             };
         }

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // placeholders.hpp
-// The proto::cxx11::_ wildcard for use as a grammar element and also as a trivial action.
+// The proto::_ wildcard for use as a grammar element and also as a trivial action.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file

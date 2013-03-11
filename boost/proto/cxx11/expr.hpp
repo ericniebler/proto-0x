@@ -44,7 +44,7 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // struct expr_boolean_convertible
                 //  expr_boolean_convertible and friends are very carefully crafted, along with
-                //  proto::cxx11::args::operator==, to only allow expressions that can be compared to have
+                //  proto::args::operator==, to only allow expressions that can be compared to have
                 //  a functioning proto_equal_to, and also to allow a==b and a!=b to have implicit
                 //  conversions to bool only where it makes sense to allow it.
                 ////////////////////////////////////////////////////////////////////////////////////

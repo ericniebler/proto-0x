@@ -62,7 +62,7 @@ namespace boost
             ///
             /// A terminal expression <tt>expr\<AT,args\<A\> \></tt> matches
             /// a grammar <tt>expr\<BT,args\<B\> \></tt> if \c BT is \c AT or
-            /// \c proto::cxx11::_ and if one of the following is true:
+            /// \c proto::_ and if one of the following is true:
             ///
             /// \li \c B is the wildcard pattern, \c _
             /// \li \c A is \c B
@@ -72,8 +72,8 @@ namespace boost
             /// \li \c B is <tt>convertible_to\<X\></tt> and
             ///     <tt>std::is_convertible\<A,X\>::value</tt> is \c true.
             /// \li \c A is <tt>X[M]</tt> or <tt>X(&)[M]</tt> and
-            ///     \c B is <tt>X[proto::cxx11::N]</tt>.
-            /// \li \c A is <tt>X(&)[M]</tt> and \c B is <tt>X(&)[proto::cxx11::N]</tt>.
+            ///     \c B is <tt>X[proto::N]</tt>.
+            /// \li \c A is <tt>X(&)[M]</tt> and \c B is <tt>X(&)[proto::N]</tt>.
             /// \li \c A is <tt>X[M]</tt> or <tt>X(&)[M]</tt> and
             ///     \c B is <tt>X*</tt>.
             /// \li \c B lambda-matches \c A (see below).

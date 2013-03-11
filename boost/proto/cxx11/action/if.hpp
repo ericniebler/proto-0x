@@ -63,9 +63,9 @@ namespace boost
             ///   : when<
             ///         literal<_>
             ///       , if_<
-            ///             proto::cxx11::make(is_integral<_value>())
-            ///           , proto::cxx11::make(std::true_type())
-            ///           , proto::cxx11::make(std::false_type())
+            ///             proto::make(is_integral<_value>())
+            ///           , proto::make(std::true_type())
+            ///           , proto::make(std::false_type())
             ///         >
             ///     >
             /// {};
