@@ -6,8 +6,8 @@
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_EXPR_HPP_INCLUDED
-#define BOOST_PROTO_EXPR_HPP_INCLUDED
+#ifndef BOOST_PROTO_CXX11_EXPR_HPP_INCLUDED
+#define BOOST_PROTO_CXX11_EXPR_HPP_INCLUDED
 
 #include <utility>
 #include <boost/mpl/bool.hpp>
