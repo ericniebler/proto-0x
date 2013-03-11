@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // match.hpp
-// Contains the behavior of proto::match when used as a grammar element.
+// Contains the behavior of proto::cxx11::match when used as a grammar element.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
@@ -18,29 +18,32 @@ namespace boost
 {
     namespace proto
     {
-        namespace detail
+        inline namespace cxx11
         {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // matches_wrap_
-            template<typename Expr, typename Grammar>
-            struct matches_wrap_
-              : matches<Expr, Grammar>
+            namespace detail
             {
-                using proto_grammar_type = Grammar;
-            };
-        }
+                ////////////////////////////////////////////////////////////////////////////////////
+                // matches_wrap_
+                template<typename Expr, typename Grammar>
+                struct matches_wrap_
+                  : matches<Expr, Grammar>
+                {
+                    using proto_grammar_type = Grammar;
+                };
+            }
 
-        namespace extension
-        {
-            // Handle proto::match
-            template<typename ...Grammars>
-            struct grammar_impl<proto::match(Grammars...)>
+            namespace extension
             {
-                template<typename Expr>
-                struct apply
-                  : utility::or_<detail::matches_wrap_<Expr, Grammars>...>
-                {};
-            };
+                // Handle proto::cxx11::match
+                template<typename ...Grammars>
+                struct grammar_impl<proto::cxx11::match(Grammars...)>
+                {
+                    template<typename Expr>
+                    struct apply
+                      : utility::or_<detail::matches_wrap_<Expr, Grammars>...>
+                    {};
+                };
+            }
         }
     }
 }

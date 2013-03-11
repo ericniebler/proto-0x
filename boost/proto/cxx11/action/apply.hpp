@@ -20,32 +20,35 @@ namespace boost
 {
     namespace proto
     {
-        namespace detail
+        inline namespace cxx11
         {
-            template<typename Fun, typename ...Actions>
-            struct _apply
-              : basic_action<_apply<Fun, Actions...>>
+            namespace detail
             {
-                template<typename ...Args>
-                auto operator()(Args &&... args) const
-                BOOST_PROTO_AUTO_RETURN(
-                    BOOST_PROTO_TRY_CALL(detail::call_1_<Actions...>())(
-                        as_action_<Fun>()(static_cast<Args &&>(args)...)
-                      , static_cast<Args &&>(args)...
+                template<typename Fun, typename ...Actions>
+                struct _apply
+                  : basic_action<_apply<Fun, Actions...>>
+                {
+                    template<typename ...Args>
+                    auto operator()(Args &&... args) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        BOOST_PROTO_TRY_CALL(detail::call_1_<Actions...>())(
+                            as_action_<Fun>()(static_cast<Args &&>(args)...)
+                          , static_cast<Args &&>(args)...
+                        )
                     )
-                )
-            };
-        }
+                };
+            }
 
-        struct apply
-        {};
-
-        namespace extension
-        {
-            template<typename Fun, typename ...Actions>
-            struct action_impl<apply(Fun, Actions...)>
-              : detail::_apply<Fun, Actions...>
+            struct apply
             {};
+
+            namespace extension
+            {
+                template<typename Fun, typename ...Actions>
+                struct action_impl<apply(Fun, Actions...)>
+                  : detail::_apply<Fun, Actions...>
+                {};
+            }
         }
     }
 }

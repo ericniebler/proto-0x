@@ -12,7 +12,7 @@
 #include <boost/fusion/include/push_front.hpp>
 #include <boost/proto/cxx11/proto_fwd.hpp>
 
-namespace boost { namespace proto { namespace functional { namespace fusion
+namespace boost { namespace proto { inline namespace cxx11 { namespace functional { namespace fusion
 {
     /// \brief A PolymorphicFunctionObject type that invokes the
     /// \c fusion::push_front() action on its argument.
@@ -27,6 +27,6 @@ namespace boost { namespace proto { namespace functional { namespace fusion
             boost::fusion::push_front(static_cast<Seq &&>(seq), static_cast<T &&>(t))
         )
     };
-}}}}
+}}}}}
 
 #endif

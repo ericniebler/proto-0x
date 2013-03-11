@@ -16,55 +16,58 @@ namespace boost
 {
     namespace proto
     {
-        namespace detail
+        inline namespace cxx11
         {
-            template<typename First, typename Second>
-            struct compressed_pair
-              : private First
-              , private Second
+            namespace detail
             {
-                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(compressed_pair);
+                template<typename First, typename Second>
+                struct compressed_pair
+                  : private First
+                  , private Second
+                {
+                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(compressed_pair);
                 
-                template<typename F, typename S>
-                constexpr compressed_pair(F && f, S && s)
-                    noexcept(
-                        noexcept(First(static_cast<F &&>(f))) &&
-                        noexcept(Second(static_cast<S &&>(s)))
-                    )
-                  : First(static_cast<F &&>(f))
-                  , Second(static_cast<S &&>(s))
-                {}
+                    template<typename F, typename S>
+                    constexpr compressed_pair(F && f, S && s)
+                        noexcept(
+                            noexcept(First(static_cast<F &&>(f))) &&
+                            noexcept(Second(static_cast<S &&>(s)))
+                        )
+                      : First(static_cast<F &&>(f))
+                      , Second(static_cast<S &&>(s))
+                    {}
 
-                First & first() & noexcept
-                {
-                    return *this;
-                }
+                    First & first() & noexcept
+                    {
+                        return *this;
+                    }
 
-                First const & first() const & noexcept
-                {
-                    return *this;
-                }
+                    First const & first() const & noexcept
+                    {
+                        return *this;
+                    }
 
-                First && first() && noexcept
-                {
-                    return static_cast<First &&>(*this);
-                }
+                    First && first() && noexcept
+                    {
+                        return static_cast<First &&>(*this);
+                    }
 
-                Second & second() & noexcept
-                {
-                    return *this;
-                }
+                    Second & second() & noexcept
+                    {
+                        return *this;
+                    }
 
-                Second const & second() const & noexcept
-                {
-                    return *this;
-                }
+                    Second const & second() const & noexcept
+                    {
+                        return *this;
+                    }
 
-                Second && second() && noexcept
-                {
-                    return static_cast<Second &&>(*this);
-                }
-            };
+                    Second && second() && noexcept
+                    {
+                        return static_cast<Second &&>(*this);
+                    }
+                };
+            }
         }
     }
 }

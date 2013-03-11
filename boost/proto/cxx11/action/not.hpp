@@ -16,41 +16,44 @@ namespace boost
 {
     namespace proto
     {
-        namespace detail
+        inline namespace cxx11
         {
-            struct logical_not_
+            namespace detail
             {
-                template<typename A>
-                std::integral_constant<bool, !static_cast<bool>(A::value)>
-                operator()(A const &) const noexcept
+                struct logical_not_
                 {
-                    return std::integral_constant<bool, !static_cast<bool>(A::value)>();
-                }
+                    template<typename A>
+                    std::integral_constant<bool, !static_cast<bool>(A::value)>
+                    operator()(A const &) const noexcept
+                    {
+                        return std::integral_constant<bool, !static_cast<bool>(A::value)>();
+                    }
 
-                inline bool operator()(bool a) const noexcept
+                    inline bool operator()(bool a) const noexcept
+                    {
+                        return !a;
+                    }
+                };
+
+                template<typename BoolAction>
+                struct _not_
+                  : basic_action<_not_<BoolAction>>
                 {
-                    return !a;
-                }
-            };
+                    template<typename ...Args>
+                    auto operator()(Args &&...args) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        logical_not_()(as_action_<BoolAction>()(static_cast<Args &&>(args)...))
+                    )
+                };
+            }
 
-            template<typename BoolAction>
-            struct _not_
-              : basic_action<_not_<BoolAction>>
+            namespace extension
             {
-                template<typename ...Args>
-                auto operator()(Args &&...args) const
-                BOOST_PROTO_AUTO_RETURN(
-                    logical_not_()(as_action_<BoolAction>()(static_cast<Args &&>(args)...))
-                )
-            };
-        }
-
-        namespace extension
-        {
-            template<typename BoolAction>
-            struct action_impl<not_(BoolAction)>
-              : detail::_not_<BoolAction>
-            {};
+                template<typename BoolAction>
+                struct action_impl<not_(BoolAction)>
+                  : detail::_not_<BoolAction>
+                {};
+            }
         }
     }
 }

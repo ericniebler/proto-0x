@@ -20,62 +20,65 @@ namespace boost
 {
     namespace proto
     {
-        namespace detail
+        inline namespace cxx11
         {
-            struct _deep_copy_cases
+            namespace detail
             {
-                template<typename Tag, bool IsTerminal = Tag::proto_is_terminal_type::value>
-                struct case_
-                  : as_action_<proto::pass(proto::_deep_copy...)>
-                {};
-
-                template<typename Tag>
-                struct case_<Tag, true>
-                  : proto::basic_action<case_<Tag, true>>
+                struct _deep_copy_cases
                 {
-                    template<typename E, typename... Rest>
-                    auto operator()(E && e, Rest &&...) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        typename decltype(e.proto_domain())::make_expr()(
-                            proto::tag_of(static_cast<E &&>(e))
-                          , utility::by_val()(proto::value(static_cast<E &&>(e)))
+                    template<typename Tag, bool IsTerminal = Tag::proto_is_terminal_type::value>
+                    struct case_
+                      : as_action_<proto::cxx11::pass(proto::cxx11::_deep_copy...)>
+                    {};
+
+                    template<typename Tag>
+                    struct case_<Tag, true>
+                      : proto::cxx11::basic_action<case_<Tag, true>>
+                    {
+                        template<typename E, typename... Rest>
+                        auto operator()(E && e, Rest &&...) const
+                        BOOST_PROTO_AUTO_RETURN(
+                            typename decltype(e.proto_domain())::make_expr()(
+                                proto::cxx11::tag_of(static_cast<E &&>(e))
+                              , utility::by_val()(proto::cxx11::value(static_cast<E &&>(e)))
+                            )
                         )
-                    )
+                    };
                 };
-            };
-        }
+            }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // _deep_copy
-        // A BasicAction that replaces all nodes stored by reference with
-        // nodes stored by value.
-        struct _deep_copy
-          : detail::as_action_<switch_(detail::_deep_copy_cases)>
-        {};
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // _deep_copy
+            // A BasicAction that replaces all nodes stored by reference with
+            // nodes stored by value.
+            struct _deep_copy
+              : detail::as_action_<switch_(detail::_deep_copy_cases)>
+            {};
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // deep_copy
-        // Replaces all nodes stored by reference with nodes stored by value.
-        template<typename E>
-        auto deep_copy(E && e)
-        BOOST_PROTO_AUTO_RETURN(
-            proto::_deep_copy()(static_cast<E &&>(e))
-        )
-
-        namespace functional
-        {
             ////////////////////////////////////////////////////////////////////////////////////////
             // deep_copy
-            // A UnaryPolymorphicFunction that replaces all nodes stored by reference
-            // with nodes stored by value.
-            struct deep_copy
+            // Replaces all nodes stored by reference with nodes stored by value.
+            template<typename E>
+            auto deep_copy(E && e)
+            BOOST_PROTO_AUTO_RETURN(
+                proto::cxx11::_deep_copy()(static_cast<E &&>(e))
+            )
+
+            namespace functional
             {
-                template<typename E>
-                auto operator()(E && e) const
-                BOOST_PROTO_AUTO_RETURN(
-                    proto::_deep_copy()(static_cast<E &&>(e))
-                )
-            };
+                ////////////////////////////////////////////////////////////////////////////////////
+                // deep_copy
+                // A UnaryPolymorphicFunction that replaces all nodes stored by reference
+                // with nodes stored by value.
+                struct deep_copy
+                {
+                    template<typename E>
+                    auto operator()(E && e) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        proto::cxx11::_deep_copy()(static_cast<E &&>(e))
+                    )
+                };
+            }
         }
     }
 }

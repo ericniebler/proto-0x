@@ -12,7 +12,7 @@
 #include <iterator>
 #include <boost/proto/cxx11/proto_fwd.hpp>
 
-namespace boost { namespace proto { namespace functional { namespace std
+namespace boost { namespace proto { inline namespace cxx11 { namespace functional { namespace std
 {
 
     // A PolymorphicFunctionObject wrapping std::advance
@@ -61,6 +61,6 @@ namespace boost { namespace proto { namespace functional { namespace std
         }
     };
 
-}}}}
+}}}}}
 
 #endif

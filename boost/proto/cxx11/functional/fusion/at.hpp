@@ -12,7 +12,7 @@
 #include <boost/fusion/include/at.hpp>
 #include <boost/proto/cxx11/proto_fwd.hpp>
 
-namespace boost { namespace proto { namespace functional { namespace fusion
+namespace boost { namespace proto { inline namespace cxx11 { namespace functional { namespace fusion
 {
     /// \brief A PolymorphicFunctionObject type that invokes the
     /// \c fusion::at() accessor on its argument.
@@ -27,6 +27,6 @@ namespace boost { namespace proto { namespace functional { namespace fusion
             boost::fusion::at<N>(static_cast<Seq &&>(seq))
         )
     };
-}}}}
+}}}}}
 
 #endif

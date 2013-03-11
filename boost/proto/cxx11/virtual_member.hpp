@@ -21,7 +21,7 @@
 // INTERNAL ONLY
 //
 #define BOOST_PROTO_EXTENDS_MEMBER_DETAIL(R, THIS_DOMAIN, ELEM)                                     \
-    boost::proto::virtual_member<                                                                   \
+    boost::proto::cxx11::virtual_member<                                                            \
         BOOST_PP_TUPLE_ELEM(2, 0, THIS_DOMAIN)                                                      \
       , BOOST_PP_TUPLE_ELEM(2, 0, ELEM)                                                             \
       , BOOST_PP_TUPLE_ELEM(2, 1, THIS_DOMAIN)                                                      \
@@ -42,27 +42,30 @@ namespace boost
 {
     namespace proto
     {
-        namespace exprs
+        inline namespace cxx11
         {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // virtual_
-            template<typename Expr>
-            struct virtual_
-              : Expr
-            {};
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // virtual_member_
-            template<typename A, typename B, typename Domain>
-            struct virtual_member_<tags::member(virtual_<A>, B), Domain>
-              : basic_expr<tags::member(virtual_<A>, B), Domain>
-              , expr_assign<virtual_member_<tags::member(virtual_<A>, B), Domain>>
-              , expr_subscript<virtual_member_<tags::member(virtual_<A>, B), Domain>>
-              , expr_function<virtual_member_<tags::member(virtual_<A>, B), Domain>>
+            namespace exprs
             {
-                BOOST_PROTO_REGULAR_TRIVIAL_CLASS(virtual_member_);
-                using expr_assign<virtual_member_>::operator=;
-            };
+                ////////////////////////////////////////////////////////////////////////////////////
+                // virtual_
+                template<typename Expr>
+                struct virtual_
+                  : Expr
+                {};
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // virtual_member_
+                template<typename A, typename B, typename Domain>
+                struct virtual_member_<tags::member(virtual_<A>, B), Domain>
+                  : basic_expr<tags::member(virtual_<A>, B), Domain>
+                  , expr_assign<virtual_member_<tags::member(virtual_<A>, B), Domain>>
+                  , expr_subscript<virtual_member_<tags::member(virtual_<A>, B), Domain>>
+                  , expr_function<virtual_member_<tags::member(virtual_<A>, B), Domain>>
+                {
+                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(virtual_member_);
+                    using expr_assign<virtual_member_>::operator=;
+                };
+            }
         }
     }
 }

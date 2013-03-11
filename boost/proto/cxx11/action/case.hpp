@@ -17,26 +17,29 @@ namespace boost
 {
     namespace proto
     {
-        namespace extension
+        inline namespace cxx11
         {
-            ////////////////////////////////////////////////////////////////////////////////////////////
-            // case_
-            template<typename Grammar, typename ...Action>
-            struct action_impl<case_(Grammar, Action...)>
-              : detail::_block<Action...>
-            {};
+            namespace extension
+            {
+                ////////////////////////////////////////////////////////////////////////////////////
+                // case_
+                template<typename Grammar, typename ...Action>
+                struct action_impl<case_(Grammar, Action...)>
+                  : detail::_block<Action...>
+                {};
 
-            template<typename Grammar, typename Action>
-            struct action_impl<case_(Grammar, Action)>
-              : detail::as_action_<Action>
-            {};
+                template<typename Grammar, typename Action>
+                struct action_impl<case_(Grammar, Action)>
+                  : detail::as_action_<Action>
+                {};
 
-            // These two are defined in pass.hpp
-            template<typename Tag, typename ...ActiveGrammars>
-            struct action_impl<case_(Tag(ActiveGrammars...), pass)>;
+                // These two are defined in pass.hpp
+                template<typename Tag, typename ...ActiveGrammars>
+                struct action_impl<case_(Tag(ActiveGrammars...), pass)>;
 
-            template<typename Tag, typename ...ActiveGrammars>
-            struct action_impl<case_(Tag(ActiveGrammars......), pass)>;
+                template<typename Tag, typename ...ActiveGrammars>
+                struct action_impl<case_(Tag(ActiveGrammars......), pass)>;
+            }
         }
     }
 }

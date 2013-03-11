@@ -16,35 +16,38 @@ namespace boost
 {
     namespace proto
     {
-        namespace detail
+        inline namespace cxx11
         {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // _matches_ basic_action
-            template<typename Grammar>
-            struct _matches_
-              : proto::basic_action<_matches_<Grammar>>
+            namespace detail
             {
-                template<typename Expr, typename... Rest>
-                auto operator()(Expr &&, Rest &&...) const
-                BOOST_PROTO_AUTO_RETURN(
-                    proto::matches<Expr, Grammar>()
-                )
-            };
-        }
+                ////////////////////////////////////////////////////////////////////////////////////
+                // _matches_ basic_action
+                template<typename Grammar>
+                struct _matches_
+                  : proto::cxx11::basic_action<_matches_<Grammar>>
+                {
+                    template<typename Expr, typename... Rest>
+                    auto operator()(Expr &&, Rest &&...) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        proto::cxx11::matches<Expr, Grammar>()
+                    )
+                };
+            }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // matches_
-        struct matches_
-        {};
-
-        namespace extension
-        {
-            ////////////////////////////////////////////////////////////////////////////////////////////
-            // action_impl
-            template<typename Grammar>
-            struct action_impl<matches_(Grammar)>
-              : detail::_matches_<Grammar>
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // matches_
+            struct matches_
             {};
+
+            namespace extension
+            {
+                ////////////////////////////////////////////////////////////////////////////////////
+                // action_impl
+                template<typename Grammar>
+                struct action_impl<matches_(Grammar)>
+                  : detail::_matches_<Grammar>
+                {};
+            }
         }
     }
 }

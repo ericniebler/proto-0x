@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // if.hpp
-// Contains the behavior of proto::if_ when used as a grammar element.
+// Contains the behavior of proto::cxx11::if_ when used as a grammar element.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
@@ -17,17 +17,20 @@ namespace boost
 {
     namespace proto
     {
-        namespace extension
+        inline namespace cxx11
         {
-            // Handle proto::if_ in a matching context
-            template<typename If>
-            struct grammar_impl<proto::if_(If)>
+            namespace extension
             {
-                template<typename Expr>
-                struct apply
-                  : detail::eval_bool_action_<If, Expr>
-                {};
-            };
+                // Handle proto::cxx11::if_ in a matching context
+                template<typename If>
+                struct grammar_impl<proto::cxx11::if_(If)>
+                {
+                    template<typename Expr>
+                    struct apply
+                      : detail::eval_bool_action_<If, Expr>
+                    {};
+                };
+            }
         }
     }
 }

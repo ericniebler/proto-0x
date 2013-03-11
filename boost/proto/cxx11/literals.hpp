@@ -16,57 +16,60 @@ namespace boost
 {
     namespace proto
     {
-        // handy user-defined literal operators for building expressions
-        namespace literals
+        inline namespace cxx11
         {
-            inline constexpr literal<char const *> operator "" _et(char const *ntbs, std::size_t) noexcept
+            // handy user-defined literal operators for building expressions
+            namespace literals
             {
-                return literal<char const *>(ntbs);
-            }
+                inline constexpr literal<char const *> operator "" _et(char const *ntbs, std::size_t) noexcept
+                {
+                    return literal<char const *>(ntbs);
+                }
 
-            inline constexpr literal<wchar_t const *> operator "" _et(wchar_t const *ntws, std::size_t) noexcept
-            {
-                return literal<wchar_t const *>(ntws);
-            }
+                inline constexpr literal<wchar_t const *> operator "" _et(wchar_t const *ntws, std::size_t) noexcept
+                {
+                    return literal<wchar_t const *>(ntws);
+                }
 
-            inline constexpr literal<char16_t const *> operator "" _et(char16_t const *ntws, std::size_t) noexcept
-            {
-                return literal<char16_t const *>(ntws);
-            }
+                inline constexpr literal<char16_t const *> operator "" _et(char16_t const *ntws, std::size_t) noexcept
+                {
+                    return literal<char16_t const *>(ntws);
+                }
 
-            inline constexpr literal<char32_t const *> operator "" _et(char32_t const *ntws, std::size_t) noexcept
-            {
-                return literal<char32_t const *>(ntws);
-            }
+                inline constexpr literal<char32_t const *> operator "" _et(char32_t const *ntws, std::size_t) noexcept
+                {
+                    return literal<char32_t const *>(ntws);
+                }
 
-            inline constexpr literal<char> operator "" _et(char ch) noexcept
-            {
-                return literal<char>(ch);
-            }
+                inline constexpr literal<char> operator "" _et(char ch) noexcept
+                {
+                    return literal<char>(ch);
+                }
 
-            inline constexpr literal<wchar_t> operator "" _et(wchar_t ch) noexcept
-            {
-                return literal<wchar_t>(ch);
-            }
+                inline constexpr literal<wchar_t> operator "" _et(wchar_t ch) noexcept
+                {
+                    return literal<wchar_t>(ch);
+                }
 
-            inline constexpr literal<char16_t> operator "" _et(char16_t ch) noexcept
-            {
-                return literal<char16_t>(ch);
-            }
+                inline constexpr literal<char16_t> operator "" _et(char16_t ch) noexcept
+                {
+                    return literal<char16_t>(ch);
+                }
 
-            inline constexpr literal<char32_t> operator "" _et(char32_t ch) noexcept
-            {
-                return literal<char32_t>(ch);
-            }
+                inline constexpr literal<char32_t> operator "" _et(char32_t ch) noexcept
+                {
+                    return literal<char32_t>(ch);
+                }
 
-            inline constexpr literal<unsigned long long> operator "" _et(unsigned long long l) noexcept
-            {
-                return literal<unsigned long long>(l);
-            }
+                inline constexpr literal<unsigned long long> operator "" _et(unsigned long long l) noexcept
+                {
+                    return literal<unsigned long long>(l);
+                }
 
-            inline constexpr literal<long double> operator "" _et(long double d) noexcept
-            {
-                return literal<long double>(d);
+                inline constexpr literal<long double> operator "" _et(long double d) noexcept
+                {
+                    return literal<long double>(d);
+                }
             }
         }
     }

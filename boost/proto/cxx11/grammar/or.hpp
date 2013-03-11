@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // or.hpp
-// Contains the behavior of proto::or_ when used as a grammar element.
+// Contains the behavior of proto::cxx11::or_ when used as a grammar element.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
@@ -17,17 +17,20 @@ namespace boost
 {
     namespace proto
     {
-        namespace extension
+        inline namespace cxx11
         {
-            // Handle proto::or_
-            template<typename ...BoolActions>
-            struct grammar_impl<proto::or_(BoolActions...)>
+            namespace extension
             {
-                template<typename Expr>
-                struct apply
-                  : utility::or_<detail::eval_bool_action_<BoolActions, Expr>...>
-                {};
-            };
+                // Handle proto::cxx11::or_
+                template<typename ...BoolActions>
+                struct grammar_impl<proto::cxx11::or_(BoolActions...)>
+                {
+                    template<typename Expr>
+                    struct apply
+                      : utility::or_<detail::eval_bool_action_<BoolActions, Expr>...>
+                    {};
+                };
+            }
         }
     }
 }

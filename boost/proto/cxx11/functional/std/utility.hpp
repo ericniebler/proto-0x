@@ -12,7 +12,7 @@
 #include <utility>
 #include <boost/proto/cxx11/proto_fwd.hpp>
 
-namespace boost { namespace proto { namespace functional { namespace std
+namespace boost { namespace proto { inline namespace cxx11 { namespace functional { namespace std
 {
     /// \brief A PolymorphicFunctionObject type that invokes the
     /// \c std::make_pair() action on its arguments.
@@ -56,6 +56,6 @@ namespace boost { namespace proto { namespace functional { namespace std
         )
     };
 
-}}}}
+}}}}}
 
 #endif

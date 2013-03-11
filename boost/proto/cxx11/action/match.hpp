@@ -37,8 +37,8 @@ namespace boost
                 auto operator()(Expr && e, Rest &&... rest) const
                 BOOST_PROTO_AUTO_RETURN(
                     as_action_<
-                        // This relies on details of how proto::match's grammar behavior is implemented.
-                        typename matches<Expr, proto::match(ActiveGrammars...)>::which::proto_grammar_type
+                        // This relies on details of how proto::cxx11::match's grammar behavior is implemented.
+                        typename matches<Expr, proto::cxx11::match(ActiveGrammars...)>::which::proto_grammar_type
                     >()(
                         static_cast<Expr &&>(e)
                       , static_cast<Rest &&>(rest)...
@@ -49,7 +49,7 @@ namespace boost
 
         namespace extension
         {
-            ////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////
             // action_impl
             template<typename ...ActiveGrammars>
             struct action_impl<match(ActiveGrammars...)>

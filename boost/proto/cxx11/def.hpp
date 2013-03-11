@@ -18,25 +18,28 @@ namespace boost
 {
     namespace proto
     {
-        namespace detail
+        inline namespace cxx11
         {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            struct def_base
-            {};
-        }
+            namespace detail
+            {
+                ////////////////////////////////////////////////////////////////////////////////////
+                struct def_base
+                {};
+            }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        template<typename T>
-        struct def
-          : detail::def_base
-          , detail::as_grammar_<T>
-          , detail::as_action_<T>
-        {
-            static_assert(
-                std::is_function<T>::value
-              , "Only use proto::def with function types."
-            );
-        };
+            ////////////////////////////////////////////////////////////////////////////////////////
+            template<typename T>
+            struct def
+              : detail::def_base
+              , detail::as_grammar_<T>
+              , detail::as_action_<T>
+            {
+                static_assert(
+                    std::is_function<T>::value
+                  , "Only use proto::cxx11::def with function types."
+                );
+            };
+        }
     }
 }
 

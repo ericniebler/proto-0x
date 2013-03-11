@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // switch.hpp
-// Contains the behavior of proto::switch_ when used as a grammar element.
+// Contains the behavior of proto::cxx11::switch_ when used as a grammar element.
 //
 //  Copyright 2012 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
@@ -21,32 +21,35 @@ namespace boost
 {
     namespace proto
     {
-        namespace extension
+        inline namespace cxx11
         {
-            // Handle proto::switch_
-            template<typename Cases>
-            struct grammar_impl<proto::switch_(Cases)>
+            namespace extension
             {
-                template<typename Expr>
-                struct apply
-                  : matches<
-                        Expr
-                      , typename Cases::template case_<typename result_of::tag_of<Expr>::type>
-                    >
-                {};
-            };
+                // Handle proto::cxx11::switch_
+                template<typename Cases>
+                struct grammar_impl<proto::cxx11::switch_(Cases)>
+                {
+                    template<typename Expr>
+                    struct apply
+                      : matches<
+                            Expr
+                          , typename Cases::template case_<typename result_of::tag_of<Expr>::type>
+                        >
+                    {};
+                };
 
-            template<typename Cases, typename Action>
-            struct grammar_impl<proto::switch_(Cases, Action)>
-            {
-                template<typename Expr>
-                struct apply
-                  : matches<
-                        Expr
-                      , typename Cases::template case_<decltype(detail::as_action_<Action>()(std::declval<Expr>()))>
-                    >
-                {};
-            };
+                template<typename Cases, typename Action>
+                struct grammar_impl<proto::cxx11::switch_(Cases, Action)>
+                {
+                    template<typename Expr>
+                    struct apply
+                      : matches<
+                            Expr
+                          , typename Cases::template case_<decltype(detail::as_action_<Action>()(std::declval<Expr>()))>
+                        >
+                    {};
+                };
+            }
         }
     }
 }

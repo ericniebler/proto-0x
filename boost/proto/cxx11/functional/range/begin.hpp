@@ -12,7 +12,7 @@
 #include <boost/range/begin.hpp>
 #include <boost/proto/cxx11/proto_fwd.hpp>
 
-namespace boost { namespace proto { namespace functional { namespace range
+namespace boost { namespace proto { inline namespace cxx11 { namespace functional { namespace range
 {
 
     // A PolymorphicFunctionObject that wraps boost::begin()
@@ -25,6 +25,6 @@ namespace boost { namespace proto { namespace functional { namespace range
         )
     };
 
-}}}}
+}}}}}
 
 #endif

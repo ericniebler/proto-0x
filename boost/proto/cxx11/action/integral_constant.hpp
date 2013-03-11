@@ -17,19 +17,22 @@ namespace boost
 {
     namespace proto
     {
-        template<typename T, T Value>
-        struct _integral_constant
-          : basic_action<_integral_constant<T, Value>>
+        inline namespace cxx11
         {
-            template<typename ...Args>
-            T operator()(Args &&...) const noexcept(noexcept(T(std::declval<T>())))
+            template<typename T, T Value>
+            struct _integral_constant
+              : basic_action<_integral_constant<T, Value>>
             {
-                return Value;
-            }
-        };
+                template<typename ...Args>
+                T operator()(Args &&...) const noexcept(noexcept(T(std::declval<T>())))
+                {
+                    return Value;
+                }
+            };
 
-        using _true = _integral_constant<bool, true>;
-        using _false = _integral_constant<bool, false>;
+            using _true = _integral_constant<bool, true>;
+            using _false = _integral_constant<bool, false>;
+        }
     }
 }
 
