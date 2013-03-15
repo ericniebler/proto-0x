@@ -354,6 +354,7 @@ test_suite* init_unit_test_suite( int argc, char* argv[] )
     test->add(BOOST_TEST_CASE(&test_make_expr_functional_2));
     test->add(BOOST_TEST_CASE(&test_unpack_expr));
     test->add(BOOST_TEST_CASE(&test_unpack_expr_2));
+    test->add(BOOST_TEST_CASE(&test_unpack_expr_functional));
     test->add(BOOST_TEST_CASE(&test_unpack_expr_functional_2));
     test->add(BOOST_TEST_CASE(&test_unpack_expr_functional));
     test->add(BOOST_TEST_CASE(&test_make_expr_transform));
