@@ -21,9 +21,7 @@ struct ewrap;
 struct mydomain
   : proto::domain<mydomain>
 {
-    struct make_expr
-      : proto::make_custom_expr<ewrap>
-    {};
+    using make_expr = proto::make_custom_expr<ewrap>;
 };
 
 template<typename E>

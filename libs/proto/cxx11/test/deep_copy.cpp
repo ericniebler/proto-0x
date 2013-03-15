@@ -77,17 +77,9 @@ struct Expr;
 struct Domain
   : proto::domain<Domain>
 {
-    struct store_value
-      : proto::utility::by_ref
-    {};
-
-    struct store_child
-      : proto::utility::by_ref
-    {};
-
-    struct make_expr
-      : proto::make_custom_expr<Expr>
-    {};
+    using store_value = proto::utility::by_ref;
+    using store_child = proto::utility::by_ref;
+    using make_expr = proto::make_custom_expr<Expr>;
 };
 
 template<typename ExprDesc>

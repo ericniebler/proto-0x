@@ -163,9 +163,7 @@ namespace boost
                 struct basic_default_domain
                   : domain<basic_default_domain, default_grammar>
                 {
-                    struct make_expr
-                      : make_custom_expr<exprs::basic_expr, basic_default_domain>
-                    {};
+                    using make_expr = make_custom_expr<exprs::basic_expr, basic_default_domain>;
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////

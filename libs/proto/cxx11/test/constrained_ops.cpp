@@ -42,9 +42,7 @@ struct my_domain:
          proto::default_domain
     >
 {
-    struct make_expr
-      : proto::make_custom_expr<extension>
-    {};
+    using make_expr = proto::make_custom_expr<extension>;
 };
 
 template<class ExprDesc>
@@ -57,9 +55,7 @@ struct my_lhs_domain:
         my_domain
     >
 {
-    struct make_expr
-      : proto::make_custom_expr<lhs_extension>
-    {};
+    using make_expr = proto::make_custom_expr<lhs_extension>;
 };
 
 template<class ExprDesc>
@@ -72,9 +68,7 @@ struct my_rhs_domain:
         my_domain
     >
 {
-    struct make_expr
-      : proto::make_custom_expr<rhs_extension>
-    {};
+    using make_expr = proto::make_custom_expr<rhs_extension>;
 };
 
 template<class ExprDesc>

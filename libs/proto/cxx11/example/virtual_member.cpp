@@ -141,9 +141,7 @@ namespace mini_lambda
     struct domain
       : proto::domain<domain>
     {
-        struct make_expr
-          : proto::make_custom_expr<expression>
-        {};
+        using make_expr = proto::make_custom_expr<expression>;
     };
 
     // Here is the mini-lambda expression wrapper. It serves two purposes:
