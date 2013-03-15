@@ -206,9 +206,8 @@ namespace mini_lambda
         template<typename E>
         auto if_(E && e)
         BOOST_PROTO_AUTO_RETURN(
-            proto::domains::make_expr<domain>(
-                proto::function()
-              , keyword::if_()
+            proto::make_expr<proto::function, domain>(
+                keyword::if_()
               , std::forward<E>(e)
             )
         )

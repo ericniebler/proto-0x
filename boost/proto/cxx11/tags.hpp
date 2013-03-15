@@ -55,12 +55,11 @@ namespace boost
                 {
                     template<
                         typename T
-                      , typename Terminal = terminal
-                      , typename MakeExpr = proto::cxx11::functional::make_expr
+                      , typename MakeExpr = proto::cxx11::functional::make_expr<terminal>
                     >
                     auto operator()(T && t) const
                     BOOST_PROTO_AUTO_RETURN(
-                        MakeExpr()(Terminal(), static_cast<T &&>(t))
+                        MakeExpr()(static_cast<T &&>(t))
                     )
                 };
 
@@ -547,12 +546,11 @@ namespace boost
                   : expr_tag<member>
                 {
                     template<typename T, typename U
-                      , typename Member = member
-                      , typename MakeExpr = proto::cxx11::functional::make_expr
+                      , typename MakeExpr = proto::cxx11::functional::make_expr<member>
                     >
                     auto operator()(T && t, U && u) const
                     BOOST_PROTO_AUTO_RETURN(
-                        MakeExpr()(Member(), static_cast<T &&>(t), static_cast<U &&>(u))
+                        MakeExpr()(static_cast<T &&>(t), static_cast<U &&>(u))
                     )
                 };
 

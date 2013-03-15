@@ -105,10 +105,10 @@ void test_expr()
     BOOST_CHECK(!jjj_.proto_equal_to(iii_[43]));
 
     // Test convertibility to bool
-    BOOST_CHECK(proto::domains::make_expr<MyDomain>(proto::equal_to(), jjj_, iii_[42]));
-    BOOST_CHECK(!proto::domains::make_expr<MyDomain>(proto::equal_to(), jjj_, iii_[43]));
-    BOOST_CHECK(!proto::domains::make_expr<MyDomain>(proto::not_equal_to(), jjj_, iii_[42]));
-    BOOST_CHECK(proto::domains::make_expr<MyDomain>(proto::not_equal_to(), jjj_, iii_[43]));
+    BOOST_CHECK(proto::make_expr<MyDomain>(proto::equal_to(), jjj_, iii_[42]));
+    BOOST_CHECK(!proto::make_expr<MyDomain>(proto::equal_to(), jjj_, iii_[43]));
+    BOOST_CHECK(!proto::make_expr<MyDomain>(proto::not_equal_to(), jjj_, iii_[42]));
+    BOOST_CHECK(proto::make_expr<MyDomain>(proto::not_equal_to(), jjj_, iii_[43]));
 
     static_assert(std::is_convertible<proto::exprs::equal_to<int_, int_>, bool>::value, "not convertible to bool");
     static_assert(std::is_convertible<proto::exprs::not_equal_to<int_, int_>, bool>::value, "not convertible to bool");

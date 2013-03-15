@@ -170,9 +170,8 @@ namespace boost
                 template<typename A0, typename A1, typename A2>
                 inline auto if_else(A0 &&a0, A1 &&a1, A2 &&a2)
                 BOOST_PROTO_AUTO_RETURN(
-                    ::boost::proto::cxx11::domains::make_expr<deduce_domain>(
-                        tags::if_else_()
-                      , static_cast<A0 &&>(a0)
+                    cxx11::make_expr<tags::if_else_, deduce_domain>(
+                        static_cast<A0 &&>(a0)
                       , static_cast<A1 &&>(a1)
                       , static_cast<A2 &&>(a2)
                     )

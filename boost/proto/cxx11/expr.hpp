@@ -161,7 +161,7 @@ namespace boost
 
                 template<typename Tag, typename ...Children, typename Domain>
                 struct as_child_<Tag(*)(Children...), Domain>
-                  : domains::result_of::make_expr<Domain, Tag, typename as_child_<Children, Domain>::type...>
+                  : result_of::make_expr<Tag(typename as_child_<Children, Domain>::type...), Domain>
                 {};
 
                 template<typename Tag, typename ...Children, typename Domain>
@@ -282,9 +282,8 @@ namespace boost
                       , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<expr_assign, U>::value))>
                     auto operator=(U && u) &
                     BOOST_PROTO_AUTO_RETURN(
-                        boost::proto::cxx11::domains::make_expr<Domain>(
-                            boost::proto::cxx11::assign()
-                          , static_cast<E &>(*this)
+                        cxx11::make_expr<cxx11::assign, Domain>(
+                            static_cast<E &>(*this)
                           , static_cast<U &&>(u)
                         )
                     )
@@ -294,9 +293,8 @@ namespace boost
                       , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<expr_assign, U>::value))>
                     auto operator=(U && u) const &
                     BOOST_PROTO_AUTO_RETURN(
-                        boost::proto::cxx11::domains::make_expr<Domain>(
-                            boost::proto::cxx11::assign()
-                          , static_cast<E const &>(*this)
+                        cxx11::make_expr<cxx11::assign, Domain>(
+                            static_cast<E const &>(*this)
                           , static_cast<U &&>(u)
                         )
                     )
@@ -306,9 +304,8 @@ namespace boost
                       , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<expr_assign, U>::value))>
                     auto operator=(U && u) &&
                     BOOST_PROTO_AUTO_RETURN(
-                        boost::proto::cxx11::domains::make_expr<Domain>(
-                            boost::proto::cxx11::assign()
-                          , static_cast<E &&>(static_cast<expr_assign &&>(*this))
+                        cxx11::make_expr<cxx11::assign, Domain>(
+                            static_cast<E &&>(static_cast<expr_assign &&>(*this))
                           , static_cast<U &&>(u)
                         )
                     )
@@ -331,9 +328,8 @@ namespace boost
                       , typename Domain = typename E::proto_domain_type>
                     auto operator[](U && u) &
                     BOOST_PROTO_AUTO_RETURN(
-                        boost::proto::cxx11::domains::make_expr<Domain>(
-                            boost::proto::cxx11::subscript()
-                          , static_cast<E &>(*this)
+                        cxx11::make_expr<cxx11::subscript, Domain>(
+                            static_cast<E &>(*this)
                           , static_cast<U &&>(u)
                         )
                     )
@@ -342,9 +338,8 @@ namespace boost
                       , typename Domain = typename E::proto_domain_type>
                     auto operator[](U && u) const &
                     BOOST_PROTO_AUTO_RETURN(
-                        boost::proto::cxx11::domains::make_expr<Domain>(
-                            boost::proto::cxx11::subscript()
-                          , static_cast<E const &>(*this)
+                        cxx11::make_expr<cxx11::subscript, Domain>(
+                            static_cast<E const &>(*this)
                           , static_cast<U &&>(u)
                         )
                     )
@@ -353,9 +348,8 @@ namespace boost
                       , typename Domain = typename E::proto_domain_type>
                     auto operator[](U && u) &&
                     BOOST_PROTO_AUTO_RETURN(
-                        boost::proto::cxx11::domains::make_expr<Domain>(
-                            boost::proto::cxx11::subscript()
-                          , static_cast<E &&>(static_cast<expr_subscript &&>(*this))
+                        cxx11::make_expr<cxx11::subscript, Domain>(
+                            static_cast<E &&>(static_cast<expr_subscript &&>(*this))
                           , static_cast<U &&>(u)
                         )
                     )
@@ -377,9 +371,8 @@ namespace boost
                       , typename Domain = typename E::proto_domain_type>
                     auto operator()(U &&... u) &
                     BOOST_PROTO_AUTO_RETURN(
-                        boost::proto::cxx11::domains::make_expr<Domain>(
-                            boost::proto::cxx11::function()
-                          , static_cast<E &>(*this)
+                        cxx11::make_expr<cxx11::function, Domain>(
+                            static_cast<E &>(*this)
                           , static_cast<U &&>(u)...
                         )
                     )
@@ -388,9 +381,8 @@ namespace boost
                       , typename Domain = typename E::proto_domain_type>
                     auto operator()(U &&... u) const &
                     BOOST_PROTO_AUTO_RETURN(
-                        boost::proto::cxx11::domains::make_expr<Domain>(
-                            boost::proto::cxx11::function()
-                          , static_cast<E const &>(*this)
+                        cxx11::make_expr<cxx11::function, Domain>(
+                            static_cast<E const &>(*this)
                           , static_cast<U &&>(u)...
                         )
                     )
@@ -399,9 +391,8 @@ namespace boost
                       , typename Domain = typename E::proto_domain_type>
                     auto operator()(U &&... u) &&
                     BOOST_PROTO_AUTO_RETURN(
-                        boost::proto::cxx11::domains::make_expr<Domain>(
-                            boost::proto::cxx11::function()
-                          , static_cast<E &&>(static_cast<expr_function &&>(*this))
+                        cxx11::make_expr<cxx11::function, Domain>(
+                            static_cast<E &&>(static_cast<expr_function &&>(*this))
                           , static_cast<U &&>(u)...
                         )
                     )
@@ -578,21 +569,6 @@ namespace boost
                         return static_cast<tag_and_children_type &&>(tag_and_children_).second();
                     }
 
-                    basic_expr & proto_base() & noexcept
-                    {
-                        return *this;
-                    }
-
-                    basic_expr const & proto_base() const & noexcept
-                    {
-                        return *this;
-                    }
-
-                    basic_expr && proto_base() && noexcept
-                    {
-                        return static_cast<basic_expr &&>(*this);
-                    }
-
                     Domain proto_domain() const noexcept(noexcept(Domain()))
                     {
                         return Domain();
@@ -707,31 +683,34 @@ namespace boost
                 using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
             };
 
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // arity_of
-            template<typename Expr>
-            struct arity_of
-              : Expr::proto_arity
+            namespace result_of
             {
-                using type = arity_of;
-                using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
-            };
+                ////////////////////////////////////////////////////////////////////////////////////////
+                // arity_of
+                template<typename Expr>
+                struct arity_of
+                  : Expr::proto_arity
+                {
+                    using type = arity_of;
+                    using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
+                };
 
-            template<typename Expr>
-            struct arity_of<Expr &>
-              : Expr::proto_arity
-            {
-                using type = arity_of;
-                using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
-            };
+                template<typename Expr>
+                struct arity_of<Expr &>
+                  : Expr::proto_arity
+                {
+                    using type = arity_of;
+                    using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
+                };
 
-            template<typename Expr>
-            struct arity_of<Expr &&>
-              : Expr::proto_arity
-            {
-                using type = arity_of;
-                using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
-            };
+                template<typename Expr>
+                struct arity_of<Expr &&>
+                  : Expr::proto_arity
+                {
+                    using type = arity_of;
+                    using tag = mpl::integral_c_tag; // HACK until mpl supports std::integral_constant
+                };
+            }
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // _arity_of
@@ -739,9 +718,9 @@ namespace boost
               : proto::cxx11::basic_action<_arity_of>
             {
                 template<typename E, typename ...Rest>
-                arity_of<E> operator()(E &&, Rest &&...) const noexcept
+                result_of::arity_of<E> operator()(E &&, Rest &&...) const noexcept
                 {
-                    return arity_of<E>();
+                    return result_of::arity_of<E>();
                 };
             };
 

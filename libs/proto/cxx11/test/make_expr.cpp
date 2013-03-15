@@ -47,7 +47,7 @@ void test_make_expr()
     BOOST_PROTO_IGNORE_UNUSED(t1, t2, p1, p2);
 
     using p3_type = ewrap<proto::unary_plus(ewrap<proto::terminal(int &)>)>;
-    p3_type p3 = proto::domains::make_expr<mydomain>(proto::unary_plus(), i);
+    p3_type p3 = proto::make_expr<mydomain>(proto::unary_plus(), i);
     BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p3)), 42);
     BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p3)), &i);
 
@@ -56,23 +56,65 @@ void test_make_expr()
     BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(proto::left(p4))), &i);
 }
 
-void test_make_expr_functional()
+void test_make_expr_2()
 {
     int i = 42;
-    proto::expr<proto::terminal(int)> t1 = proto::functional::make_expr()(proto::terminal(), 1);
-    proto::expr<proto::terminal(int &)> t2 = proto::functional::make_expr()(proto::terminal(), i);
-    proto::expr<proto::unary_plus(proto::terminal(int))> p1 = proto::functional::make_expr()(proto::unary_plus(), 1);
-    proto::expr<proto::unary_plus(proto::terminal(int &))> p2 = proto::functional::make_expr()(proto::unary_plus(), i);
+    proto::expr<proto::terminal(int)> t1 = proto::make_expr<proto::terminal>(1);
+    proto::expr<proto::terminal(int &)> t2 = proto::make_expr<proto::terminal>(i);
+    proto::expr<proto::unary_plus(proto::terminal(int))> p1 = proto::make_expr<proto::unary_plus>(1);
+    proto::expr<proto::unary_plus(proto::terminal(int &))> p2 = proto::make_expr<proto::unary_plus>(i);
     BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p2)), 42);
     BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p2)), &i);
     BOOST_PROTO_IGNORE_UNUSED(t1, t2, p1, p2);
 
     using p3_type = ewrap<proto::unary_plus(ewrap<proto::terminal(int &)>)>;
-    p3_type p3 = proto::domains::functional::make_expr<mydomain>()(proto::unary_plus(), i);
+    p3_type p3 = proto::make_expr<proto::unary_plus, mydomain>(i);
     BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p3)), 42);
     BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p3)), &i);
 
-    ewrap<proto::plus(p3_type &, ewrap<proto::terminal(int)>)> p4 = proto::functional::make_expr()(proto::plus(), p3, 0);
+    ewrap<proto::plus(p3_type &, ewrap<proto::terminal(int)>)> p4 = proto::make_expr<proto::plus>(p3, 0);
+    BOOST_CHECK_EQUAL(proto::value(proto::child<0>(proto::left(p4))), 42);
+    BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(proto::left(p4))), &i);
+}
+
+void test_make_expr_functional()
+{
+    int i = 42;
+    proto::expr<proto::terminal(int)> t1 = proto::functional::make_expr<>()(proto::terminal(), 1);
+    proto::expr<proto::terminal(int &)> t2 = proto::functional::make_expr<>()(proto::terminal(), i);
+    proto::expr<proto::unary_plus(proto::terminal(int))> p1 = proto::functional::make_expr<>()(proto::unary_plus(), 1);
+    proto::expr<proto::unary_plus(proto::terminal(int &))> p2 = proto::functional::make_expr<>()(proto::unary_plus(), i);
+    BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p2)), 42);
+    BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p2)), &i);
+    BOOST_PROTO_IGNORE_UNUSED(t1, t2, p1, p2);
+
+    using p3_type = ewrap<proto::unary_plus(ewrap<proto::terminal(int &)>)>;
+    p3_type p3 = proto::functional::make_expr<mydomain>()(proto::unary_plus(), i);
+    BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p3)), 42);
+    BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p3)), &i);
+
+    ewrap<proto::plus(p3_type &, ewrap<proto::terminal(int)>)> p4 = proto::functional::make_expr<>()(proto::plus(), p3, 0);
+    BOOST_CHECK_EQUAL(proto::value(proto::child<0>(proto::left(p4))), 42);
+    BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(proto::left(p4))), &i);
+}
+
+void test_make_expr_functional_2()
+{
+    int i = 42;
+    proto::expr<proto::terminal(int)> t1 = proto::functional::make_expr<proto::terminal>()(1);
+    proto::expr<proto::terminal(int &)> t2 = proto::functional::make_expr<proto::terminal>()(i);
+    proto::expr<proto::unary_plus(proto::terminal(int))> p1 = proto::functional::make_expr<proto::unary_plus>()(1);
+    proto::expr<proto::unary_plus(proto::terminal(int &))> p2 = proto::functional::make_expr<proto::unary_plus>()(i);
+    BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p2)), 42);
+    BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p2)), &i);
+    BOOST_PROTO_IGNORE_UNUSED(t1, t2, p1, p2);
+
+    using p3_type = ewrap<proto::unary_plus(ewrap<proto::terminal(int &)>)>;
+    p3_type p3 = proto::functional::make_expr<proto::unary_plus, mydomain>()(i);
+    BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p3)), 42);
+    BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p3)), &i);
+
+    ewrap<proto::plus(p3_type &, ewrap<proto::terminal(int)>)> p4 = proto::functional::make_expr<proto::plus>()(p3, 0);
     BOOST_CHECK_EQUAL(proto::value(proto::child<0>(proto::left(p4))), 42);
     BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(proto::left(p4))), &i);
 }
@@ -89,7 +131,7 @@ void test_unpack_expr()
     BOOST_PROTO_IGNORE_UNUSED(t1, t2, p1, p2);
 
     using p3_type = ewrap<proto::unary_plus(ewrap<proto::terminal(int &)>)>;
-    p3_type p3 = proto::domains::unpack_expr<mydomain>(proto::unary_plus(), fusion::make_tuple(boost::ref(i)));
+    p3_type p3 = proto::unpack_expr<mydomain>(proto::unary_plus(), fusion::make_tuple(boost::ref(i)));
     BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p3)), 42);
     BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p3)), &i);
 
@@ -98,23 +140,65 @@ void test_unpack_expr()
     BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(proto::left(p4))), &i);
 }
 
-void test_unpack_expr_functional()
+void test_unpack_expr_2()
 {
     int i = 42;
-    proto::expr<proto::terminal(int)> t1 = proto::functional::unpack_expr()(proto::terminal(), fusion::make_tuple(1));
-    proto::expr<proto::terminal(int &)> t2 = proto::functional::unpack_expr()(proto::terminal(), fusion::make_tuple(boost::ref(i)));
-    proto::expr<proto::unary_plus(proto::terminal(int))> p1 = proto::functional::unpack_expr()(proto::unary_plus(), fusion::make_tuple(1));
-    proto::expr<proto::unary_plus(proto::terminal(int &))> p2 = proto::functional::unpack_expr()(proto::unary_plus(), fusion::make_tuple(boost::ref(i)));
+    proto::expr<proto::terminal(int)> t1 = proto::unpack_expr<proto::terminal>(fusion::make_tuple(1));
+    proto::expr<proto::terminal(int &)> t2 = proto::unpack_expr<proto::terminal>(fusion::make_tuple(boost::ref(i)));
+    proto::expr<proto::unary_plus(proto::terminal(int))> p1 = proto::unpack_expr<proto::unary_plus>(fusion::make_tuple(1));
+    proto::expr<proto::unary_plus(proto::terminal(int &))> p2 = proto::unpack_expr<proto::unary_plus>(fusion::make_tuple(boost::ref(i)));
     BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p2)), 42);
     BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p2)), &i);
     BOOST_PROTO_IGNORE_UNUSED(t1, t2, p1, p2);
 
     using p3_type = ewrap<proto::unary_plus(ewrap<proto::terminal(int &)>)>;
-    p3_type p3 = proto::domains::functional::unpack_expr<mydomain>()(proto::unary_plus(), fusion::make_tuple(boost::ref(i)));
+    p3_type p3 = proto::unpack_expr<proto::unary_plus, mydomain>(fusion::make_tuple(boost::ref(i)));
     BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p3)), 42);
     BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p3)), &i);
 
-    ewrap<proto::plus(p3_type &, ewrap<proto::terminal(int)>)> p4 = proto::functional::unpack_expr()(proto::plus(), fusion::make_tuple(boost::ref(p3), 0));
+    ewrap<proto::plus(p3_type &, ewrap<proto::terminal(int)>)> p4 = proto::unpack_expr<proto::plus>(fusion::make_tuple(boost::ref(p3), 0));
+    BOOST_CHECK_EQUAL(proto::value(proto::child<0>(proto::left(p4))), 42);
+    BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(proto::left(p4))), &i);
+}
+
+void test_unpack_expr_functional()
+{
+    int i = 42;
+    proto::expr<proto::terminal(int)> t1 = proto::functional::unpack_expr<>()(proto::terminal(), fusion::make_tuple(1));
+    proto::expr<proto::terminal(int &)> t2 = proto::functional::unpack_expr<>()(proto::terminal(), fusion::make_tuple(boost::ref(i)));
+    proto::expr<proto::unary_plus(proto::terminal(int))> p1 = proto::functional::unpack_expr<>()(proto::unary_plus(), fusion::make_tuple(1));
+    proto::expr<proto::unary_plus(proto::terminal(int &))> p2 = proto::functional::unpack_expr<>()(proto::unary_plus(), fusion::make_tuple(boost::ref(i)));
+    BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p2)), 42);
+    BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p2)), &i);
+    BOOST_PROTO_IGNORE_UNUSED(t1, t2, p1, p2);
+
+    using p3_type = ewrap<proto::unary_plus(ewrap<proto::terminal(int &)>)>;
+    p3_type p3 = proto::functional::unpack_expr<mydomain>()(proto::unary_plus(), fusion::make_tuple(boost::ref(i)));
+    BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p3)), 42);
+    BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p3)), &i);
+
+    ewrap<proto::plus(p3_type &, ewrap<proto::terminal(int)>)> p4 = proto::functional::unpack_expr<>()(proto::plus(), fusion::make_tuple(boost::ref(p3), 0));
+    BOOST_CHECK_EQUAL(proto::value(proto::child<0>(proto::left(p4))), 42);
+    BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(proto::left(p4))), &i);
+}
+
+void test_unpack_expr_functional_2()
+{
+    int i = 42;
+    proto::expr<proto::terminal(int)> t1 = proto::functional::unpack_expr<proto::terminal>()(fusion::make_tuple(1));
+    proto::expr<proto::terminal(int &)> t2 = proto::functional::unpack_expr<proto::terminal>()(fusion::make_tuple(boost::ref(i)));
+    proto::expr<proto::unary_plus(proto::terminal(int))> p1 = proto::functional::unpack_expr<proto::unary_plus>()(fusion::make_tuple(1));
+    proto::expr<proto::unary_plus(proto::terminal(int &))> p2 = proto::functional::unpack_expr<proto::unary_plus>()(fusion::make_tuple(boost::ref(i)));
+    BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p2)), 42);
+    BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p2)), &i);
+    BOOST_PROTO_IGNORE_UNUSED(t1, t2, p1, p2);
+
+    using p3_type = ewrap<proto::unary_plus(ewrap<proto::terminal(int &)>)>;
+    p3_type p3 = proto::functional::unpack_expr<proto::unary_plus, mydomain>()(fusion::make_tuple(boost::ref(i)));
+    BOOST_CHECK_EQUAL(proto::value(proto::child<0>(p3)), 42);
+    BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(p3)), &i);
+
+    ewrap<proto::plus(p3_type &, ewrap<proto::terminal(int)>)> p4 = proto::functional::unpack_expr<proto::plus>()(fusion::make_tuple(boost::ref(p3), 0));
     BOOST_CHECK_EQUAL(proto::value(proto::child<0>(proto::left(p4))), 42);
     BOOST_CHECK_EQUAL(&proto::value(proto::child<0>(proto::left(p4))), &i);
 }
@@ -247,7 +331,7 @@ struct Convert
     >
 {};
 
-void test_make_expr_transform2()
+void test_make_expr_transform_2()
 {
     auto expr = length(1) < length(2);
     void const *addr1 = boost::addressof(proto::child<1>(proto::child<0>(expr)));
@@ -267,11 +351,15 @@ test_suite* init_unit_test_suite( int argc, char* argv[] )
     test_suite *test = BOOST_TEST_SUITE("test proto::make_expr, proto::unpack_expr and friends");
 
     test->add(BOOST_TEST_CASE(&test_make_expr));
+    test->add(BOOST_TEST_CASE(&test_make_expr_2));
     test->add(BOOST_TEST_CASE(&test_make_expr_functional));
+    test->add(BOOST_TEST_CASE(&test_make_expr_functional_2));
     test->add(BOOST_TEST_CASE(&test_unpack_expr));
+    test->add(BOOST_TEST_CASE(&test_unpack_expr_2));
+    test->add(BOOST_TEST_CASE(&test_unpack_expr_functional_2));
     test->add(BOOST_TEST_CASE(&test_unpack_expr_functional));
     test->add(BOOST_TEST_CASE(&test_make_expr_transform));
-    test->add(BOOST_TEST_CASE(&test_make_expr_transform2));
+    test->add(BOOST_TEST_CASE(&test_make_expr_transform_2));
 
     return test;
 }

@@ -61,7 +61,7 @@ namespace boost
                         typename decltype(e.proto_domain())::make_expr()(
                             proto::cxx11::tag_of(static_cast<E &&>(e))
                           , utility::by_val()(
-                                proto::cxx11::domains::as_expr<decltype(e.proto_domain())>(
+                                proto::cxx11::as_expr<decltype(e.proto_domain())>(
                                     as_pass_action_<Actions>()(
                                         proto::cxx11::child<I>(static_cast<E &&>(e))
                                       , static_cast<Rest &&>(rest)...
@@ -112,7 +112,7 @@ namespace boost
                     auto operator()(E && e, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
                         detail::pass_0_<
-                            utility::make_indices<arity_of<E>::value>
+                            utility::make_indices<result_of::arity_of<E>::value>
                           , Actions
                         >()(static_cast<E &&>(e), static_cast<Rest &&>(rest)...)
                     )

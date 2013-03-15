@@ -59,5 +59,3 @@ struct unary_plus
   reference.
 
 * Implementation of `unpack_expr` could probably use `fusion::invoke_function_object`.
-
-* Maybe result_of::make_expr<Tag(Child0, Child1), Domain> ?

@@ -278,7 +278,7 @@ namespace boost
             {
                 template<
                     typename Iterator
-                  , std::size_t Arity = proto::cxx11::arity_of<typename Iterator::expr_type>::value
+                  , std::size_t Arity = proto::cxx11::result_of::arity_of<typename Iterator::expr_type>::value
                 >
                 struct apply
                 {
@@ -481,7 +481,7 @@ namespace boost
                 template<
                     typename Sequence
                   , typename Index
-                  , std::size_t Arity = proto::cxx11::arity_of<Sequence>::value
+                  , std::size_t Arity = proto::cxx11::result_of::arity_of<Sequence>::value
                 >
                 struct apply
                 {
@@ -522,15 +522,15 @@ namespace boost
                 struct apply
                 {
                     using type =
-                        typename proto::cxx11::domains::result_of::unpack_expr<
-                            Domain
-                          , Tag
+                        typename proto::cxx11::result_of::unpack_expr<
+                            Tag
                           , Sequence &
+                          , Domain
                         >::type;
 
                     static type call(Sequence& seq)
                     {
-                        return proto::cxx11::domains::unpack_expr<Domain>(Tag(), seq);
+                        return proto::cxx11::unpack_expr<Tag, Domain>(seq);
                     }
                 };
             };
@@ -542,15 +542,15 @@ namespace boost
                 struct apply
                 {
                     using type =
-                        typename proto::cxx11::domains::result_of::unpack_expr<
-                            Domain
-                          , Tag
+                        typename proto::cxx11::result_of::unpack_expr<
+                            Tag
                           , Sequence &
+                          , Domain
                         >::type;
 
                     static type call(Sequence & seq)
                     {
-                        return proto::cxx11::domains::unpack_expr<Domain>(Tag(), seq);
+                        return proto::cxx11::unpack_expr<Tag, Domain>(seq);
                     }
                 };
             };

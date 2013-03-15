@@ -90,59 +90,82 @@ namespace boost
                 )
             }
 
-            namespace domains
-            {
-                ////////////////////////////////////////////////////////////////////////////////////
-                // unpack_expr (with domain)
-                template<typename Domain, typename Tag, typename Seq>
-                inline constexpr auto unpack_expr(Tag tag, Seq && seq)
-                BOOST_PROTO_AUTO_RETURN(
-                    detail::unroll_fusion_seq_(
-                        detail::with_deduced_expr_maker_<Domain>(static_cast<Tag &&>(tag))
-                      , static_cast<Seq &&>(seq)
-                    )
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // unpack_expr (with domain)
+            template<typename Domain, typename Seq, typename Tag>
+            inline constexpr auto unpack_expr(Tag && tag, Seq && seq)
+            BOOST_PROTO_AUTO_RETURN(
+                detail::unroll_fusion_seq_(
+                    detail::with_deduced_expr_maker_<Domain>(static_cast<Tag &&>(tag))
+                  , static_cast<Seq &&>(seq)
                 )
+            )
 
-                namespace functional
-                {
-                    template<typename Domain>
-                    struct unpack_expr
-                    {
-                        template<typename Tag, typename Seq>
-                        constexpr auto operator()(Tag tag, Seq && seq) const
-                        BOOST_PROTO_AUTO_RETURN(
-                            domains::unpack_expr<Domain>(static_cast<Tag &&>(tag), static_cast<Seq &&>(seq))
-                        )
-                    };
-                }
-
-                namespace result_of
-                {
-                    template<typename Domain, typename Tag, typename Seq>
-                    struct unpack_expr
-                    {
-                        using type = decltype(domains::unpack_expr<Domain>(Tag(), std::declval<Seq>()));
-                    };
-                }
-            }
+            template<typename Tag, typename Domain, typename Seq>
+            inline constexpr auto unpack_expr(Seq && seq)
+            BOOST_PROTO_AUTO_RETURN(
+                proto::cxx11::unpack_expr<Domain>(
+                    Tag()
+                  , static_cast<Seq &&>(seq)
+                )
+            )
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // unpack_expr (no domain)
-            template<typename Tag, typename Seq>
-            inline constexpr auto unpack_expr(Tag tag, Seq && seq)
+            template<typename Seq, typename Tag>
+            inline constexpr auto unpack_expr(Tag && tag, Seq && seq)
             BOOST_PROTO_AUTO_RETURN(
-                proto::cxx11::domains::unpack_expr<deduce_domain>(
+                proto::cxx11::unpack_expr<deduce_domain>(
                     static_cast<Tag &&>(tag)
                   , static_cast<Seq &&>(seq)
                 )
             )
 
+            template<typename Tag, typename Seq>
+            inline constexpr auto unpack_expr(Seq && seq)
+            BOOST_PROTO_AUTO_RETURN(
+                proto::cxx11::unpack_expr<Tag, deduce_domain>(
+                    static_cast<Seq &&>(seq)
+                )
+            )
+
             namespace functional
             {
+                template<typename Tag, typename Domain>
                 struct unpack_expr
                 {
-                    template<typename Tag, typename Seq>
-                    constexpr auto operator()(Tag tag, Seq && seq) const
+                    template<typename Seq>
+                    constexpr auto operator()(Seq && seq) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        proto::cxx11::unpack_expr<Tag, Domain>(static_cast<Seq &&>(seq))
+                    )
+                };
+
+                template<typename Domain>
+                struct unpack_expr<Domain, typename std::enable_if<is_domain<Domain>::value>::type>
+                {
+                    template<typename Seq, typename Tag>
+                    constexpr auto operator()(Tag && tag, Seq && seq) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        proto::cxx11::unpack_expr<Domain>(static_cast<Tag &&>(tag), static_cast<Seq &&>(seq))
+                    )
+                };
+
+                template<typename Tag>
+                struct unpack_expr<Tag, typename std::enable_if<is_tag<Tag>::value>::type>
+                {
+                    template<typename Seq>
+                    constexpr auto operator()(Seq && seq) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        proto::cxx11::unpack_expr<Tag>(static_cast<Seq &&>(seq))
+                    )
+                };
+
+                template<>
+                struct unpack_expr<void, void>
+                {
+                    template<typename Seq, typename Tag>
+                    constexpr auto operator()(Tag && tag, Seq && seq) const
                     BOOST_PROTO_AUTO_RETURN(
                         proto::cxx11::unpack_expr(static_cast<Tag &&>(tag), static_cast<Seq &&>(seq))
                     )
@@ -151,10 +174,10 @@ namespace boost
 
             namespace result_of
             {
-                template<typename Tag, typename Seq>
+                template<typename Tag, typename Seq, typename Domain>
                 struct unpack_expr
                 {
-                    using type = decltype(proto::cxx11::unpack_expr(Tag(), std::declval<Seq>()));
+                    using type = decltype(proto::cxx11::unpack_expr<Tag, Domain>(std::declval<Seq>()));
                 };
             }
         }

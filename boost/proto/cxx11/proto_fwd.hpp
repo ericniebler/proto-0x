@@ -256,10 +256,19 @@ namespace boost
             {
                 template<typename Expr>
                 struct tag_of;
+
+                template<typename Expr>
+                struct arity_of;
+
+                template<typename Expr>
+                struct domain_of;
             }
 
             template<typename T>
             struct is_tag;
+
+            template<typename T>
+            struct is_domain;
 
             namespace domains
             {
@@ -282,30 +291,6 @@ namespace boost
 
                 template<template<typename...> class Expr, typename Domain = void>
                 struct make_custom_expr;
-
-                namespace functional
-                {
-                    template<typename Domain>
-                    struct as_expr;
-
-                    template<typename Domain>
-                    struct make_expr;
-
-                    template<typename Domain>
-                    struct unpack_expr;
-                }
-
-                namespace result_of
-                {
-                    template<typename Domain, typename T>
-                    struct as_expr;
-
-                    template<typename Domain, typename Tag, typename ...T>
-                    struct make_expr;
-
-                    template<typename Domain, typename Tag, typename Seq>
-                    struct unpack_expr;
-                }
             }
 
             using domains::no_super_domain;
@@ -318,10 +303,13 @@ namespace boost
 
             namespace functional
             {
+                template<typename Domain = default_domain>
                 struct as_expr;
 
+                template<typename TagOrDomain = void, typename DomainOrVoid = void>
                 struct make_expr;
 
+                template<typename TagOrDomain = void, typename DomainOrVoid = void>
                 struct unpack_expr;
 
                 template<typename Key>
@@ -330,13 +318,13 @@ namespace boost
 
             namespace result_of
             {
-                template<typename T>
+                template<typename T, typename Domain = default_domain>
                 struct as_expr;
 
-                template<typename Tag, typename ...T>
+                template<typename ExprDesc, typename Domain = deduce_domain>
                 struct make_expr;
 
-                template<typename Tag, typename Seq>
+                template<typename Tag, typename Seq, typename Domain = deduce_domain>
                 struct unpack_expr;
 
                 template<typename Env, typename Key>
@@ -484,6 +472,8 @@ namespace boost
 
             struct make;
 
+            struct call;
+
             struct let;
 
             struct fold;
@@ -498,12 +488,6 @@ namespace boost
 
             template<typename Expr>
             struct is_terminal;
-
-            template<typename Expr>
-            struct arity_of;
-
-            template<typename Expr>
-            struct domain_of;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // Stuff for grammar building

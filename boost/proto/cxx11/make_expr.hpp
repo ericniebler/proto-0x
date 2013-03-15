@@ -100,103 +100,118 @@ namespace boost
                 }
             }
 
-            namespace domains
-            {
-                ////////////////////////////////////////////////////////////////////////////////////
-                // as_expr (with domain)
-                template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(is_expr<T>::value)>
-                inline constexpr auto as_expr(T &&t)
-                BOOST_PROTO_AUTO_RETURN(
-                    detail::child_storer(Domain(), t)(detail::normalize_expr(static_cast<T &&>(t)))
-                )
+            ////////////////////////////////////////////////////////////////////////////////////
+            // as_expr (with domain)
+            template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(is_expr<T>::value)>
+            inline constexpr auto as_expr(T &&t)
+            BOOST_PROTO_AUTO_RETURN(
+                detail::child_storer(Domain(), t)(detail::normalize_expr(static_cast<T &&>(t)))
+            )
 
-                template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(!is_expr<T>::value)>
-                inline constexpr auto as_expr(T &&t)
-                BOOST_PROTO_AUTO_RETURN(
-                    detail::expr_maker(Domain(), t)(proto::cxx11::terminal(), static_cast<T &&>(t))
-                )
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // make_expr (with domain)
-                template<typename Domain, typename Tag, typename ...T>
-                inline constexpr auto make_expr(Tag tag, T &&...t)
-                BOOST_PROTO_AUTO_RETURN(
-                    detail::expr_maker(Domain(), t...)(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
-                )
-
-                namespace functional
-                {
-                    template<typename Domain>
-                    struct as_expr
-                    {
-                        template<typename T>
-                        inline constexpr auto operator()(T &&t) const
-                        BOOST_PROTO_AUTO_RETURN(
-                            domains::as_expr<Domain>(static_cast<T &&>(t))
-                        )
-                    };
-
-                    template<typename Domain>
-                    struct make_expr
-                    {
-                        template<typename Tag, typename ...T>
-                        inline constexpr auto operator()(Tag tag, T &&...t) const
-                        BOOST_PROTO_AUTO_RETURN(
-                            domains::make_expr<Domain>(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
-                        )
-                    };
-                }
-
-                namespace result_of
-                {
-                    template<typename Domain, typename T>
-                    struct as_expr
-                    {
-                        using type = decltype(domains::as_expr<Domain>(std::declval<T>()));
-                    };
-
-                    template<typename Domain, typename Tag, typename ...T>
-                    struct make_expr
-                    {
-                        using type = decltype(domains::make_expr<Domain>(Tag(), std::declval<T>()...));
-                    };
-                }
-            }
+            template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(!is_expr<T>::value)>
+            inline constexpr auto as_expr(T &&t)
+            BOOST_PROTO_AUTO_RETURN(
+                detail::expr_maker(Domain(), t)(proto::cxx11::terminal(), static_cast<T &&>(t))
+            )
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // as_expr (no domain)
             template<typename T>
             inline constexpr auto as_expr(T &&t)
             BOOST_PROTO_AUTO_RETURN(
-                proto::cxx11::domains::as_expr<default_domain>(static_cast<T &&>(t))
+                proto::cxx11::as_expr<default_domain>(static_cast<T &&>(t))
             )
 
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // make_expr (no domain)
-            template<typename Tag, typename ...T>
-            inline constexpr auto make_expr(Tag tag, T &&...t)
+            ////////////////////////////////////////////////////////////////////////////////////
+            // make_expr (with domain)
+            template<typename Domain, typename ...T, typename Tag
+              , BOOST_PROTO_ENABLE_IF(is_tag<Tag>::value)>
+            inline constexpr auto make_expr(Tag && tag, T &&...t)
             BOOST_PROTO_AUTO_RETURN(
-                proto::cxx11::domains::make_expr<deduce_domain>(
+                detail::expr_maker(Domain(), t...)(
                     static_cast<Tag &&>(tag)
                   , static_cast<T &&>(t)...
                 )
             )
 
+            template<typename Tag, typename Domain, typename ...T>
+            inline constexpr auto make_expr(T &&...t)
+            BOOST_PROTO_AUTO_RETURN(
+                proto::cxx11::make_expr<Domain>(Tag(), static_cast<T &&>(t)...)
+            )
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // make_expr (no domain)
+            template<typename ...T, typename Tag>
+            inline constexpr auto make_expr(Tag && tag, T &&...t)
+            BOOST_PROTO_AUTO_RETURN(
+                proto::cxx11::make_expr<deduce_domain>(
+                    static_cast<Tag &&>(tag)
+                  , static_cast<T &&>(t)...
+                )
+            )
+
+            template<typename Tag, typename ...T>
+            inline constexpr auto make_expr(T &&...t)
+            BOOST_PROTO_AUTO_RETURN(
+                proto::cxx11::make_expr<Tag, deduce_domain>(
+                    static_cast<T &&>(t)...
+                )
+            )
+
             namespace functional
             {
+                ////////////////////////////////////////////////////////////////////////////////////
+                // functional::as_expr
+                template<typename Domain>
                 struct as_expr
                 {
                     template<typename T>
                     inline constexpr auto operator()(T &&t) const
                     BOOST_PROTO_AUTO_RETURN(
-                        proto::cxx11::as_expr(static_cast<T &&>(t))
+                        proto::cxx11::as_expr<Domain>(static_cast<T &&>(t))
                     )
                 };
 
+                ////////////////////////////////////////////////////////////////////////////////////
+                // functional::make_expr (with domain)
+                template<typename Tag, typename Domain>
                 struct make_expr
                 {
-                    template<typename Tag, typename ...T>
-                    inline constexpr auto operator()(Tag tag, T &&...t) const
+                    template<typename ...T>
+                    inline constexpr auto operator()(T &&...t) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        proto::cxx11::make_expr<Tag, Domain>(static_cast<T &&>(t)...)
+                    )
+                };
+
+                template<typename Domain>
+                struct make_expr<Domain, typename std::enable_if<is_domain<Domain>::value>::type>
+                {
+                    template<typename ...T, typename Tag>
+                    inline constexpr auto operator()(Tag && tag, T &&...t) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        proto::cxx11::make_expr<Domain>(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
+                    )
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // functional::make_expr (no domain)
+                template<typename Tag>
+                struct make_expr<Tag, typename std::enable_if<is_tag<Tag>::value>::type>
+                {
+                    template<typename ...T>
+                    inline constexpr auto operator()(T &&...t) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        proto::cxx11::make_expr<Tag>(static_cast<T &&>(t)...)
+                    )
+                };
+
+                template<>
+                struct make_expr<void, void>
+                {
+                    template<typename ...T, typename Tag>
+                    inline constexpr auto operator()(Tag && tag, T &&...t) const
                     BOOST_PROTO_AUTO_RETURN(
                         proto::cxx11::make_expr(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
                     )
@@ -205,16 +220,16 @@ namespace boost
 
             namespace result_of
             {
-                template<typename T>
+                template<typename T, typename Domain>
                 struct as_expr
                 {
-                    using type = decltype(proto::cxx11::as_expr(std::declval<T>()));
+                    using type = decltype(proto::cxx11::as_expr<Domain>(std::declval<T>()));
                 };
 
-                template<typename Tag, typename ...T>
-                struct make_expr
+                template<typename Tag, typename ...T, typename Domain>
+                struct make_expr<Tag(T...), Domain>
                 {
-                    using type = decltype(proto::cxx11::make_expr(Tag(), std::declval<T>()...));
+                    using type = decltype(proto::cxx11::make_expr<Tag, Domain>(std::declval<T>()...));
                 };
             }
         }

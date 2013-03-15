@@ -100,7 +100,7 @@ namespace boost
                     auto operator()(Expr && expr, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
                         this->impl(
-                            utility::make_indices<arity_of<Expr>::value>()
+                            utility::make_indices<result_of::arity_of<Expr>::value>()
                           , static_cast<Expr &&>(expr)
                           , static_cast<Rest &&>(rest)...
                         )

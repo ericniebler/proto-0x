@@ -45,7 +45,7 @@ namespace boost
                     BOOST_PROTO_AUTO_RETURN(
                         typename Domain::make_expr()(
                             static_cast<Tag &&>(tag)
-                          , proto::cxx11::domains::as_expr<Domain>(static_cast<T &&>(t))...
+                          , proto::cxx11::as_expr<Domain>(static_cast<T &&>(t))...
                         )
                     )
 
@@ -114,9 +114,15 @@ namespace boost
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
+                // domain_base
+                struct domain_base
+                {};
+
+                ////////////////////////////////////////////////////////////////////////////////////
                 // domain
                 template<typename Domain, typename Grammar, typename SuperDomain>
                 struct domain
+                  : domain_base
                 {
                     using proto_domain_type = Domain;
                     using proto_grammar_type = Grammar;
@@ -169,24 +175,34 @@ namespace boost
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // domain_of
-            template<typename Expr>
-            struct domain_of
-            {
-                using type = typename Expr::proto_domain_type;
-            };
+            // is_domain
+            template<typename T>
+            struct is_domain
+              : std::is_base_of<domains::domain_base, T>
+            {};
 
-            template<typename Expr>
-            struct domain_of<Expr &>
+            namespace result_of
             {
-                using type = typename Expr::proto_domain_type;
-            };
+                ////////////////////////////////////////////////////////////////////////////////////////
+                // domain_of
+                template<typename Expr>
+                struct domain_of
+                {
+                    using type = typename Expr::proto_domain_type;
+                };
 
-            template<typename Expr>
-            struct domain_of<Expr &&>
-            {
-                using type = typename Expr::proto_domain_type;
-            };
+                template<typename Expr>
+                struct domain_of<Expr &>
+                {
+                    using type = typename Expr::proto_domain_type;
+                };
+
+                template<typename Expr>
+                struct domain_of<Expr &&>
+                {
+                    using type = typename Expr::proto_domain_type;
+                };
+            }
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // _domain_of
