@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Proto Files">
+      <UniqueIdentifier>{ddec84e0-144c-4e2b-8c74-dd23488c6f2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{ea867dcc-019a-41c6-9b73-6646d07f3642}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Proto Files\detail">
+      <UniqueIdentifier>{8028ed3e-04d4-43ac-bcc1-f2f6bbb70ce0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test Files">
+      <UniqueIdentifier>{8146d17b-12da-4536-955c-5b5659f9033c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Example Files">
+      <UniqueIdentifier>{b7dc5246-2b26-4c29-8d49-dc17b45777c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Proto Files\functional">
+      <UniqueIdentifier>{ea2ed1ac-915f-408e-b00c-976b2089392b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Proto Files\functional\std">
+      <UniqueIdentifier>{f8a33037-fcd2-46c8-aa43-b978384f35bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Proto Files\functional\fusion">
+      <UniqueIdentifier>{eb5bff9f-3017-48e3-87c1-273b04df0e62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Proto Files\grammar">
+      <UniqueIdentifier>{fa686832-862a-411e-aba9-19a89b2b8f3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Proto Files\action">
+      <UniqueIdentifier>{1617621d-4ce9-4de2-b204-9d89fb132868}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Proto Files\functional\range">
+      <UniqueIdentifier>{3a2d0b57-582a-4bd0-a145-0053ea9aa5d2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\expr.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\proto_fwd.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\proto.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\tags.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\domain.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\operators.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\detail\common_domain.hpp">
+      <Filter>Proto Files\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\make_expr.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\matches.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\utility.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\test\unit_test.hpp">
+      <Filter>Test Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\debug.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\fusion.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\virtual_member.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\fusion.hpp">
+      <Filter>Proto Files\functional</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\std.hpp">
+      <Filter>Proto Files\functional</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\fusion\at.hpp">
+      <Filter>Proto Files\functional\fusion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\fusion\pop_back.hpp">
+      <Filter>Proto Files\functional\fusion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\fusion\pop_front.hpp">
+      <Filter>Proto Files\functional\fusion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\fusion\push_back.hpp">
+      <Filter>Proto Files\functional\fusion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\fusion\push_front.hpp">
+      <Filter>Proto Files\functional\fusion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\fusion\reverse.hpp">
+      <Filter>Proto Files\functional\fusion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\std\utility.hpp">
+      <Filter>Proto Files\functional\std</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\core.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\deep_copy.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\custom.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\grammar.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\apply.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\call.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\env.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\eval.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\fold.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\integral_constant.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\protect.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\recursive_fold.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\unpack.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\children.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\placeholders.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\grammar\if.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\grammar\not.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\grammar\or.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\grammar\and.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\grammar\switch.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\if.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\or.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\switch.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\grammar\expr.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\let.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\literals.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\range.hpp">
+      <Filter>Proto Files\functional</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\range\begin.hpp">
+      <Filter>Proto Files\functional\range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\range\empty.hpp">
+      <Filter>Proto Files\functional\range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\range\end.hpp">
+      <Filter>Proto Files\functional\range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\range\rbegin.hpp">
+      <Filter>Proto Files\functional\range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\range\rend.hpp">
+      <Filter>Proto Files\functional\range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\range\size.hpp">
+      <Filter>Proto Files\functional\range</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\std\iterator.hpp">
+      <Filter>Proto Files\functional\std</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\detail\compressed_pair.hpp">
+      <Filter>Proto Files\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\accessors.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\matches.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\pass.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\match.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\grammar\match.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\block.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\case.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\grammar\case.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\and.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\placeholders.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\grammar\placeholders.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\unpack_expr.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\def.hpp">
+      <Filter>Proto Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\not.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\basic_action.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\grammar\basic_grammar.hpp">
+      <Filter>Proto Files\grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\make.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\matches.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\expr.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\common_domain.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\mem_fun.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\example\lambda.cpp">
+      <Filter>Example Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\display_expr.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\bug2407.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\flatten.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\virtual_member.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\example\virtual_member.cpp">
+      <Filter>Example Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\constrained_ops.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\deep_copy.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\pack_expansion.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\noinvoke.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\protect.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\apply.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\action.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\fold.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\let.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\cpp-next_bug.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\logical_ops.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\make_expr.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\mpl.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\def.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\make.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\pass.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\test\Jamfile">
+      <Filter>Test Files</Filter>
+    </None>
+    <None Include="..\example\Jamfile">
+      <Filter>Example Files</Filter>
+    </None>
+    <None Include="Makefile">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Jamfile">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\..\..\..\LICENSE.md" />
+    <None Include="..\..\..\..\README.md" />
+    <None Include="..\..\..\..\TODO.md" />
+  </ItemGroup>
+</Project>
