@@ -5,10 +5,13 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <cxxabi.h>
 #include <cstdio>
 #include <utility>
 #include <typeinfo>
 #include <type_traits>
+#include <memory>
+#include <cstdlib>
 #include <boost/proto/v5/proto.hpp>
 #include <boost/proto/v5/debug.hpp>
 
@@ -22,12 +25,14 @@ struct placeholder
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(placeholder);
     using proto::env_var_tag<placeholder<T>>::operator=;
 
-    // So placeholder terminals can be pretty-printed with display_expr
-    friend std::ostream & operator << (std::ostream & s, placeholder<T>)
-    {
-        return s << "_" << T::value + 1;
-    }
 };
+
+// So placeholder terminals can be pretty-printed with display_expr
+template<typename T>
+std::ostream & operator << (std::ostream & s, placeholder<T>)
+{
+    return s << "_" << T::value + 1;
+}
 
 template<std::size_t I>
 using placeholder_c = placeholder<std::integral_constant<std::size_t, I>>;
@@ -64,7 +69,7 @@ struct lambda_domain
   : proto::domain<lambda_domain>
 {
     using make_expr = proto::make_custom_expr<lambda_expr>;
-    //using store_child = proto::utility::by_ref;
+    using store_child = proto::utility::by_ref;
 };
 
 template<typename ExprDesc>
@@ -100,6 +105,91 @@ namespace
 static_assert(std::is_trivial<lambda_var<placeholder_c<0>>>::value, "_1 should be trivial");
 BOOST_PROTO_IGNORE_UNUSED(_1, _2, _3);
 
+using make_minus = proto::functional::make_expr<proto::minus>;
+
+struct Invert
+  : proto::def<
+        proto::match(
+            proto::case_(   proto::terminal(_),
+                            proto::_                            )
+          , proto::case_(   proto::plus(_,_),
+                            make_minus(Invert(proto::_left),
+                                       Invert(proto::_right))   ) // watch that this doesn't create danging
+          , proto::case_(   _(Invert...),                         //   references if Invert returns a temporary!
+                            proto::pass                         )
+        )
+    >
+{};
+
+std::string demangle(char const *name)
+{
+  int status = 0;
+  std::unique_ptr<char,void(*)(void*)> realname(
+    abi::__cxa_demangle(name, 0, 0, &status),[](void*p){free(p);});
+  return realname.get();
+}
+
+template<typename T>
+std::string name_of()
+{
+    return demangle(typeid(T).name());
+}
+
+template<typename T>
+std::string name_of(T &&)
+{
+    return name_of<T>();
+}
+
+//    std::cout << name_of(_1 + 42 * _2) << std::endl;
+//    lambda_expr<boost::proto::cxx11::tags::plus ()(
+//        lambda_expr<boost::proto::cxx11::tags::terminal ()(
+//            placeholder<std::integral_constant<unsigned int, 0u> >)
+//        > const &,
+//        lambda_expr<boost::proto::cxx11::tags::multiplies ()(
+//            lambda_expr<boost::proto::cxx11::tags::terminal ()(int)>,
+//            lambda_expr<boost::proto::cxx11::tags::terminal ()(
+//                placeholder<std::integral_constant<unsigned int, 1u> >
+//            )> const&
+//        )> const&
+//    )>
+
+//    lambda_expr<boost::proto::cxx11::tags::plus ()(
+//        lambda_expr<boost::proto::cxx11::tags::terminal ()(
+//            placeholder<std::integral_constant<unsigned int, 0u> >
+//        )>,
+//        lambda_expr<boost::proto::cxx11::tags::multiplies ()(
+//            lambda_expr<boost::proto::cxx11::tags::terminal ()(int)>,
+//            lambda_expr<boost::proto::cxx11::tags::terminal ()(
+//                placeholder<std::integral_constant<unsigned int, 1u> >
+//            )>
+//        )>
+//    )>
+
+//    lambda_expr<boost::proto::cxx11::tags::minus ()(
+//        lambda_expr<boost::proto::cxx11::tags::terminal ()(
+//            placeholder<std::integral_constant<unsigned int, 0u> >
+//        )>&,
+//        lambda_expr<boost::proto::cxx11::tags::multiplies ()(
+//            lambda_expr<boost::proto::cxx11::tags::terminal ()(int)>,
+//            lambda_expr<boost::proto::cxx11::tags::terminal ()(
+//                placeholder<std::integral_constant<unsigned int, 1u> >
+//            )>
+//        )> const&
+//    )>
+
+//    lambda_expr<boost::proto::cxx11::tags::minus ()(
+//        lambda_expr<boost::proto::cxx11::tags::terminal ()(
+//            placeholder<std::integral_constant<unsigned int, 0u> >
+//        )>&,
+//        lambda_expr<boost::proto::cxx11::tags::multiplies ()(
+//            lambda_expr<boost::proto::cxx11::tags::terminal ()(int)>,
+//            lambda_expr<boost::proto::cxx11::tags::terminal ()(
+//                placeholder<std::integral_constant<unsigned int, 1u> >
+//            )>
+//        )> const&
+//    )>
+
 int main()
 {
     std::printf("*** \n");
@@ -107,16 +197,23 @@ int main()
     std::printf("*** \n");
 
     // Create a lambda
-    auto fun = _1 + 42 * _2;
+    std::cout << name_of(_1 + 42 * _2) << std::endl;
+    //auto fun = _1 + 42 * _2;
+    auto fun = proto::deep_copy(_1 + 42 * _2);
+    std::cout << name_of(fun) << std::endl;
 
-    // pretty-print the expression
-    proto::display_expr(fun);
+    //// pretty-print the expression
+    //proto::display_expr(fun);
 
-    // Call the lambda
-    int i = fun(8, 2);
+    std::cout << name_of(Invert()(fun)) << std::endl;
+    //auto fun2 = Invert()(fun);
+    //proto::display_expr(fun2);
 
-    // print the result
-    std::printf("The lambda '_1 + 42 * _2' yields '%d' when called with 8 and 2.\n", i);
+    //// Call the lambda
+    //int i = fun(8, 2);
+
+    //// print the result
+    //std::printf("The lambda '_1 + 42 * _2' yields '%d' when called with 8 and 2.\n", i);
 
     void done();
     done();

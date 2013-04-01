@@ -53,10 +53,7 @@ namespace boost
                 struct terminal
                   : expr_tag<terminal, std::true_type>
                 {
-                    template<
-                        typename T
-                      , typename MakeExpr = proto::v5::functional::make_expr<terminal>
-                    >
+                    template<typename T, typename MakeExpr = functional::make_expr<terminal>>
                     auto operator()(T && t) const
                     BOOST_PROTO_AUTO_RETURN(
                         MakeExpr()(static_cast<T &&>(t))

@@ -41,7 +41,7 @@ namespace boost
                 {
                     // If Tag does not represents a terminal, first pass the argument(s) through as_expr
                     template<typename Tag, typename ...T, BOOST_PROTO_ENABLE_IF(!Tag::proto_is_terminal_type::value)>
-                    inline constexpr auto operator()(Tag tag, T &&... t) const
+                    inline constexpr auto operator()(Tag && tag, T &&... t) const
                     BOOST_PROTO_AUTO_RETURN(
                         typename Domain::make_expr()(
                             static_cast<Tag &&>(tag)
@@ -51,7 +51,7 @@ namespace boost
 
                     // If Tag represents a terminal, don't pass the argument(s) through as_expr
                     template<typename Tag, typename T, BOOST_PROTO_ENABLE_IF(Tag::proto_is_terminal_type::value)>
-                    inline constexpr auto operator()(Tag tag, T && t) const
+                    inline constexpr auto operator()(Tag && tag, T && t) const
                     BOOST_PROTO_AUTO_RETURN(
                         typename Domain::make_expr()(
                             static_cast<Tag &&>(tag)
@@ -63,15 +63,15 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // detail::make_custom_expr
                 template<template<typename> class Expr, typename Domain, typename Tag, typename ...T>
-                inline constexpr auto make_custom_expr(Tag tag, T &&...t)
+                inline constexpr auto make_custom_expr(Tag && tag, T &&...t)
                 BOOST_PROTO_AUTO_RETURN(
-                    Expr<Tag(T...)>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
+                    Expr<utility::uncvref<Tag>(T...)>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
                 )
 
                 template<template<typename, typename> class Expr, typename Domain, typename Tag, typename ...T>
-                inline constexpr auto make_custom_expr(Tag tag, T &&...t)
+                inline constexpr auto make_custom_expr(Tag && tag, T &&...t)
                 BOOST_PROTO_AUTO_RETURN(
-                    Expr<Tag(T...), Domain>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
+                    Expr<utility::uncvref<Tag>(T...), Domain>{static_cast<Tag &&>(tag), static_cast<T &&>(t)...}
                 )
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -90,6 +90,7 @@ namespace boost
                 template<template<typename...A> class Expr, typename Domain>
                 struct make_custom_expr
                 {
+                private:
                     static constexpr std::size_t template_arity = sizeof(detail::template_arity<Expr>());
 
                     static_assert(
@@ -103,8 +104,9 @@ namespace boost
                         " specify what the domain should be"
                     );
 
+                public:
                     template<typename Tag, typename ...T>
-                    inline constexpr auto operator()(Tag tag, T &&... t) const
+                    inline constexpr auto operator()(Tag && tag, T &&... t) const
                     BOOST_PROTO_AUTO_RETURN(
                         detail::make_custom_expr<Expr, Domain>(
                             static_cast<Tag &&>(tag)

@@ -126,7 +126,7 @@ namespace boost
                 struct make_expr_if_
                 {
                     template<typename Tag, typename ...T>
-                    constexpr auto operator()(Tag tag, T &&...t) const
+                    constexpr auto operator()(Tag && tag, T &&...t) const
                     BOOST_PROTO_AUTO_RETURN(
                         detail::expr_maker_if_2_<
                             Tag(decltype(detail::as_basic_expr<Domain>(static_cast<T &&>(t)))...)
@@ -146,7 +146,7 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // make_expr_if (with domain) - refuse to create expressions that are non-grammatical
                 template<typename Domain, typename Tag, typename ...T>
-                inline constexpr auto make_expr_if(Tag tag, T &&...t)
+                inline constexpr auto make_expr_if(Tag && tag, T &&...t)
                 BOOST_PROTO_AUTO_RETURN(
                     detail::expr_maker_if(Domain(), t...)(
                         static_cast<Tag &&>(tag)

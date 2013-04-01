@@ -52,10 +52,20 @@ struct unary_plus
 
 * How about a `static_cast_` function object?
 
-* Should terminal-ness really be encoded in the tag? (Answer: yeah, probably. Otherwise, `make_expr`
-  needs another way to know whether it's building a terminal or not.)
+* Should terminal-ness really be encoded in the tag? (Answer: yeah, probably. Otherwise,
+ `make_expr` needs another way to know whether it's building a terminal or not.)
 
 * Everyplace where we directly return an rvalue reference is potentially creating a dangling
   reference.
 
 * Implementation of `unpack_expr` could probably use `fusion::invoke_function_object`.
+
+* Should `_(A(_left), B(_right))` be synonymous for `pass(A, B)`? That would be consistent with the
+  use of `_` in expression patterns like `_(A,B)`, where `_` means "any tag", but inconsistent with
+  the use of `_` as a primitive transform, where `_(A,B)` simply returns `a`.
+
+* I think we have a problem with `as_expr` calling `store_child`. In proto-current,
+  `functional::make_expr` doesn't create dangling references when used in transforms, regardless of
+  the Domain's `as_child` policy. In proto-0x, `using store_child = by_ref` does cause `make_expr` to
+  create dangling references. Should the operators should not have exactly the same behavior as
+  `make_expr`? That would effect the use of the tag types as expression creators in actions.

@@ -29,6 +29,11 @@ namespace boost
             namespace utility
             {
                 ////////////////////////////////////////////////////////////////////////////////////
+                // uncvref
+                template<typename T>
+                using uncvref = typename std::remove_cv<typename std::remove_reference<T>::type>::type;
+
+                ////////////////////////////////////////////////////////////////////////////////////
                 // never
                 template<typename ...T>
                 struct never
