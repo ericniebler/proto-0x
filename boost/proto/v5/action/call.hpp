@@ -17,6 +17,7 @@
 #include <boost/proto/v5/action/basic_action.hpp>
 #include <boost/proto/v5/action/protect.hpp>
 #include <boost/proto/v5/action/env.hpp>
+#include <boost/proto/v5/functional/cxx/construct.hpp>
 
 namespace boost
 {
@@ -32,7 +33,7 @@ namespace boost
             {
                 ////////////////////////////////////////////////////////////////////////////////////
                 // call_2_
-                template<bool NoPad, typename ...Results>
+                template<bool TryCall, bool NoPad, typename ...Results>
                 struct call_2_
                 {
                     template<typename Action, typename ...Args>
@@ -43,20 +44,20 @@ namespace boost
                       , Args &&... args
                     ) const
                     BOOST_PROTO_AUTO_RETURN(
-                        BOOST_PROTO_TRY_CALL(static_cast<Action &&>(act))(
+                        BOOST_PROTO_TRY_CALL_IF(TryCall)(static_cast<Action &&>(act))(
                             static_cast<Results &&>(results)...
                           , static_cast<Args &&>(args)...
                         )
                     )
                 };
 
-                template<typename ...Results>
-                struct call_2_<true, Results...>
+                template<bool TryCall, typename ...Results>
+                struct call_2_<TryCall, true, Results...>
                 {
                     template<typename Action, typename ...Ts>
                     auto operator()(Action &&act, Results &&... results, Ts &&...) const
                     BOOST_PROTO_AUTO_RETURN(
-                        BOOST_PROTO_TRY_CALL(static_cast<Action &&>(act))(
+                        BOOST_PROTO_TRY_CALL_IF(TryCall)(static_cast<Action &&>(act))(
                             static_cast<Results &&>(results)...
                         )
                     )
@@ -64,7 +65,7 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // call_1_
-                template<typename ...Actions>
+                template<bool TryCall, typename ...Actions>
                 struct call_1_
                 {
                     // Handle actions
@@ -75,8 +76,9 @@ namespace boost
                     >
                     auto operator()(Action &&act, Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
-                        BOOST_PROTO_TRY_CALL(call_2_<
-                            (sizeof...(Args) <= sizeof...(Actions))
+                        BOOST_PROTO_TRY_CALL_IF(TryCall)(call_2_<
+                            TryCall
+                          , (sizeof...(Args) <= sizeof...(Actions))
                           , decltype(as_action_<Actions>()(static_cast<Args &&>(args)...))...
                         >())(
                             static_cast<Action &&>(act)
@@ -93,7 +95,7 @@ namespace boost
                     >
                     auto operator()(Fun &&fun, Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
-                        BOOST_PROTO_TRY_CALL(static_cast<Fun &&>(fun))(
+                        BOOST_PROTO_TRY_CALL_IF(TryCall)(static_cast<Fun &&>(fun))(
                             as_action_<Actions>()(static_cast<Args &&>(args)...)...
                         )
                     )
@@ -108,7 +110,48 @@ namespace boost
                     template<typename ...Args, typename Fun = Ret>
                     auto operator()(Args &&... t) const
                     BOOST_PROTO_AUTO_RETURN(
-                        call_1_<Actions...>()(Fun(), static_cast<Args &&>(t)...)
+                        call_1_<true, Actions...>()(Fun(), static_cast<Args &&>(t)...)
+                    )
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // call_or_construct_1_
+                template<typename Ret, typename ...Actions>
+                struct call_or_construct_1_
+                {
+                    template<typename ...Args, typename Fun = Ret>
+                    auto operator()(Args &&... t) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        call_1_<false, Actions...>()(
+                            Fun()
+                          , static_cast<Args &&>(t)...
+                        )
+                    )
+
+                    template<typename ...Args, typename Obj = Ret
+                      , BOOST_PROTO_ENABLE_IF(!v5::is_action<Obj>::value)
+                    >
+                    auto operator()(Args &&... t) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        call_1_<false, Actions...>()(
+                            functional::cxx::construct<Obj>()
+                          , static_cast<Args &&>(t)...
+                        )
+                    )
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // _call_or_construct
+                template<typename Ret, typename ...Actions>
+                struct _call_or_construct
+                  : basic_action<_call_or_construct<Ret, Actions...>>
+                {
+                    template<typename ...Args>
+                    auto operator()(Args &&... t) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        BOOST_PROTO_TRY_CALL(call_or_construct_1_<Ret, Actions...>())(
+                            static_cast<Args &&>(t)...
+                        )
                     )
                 };
             }
@@ -122,7 +165,7 @@ namespace boost
                 // Handle callable actions
                 template<typename Ret, typename ...Actions>
                 struct action_impl<Ret(Actions...)>
-                  : detail::_call<Ret, Actions...>
+                  : detail::_call_or_construct<Ret, Actions...>
                 {};
 
                 template<typename Ret>

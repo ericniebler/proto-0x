@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -92,6 +92,8 @@
     <ClInclude Include="..\..\..\..\boost\proto\v5\domain.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\expr.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional.hpp" />
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\cxx.hpp" />
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\cxx\construct.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional\fusion.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional\fusion\at.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional\fusion\pop_back.hpp" />

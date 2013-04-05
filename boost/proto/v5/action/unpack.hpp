@@ -174,9 +174,15 @@ namespace boost
 
             namespace extension
             {
+                ////////////////////////////////////////////////////////////////////////////////////
                 // Handle actions with pack expansions
                 template<typename Ret, typename ...Actions>
                 struct action_impl<Ret(Actions......)>
+                  : detail::_unpack<Ret, Actions...>
+                {};
+
+                template<typename Ret, typename ...Actions>
+                struct action_impl<call(Ret(*)(Actions......))>
                   : detail::_unpack<Ret, Actions...>
                 {};
             }

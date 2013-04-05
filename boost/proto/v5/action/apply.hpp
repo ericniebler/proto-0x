@@ -31,7 +31,7 @@ namespace boost
                     template<typename ...Args>
                     auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
-                        BOOST_PROTO_TRY_CALL(detail::call_1_<Actions...>())(
+                        BOOST_PROTO_TRY_CALL(detail::call_1_<true, Actions...>())(
                             as_action_<Fun>()(static_cast<Args &&>(args)...)
                           , static_cast<Args &&>(args)...
                         )

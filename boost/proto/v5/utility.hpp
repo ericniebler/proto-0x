@@ -763,10 +763,24 @@ namespace boost
                     try_call_wrapper<Fun>(static_cast<Fun &&>(fun))
                 )
 
+                template<bool B, typename Fun, BOOST_PROTO_ENABLE_IF(B)>
+                inline constexpr auto try_call_if(Fun &&fun)
+                BOOST_PROTO_AUTO_RETURN(
+                    try_call_wrapper<Fun>(static_cast<Fun &&>(fun))
+                )
+
+                template<bool B, typename Fun, BOOST_PROTO_ENABLE_IF(!B)>
+                inline constexpr Fun try_call_if(Fun &&fun)
+                BOOST_PROTO_RETURN(
+                    Fun(static_cast<Fun &&>(fun))
+                )
+
             #if 1
                 #define BOOST_PROTO_TRY_CALL boost::proto::v5::utility::try_call
+                #define BOOST_PROTO_TRY_CALL_IF(B) boost::proto::v5::utility::try_call_if<B>
             #else
                 #define BOOST_PROTO_TRY_CALL
+                #define BOOST_PROTO_TRY_CALL_IF(B)
             #endif
             }
 

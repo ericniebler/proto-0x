@@ -164,6 +164,7 @@ namespace mini_lambda
     public:
         using proto_basic_expr_type = proto::basic_expr<ExprDesc, domain>;
         BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expression);
+        //using proto::basic_expr<ExprDesc, domain>::basic_expr;
         BOOST_PROTO_INHERIT_EXPR_CTORS(expression, proto_basic_expr_type);
         using proto::expr_assign<expression>::operator=;
 

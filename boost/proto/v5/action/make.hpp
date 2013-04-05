@@ -15,6 +15,7 @@
 #include <boost/proto/v5/action/basic_action.hpp>
 #include <boost/proto/v5/action/protect.hpp>
 #include <boost/proto/v5/utility.hpp>
+#include <boost/proto/v5/functional/cxx/construct.hpp>
 
 namespace boost
 {
@@ -130,18 +131,6 @@ namespace boost
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // make_
-                template<typename Type>
-                struct make_
-                {
-                    template<typename ...Args>
-                    auto operator()(Args &&... args) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        Type{static_cast<Args &&>(args)...}
-                    )
-                };
-
-                ////////////////////////////////////////////////////////////////////////////////////
                 // _make
                 template<typename Type, typename ...Actions>
                 struct _make
@@ -153,7 +142,7 @@ namespace boost
                     >
                     auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
-                        as_action_<detail::make_<X>(Actions...)>()(static_cast<Args &&>(args)...)
+                        as_action_<call(functional::cxx::construct<X>(Actions...))>()(static_cast<Args &&>(args)...)
                     )
                 };
 
@@ -169,7 +158,7 @@ namespace boost
                     >
                     auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
-                        as_action_<detail::make_<Obj>(Actions......)>()(static_cast<Args &&>(args)...)
+                        as_action_<call(functional::cxx::construct<Obj>(Actions......))>()(static_cast<Args &&>(args)...)
                     )
                 };
             }

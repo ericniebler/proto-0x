@@ -36,11 +36,16 @@ namespace test_make
       : proto::def< proto::make( type2type< careful<int> >() ) >
     {};
 
+    struct MakeTest1prime
+      : proto::def< type2type< careful<int> >() >
+    {};
+
     void make_test1()
     {
         proto::literal<int> i{42};
         type2type< careful<int> > res = MakeTest1()(i);
-        BOOST_PROTO_IGNORE_UNUSED(res);
+        type2type< careful<int> > res2 = MakeTest1prime()(i);
+        BOOST_PROTO_IGNORE_UNUSED(res, res2);
     }
 
     // Test that when substitution is done, and there is no nested ::type
@@ -109,11 +114,17 @@ namespace test_make
       : proto::def< proto::make( wrapper< proto::make( int(proto::_state) ) >(proto::_state(_)) ) >
     {};
 
+    struct MakeTest7prime
+      : proto::def< proto::make( wrapper< int(proto::_state) >(proto::_state(_)) ) >
+    {};
+
     void make_test7()
     {
         proto::literal<int> i{42};
         wrapper<int> res = MakeTest7()(i, proto::empty_env(), 43);
         BOOST_CHECK_EQUAL(res.t_, 43);
+        wrapper<int> res2 = MakeTest7prime()(i, proto::empty_env(), 44);
+        BOOST_CHECK_EQUAL(res2.t_, 44);
     }
 
     struct tfx : proto::basic_action<tfx>
