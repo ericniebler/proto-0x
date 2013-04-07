@@ -275,7 +275,7 @@ void test_make_expr_transform()
 
     proto::expr<
         proto::plus(
-            proto::terminal(int &)  // BUGBUG why isn't this int const &
+            proto::terminal(int &)
           , proto::terminal(int &)
         )
     > t2 = ByRef()(proto::as_expr(1) + 1);

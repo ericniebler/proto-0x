@@ -207,7 +207,7 @@ namespace boost
 
                 struct display_expr_
                 {
-                    display_expr_(int depth, char const **names, ::std::size_t &index, std::ostream &sout)
+                    display_expr_(std::ostream &sout, int depth, char const **names, ::std::size_t &index)
                       : depth_(depth)
                       , names_(names)
                       , index_(index)
@@ -251,7 +251,7 @@ namespace boost
                                     << "(\n";
                         exprs::for_each(
                             static_cast<E &&>(e).proto_args()
-                          , display_expr_(this->depth_ + 4, names, index, this->sout_)
+                          , display_expr_(this->sout_, this->depth_ + 4, names, index)
                         );
                         this->sout_ << std::setw(this->depth_)
                                     << ""
@@ -295,7 +295,8 @@ namespace boost
                     {
                         ::std::size_t index = 0;
                         char const *names[1] = {""};
-                        detail::display_expr_(this->depth_, names, index, this->sout_)(static_cast<E &&>(e));
+                        detail::display_expr_ disp(this->sout_, this->depth_, names, index);
+                        disp(static_cast<E &&>(e));
                     }
 
                 private:
@@ -311,18 +312,47 @@ namespace boost
             /// \param sout The \c ostream to which the output should be
             ///             written. If not specified, defaults to
             ///             <tt>std::cout</tt>.
+            /// \param depth The number of spaces to indent the expression.
             template<typename E>
-            void display_expr(E &&e, std::ostream &sout)
+            void display_expr(E &&e, std::ostream &sout, int depth = 0)
             {
-                functional::display_expr(sout, 0)(static_cast<E &&>(e));
+                functional::display_expr(sout, depth)(static_cast<E &&>(e));
             }
 
             /// \overload
             ///
             template<typename E>
-            void display_expr(E &&e)
+            void display_expr(E &&e, int depth = 0)
             {
-                functional::display_expr()(static_cast<E &&>(e));
+                functional::display_expr(::std::cout, depth)(static_cast<E &&>(e));
+            }
+
+            /// \brief Iostream inserter object for Proto expressions.
+            ///
+            template<typename Expr>
+            struct pretty_expr_wrap
+            {
+                explicit pretty_expr_wrap(Expr &&expr, int depth = 0)
+                  : expr_(static_cast<Expr &&>(expr))
+                  , depth_(depth)
+                {}
+
+                friend std::ostream &operator <<(std::ostream &sout, pretty_expr_wrap const &e)
+                {
+                    proto::display_expr(e.expr_, sout, e.depth_);
+                    return sout;
+                }
+            private:
+                Expr expr_;
+                int depth_;
+            };
+
+            /// \brief Iostream inserter for Proto expressions.
+            ///
+            template<typename Expr>
+            pretty_expr_wrap<Expr> pretty_expr(Expr &&expr, int depth = 0)
+            {
+                return pretty_expr_wrap<Expr>(static_cast<Expr &&>(expr), depth);
             }
 
             /// \brief Assert at compile time that a particular expression

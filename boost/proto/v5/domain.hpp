@@ -32,7 +32,11 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // not_a_domain
                 struct not_a_domain
-                {};
+                {
+                    using proto_grammar_type = default_grammar; ///< INTERNAL ONLY
+                    using store_value = utility::identity;      ///< INTERNAL ONLY
+                    using store_child = utility::identity;      ///< INTERNAL ONLY
+                };
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // make_expr_raw_
@@ -40,7 +44,9 @@ namespace boost
                 struct make_expr_raw_
                 {
                     // If Tag does not represents a terminal, first pass the argument(s) through as_expr
-                    template<typename Tag, typename ...T, BOOST_PROTO_ENABLE_IF(!Tag::proto_is_terminal_type::value)>
+                    template<typename Tag, typename ...T
+                      , BOOST_PROTO_ENABLE_IF(!Tag::proto_is_terminal_type::value)
+                    >
                     inline constexpr auto operator()(Tag && tag, T &&... t) const
                     BOOST_PROTO_AUTO_RETURN(
                         typename Domain::make_expr()(
@@ -50,7 +56,9 @@ namespace boost
                     )
 
                     // If Tag represents a terminal, don't pass the argument(s) through as_expr
-                    template<typename Tag, typename T, BOOST_PROTO_ENABLE_IF(Tag::proto_is_terminal_type::value)>
+                    template<typename Tag, typename T
+                      , BOOST_PROTO_ENABLE_IF(Tag::proto_is_terminal_type::value)
+                    >
                     inline constexpr auto operator()(Tag && tag, T && t) const
                     BOOST_PROTO_AUTO_RETURN(
                         typename Domain::make_expr()(
@@ -91,7 +99,8 @@ namespace boost
                 struct make_custom_expr
                 {
                 private:
-                    static constexpr std::size_t template_arity = sizeof(detail::template_arity<Expr>());
+                    static constexpr std::size_t template_arity =
+                        sizeof(detail::template_arity<Expr>());
 
                     static_assert(
                         template_arity == 1 || template_arity == 2
@@ -132,11 +141,11 @@ namespace boost
 
                     // Define this in your derived domain class to control how
                     // objects are stored within the terminals of your domain.
-                    using store_value = utility::identity;
+                    using store_value = typename SuperDomain::store_value;
 
                     // Define this in your derived domain class to control how intermediate
                     // nodes are stored within your expressions.
-                    using store_child = utility::identity;
+                    using store_child = typename SuperDomain::store_child;
 
                     // Define this in your derived domain class to control how expressions are
                     // assembled.
@@ -146,6 +155,21 @@ namespace boost
                     // assembled. But really, you shouldn't be messing with this. Mess with make_expr
                     // instead.
                     using make_expr_raw = detail::make_expr_raw_<Domain>;
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // safe_domain_adaptor
+                template<typename BaseDomain>
+                struct safe_domain_adaptor
+                  : domain<
+                        safe_domain_adaptor<BaseDomain>
+                      , typename BaseDomain::proto_grammar_type
+                      , BaseDomain
+                    >
+                {
+                    using store_value = utility::identity;
+                    using store_child = utility::identity;
+                    using make_expr = typename BaseDomain::make_expr;
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -171,7 +195,12 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // deduce_domain
                 struct deduce_domain
-                {};
+                {
+                    using proto_grammar_type = void;    ///< INTERNAL ONLY
+                    using store_value = void;           ///< INTERNAL ONLY
+                    using store_child = void;           ///< INTERNAL ONLY
+                    using make_expr = void;             ///< INTERNAL ONLY
+                };
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////

@@ -34,9 +34,7 @@ std::ostream & operator << (std::ostream & s, placeholder<T>)
 }
 
 template<std::size_t I>
-struct placeholder_c
-  : placeholder<std::integral_constant<std::size_t, I>>
-{};
+using placeholder_c = placeholder<std::integral_constant<std::size_t, I>>;
 
 struct lambda_eval
   : proto::def<
@@ -129,22 +127,26 @@ int main()
     std::printf("*** This program demonstrates how to build a lambda library with Proto.\n");
     std::printf("*** \n");
 
+    std::cout << "expr:\n"
+              << proto::pretty_expr(_1 + 42 * _2, 4)
+              << std::endl;
+
     // Create a lambda
     auto fun = proto::deep_copy(_1 + 42 * _2);
 
-    std::cout << "deep-copied expr:" << std::endl;
-    proto::display_expr(fun);
-    std::cout << std::endl;
+    std::cout << "deep-copied expr:\n"
+              << proto::pretty_expr(fun, 4)
+              << std::endl;
 
-    std::cout << "Invert'ed expr:" << std::endl;
-    proto::display_expr(Invert()(fun));
-    std::cout << std::endl;
+    std::cout << "Invert'ed expr:\n"
+              << proto::pretty_expr(Invert()(fun), 4)
+              << std::endl;
 
-    //// Call the lambda
-    //int i = fun(8, 2);
+    // call the lambda
+    int i = fun(8, 2);
 
-    //// print the result
-    //std::printf("The lambda '_1 + 42 * _2' yields '%d' when called with 8 and 2.\n", i);
+    // print the result
+    std::printf("the lambda '_1 + 42 * _2' yields '%d' when called with 8 and 2.\n", i);
 
     void done();
     done();

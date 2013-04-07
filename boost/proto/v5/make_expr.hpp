@@ -46,8 +46,20 @@ namespace boost
 
                 template<typename ...T>
                 struct get_common_domain_impl<deduce_domain, T...>
+                {
+                    using type =
+                        typename common_domain<decltype(detail::get_domain<T>(1))...>::type;
+                };
+
+                template<typename ...T>
+                struct get_common_domain_impl<domains::safe_domain_adaptor<deduce_domain>, T...>
                   : common_domain<decltype(detail::get_domain<T>(1))...>
-                {};
+                {
+                    using type =
+                        domains::safe_domain_adaptor<
+                            typename common_domain<decltype(detail::get_domain<T>(1))...>::type
+                        >;
+                };
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // Misc domain helpers
@@ -166,6 +178,10 @@ namespace boost
                 template<typename Domain>
                 struct as_expr
                 {
+                    /// INTERNAL ONLY
+                    using proto_action_type =
+                        as_expr<domains::safe_domain_adaptor<Domain>>;
+
                     template<typename T>
                     inline constexpr auto operator()(T &&t) const
                     BOOST_PROTO_AUTO_RETURN(
@@ -178,6 +194,10 @@ namespace boost
                 template<typename Tag, typename Domain>
                 struct make_expr
                 {
+                    /// INTERNAL ONLY
+                    using proto_action_type =
+                        make_expr<Tag, domains::safe_domain_adaptor<Domain>>;
+
                     template<typename ...T>
                     inline constexpr auto operator()(T &&...t) const
                     BOOST_PROTO_AUTO_RETURN(
@@ -188,6 +208,10 @@ namespace boost
                 template<typename Domain>
                 struct make_expr<Domain, typename std::enable_if<is_domain<Domain>::value>::type>
                 {
+                    /// INTERNAL ONLY
+                    using proto_action_type =
+                        make_expr<domains::safe_domain_adaptor<Domain>>;
+
                     template<typename ...T, typename Tag>
                     inline constexpr auto operator()(Tag && tag, T &&...t) const
                     BOOST_PROTO_AUTO_RETURN(
@@ -200,6 +224,10 @@ namespace boost
                 template<typename Tag>
                 struct make_expr<Tag, typename std::enable_if<is_tag<Tag>::value>::type>
                 {
+                    /// INTERNAL ONLY
+                    using proto_action_type =
+                        make_expr<Tag, domains::safe_domain_adaptor<domains::deduce_domain>>;
+
                     template<typename ...T>
                     inline constexpr auto operator()(T &&...t) const
                     BOOST_PROTO_AUTO_RETURN(
@@ -210,6 +238,10 @@ namespace boost
                 template<>
                 struct make_expr<void, void>
                 {
+                    /// INTERNAL ONLY
+                    using proto_action_type =
+                        make_expr<domains::safe_domain_adaptor<domains::deduce_domain>>;
+
                     template<typename ...T, typename Tag>
                     inline constexpr auto operator()(Tag && tag, T &&...t) const
                     BOOST_PROTO_AUTO_RETURN(
