@@ -17,7 +17,6 @@
 #include <boost/proto/v5/action/basic_action.hpp>
 #include <boost/proto/v5/action/protect.hpp>
 #include <boost/proto/v5/action/env.hpp>
-#include <boost/proto/v5/functional/cxx/construct.hpp>
 
 namespace boost
 {
@@ -133,10 +132,7 @@ namespace boost
                     >
                     auto operator()(Args &&... t) const
                     BOOST_PROTO_AUTO_RETURN(
-                        call_1_<false, Actions...>()(
-                            functional::cxx::construct<Obj>()
-                          , static_cast<Args &&>(t)...
-                        )
+                        Obj{as_action_<Actions>()(static_cast<Args &&>(t)...)...}
                     )
                 };
 

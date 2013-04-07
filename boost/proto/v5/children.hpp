@@ -135,24 +135,24 @@ namespace boost
                 };                                                                                  \
                                                                                                     \
                 template<BOOST_PP_ENUM_PARAMS(N, typename T), typename F>                           \
-                inline F for_each(children<BOOST_PP_ENUM_PARAMS(N, T)> & a, F const & f)            \
+                inline F for_each(children<BOOST_PP_ENUM_PARAMS(N, T)> & a, F && f)                 \
                 {                                                                                   \
                     BOOST_PP_REPEAT(N, INVOKE, a)                                                   \
-                    return f;                                                                       \
+                    return static_cast<F &&>(f);                                                    \
                 }                                                                                   \
                                                                                                     \
                 template<BOOST_PP_ENUM_PARAMS(N, typename T), typename F>                           \
-                inline F for_each(children<BOOST_PP_ENUM_PARAMS(N, T)> const & a, F const & f)      \
+                inline F for_each(children<BOOST_PP_ENUM_PARAMS(N, T)> const & a, F && f)           \
                 {                                                                                   \
                     BOOST_PP_REPEAT(N, INVOKE, a)                                                   \
-                    return f;                                                                       \
+                    return static_cast<F &&>(f);                                                    \
                 }                                                                                   \
                                                                                                     \
                 template<BOOST_PP_ENUM_PARAMS(N, typename T), typename F>                           \
-                inline F for_each(children<BOOST_PP_ENUM_PARAMS(N, T)> && a, F const & f)           \
+                inline F for_each(children<BOOST_PP_ENUM_PARAMS(N, T)> && a, F && f)                \
                 {                                                                                   \
                     BOOST_PP_REPEAT(N, INVOKE, (static_cast<children<BOOST_PP_ENUM_PARAMS(N, T)> &&>(a))) \
-                    return f;                                                                       \
+                    return static_cast<F &&>(f);                                                    \
                 }                                                                                   \
                 /**/
 
@@ -242,24 +242,27 @@ namespace boost
                 {};
 
                 template<typename ...T, typename F>
-                inline F for_each(children<T...> & a, F const & f)
+                inline F for_each(children<T...> & a, F && f)
                 {
                     BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, INVOKE, a)
-                    return exprs::for_each(a.proto_children_tail, f);
+                    return exprs::for_each(a.proto_children_tail, static_cast<F &&>(f));
                 }
 
                 template<typename ...T, typename F>
-                inline F for_each(children<T...> const & a, F const & f)
+                inline F for_each(children<T...> const & a, F && f)
                 {
                     BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, INVOKE, a)
-                    return exprs::for_each(a.proto_children_tail, f);
+                    return exprs::for_each(a.proto_children_tail, static_cast<F &&>(f));
                 }
 
                 template<typename ...T, typename F>
-                inline F for_each(children<T...> && a, F const & f)
+                inline F for_each(children<T...> && a, F && f)
                 {
                     BOOST_PP_REPEAT(BOOST_PROTO_ARGS_UNROLL_MAX, INVOKE, a)
-                    return exprs::for_each(static_cast<children<T...> &&>(a).proto_children_tail, f);
+                    return exprs::for_each(
+                        static_cast<children<T...> &&>(a).proto_children_tail
+                      , static_cast<F &&>(f)
+                    );
                 }
 
                 #undef INIT

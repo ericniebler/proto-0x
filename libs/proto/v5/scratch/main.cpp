@@ -24,7 +24,6 @@ struct placeholder
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(placeholder);
     using proto::env_var_tag<placeholder<T>>::operator=;
-
 };
 
 // So placeholder terminals can be pretty-printed with display_expr
@@ -35,7 +34,9 @@ std::ostream & operator << (std::ostream & s, placeholder<T>)
 }
 
 template<std::size_t I>
-using placeholder_c = placeholder<std::integral_constant<std::size_t, I>>;
+struct placeholder_c
+  : placeholder<std::integral_constant<std::size_t, I>>
+{};
 
 struct lambda_eval
   : proto::def<
@@ -81,9 +82,10 @@ struct lambda_expr
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(lambda_expr);
 
     using proto::expr_assign<lambda_expr>::operator=;
-    //using proto::basic_expr<ExprDesc, lambda_domain>::basic_expr;
+
     using proto_basic_expr_type = proto::basic_expr<ExprDesc, lambda_domain>;
     BOOST_PROTO_INHERIT_EXPR_CTORS(lambda_expr, proto_basic_expr_type);
+    //using proto::basic_expr<ExprDesc, lambda_domain>::basic_expr;
 
     template<typename ...T>
     auto operator()(T &&... t) const
@@ -121,75 +123,6 @@ struct Invert
     >
 {};
 
-std::string demangle(char const *name)
-{
-  int status = 0;
-  std::unique_ptr<char,void(*)(void*)> realname(
-    abi::__cxa_demangle(name, 0, 0, &status),[](void*p){free(p);});
-  return realname.get();
-}
-
-template<typename T>
-std::string name_of()
-{
-    return demangle(typeid(T).name());
-}
-
-template<typename T>
-std::string name_of(T &&)
-{
-    return name_of<T>();
-}
-
-//    std::cout << name_of(_1 + 42 * _2) << std::endl;
-//    lambda_expr<boost::proto::cxx11::tags::plus ()(
-//        lambda_expr<boost::proto::cxx11::tags::terminal ()(
-//            placeholder<std::integral_constant<unsigned int, 0u> >)
-//        > const &,
-//        lambda_expr<boost::proto::cxx11::tags::multiplies ()(
-//            lambda_expr<boost::proto::cxx11::tags::terminal ()(int)>,
-//            lambda_expr<boost::proto::cxx11::tags::terminal ()(
-//                placeholder<std::integral_constant<unsigned int, 1u> >
-//            )> const&
-//        )> const&
-//    )>
-
-//    lambda_expr<boost::proto::cxx11::tags::plus ()(
-//        lambda_expr<boost::proto::cxx11::tags::terminal ()(
-//            placeholder<std::integral_constant<unsigned int, 0u> >
-//        )>,
-//        lambda_expr<boost::proto::cxx11::tags::multiplies ()(
-//            lambda_expr<boost::proto::cxx11::tags::terminal ()(int)>,
-//            lambda_expr<boost::proto::cxx11::tags::terminal ()(
-//                placeholder<std::integral_constant<unsigned int, 1u> >
-//            )>
-//        )>
-//    )>
-
-//    lambda_expr<boost::proto::cxx11::tags::minus ()(
-//        lambda_expr<boost::proto::cxx11::tags::terminal ()(
-//            placeholder<std::integral_constant<unsigned int, 0u> >
-//        )>&,
-//        lambda_expr<boost::proto::cxx11::tags::multiplies ()(
-//            lambda_expr<boost::proto::cxx11::tags::terminal ()(int)>,
-//            lambda_expr<boost::proto::cxx11::tags::terminal ()(
-//                placeholder<std::integral_constant<unsigned int, 1u> >
-//            )>
-//        )> const&
-//    )>
-
-//    lambda_expr<boost::proto::cxx11::tags::minus ()(
-//        lambda_expr<boost::proto::cxx11::tags::terminal ()(
-//            placeholder<std::integral_constant<unsigned int, 0u> >
-//        )>&,
-//        lambda_expr<boost::proto::cxx11::tags::multiplies ()(
-//            lambda_expr<boost::proto::cxx11::tags::terminal ()(int)>,
-//            lambda_expr<boost::proto::cxx11::tags::terminal ()(
-//                placeholder<std::integral_constant<unsigned int, 1u> >
-//            )>
-//        )> const&
-//    )>
-
 int main()
 {
     std::printf("*** \n");
@@ -197,17 +130,15 @@ int main()
     std::printf("*** \n");
 
     // Create a lambda
-    std::cout << name_of(_1 + 42 * _2) << std::endl;
-    //auto fun = _1 + 42 * _2;
     auto fun = proto::deep_copy(_1 + 42 * _2);
-    std::cout << name_of(fun) << std::endl;
 
-    //// pretty-print the expression
-    //proto::display_expr(fun);
+    std::cout << "deep-copied expr:" << std::endl;
+    proto::display_expr(fun);
+    std::cout << std::endl;
 
-    std::cout << name_of(Invert()(fun)) << std::endl;
-    //auto fun2 = Invert()(fun);
-    //proto::display_expr(fun2);
+    std::cout << "Invert'ed expr:" << std::endl;
+    proto::display_expr(Invert()(fun));
+    std::cout << std::endl;
 
     //// Call the lambda
     //int i = fun(8, 2);

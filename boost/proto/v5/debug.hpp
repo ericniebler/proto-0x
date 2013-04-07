@@ -10,13 +10,28 @@
 #define BOOST_PROTO_CXX11_DEBUG_HPP_INCLUDED
 
 #include <cstddef>
+#include <memory>
+#include <string>
+#include <iomanip>
 #include <iostream>
 #include <functional>
 #include <boost/preprocessor/stringize.hpp>
+#include <boost/type.hpp>
+#include <boost/mpl/at.hpp>
+#include <boost/mpl/size.hpp>
+#include <boost/mpl/for_each.hpp>
+#include <boost/mpl/quote.hpp>
+#include <boost/fusion/mpl.hpp>
 #include <boost/proto/v5/proto_fwd.hpp>
 #include <boost/proto/v5/expr.hpp>
+#include <boost/proto/v5/fusion.hpp>
 #include <boost/proto/v5/utility.hpp>
 #include <boost/detail/sp_typeinfo.hpp>
+
+#if defined(__GLIBCXX__) || defined(__GLIBCPP__)
+#define BOOST_PROTO_USE_DEMANGLING
+#include <cxxabi.h>
+#endif
 
 namespace boost
 {
@@ -84,6 +99,23 @@ namespace boost
                 #undef BOOST_PROTO_DEFINE_TAG_INSERTION
             }
 
+            namespace detail
+            {
+                template<typename T>
+                std::string name_of()
+                {
+                #ifdef BOOST_PROTO_USE_DEMANGLING
+                    struct free_t { void operator()(void *p) { free(p); } };
+                    int status = 0;
+                    std::unique_ptr<char, free_t> realname(
+                        abi::__cxa_demangle(BOOST_SP_TYPEID(T).name(), 0, 0, &status));
+                    return realname.get();
+                #else
+                    return BOOST_SP_TYPEID(T).name();
+                #endif
+                }
+            }
+
             namespace hidden_detail_
             {
                 struct ostream_wrapper
@@ -97,11 +129,11 @@ namespace boost
 
                 struct named_any
                 {
-                    char const *name_;
+                    std::string name_;
 
                     template<typename T>
                     named_any(T const &)
-                      : name_(BOOST_SP_TYPEID(T).name())
+                      : name_(detail::name_of<T>())
                     {}
                 };
 
@@ -113,42 +145,126 @@ namespace boost
 
             namespace detail
             {
+                template<typename T>
+                struct cvref_name
+                {
+                    static char const* const value;
+                };
+
+                template<typename T>
+                char const *const cvref_name<T>::value = "";
+
+                template<typename T>
+                struct cvref_name<T &>
+                {
+                    static char const* const value;
+                };
+
+                template<typename T>
+                char const *const cvref_name<T &>::value = " &";
+
+                template<typename T>
+                struct cvref_name<T const &>
+                {
+                    static char const* const value;
+                };
+
+                template<typename T>
+                char const *const cvref_name<T const &>::value = " const &";
+
+                template<typename T>
+                struct cvref_name<T &&>
+                {
+                    static char const* const value;
+                };
+
+                template<typename T>
+                char const *const cvref_name<T &&>::value = " &&";
+
+                // for use with mpl::for_each to fill in an array of cvref names
+                struct cvref_names
+                {
+                    explicit cvref_names(char const **&names)
+                      : names_(names)
+                    {}
+
+                    template<typename T>
+                    void operator()(boost::type<T>) const
+                    {
+                        *this->names_++ = cvref_name<T>::value;
+                    }
+
+                private:
+                    char const **&names_;
+                };
+
+                template<typename Expr>
+                struct expr_wrap
+                  : std::remove_reference<Expr>::type
+                {
+                    using tag = fusion::fusion_sequence_tag;
+                };
+
                 struct display_expr_
                 {
-                    explicit display_expr_(std::ostream &sout, int depth = 0)
+                    display_expr_(int depth, char const **names, ::std::size_t &index, std::ostream &sout)
                       : depth_(depth)
-                      , first_(true)
+                      , names_(names)
+                      , index_(index)
                       , sout_(sout)
                     {}
 
                     template<typename E, BOOST_PROTO_ENABLE_IF(is_terminal<E>::value)>
-                    void operator()(E const &e) const
+                    void operator()(E &&e) const
                     {
                         using namespace hidden_detail_;
-                        using tag = typename result_of::tag_of<E>::type;
-                        this->sout_.width(this->depth_);
-                        this->sout_ << (this->first_ ? "" : ", ");
-                        this->sout_ << tag() << "(" << proto::v5::value(e) << ")\n";
-                        this->first_ = false;
+                        using tag_t = typename result_of::tag_of<E>::type;
+                        using value_t = typename mpl::at_c<expr_wrap<E>, 0>::type;
+                        this->sout_ << std::setw(this->depth_)
+                                    << (0 == this->index_ ? "" : ", ")
+                                    << tag_t()
+                                    << "( "
+                                    << "("
+                                    << detail::name_of<utility::uncvref<value_t>>()
+                                    << detail::cvref_name<value_t>::value
+                                    << ") "
+                                    << proto::v5::value(static_cast<E &&>(e))
+                                    << " "
+                                    << ")"
+                                    << this->names_[this->index_]
+                                    << "\n";
+                        ++this->index_;
                     }
 
                     template<typename E, BOOST_PROTO_ENABLE_IF(!is_terminal<E>::value)>
-                    void operator()(E const &e) const
+                    void operator()(E &&e) const
                     {
                         using namespace hidden_detail_;
-                        using tag = typename result_of::tag_of<E>::type;
-                        this->sout_.width(this->depth_);
-                        this->sout_ << (this->first_ ? "" : ", ");
-                        this->sout_ << tag() << "(\n";
-                        exprs::for_each(e.proto_args(), display_expr_(this->sout_, this->depth_ + 4));
-                        this->sout_.width(this->depth_);
-                        this->sout_ << "" << ")\n";
-                        this->first_ = false;
+                        using tag_t = typename result_of::tag_of<E>::type;
+                        ::std::size_t index = 0;
+                        char const *names[mpl::size<expr_wrap<E>>::value] = {};
+                        char const **names_ptr = names;
+                        mpl::for_each<expr_wrap<E>, mpl::quote1<boost::type>>(detail::cvref_names(names_ptr));
+                        this->sout_ << std::setw(this->depth_)
+                                    << (0 == this->index_ ? "" : ", ")
+                                    << tag_t()
+                                    << "(\n";
+                        exprs::for_each(
+                            static_cast<E &&>(e).proto_args()
+                          , display_expr_(this->depth_ + 4, names, index, this->sout_)
+                        );
+                        this->sout_ << std::setw(this->depth_)
+                                    << ""
+                                    << ")"
+                                    << this->names_[this->index_]
+                                    << "\n";
+                        ++this->index_;
                     }
 
                 private:
                     int depth_;
-                    mutable bool first_;
+                    char const **names_;
+                    ::std::size_t &index_;
                     std::ostream &sout_;
                 };
             }
@@ -175,9 +291,11 @@ namespace boost
                     /// \brief Pretty-print the current node in a Proto expression
                     /// tree.
                     template<typename E>
-                    void operator()(E const &e) const
+                    void operator()(E &&e) const
                     {
-                        detail::display_expr_(this->sout_, this->depth_)(e);
+                        ::std::size_t index = 0;
+                        char const *names[1] = {""};
+                        detail::display_expr_(this->depth_, names, index, this->sout_)(static_cast<E &&>(e));
                     }
 
                 private:
@@ -194,17 +312,17 @@ namespace boost
             ///             written. If not specified, defaults to
             ///             <tt>std::cout</tt>.
             template<typename E>
-            void display_expr(E const &e, std::ostream &sout)
+            void display_expr(E &&e, std::ostream &sout)
             {
-                functional::display_expr(sout, 0)(e);
+                functional::display_expr(sout, 0)(static_cast<E &&>(e));
             }
 
             /// \overload
             ///
             template<typename E>
-            void display_expr(E const &e)
+            void display_expr(E &&e)
             {
-                functional::display_expr()(e);
+                functional::display_expr()(static_cast<E &&>(e));
             }
 
             /// \brief Assert at compile time that a particular expression

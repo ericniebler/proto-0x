@@ -24,35 +24,38 @@ void test_display_expr()
 {
     // https://svn.boost.org/trac/boost/ticket/4910
     proto::literal<int> i{0};
+    std::string intname = proto::detail::name_of<int>();
 
     {
         std::stringstream sout;
         proto::display_expr(i + A(), sout);
+        std::string Aname = proto::detail::name_of<A>();
         BOOST_CHECK_EQUAL(sout.str(), std::string(
           "plus(\n"
-          "    terminal(0)\n"
-          "  , terminal(this is A!)\n"
+          "    terminal( (int) 0 ) &\n"
+          "  , terminal( (" + Aname + ") this is A! )\n"
           ")\n"));
     }
 
     {
         std::stringstream sout;
         proto::display_expr(i + B(), sout);
+        std::string Bname = proto::detail::name_of<B>();
         BOOST_CHECK_EQUAL(sout.str(), std::string(
           "plus(\n"
-          "    terminal(0)\n"
-          "  , terminal(this is A!)\n"
+          "    terminal( (" + intname + ") 0 ) &\n"
+          "  , terminal( (" + Bname + ") this is A! )\n"
           ")\n"));
     }
 
     {
         std::stringstream sout;
-        char const * Cname = BOOST_SP_TYPEID(C).name();
+        std::string Cname = proto::detail::name_of<C>();
         proto::display_expr(i + C(), sout);
         BOOST_CHECK_EQUAL(sout.str(), std::string(
           "plus(\n"
-          "    terminal(0)\n"
-          "  , terminal(") + Cname + std::string(")\n"
+          "    terminal( (" + intname + ") 0 ) &\n"
+          "  , terminal( (" + Cname + ") " + Cname + " )\n"
           ")\n"));
     }
 }
