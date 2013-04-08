@@ -284,8 +284,8 @@ namespace boost
 
             namespace extension
             {
-                template<typename Tag, typename ...Grammars>
-                struct grammar_impl<expr_tag<Tag>(Grammars...)>
+                template<typename Tag, typename Arity, typename ...Grammars>
+                struct grammar_impl<expr_tag<Tag, Arity>(Grammars...)>
                 {
                     template<typename Expr>
                     struct apply
@@ -296,8 +296,8 @@ namespace boost
                     {};
                 };
 
-                template<typename Tag, typename ...Grammars>
-                struct grammar_impl<expr_tag<Tag>(Grammars......)>
+                template<typename Tag, typename Arity, typename ...Grammars>
+                struct grammar_impl<expr_tag<Tag, Arity>(Grammars......)>
                 {
                     template<typename Expr>
                     struct apply

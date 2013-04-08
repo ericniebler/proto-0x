@@ -168,10 +168,16 @@ namespace boost
             // Operator tags
             namespace tags
             {
+                struct nullary;
+                struct unary;
+                struct binary;
+                struct ternary;
+                struct nary;
+
                 struct expr_tag_tag;
                 struct expr_tag_base;
 
-                template<typename Tag, typename IsTerminal = std::false_type>
+                template<typename Tag, typename Arity>
                 struct expr_tag;
 
                 struct terminal;

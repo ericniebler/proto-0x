@@ -297,11 +297,31 @@ void test_make_expr_transform()
     BOOST_PROTO_IGNORE_UNUSED(t1, t2, t3, t4);
 }
 
+template<typename ExprDesc>
+struct by_ref_expr;
+
+struct by_ref_domain
+  : proto::domain<by_ref_domain>
+{
+    using make_expr = proto::make_custom_expr<by_ref_expr>;
+    using store_child = proto::utility::by_ref;
+};
+
+template<typename ExprDesc>
+struct by_ref_expr
+  : proto::basic_expr<ExprDesc, by_ref_domain>
+  , proto::expr_function<by_ref_expr<ExprDesc>>
+{
+    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(by_ref_expr);
+    using proto_basic_expr_type = proto::basic_expr<ExprDesc, by_ref_domain>;
+    BOOST_PROTO_INHERIT_EXPR_CTORS(by_ref_expr, proto_basic_expr_type);
+};
+
 struct length_impl {};
 struct dot_impl {};
 
-constexpr proto::expr<proto::terminal(length_impl)> length{};
-constexpr proto::expr<proto::terminal(dot_impl)> dot{};
+constexpr by_ref_expr<proto::terminal(length_impl)> length{};
+constexpr by_ref_expr<proto::terminal(dot_impl)> dot{};
 
 // convert length(a) < length(b) to dot(a,a) < dot(b,b)
 struct Convert
@@ -314,12 +334,12 @@ struct Convert
                 )
               , proto::less(
                     proto::function(
-                        proto::terminal(proto::make(dot_impl()))
+                        proto::terminal(dot_impl())
                       , proto::_child<1>(proto::_child<0>)
                       , proto::_child<1>(proto::_child<0>)
                     )
                   , proto::function(
-                        proto::terminal(proto::make(dot_impl()))
+                        proto::terminal(dot_impl())
                       , proto::_child<1>(proto::_child<1>)
                       , proto::_child<1>(proto::_child<1>)
                     )
@@ -331,13 +351,28 @@ struct Convert
 
 void test_make_expr_transform_2()
 {
-    auto expr = length(1) < length(2);
+    auto expr = proto::deep_copy(length(1) < length(2));
+    // Test that intermediate nodes are stored by value, even though the
+    // store_child policy is by_ref
+    by_ref_expr<proto::less(
+        by_ref_expr<proto::function(
+            proto::expr<proto::terminal(dot_impl)> // BUGBUG would be nice if this were by_ref_expr
+          , by_ref_expr<proto::terminal(int)> &
+          , by_ref_expr<proto::terminal(int)> &
+        )>
+      , by_ref_expr<proto::function(
+            proto::expr<proto::terminal(dot_impl)> // BUGBUG would be nice if this were by_ref_expr
+          , by_ref_expr<proto::terminal(int)> &
+          , by_ref_expr<proto::terminal(int)> &
+        )>
+    )> res = Convert()(expr);
+
     void const *addr1 = boost::addressof(proto::child<1>(proto::child<0>(expr)));
-    void const *addr2 = boost::addressof(proto::child<1>(proto::child<0>(Convert()(expr))));
+    void const *addr2 = boost::addressof(proto::child<1>(proto::child<0>(res)));
     BOOST_CHECK_EQUAL(addr1, addr2);
 
     BOOST_CHECK_EQUAL(1, proto::value(proto::child<1>(proto::child<0>(expr))));
-    BOOST_CHECK_EQUAL(1, proto::value(proto::child<1>(proto::child<0>(Convert()(expr)))));
+    BOOST_CHECK_EQUAL(1, proto::value(proto::child<1>(proto::child<0>(res))));
 }
 
 using namespace boost::unit_test;

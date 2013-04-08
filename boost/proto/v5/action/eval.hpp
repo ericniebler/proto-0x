@@ -29,22 +29,30 @@ namespace boost
     {
         inline namespace v5
         {
-            template<typename Tag>
-            struct op
-            {
-                template<typename ...T>
-                utility::any operator()(T &&...) const noexcept
-                {
-                    static_assert(
-                        utility::never<Tag, T...>::value
-                      , "proto::eval doesn't know how to evaluate this expression!"
-                    );
-                    return utility::any();
-                }
-            };
-
             namespace detail
             {
+                template<typename Tag>
+                struct _op
+                {
+                    using type = _op;
+
+                    template<typename ...T>
+                    utility::any operator()(T &&...) const noexcept
+                    {
+                        static_assert(
+                            utility::never<Tag, T...>::value
+                          , "proto::eval doesn't know how to evaluate this expression!"
+                        );
+                        return utility::any();
+                    }
+                };
+
+                template<>
+                struct _op<terminal>
+                {
+                    using type = utility::identity;
+                };
+
                 ////////////////////////////////////////////////////////////////////////////////////
                 // _eval_unknown
                 struct _eval_unknown
@@ -74,10 +82,8 @@ namespace boost
                 {};
             }
 
-            template<>
-            struct op<terminal>
-              : utility::identity
-            {};
+            template<typename Tag>
+            using op = typename detail::_op<Tag>::type;
 
             namespace detail
             {
@@ -169,102 +175,98 @@ namespace boost
                         )
                     )
                 };
-            }
 
-        #define BOOST_PROTO_UNARY_EVAL(TAG)                                                         \
-            template<>                                                                              \
-            struct op<TAG>                                                                          \
-              : TAG                                                                                 \
-            {};                                                                                     \
+            #define BOOST_PROTO_UNARY_EVAL(TAG)                                                     \
+                template<>                                                                          \
+                struct _op<TAG>                                                                     \
+                {                                                                                   \
+                    using type = TAG;                                                               \
+                };                                                                                  \
                                                                                                     \
-            namespace detail                                                                        \
-            {                                                                                       \
                 template<typename ActiveGrammar>                                                    \
                 struct _eval_case<ActiveGrammar, TAG>                                               \
                   : def<case_(TAG(ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)>                  \
                 {};                                                                                 \
-            }                                                                                       \
             /**/
 
-        #define BOOST_PROTO_BINARY_EVAL(TAG)                                                        \
-            template<>                                                                              \
-            struct op<TAG>                                                                          \
-              : TAG                                                                                 \
-            {};                                                                                     \
+            #define BOOST_PROTO_BINARY_EVAL(TAG)                                                    \
+                template<>                                                                          \
+                struct _op<TAG>                                                                     \
+                {                                                                                   \
+                    using type = TAG;                                                               \
+                };                                                                                  \
                                                                                                     \
-            namespace detail                                                                        \
-            {                                                                                       \
                 template<typename ActiveGrammar>                                                    \
                 struct _eval_case<ActiveGrammar, TAG>                                               \
                   : def<case_(TAG(ActiveGrammar, ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)>   \
                 {};                                                                                 \
-            }                                                                                       \
-            /**/
+                /**/
 
-            BOOST_PROTO_UNARY_EVAL(unary_plus)
-            BOOST_PROTO_UNARY_EVAL(negate)
-            BOOST_PROTO_UNARY_EVAL(dereference)
-            BOOST_PROTO_UNARY_EVAL(complement)
-            BOOST_PROTO_UNARY_EVAL(address_of)
-            BOOST_PROTO_UNARY_EVAL(logical_not)
-            BOOST_PROTO_UNARY_EVAL(pre_inc)
-            BOOST_PROTO_UNARY_EVAL(pre_dec)
-            BOOST_PROTO_UNARY_EVAL(post_inc)
-            BOOST_PROTO_UNARY_EVAL(post_dec)
+                BOOST_PROTO_UNARY_EVAL(unary_plus)
+                BOOST_PROTO_UNARY_EVAL(negate)
+                BOOST_PROTO_UNARY_EVAL(dereference)
+                BOOST_PROTO_UNARY_EVAL(complement)
+                BOOST_PROTO_UNARY_EVAL(address_of)
+                BOOST_PROTO_UNARY_EVAL(logical_not)
+                BOOST_PROTO_UNARY_EVAL(pre_inc)
+                BOOST_PROTO_UNARY_EVAL(pre_dec)
+                BOOST_PROTO_UNARY_EVAL(post_inc)
+                BOOST_PROTO_UNARY_EVAL(post_dec)
 
-            BOOST_PROTO_BINARY_EVAL(shift_left)
-            BOOST_PROTO_BINARY_EVAL(shift_right)
-            BOOST_PROTO_BINARY_EVAL(multiplies)
-            BOOST_PROTO_BINARY_EVAL(divides)
-            BOOST_PROTO_BINARY_EVAL(modulus)
-            BOOST_PROTO_BINARY_EVAL(plus)
-            BOOST_PROTO_BINARY_EVAL(minus)
-            BOOST_PROTO_BINARY_EVAL(less)
-            BOOST_PROTO_BINARY_EVAL(greater)
-            BOOST_PROTO_BINARY_EVAL(less_equal)
-            BOOST_PROTO_BINARY_EVAL(greater_equal)
-            BOOST_PROTO_BINARY_EVAL(equal_to)
-            BOOST_PROTO_BINARY_EVAL(not_equal_to)
-            BOOST_PROTO_BINARY_EVAL(logical_or)
-            BOOST_PROTO_BINARY_EVAL(logical_and)
-            BOOST_PROTO_BINARY_EVAL(bitwise_and)
-            BOOST_PROTO_BINARY_EVAL(bitwise_or)
-            BOOST_PROTO_BINARY_EVAL(bitwise_xor)
-            BOOST_PROTO_BINARY_EVAL(comma)
-            BOOST_PROTO_BINARY_EVAL(subscript)
-            BOOST_PROTO_BINARY_EVAL(mem_ptr)
-            //BOOST_PROTO_BINARY_EVAL(member)
+                BOOST_PROTO_BINARY_EVAL(shift_left)
+                BOOST_PROTO_BINARY_EVAL(shift_right)
+                BOOST_PROTO_BINARY_EVAL(multiplies)
+                BOOST_PROTO_BINARY_EVAL(divides)
+                BOOST_PROTO_BINARY_EVAL(modulus)
+                BOOST_PROTO_BINARY_EVAL(plus)
+                BOOST_PROTO_BINARY_EVAL(minus)
+                BOOST_PROTO_BINARY_EVAL(less)
+                BOOST_PROTO_BINARY_EVAL(greater)
+                BOOST_PROTO_BINARY_EVAL(less_equal)
+                BOOST_PROTO_BINARY_EVAL(greater_equal)
+                BOOST_PROTO_BINARY_EVAL(equal_to)
+                BOOST_PROTO_BINARY_EVAL(not_equal_to)
+                BOOST_PROTO_BINARY_EVAL(logical_or)
+                BOOST_PROTO_BINARY_EVAL(logical_and)
+                BOOST_PROTO_BINARY_EVAL(bitwise_and)
+                BOOST_PROTO_BINARY_EVAL(bitwise_or)
+                BOOST_PROTO_BINARY_EVAL(bitwise_xor)
+                BOOST_PROTO_BINARY_EVAL(comma)
+                BOOST_PROTO_BINARY_EVAL(subscript)
+                BOOST_PROTO_BINARY_EVAL(mem_ptr)
+                //BOOST_PROTO_BINARY_EVAL(member)
 
-            BOOST_PROTO_BINARY_EVAL(assign)
-            BOOST_PROTO_BINARY_EVAL(shift_left_assign)
-            BOOST_PROTO_BINARY_EVAL(shift_right_assign)
-            BOOST_PROTO_BINARY_EVAL(multiplies_assign)
-            BOOST_PROTO_BINARY_EVAL(divides_assign)
-            BOOST_PROTO_BINARY_EVAL(modulus_assign)
-            BOOST_PROTO_BINARY_EVAL(plus_assign)
-            BOOST_PROTO_BINARY_EVAL(minus_assign)
-            BOOST_PROTO_BINARY_EVAL(bitwise_and_assign)
-            BOOST_PROTO_BINARY_EVAL(bitwise_or_assign)
-            BOOST_PROTO_BINARY_EVAL(bitwise_xor_assign)
+                BOOST_PROTO_BINARY_EVAL(assign)
+                BOOST_PROTO_BINARY_EVAL(shift_left_assign)
+                BOOST_PROTO_BINARY_EVAL(shift_right_assign)
+                BOOST_PROTO_BINARY_EVAL(multiplies_assign)
+                BOOST_PROTO_BINARY_EVAL(divides_assign)
+                BOOST_PROTO_BINARY_EVAL(modulus_assign)
+                BOOST_PROTO_BINARY_EVAL(plus_assign)
+                BOOST_PROTO_BINARY_EVAL(minus_assign)
+                BOOST_PROTO_BINARY_EVAL(bitwise_and_assign)
+                BOOST_PROTO_BINARY_EVAL(bitwise_or_assign)
+                BOOST_PROTO_BINARY_EVAL(bitwise_xor_assign)
 
             #undef BOOST_PROTO_UNARY_EVAL
             #undef BOOST_PROTO_BINARY_EVAL
 
-            template<>
-            struct op<if_else_>
-              : if_else_
-            {};
+                template<>
+                struct _op<if_else_>
+                {
+                    using type = if_else_;
+                };
 
-            template<>
-            struct op<function>
-              : function
-            {};
+                template<>
+                struct _op<function>
+                {
+                    using type = function;
+                };
 
-            namespace detail
-            {
                 template<typename ActiveGrammar>
                 struct _eval_case<ActiveGrammar, if_else_>
-                  : def<case_(if_else_(ActiveGrammar, ActiveGrammar, ActiveGrammar), _op_unpack<if_else_, ActiveGrammar>)>
+                  : def<case_(if_else_(ActiveGrammar, ActiveGrammar, ActiveGrammar),
+                                  _op_unpack<if_else_, ActiveGrammar>)>
                 {};
 
                 template<typename ActiveGrammar>

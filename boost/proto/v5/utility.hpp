@@ -697,6 +697,9 @@ namespace boost
                     substitution_failure &operator=(substitution_failure const &) = delete;
                     #endif
 
+                    template<typename T>
+                    operator T &&() const noexcept;
+
                     virtual void what() const noexcept
                     {
                         using error_message = decltype(std::declval<Fun>()(std::declval<Args>()...));

@@ -113,9 +113,9 @@ struct Invert
             proto::case_(   proto::terminal(_),
                             proto::_                            )
           , proto::case_(   proto::plus(_,_),
-                            make_minus(Invert(proto::_left),
-                                       Invert(proto::_right))   ) // watch that this doesn't create danging
-          , proto::case_(   _(Invert...),                         //   references if Invert returns a temporary!
+                            proto::minus(Invert(proto::_left),
+                                         Invert(proto::_right)) )
+          , proto::case_(   _(Invert...),
                             proto::pass                         )
         )
     >
