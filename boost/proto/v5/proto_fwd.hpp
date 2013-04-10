@@ -297,6 +297,9 @@ namespace boost
                 template<typename BaseDomain>
                 struct safe_domain_adaptor;
 
+                template<typename BaseDomain>
+                struct basic_expr_domain_adaptor;
+
                 struct default_domain;
 
                 struct basic_default_domain;

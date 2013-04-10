@@ -173,6 +173,15 @@ namespace boost
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
+                // basic_expr_domain_adaptor
+                template<typename BaseDomain>
+                struct basic_expr_domain_adaptor
+                  : domain<basic_expr_domain_adaptor<BaseDomain>, proto::_, BaseDomain>
+                {
+                    using make_expr = make_custom_expr<exprs::basic_expr, BaseDomain>;
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
                 // default_grammar
                 struct default_grammar
                   : detail::as_grammar_<not_(matches_(address_of(_)))>

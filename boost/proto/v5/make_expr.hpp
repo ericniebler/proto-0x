@@ -53,10 +53,18 @@ namespace boost
 
                 template<typename ...T>
                 struct get_common_domain_impl<domains::safe_domain_adaptor<deduce_domain>, T...>
-                  : common_domain<decltype(detail::get_domain<T>(1))...>
                 {
                     using type =
                         domains::safe_domain_adaptor<
+                            typename common_domain<decltype(detail::get_domain<T>(1))...>::type
+                        >;
+                };
+
+                template<typename ...T>
+                struct get_common_domain_impl<domains::basic_expr_domain_adaptor<deduce_domain>, T...>
+                {
+                    using type =
+                        domains::basic_expr_domain_adaptor<
                             typename common_domain<decltype(detail::get_domain<T>(1))...>::type
                         >;
                 };

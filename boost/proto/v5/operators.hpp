@@ -17,27 +17,35 @@
 #include <boost/proto/v5/tags.hpp>
 #include <boost/proto/v5/domain.hpp>
 #include <boost/proto/v5/matches.hpp>
+#include <boost/proto/v5/make_expr.hpp>
 
 #define BOOST_PROTO_UNARY_OP_IS_POSTFIX_0
 #define BOOST_PROTO_UNARY_OP_IS_POSTFIX_1 , int
 
 #define BOOST_PROTO_DEFINE_UNARY_OPERATOR(OP, TAG, TRAIT, DOMAIN, POST)                             \
     template<typename Arg                                                                           \
-      , BOOST_PROTO_ENABLE_IF(BOOST_PROTO_APPLY_UNARY_(TRAIT, Arg))>                                \
+      , BOOST_PROTO_ENABLE_IF(BOOST_PROTO_APPLY_UNARY_(TRAIT, Arg))                                 \
+      , BOOST_PROTO_ENABLE_IF(::boost::proto::v5::detail::is_grammatical<TAG(Arg), DOMAIN>::value)  \
+    >                                                                                               \
     inline auto operator OP(Arg &&arg BOOST_PROTO_UNARY_OP_IS_POSTFIX_ ## POST)                     \
     BOOST_PROTO_AUTO_RETURN(                                                                        \
-        ::boost::proto::v5::detail::make_expr_if<DOMAIN>(                                           \
-            TAG(), static_cast<Arg &&>(arg))                                                        \
+        ::boost::proto::v5::make_expr<TAG, DOMAIN>(static_cast<Arg &&>(arg))                        \
     )                                                                                               \
     /**/
 
 #define BOOST_PROTO_DEFINE_BINARY_OPERATOR(OP, TAG, TRAIT, DOMAIN)                                  \
     template<typename Left, typename Right                                                          \
-      , BOOST_PROTO_ENABLE_IF(BOOST_PROTO_APPLY_BINARY_(TRAIT, Left, Right))>                       \
+      , BOOST_PROTO_ENABLE_IF(BOOST_PROTO_APPLY_BINARY_(TRAIT, Left, Right))                        \
+      , BOOST_PROTO_ENABLE_IF(                                                                      \
+            ::boost::proto::v5::detail::is_grammatical<TAG(Left, Right), DOMAIN>::value             \
+        )                                                                                           \
+    >                                                                                               \
     inline auto operator OP(Left &&left, Right &&right)                                             \
     BOOST_PROTO_AUTO_RETURN(                                                                        \
-        ::boost::proto::v5::detail::make_expr_if<DOMAIN>(                                           \
-            TAG(), static_cast<Left &&>(left), static_cast<Right &&>(right))                        \
+        ::boost::proto::v5::make_expr<TAG, DOMAIN>(                                                 \
+            static_cast<Left &&>(left)                                                              \
+          , static_cast<Right &&>(right)                                                            \
+        )                                                                                           \
     )                                                                                               \
     /**/
 
@@ -96,63 +104,16 @@ namespace boost
             namespace detail
             {
                 ////////////////////////////////////////////////////////////////////////////////////
-                // as_basic_expr
-                template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(is_expr<T>::value)>
-                auto as_basic_expr(T &&t) ->
-                    decltype(typename Domain::store_child()(t));
-
-                template<typename Domain, typename T, BOOST_PROTO_ENABLE_IF(!is_expr<T>::value)>
-                auto as_basic_expr(T &&t) ->
-                    exprs::basic_expr<
-                        terminal(decltype(typename Domain::store_value()(t)))
-                      , Domain
-                    >;
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // expr_maker_if_2_
-                template<typename ExprDesc, typename Domain
-                  , typename E = exprs::basic_expr<ExprDesc, Domain>
-                  , typename G = typename Domain::proto_grammar_type
-                  , BOOST_PROTO_ENABLE_IF(matches<E, G>::value)
-                >
-                inline constexpr auto expr_maker_if_2_()
-                BOOST_PROTO_AUTO_RETURN(
-                    typename Domain::make_expr_raw()
-                )
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // make_expr_if_
-                template<typename Domain>
-                struct make_expr_if_
+                // is_grammatical
+                template<typename ExprDesc, typename Domain>
+                struct is_grammatical
                 {
-                    template<typename Tag, typename ...T>
-                    constexpr auto operator()(Tag && tag, T &&...t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        detail::expr_maker_if_2_<
-                            Tag(decltype(detail::as_basic_expr<Domain>(static_cast<T &&>(t)))...)
-                          , Domain
-                        >()(static_cast<Tag &&>(tag), static_cast<T &&>(t)...)
-                    )
+                    using domain_type = domains::basic_expr_domain_adaptor<Domain>;
+                    using expr_type = typename result_of::make_expr<ExprDesc, domain_type>::type;
+                    using grammar_type = typename expr_type::proto_domain_type::proto_grammar_type;
+                    static constexpr bool value = proto::matches<expr_type, grammar_type>::value;
+                    using type = std::integral_constant<bool, value>;
                 };
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // expr_maker_if
-                template<typename Domain, typename ...U>
-                inline constexpr auto expr_maker_if(Domain, U const &...u)
-                BOOST_PROTO_AUTO_RETURN(
-                    detail::make_expr_if_<decltype(detail::get_common_domain(Domain(), u...))>()
-                )
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // make_expr_if (with domain) - refuse to create expressions that are non-grammatical
-                template<typename Domain, typename Tag, typename ...T>
-                inline constexpr auto make_expr_if(Tag && tag, T &&...t)
-                BOOST_PROTO_AUTO_RETURN(
-                    detail::expr_maker_if(Domain(), t...)(
-                        static_cast<Tag &&>(tag)
-                      , static_cast<T &&>(t)...
-                    )
-                )
             }
 
             // Extensions are a superset of Proto expressions
