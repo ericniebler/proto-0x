@@ -22,7 +22,7 @@ namespace boost
                 namespace cxx
                 {
                     ////////////////////////////////////////////////////////////////////////////////////
-                    // make_
+                    // construct
                     template<typename Type>
                     struct construct
                     {

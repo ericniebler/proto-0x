@@ -130,7 +130,7 @@ int main()
     std::cout << "expr:\n"
               << proto::pretty_expr(_1 + 42 * _2, 4)
               << std::endl;
-
+    
     // Create a lambda
     auto fun = proto::deep_copy(_1 + 42 * _2);
 

@@ -84,6 +84,39 @@ void test_mem_fun()
     BOOST_CHECK_EQUAL(i, 3);
 }
 
+// other miscelaneous test cases
+void test_mem_fun_2()
+{
+    S s{43};
+    S *ps = &s;
+    int &j = proto::mem_ptr()(&s, &S::m);
+    int &j2 = proto::mem_ptr()(ps, &S::m);
+    BOOST_CHECK_EQUAL(j, 43);
+    BOOST_CHECK_EQUAL(j2, 43);
+
+    int k = proto::mem_ptr()(&s, &S::bar)(42);
+    int k2 = proto::mem_ptr()(ps, &S::bar)(42);
+    BOOST_CHECK_EQUAL(k, 42);
+    BOOST_CHECK_EQUAL(k2, 42);
+
+    proto::literal<int> i;
+    proto::expr<proto::mem_ptr(
+        proto::expr<proto::terminal(int)> &
+      , proto::terminal(int S::*)
+    )> x = proto::mem_ptr()(i, &S::m);
+    
+    int S::*pm = &S::m;
+    proto::expr<proto::mem_ptr(
+        proto::expr<proto::terminal(int)> &
+      , proto::terminal(int S::*&)
+    )> x2 = proto::mem_ptr()(i, pm);
+
+    auto x3 = proto::mem_ptr()(i, &S::foo);
+    static_assert(proto::is_expr<decltype(x3)>::value, "");
+
+    BOOST_PROTO_IGNORE_UNUSED(x, x2, x3);
+}
+
 using namespace boost::unit_test;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // init_unit_test_suite
@@ -93,6 +126,7 @@ test_suite* init_unit_test_suite( int argc, char* argv[] )
     test_suite *test = BOOST_TEST_SUITE("tests for eval with functions and member pointer ops");
 
     test->add(BOOST_TEST_CASE(&test_mem_fun));
+    test->add(BOOST_TEST_CASE(&test_mem_fun_2));
 
     return test;
 }

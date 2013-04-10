@@ -26,7 +26,7 @@
       , BOOST_PROTO_ENABLE_IF(BOOST_PROTO_APPLY_UNARY_(TRAIT, Arg))>                                \
     inline auto operator OP(Arg &&arg BOOST_PROTO_UNARY_OP_IS_POSTFIX_ ## POST)                     \
     BOOST_PROTO_AUTO_RETURN(                                                                        \
-        ::boost::proto::v5::detail::make_expr_if<DOMAIN>(                                        \
+        ::boost::proto::v5::detail::make_expr_if<DOMAIN>(                                           \
             TAG(), static_cast<Arg &&>(arg))                                                        \
     )                                                                                               \
     /**/
@@ -36,52 +36,52 @@
       , BOOST_PROTO_ENABLE_IF(BOOST_PROTO_APPLY_BINARY_(TRAIT, Left, Right))>                       \
     inline auto operator OP(Left &&left, Right &&right)                                             \
     BOOST_PROTO_AUTO_RETURN(                                                                        \
-        ::boost::proto::v5::detail::make_expr_if<DOMAIN>(                                        \
+        ::boost::proto::v5::detail::make_expr_if<DOMAIN>(                                           \
             TAG(), static_cast<Left &&>(left), static_cast<Right &&>(right))                        \
     )                                                                                               \
     /**/
 
 #define BOOST_PROTO_DEFINE_OPERATORS(TRAIT, DOMAIN)                                                 \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(+, boost::proto::v5::unary_plus, TRAIT, DOMAIN, 0)         \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(-, boost::proto::v5::negate, TRAIT, DOMAIN, 0)             \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(*, boost::proto::v5::dereference, TRAIT, DOMAIN, 0)        \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(~, boost::proto::v5::complement, TRAIT, DOMAIN, 0)         \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(&, boost::proto::v5::address_of, TRAIT, DOMAIN, 0)         \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(!, boost::proto::v5::logical_not, TRAIT, DOMAIN, 0)        \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(++, boost::proto::v5::pre_inc, TRAIT, DOMAIN, 0)           \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(--, boost::proto::v5::pre_dec, TRAIT, DOMAIN, 0)           \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(++, boost::proto::v5::post_inc, TRAIT, DOMAIN, 1)          \
-    BOOST_PROTO_DEFINE_UNARY_OPERATOR(--, boost::proto::v5::post_dec, TRAIT, DOMAIN, 1)          \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<<, boost::proto::v5::shift_left, TRAIT, DOMAIN)          \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>>, boost::proto::v5::shift_right, TRAIT, DOMAIN)         \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(*, boost::proto::v5::multiplies, TRAIT, DOMAIN)           \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(/, boost::proto::v5::divides, TRAIT, DOMAIN)              \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(%, boost::proto::v5::modulus, TRAIT, DOMAIN)              \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(+, boost::proto::v5::plus, TRAIT, DOMAIN)                 \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(-, boost::proto::v5::minus, TRAIT, DOMAIN)                \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<, boost::proto::v5::less, TRAIT, DOMAIN)                 \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>, boost::proto::v5::greater, TRAIT, DOMAIN)              \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<=, boost::proto::v5::less_equal, TRAIT, DOMAIN)          \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>=, boost::proto::v5::greater_equal, TRAIT, DOMAIN)       \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(==, boost::proto::v5::equal_to, TRAIT, DOMAIN)            \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(!=, boost::proto::v5::not_equal_to, TRAIT, DOMAIN)        \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(||, boost::proto::v5::logical_or, TRAIT, DOMAIN)          \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(&&, boost::proto::v5::logical_and, TRAIT, DOMAIN)         \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(&, boost::proto::v5::bitwise_and, TRAIT, DOMAIN)          \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(|, boost::proto::v5::bitwise_or, TRAIT, DOMAIN)           \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(^, boost::proto::v5::bitwise_xor, TRAIT, DOMAIN)          \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(BOOST_PP_COMMA(), boost::proto::v5::comma, TRAIT, DOMAIN) \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(->*, boost::proto::v5::mem_ptr, TRAIT, DOMAIN)            \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<<=, boost::proto::v5::shift_left_assign, TRAIT, DOMAIN)  \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>>=, boost::proto::v5::shift_right_assign, TRAIT, DOMAIN) \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(*=, boost::proto::v5::multiplies_assign, TRAIT, DOMAIN)   \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(/=, boost::proto::v5::divides_assign, TRAIT, DOMAIN)      \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(%=, boost::proto::v5::modulus_assign, TRAIT, DOMAIN)      \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(+=, boost::proto::v5::plus_assign, TRAIT, DOMAIN)         \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(-=, boost::proto::v5::minus_assign, TRAIT, DOMAIN)        \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(&=, boost::proto::v5::bitwise_and_assign, TRAIT, DOMAIN)  \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(|=, boost::proto::v5::bitwise_or_assign, TRAIT, DOMAIN)   \
-    BOOST_PROTO_DEFINE_BINARY_OPERATOR(^=, boost::proto::v5::bitwise_xor_assign, TRAIT, DOMAIN)  \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(+, boost::proto::v5::unary_plus, TRAIT, DOMAIN, 0)            \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(-, boost::proto::v5::negate, TRAIT, DOMAIN, 0)                \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(*, boost::proto::v5::dereference, TRAIT, DOMAIN, 0)           \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(~, boost::proto::v5::complement, TRAIT, DOMAIN, 0)            \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(&, boost::proto::v5::address_of, TRAIT, DOMAIN, 0)            \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(!, boost::proto::v5::logical_not, TRAIT, DOMAIN, 0)           \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(++, boost::proto::v5::pre_inc, TRAIT, DOMAIN, 0)              \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(--, boost::proto::v5::pre_dec, TRAIT, DOMAIN, 0)              \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(++, boost::proto::v5::post_inc, TRAIT, DOMAIN, 1)             \
+    BOOST_PROTO_DEFINE_UNARY_OPERATOR(--, boost::proto::v5::post_dec, TRAIT, DOMAIN, 1)             \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<<, boost::proto::v5::shift_left, TRAIT, DOMAIN)             \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>>, boost::proto::v5::shift_right, TRAIT, DOMAIN)            \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(*, boost::proto::v5::multiplies, TRAIT, DOMAIN)              \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(/, boost::proto::v5::divides, TRAIT, DOMAIN)                 \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(%, boost::proto::v5::modulus, TRAIT, DOMAIN)                 \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(+, boost::proto::v5::plus, TRAIT, DOMAIN)                    \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(-, boost::proto::v5::minus, TRAIT, DOMAIN)                   \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<, boost::proto::v5::less, TRAIT, DOMAIN)                    \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>, boost::proto::v5::greater, TRAIT, DOMAIN)                 \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<=, boost::proto::v5::less_equal, TRAIT, DOMAIN)             \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>=, boost::proto::v5::greater_equal, TRAIT, DOMAIN)          \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(==, boost::proto::v5::equal_to, TRAIT, DOMAIN)               \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(!=, boost::proto::v5::not_equal_to, TRAIT, DOMAIN)           \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(||, boost::proto::v5::logical_or, TRAIT, DOMAIN)             \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(&&, boost::proto::v5::logical_and, TRAIT, DOMAIN)            \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(&, boost::proto::v5::bitwise_and, TRAIT, DOMAIN)             \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(|, boost::proto::v5::bitwise_or, TRAIT, DOMAIN)              \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(^, boost::proto::v5::bitwise_xor, TRAIT, DOMAIN)             \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(BOOST_PP_COMMA(), boost::proto::v5::comma, TRAIT, DOMAIN)    \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(->*, boost::proto::v5::mem_ptr, TRAIT, DOMAIN)               \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(<<=, boost::proto::v5::shift_left_assign, TRAIT, DOMAIN)     \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(>>=, boost::proto::v5::shift_right_assign, TRAIT, DOMAIN)    \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(*=, boost::proto::v5::multiplies_assign, TRAIT, DOMAIN)      \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(/=, boost::proto::v5::divides_assign, TRAIT, DOMAIN)         \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(%=, boost::proto::v5::modulus_assign, TRAIT, DOMAIN)         \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(+=, boost::proto::v5::plus_assign, TRAIT, DOMAIN)            \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(-=, boost::proto::v5::minus_assign, TRAIT, DOMAIN)           \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(&=, boost::proto::v5::bitwise_and_assign, TRAIT, DOMAIN)     \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(|=, boost::proto::v5::bitwise_or_assign, TRAIT, DOMAIN)      \
+    BOOST_PROTO_DEFINE_BINARY_OPERATOR(^=, boost::proto::v5::bitwise_xor_assign, TRAIT, DOMAIN)     \
     /**/
 
 #define BOOST_PROTO_APPLY_UNARY_(TRAIT, ARG)          (TRAIT<ARG>::value)
@@ -170,11 +170,18 @@ namespace boost
                 template<typename A0, typename A1, typename A2>
                 inline auto if_else(A0 &&a0, A1 &&a1, A2 &&a2)
                 BOOST_PROTO_AUTO_RETURN(
-                    v5::make_expr<tags::if_else_, deduce_domain>(
+                    v5::make_expr<if_else_>(
                         static_cast<A0 &&>(a0)
                       , static_cast<A1 &&>(a1)
                       , static_cast<A2 &&>(a2)
                     )
+                )
+
+                /// INTERNAL ONLY
+                template<typename T, typename U>
+                auto mem_ptr_helper(T && t, U && u, int)
+                BOOST_PROTO_AUTO_RETURN(
+                    static_cast<T &&>(t) ->* static_cast<U &&>(u)
                 )
             }
 
@@ -192,21 +199,21 @@ namespace boost
 
 #define BOOST_PROTO_APPLY_UNARY_(TRAIT, ARG)                                                        \
     (boost::mpl::and_<                                                                              \
-        TRAIT<typename std::remove_const<typename std::remove_reference<ARG>::type>::type>          \
-      , boost::mpl::not_<boost::proto::v5::is_extension<ARG>>                                    \
+        TRAIT<boost::proto::v5::utility::uncvref<ARG>>                                              \
+      , boost::mpl::not_<boost::proto::v5::is_extension<ARG>>                                       \
     >::value)                                                                                       \
     /**/
 
 #define BOOST_PROTO_APPLY_BINARY_(TRAIT, LEFT, RIGHT)                                               \
     (boost::mpl::and_<                                                                              \
         boost::mpl::or_<                                                                            \
-            TRAIT<typename std::remove_const<typename std::remove_reference<LEFT>::type>::type>     \
-          , TRAIT<typename std::remove_const<typename std::remove_reference<RIGHT>::type>::type>    \
+            TRAIT<boost::proto::v5::utility::uncvref<LEFT>>                                         \
+          , TRAIT<boost::proto::v5::utility::uncvref<RIGHT>>                                        \
         >                                                                                           \
       , boost::mpl::not_<                                                                           \
             boost::mpl::or_<                                                                        \
-                boost::proto::v5::is_extension<LEFT>                                             \
-              , boost::proto::v5::is_extension<RIGHT>                                            \
+                boost::proto::v5::is_extension<LEFT>                                                \
+              , boost::proto::v5::is_extension<RIGHT>                                               \
             >                                                                                       \
         >                                                                                           \
     >::value)                                                                                       \

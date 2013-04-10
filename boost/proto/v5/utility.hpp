@@ -656,6 +656,84 @@ namespace boost
                 BOOST_PROTO_IGNORE_UNUSED(void_);
 
                 ////////////////////////////////////////////////////////////////////////////////////
+                // get_pointer_adl
+                template<typename T>
+                auto get_pointer_adl(T & t, long)
+                BOOST_PROTO_AUTO_RETURN(
+                    boost::addressof(t) // TODO replace with std::addressof
+                )
+
+                template<typename T>
+                auto get_pointer_adl(T && t, int)
+                BOOST_PROTO_AUTO_RETURN(
+                    get_pointer(static_cast<T &&>(t))
+                )
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // mem_fun_t
+                template<typename T, typename PMF>
+                class mem_fun_t
+                {
+                    T obj_;
+                    PMF pmf_;
+
+                public:
+                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(mem_fun_t);
+
+                    template<typename U>
+                    mem_fun_t(U && u, PMF pmf) noexcept(noexcept(T(static_cast<U &&>(u))))
+                      : obj_(static_cast<U &&>(u))
+                      , pmf_(pmf)
+                    {}
+
+                    template<typename ...A, typename U = T>
+                    auto operator()(A &&... a) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        (utility::get_pointer_adl(
+                            static_cast<U &&>(const_cast<U &>(this->obj_))
+                          , 1
+                        ) ->* this->pmf_)(static_cast<A &&>(a)...)
+                    )
+                };
+
+                namespace adl_barrier
+                {
+                    template<typename T, typename U>
+                    auto mem_ptr_helper_2(T && t, U && u)
+                    BOOST_PROTO_AUTO_RETURN(
+                        static_cast<T &&>(t) ->* static_cast<U &&>(u)
+                    )
+
+                    template<typename Obj, typename Type, typename Class>
+                    auto mem_ptr_helper_2(Obj && obj, Type Class::*pm)
+                    BOOST_PROTO_AUTO_RETURN(
+                        utility::get_pointer_adl(static_cast<Obj &&>(obj), 1) ->* pm
+                    )
+
+                    template<typename Obj, typename Type, typename Class, typename ...Args>
+                    auto mem_ptr_helper_2(Obj && obj, Type (Class::*pmf)(Args...))
+                    BOOST_PROTO_AUTO_RETURN(
+                        mem_fun_t<Obj, Type (Class::*)(Args...)>(static_cast<Obj &&>(obj), pmf)
+                    )
+
+                    template<typename T, typename U>
+                    auto mem_ptr_helper(T && t, U && u, long)
+                    BOOST_PROTO_AUTO_RETURN(
+                        adl_barrier::mem_ptr_helper_2(static_cast<T &&>(t), static_cast<U &&>(u))
+                    )
+                }
+
+                using namespace adl_barrier;
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // mem_ptr_adl
+                template<typename T, typename U>
+                auto mem_ptr_adl(T && t, U && u)
+                BOOST_PROTO_AUTO_RETURN(
+                    mem_ptr_helper(static_cast<T &&>(t), static_cast<U &&>(u), 1)
+                )
+
+                ////////////////////////////////////////////////////////////////////////////////////
                 // substitution_failure
                 struct substitution_failure_base
                 {
@@ -785,47 +863,6 @@ namespace boost
                 #define BOOST_PROTO_TRY_CALL
                 #define BOOST_PROTO_TRY_CALL_IF(B)
             #endif
-            }
-
-            namespace detail
-            {
-                ////////////////////////////////////////////////////////////////////////////////////
-                // proto_get_pointer
-                template<typename T>
-                auto proto_get_pointer(T & t, long)
-                BOOST_PROTO_AUTO_RETURN(
-                    boost::addressof(t) // TODO replace with std::addressof
-                )
-
-                template<typename T>
-                auto proto_get_pointer(T && t, int)
-                BOOST_PROTO_AUTO_RETURN(
-                    get_pointer(static_cast<T &&>(t))
-                )
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // mem_fun_binder_
-                template<typename T, typename PMF>
-                class mem_fun_binder_
-                {
-                    T obj_;
-                    PMF pmf_;
-
-                public:
-                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(mem_fun_binder_);
-
-                    template<typename U>
-                    mem_fun_binder_(U && u, PMF pmf) noexcept(noexcept(T(static_cast<U &&>(u))))
-                      : obj_(static_cast<U &&>(u))
-                      , pmf_(pmf)
-                    {}
-
-                    template<typename ...A>
-                    auto operator()(A &&... a) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        (detail::proto_get_pointer(obj_, 1) ->* pmf_)(static_cast<A &&>(a)...)
-                    )
-                };
             }
         }
     }

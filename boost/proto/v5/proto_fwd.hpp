@@ -85,6 +85,9 @@ namespace boost
 
                 struct _eval;
 
+                struct empty
+                {};
+
                 struct empty_state
                 {};
 
@@ -177,7 +180,7 @@ namespace boost
                 struct expr_tag_tag;
                 struct expr_tag_base;
 
-                template<typename Tag, typename Arity>
+                template<typename Tag, typename Arity, typename Action = detail::empty>
                 struct expr_tag;
 
                 struct terminal;

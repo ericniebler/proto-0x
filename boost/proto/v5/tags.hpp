@@ -12,6 +12,7 @@
 #include <boost/proto/v5/proto_fwd.hpp>
 #include <boost/proto/v5/utility.hpp>
 #include <boost/proto/v5/action/basic_action.hpp>
+#include <boost/proto/v5/functional/cxx/operators.hpp>
 
 namespace boost
 {
@@ -32,7 +33,8 @@ namespace boost
                 template<typename Tag>
                 struct safe_tag_action
                 {
-                    // If the Tag action creates an expression, use functional::make_expr instead
+                    // If the Tag action creates an expression, use functional::make_expr with
+                    // a safe version of the deduced domain instead to avoid dangling references.
                     template<
                         typename ...Ts
                       , typename ThisTag = Tag
@@ -42,7 +44,7 @@ namespace boost
                               , domains::safe_domain_adaptor<deduce_domain>
                             >
                       , BOOST_PROTO_ENABLE_IF(
-                            ThisTag::proto_arity_type::matches(sizeof...(Ts))
+                            ThisTag::proto_arity_type::equal_to(sizeof...(Ts))
                         )
                       , BOOST_PROTO_ENABLE_IF(
                             v5::is_expr<typename std::result_of<ThisTag(Ts...)>::type>::value
@@ -58,7 +60,7 @@ namespace boost
                         typename ...Ts
                       , typename ThisTag = Tag
                       , BOOST_PROTO_ENABLE_IF(
-                            ThisTag::proto_arity_type::matches(sizeof...(Ts))
+                            ThisTag::proto_arity_type::equal_to(sizeof...(Ts))
                         )
                       , BOOST_PROTO_ENABLE_IF(
                             !v5::is_expr<typename std::result_of<ThisTag(Ts...)>::type>::value
@@ -75,7 +77,7 @@ namespace boost
             {
                 struct nullary
                 {
-                    static constexpr bool matches(std::size_t)
+                    static constexpr bool equal_to(std::size_t)
                     {
                         return false;
                     }
@@ -83,7 +85,7 @@ namespace boost
 
                 struct unary
                 {
-                    static constexpr bool matches(std::size_t N)
+                    static constexpr bool equal_to(std::size_t N)
                     {
                         return 1 == N;
                     }
@@ -91,7 +93,7 @@ namespace boost
 
                 struct binary
                 {
-                    static constexpr bool matches(std::size_t N)
+                    static constexpr bool equal_to(std::size_t N)
                     {
                         return 2 == N;
                     }
@@ -99,7 +101,7 @@ namespace boost
 
                 struct ternary
                 {
-                    static constexpr bool matches(std::size_t N)
+                    static constexpr bool equal_to(std::size_t N)
                     {
                         return 3 == N;
                     }
@@ -107,31 +109,257 @@ namespace boost
 
                 struct nary
                 {
-                    static constexpr bool matches(std::size_t N)
+                    static constexpr bool equal_to(std::size_t N)
                     {
                         return 1 <= N;
                     }
                 };
 
+                ////////////////////////////////////////////////////////////////////////////////////
+                // expr_tag_tag
                 struct expr_tag_tag
                 {};
 
+                ////////////////////////////////////////////////////////////////////////////////////
+                // expr_tag_base
                 struct expr_tag_base
                 {
                     using proto_tag_type = expr_tag_tag;
                 };
 
-                template<typename Tag, typename Arity>
+                ////////////////////////////////////////////////////////////////////////////////////
+                // expr_tag
+                template<typename Tag, typename Arity, typename Action>
                 struct expr_tag
-                  : expr_tag_base
+                  : expr_tag_base, Action
                 {
                     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr_tag);
                     using proto_arity_type = Arity;
                     using proto_action_type = detail::safe_tag_action<Tag>;
-                    using proto_grammar_type = expr_tag<Tag, Arity>;
+                    using proto_grammar_type = expr_tag<Tag, Arity, Action>;
                     using proto_is_terminal_type =
                         std::integral_constant<bool, std::is_same<Arity, nullary>::value>;
                 };
+
+                /// Tag type for the unary + operator.
+                struct unary_plus
+                  : expr_tag<unary_plus, unary, v5::functional::cxx::unary_plus>
+                {};
+
+                /// Tag type for the unary - operator.
+                struct negate
+                  : expr_tag<negate, unary, v5::functional::cxx::negate>
+                {};
+
+                /// Tag type for the unary * operator.
+                struct dereference
+                  : expr_tag<dereference, unary, v5::functional::cxx::dereference>
+                {};
+
+                /// Tag type for the unary ~ operator.
+                struct complement
+                  : expr_tag<complement, unary, v5::functional::cxx::complement>
+                {};
+
+                /// Tag type for the unary & operator.
+                struct address_of
+                  : expr_tag<address_of, unary, v5::functional::cxx::address_of>
+                {};
+
+                /// Tag type for the unary ! operator.
+                struct logical_not
+                  : expr_tag<logical_not, unary, v5::functional::cxx::logical_not>
+                {};
+
+                /// Tag type for the unary prefix ++ operator.
+                struct pre_inc
+                  : expr_tag<pre_inc, unary, v5::functional::cxx::pre_inc>
+                {};
+
+                /// Tag type for the unary prefix -- operator.
+                struct pre_dec
+                  : expr_tag<pre_dec, unary, v5::functional::cxx::pre_dec>
+                {};
+
+                /// Tag type for the unary postfix ++ operator.
+                struct post_inc
+                  : expr_tag<post_inc, unary, v5::functional::cxx::post_inc>
+                {};
+
+                /// Tag type for the unary postfix -- operator.
+                struct post_dec
+                  : expr_tag<post_dec, unary, v5::functional::cxx::post_dec>
+                {};
+
+                /// Tag type for the binary \<\< operator.
+                struct shift_left
+                  : expr_tag<shift_left, binary, v5::functional::cxx::shift_left>
+                {};
+
+                /// Tag type for the binary \>\> operator.
+                struct shift_right
+                  : expr_tag<shift_right, binary, v5::functional::cxx::shift_right>
+                {};
+
+                /// Tag type for the binary * operator.
+                struct multiplies
+                  : expr_tag<multiplies, binary, v5::functional::cxx::multiplies>
+                {};
+
+                /// Tag type for the binary / operator.
+                struct divides
+                  : expr_tag<divides, binary, v5::functional::cxx::divides>
+                {};
+
+                /// Tag type for the binary % operator.
+                struct modulus
+                  : expr_tag<modulus, binary, v5::functional::cxx::modulus>
+                {};
+
+                /// Tag type for the binary + operator.
+                struct plus
+                  : expr_tag<plus, binary, v5::functional::cxx::plus>
+                {};
+
+                /// Tag type for the binary - operator.
+                struct minus
+                  : expr_tag<minus, binary, v5::functional::cxx::minus>
+                {};
+
+                /// Tag type for the binary \< operator.
+                struct less
+                  : expr_tag<less, binary, v5::functional::cxx::less>
+                {};
+
+                /// Tag type for the binary \> operator.
+                struct greater
+                  : expr_tag<greater, binary, v5::functional::cxx::greater>
+                {};
+
+                /// Tag type for the binary \<= operator.
+                struct less_equal
+                  : expr_tag<less_equal, binary, v5::functional::cxx::less_equal>
+                {};
+
+                /// Tag type for the binary \>= operator.
+                struct greater_equal
+                  : expr_tag<greater_equal, binary, v5::functional::cxx::greater_equal>
+                {};
+
+                /// Tag type for the binary == operator.
+                struct equal_to
+                  : expr_tag<equal_to, binary, v5::functional::cxx::equal_to>
+                {};
+
+                /// Tag type for the binary != operator.
+                struct not_equal_to
+                  : expr_tag<not_equal_to, binary, v5::functional::cxx::not_equal_to>
+                {};
+
+                /// Tag type for the binary || operator.
+                struct logical_or
+                  : expr_tag<logical_or, binary, v5::functional::cxx::logical_or>
+                {};
+
+                /// Tag type for the binary && operator.
+                struct logical_and
+                  : expr_tag<logical_and, binary, v5::functional::cxx::logical_and>
+                {};
+
+                /// Tag type for the binary & operator.
+                struct bitwise_and
+                  : expr_tag<bitwise_and, binary, v5::functional::cxx::bitwise_and>
+                {};
+
+                /// Tag type for the binary | operator.
+                struct bitwise_or
+                  : expr_tag<bitwise_or, binary, v5::functional::cxx::bitwise_or>
+                {};
+
+                /// Tag type for the binary ^ operator.
+                struct bitwise_xor
+                  : expr_tag<bitwise_xor, binary, v5::functional::cxx::bitwise_xor>
+                {};
+
+                /// Tag type for the binary , operator.
+                struct comma
+                  : expr_tag<comma, binary, v5::functional::cxx::comma>
+                {};
+
+                /// Tag type for the binary ->* operator.
+                struct mem_ptr
+                  : expr_tag<mem_ptr, binary, v5::functional::cxx::mem_ptr>
+                {};
+
+                /// Tag type for the binary = operator.
+                struct assign
+                  : expr_tag<assign, binary, v5::functional::cxx::assign>
+                {};
+
+                /// Tag type for the binary \<\<= operator.
+                struct shift_left_assign
+                  : expr_tag<shift_left_assign, binary, v5::functional::cxx::shift_left_assign>
+                {};
+
+                /// Tag type for the binary \>\>= operator.
+                struct shift_right_assign
+                  : expr_tag<shift_right_assign, binary, v5::functional::cxx::shift_right_assign>
+                {};
+
+                /// Tag type for the binary *= operator.
+                struct multiplies_assign
+                  : expr_tag<multiplies_assign, binary, v5::functional::cxx::multiplies_assign>
+                {};
+
+                /// Tag type for the binary /= operator.
+                struct divides_assign
+                  : expr_tag<divides_assign, binary, v5::functional::cxx::divides_assign>
+                {};
+
+                /// Tag type for the binary %= operator.
+                struct modulus_assign
+                  : expr_tag<modulus_assign, binary, v5::functional::cxx::modulus_assign>
+                {};
+
+                /// Tag type for the binary += operator.
+                struct plus_assign
+                  : expr_tag<plus_assign, binary, v5::functional::cxx::plus_assign>
+                {};
+
+                /// Tag type for the binary -= operator.
+                struct minus_assign
+                  : expr_tag<minus_assign, binary, v5::functional::cxx::minus_assign>
+                {};
+
+                /// Tag type for the binary &= operator.
+                struct bitwise_and_assign
+                  : expr_tag<bitwise_and_assign, binary, v5::functional::cxx::bitwise_and_assign>
+                {};
+
+                /// Tag type for the binary |= operator.
+                struct bitwise_or_assign
+                  : expr_tag<bitwise_or_assign, binary, v5::functional::cxx::bitwise_or_assign>
+                {};
+
+                /// Tag type for the binary ^= operator.
+                struct bitwise_xor_assign
+                  : expr_tag<bitwise_xor_assign, binary, v5::functional::cxx::bitwise_xor_assign>
+                {};
+
+                /// Tag type for the binary subscript operator.
+                struct subscript
+                  : expr_tag<subscript, binary, v5::functional::cxx::subscript>
+                {};
+
+                /// Tag type for the ternary ?: conditional operator.
+                struct if_else_
+                  : expr_tag<if_else_, ternary, v5::functional::cxx::if_else>
+                {};
+
+                /// Tag type for the n-ary function call operator.
+                struct function
+                  : expr_tag<function, nary, v5::functional::cxx::function>
+                {};
 
                 /// Tag type for terminals; aka, leaves in the expression tree.
                 struct terminal
@@ -150,484 +378,6 @@ namespace boost
                     auto operator()(T && t) const
                     BOOST_PROTO_AUTO_RETURN(
                         MakeExpr()(static_cast<T &&>(t))
-                    )
-                };
-
-                /// Tag type for the unary + operator.
-                struct unary_plus
-                  : expr_tag<unary_plus, unary>
-                {
-                    template<typename T>
-                    auto operator()(T && t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        + static_cast<T &&>(t)
-                    )
-                };
-
-                /// Tag type for the unary - operator.
-                struct negate
-                  : expr_tag<negate, unary>
-                {
-                    template<typename T>
-                    auto operator()(T && t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        - static_cast<T &&>(t)
-                    )
-                };
-
-                /// Tag type for the unary * operator.
-                struct dereference
-                  : expr_tag<dereference, unary>
-                {
-                    template<typename T>
-                    auto operator()(T && t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        * static_cast<T &&>(t)
-                    )
-                };
-
-                /// Tag type for the unary ~ operator.
-                struct complement
-                  : expr_tag<complement, unary>
-                {
-                    template<typename T>
-                    auto operator()(T && t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        ~ static_cast<T &&>(t)
-                    )
-                };
-
-                /// Tag type for the unary & operator.
-                struct address_of
-                  : expr_tag<address_of, unary>
-                {
-                    template<typename T>
-                    auto operator()(T && t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        & static_cast<T &&>(t)
-                    )
-                };
-
-                /// Tag type for the unary ! operator.
-                struct logical_not
-                  : expr_tag<logical_not, unary>
-                {
-                    template<typename T>
-                    auto operator()(T && t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        ! static_cast<T &&>(t)
-                    )
-                };
-
-                /// Tag type for the unary prefix ++ operator.
-                struct pre_inc
-                  : expr_tag<pre_inc, unary>
-                {
-                    template<typename T>
-                    auto operator()(T && t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        ++ static_cast<T &&>(t)
-                    )
-                };
-
-                /// Tag type for the unary prefix -- operator.
-                struct pre_dec
-                  : expr_tag<pre_dec, unary>
-                {
-                    template<typename T>
-                    auto operator()(T && t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        -- static_cast<T &&>(t)
-                    )
-                };
-
-                /// Tag type for the unary postfix ++ operator.
-                struct post_inc
-                  : expr_tag<post_inc, unary>
-                {
-                    template<typename T>
-                    auto operator()(T && t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) ++
-                    )
-                };
-
-                /// Tag type for the unary postfix -- operator.
-                struct post_dec
-                  : expr_tag<post_dec, unary>
-                {
-                    template<typename T>
-                    auto operator()(T && t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) --
-                    )
-                };
-
-                /// Tag type for the binary \<\< operator.
-                struct shift_left
-                  : expr_tag<shift_left, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) << static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary \>\> operator.
-                struct shift_right
-                  : expr_tag<shift_right, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) >> static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary * operator.
-                struct multiplies
-                  : expr_tag<multiplies, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) * static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary / operator.
-                struct divides
-                  : expr_tag<divides, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) / static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary % operator.
-                struct modulus
-                  : expr_tag<modulus, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) % static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary + operator.
-                struct plus
-                  : expr_tag<plus, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) + static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary - operator.
-                struct minus
-                  : expr_tag<minus, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) - static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary \< operator.
-                struct less
-                  : expr_tag<less, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) < static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary \> operator.
-                struct greater
-                  : expr_tag<greater, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) > static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary \<= operator.
-                struct less_equal
-                  : expr_tag<less_equal, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) <= static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary \>= operator.
-                struct greater_equal
-                  : expr_tag<greater_equal, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) >= static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary == operator.
-                struct equal_to
-                  : expr_tag<equal_to, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) == static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary != operator.
-                struct not_equal_to
-                  : expr_tag<not_equal_to, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) != static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary || operator.
-                struct logical_or
-                  : expr_tag<logical_or, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) || static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary && operator.
-                struct logical_and
-                  : expr_tag<logical_and, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) && static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary & operator.
-                struct bitwise_and
-                  : expr_tag<bitwise_and, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) & static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary | operator.
-                struct bitwise_or
-                  : expr_tag<bitwise_or, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) | static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary ^ operator.
-                struct bitwise_xor
-                  : expr_tag<bitwise_xor, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) ^ static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary , operator.
-                struct comma
-                  : expr_tag<comma, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) , static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary ->* operator.
-                struct mem_ptr
-                  : expr_tag<mem_ptr, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) ->* static_cast<U &&>(u)
-                    )
-
-                    template<typename Obj, typename Type, typename Class
-                      , BOOST_PROTO_ENABLE_IF(!proto::v5::is_expr<Obj>::value)
-                    >
-                    auto operator()(Obj && obj, Type Class::*pm) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        (detail::proto_get_pointer(static_cast<Obj &&>(obj), 1) ->* pm)
-                    )
-
-                    template<typename Obj, typename Type, typename Class, typename ...Args
-                      , BOOST_PROTO_ENABLE_IF(!proto::v5::is_expr<Obj>::value)
-                    >
-                    auto operator()(Obj && obj, Type (Class::*pmf)(Args...)) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        detail::mem_fun_binder_<Obj, Type (Class::*)(Args...)>(static_cast<Obj &&>(obj), pmf)
-                    )
-                };
-
-                /// Tag type for the binary = operator.
-                struct assign
-                  : expr_tag<assign, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) = static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary \<\<= operator.
-                struct shift_left_assign
-                  : expr_tag<shift_left_assign, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) <<= static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary \>\>= operator.
-                struct shift_right_assign
-                  : expr_tag<shift_right_assign, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) >>= static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary *= operator.
-                struct multiplies_assign
-                  : expr_tag<multiplies_assign, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) *= static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary /= operator.
-                struct divides_assign
-                  : expr_tag<divides_assign, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) /= static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary %= operator.
-                struct modulus_assign
-                  : expr_tag<modulus_assign, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) %= static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary += operator.
-                struct plus_assign
-                  : expr_tag<plus_assign, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) += static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary -= operator.
-                struct minus_assign
-                  : expr_tag<minus_assign, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) -= static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary &= operator.
-                struct bitwise_and_assign
-                  : expr_tag<bitwise_and_assign, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) &= static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary |= operator.
-                struct bitwise_or_assign
-                  : expr_tag<bitwise_or_assign, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) |= static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary ^= operator.
-                struct bitwise_xor_assign
-                  : expr_tag<bitwise_xor_assign, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) -= static_cast<U &&>(u)
-                    )
-                };
-
-                /// Tag type for the binary subscript operator.
-                struct subscript
-                  : expr_tag<subscript, binary>
-                {
-                    template<typename T, typename U>
-                    auto operator()(T && t, U && u) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) [ static_cast<U &&>(u) ]
                     )
                 };
 
@@ -652,40 +402,6 @@ namespace boost
                     )
                 };
 
-                /// Tag type for the ternary ?: conditional operator.
-                struct if_else_
-                  : expr_tag<if_else_, ternary>
-                {
-                    template<typename T, typename U, typename V>
-                    auto operator()(T && t, U && u, V && v) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<T &&>(t) ? static_cast<U &&>(u) : static_cast<V &&>(v)
-                    )
-                };
-
-                /// Tag type for the n-ary function call operator.
-                struct function
-                  : expr_tag<function, nary>
-                {
-                    template<typename Fun, typename ...T>
-                    auto operator()(Fun && fun, T &&... t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<Fun &&>(fun)(static_cast<T &&>(t)...)
-                    )
-
-                    template<typename Type, typename Class, typename Obj>
-                    auto operator()(Type Class::*pm, Obj && obj) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        (detail::proto_get_pointer(static_cast<Obj &&>(obj), 1) ->* pm)
-                    )
-
-                    template<typename Type, typename Class, typename ...Args, typename Obj, typename ...T>
-                    auto operator()(Type (Class::*pmf)(Args...), Obj && obj, T &&... t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        (detail::proto_get_pointer(static_cast<Obj &&>(obj), 1) ->* pmf)(static_cast<T &&>(t)...)
-                    )
-                };
-
                 ////////////////////////////////////////////////////////////////////////////////////
                 // env_var_tag
                 template<typename Tag>
@@ -696,7 +412,10 @@ namespace boost
                     // So that tag objects of type (derived from) env_var_tag can be used
                     // to create basic_action environments like (data=x, myvar=y),
                     // where "data" and "myvar" are tags.
-                    template<typename V, BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<env_var_tag, V>::value))>
+                    template<
+                        typename V
+                      , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<env_var_tag, V>::value))
+                    >
                     env<Tag, V> operator=(V && v) const
                     {
                         return env<Tag, V>(static_cast<V &&>(v));
