@@ -177,95 +177,6 @@ namespace boost
                 };
             }
 
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // constructors
-            // This will no longer be needed once clang implements inheriting constructors
-            #define BOOST_PROTO_INHERIT_EXPR_CTORS(EXPR, BASE)                                      \
-                using typename BASE::proto_tag_type;                                                \
-                using typename BASE::proto_children_type;                                           \
-                                                                                                    \
-                constexpr EXPR(proto_tag_type tag, proto_children_type args)                        \
-                    noexcept(noexcept(                                                              \
-                        BASE(static_cast<proto_tag_type &&>(tag), static_cast<proto_children_type &&>(args)) \
-                    ))                                                                              \
-                  : BASE(static_cast<proto_tag_type &&>(tag), static_cast<proto_children_type &&>(args))\
-                {}                                                                                  \
-                                                                                                    \
-                constexpr explicit EXPR(proto_children_type args)                                   \
-                    noexcept(noexcept(                                                              \
-                        EXPR(proto_tag_type(), static_cast<proto_children_type &&>(args))           \
-                    ))                                                                              \
-                  : EXPR(proto_tag_type(), static_cast<proto_children_type &&>(args))               \
-                {}                                                                                  \
-                                                                                                    \
-                template<typename proto_A_                                                          \
-                  , BOOST_PROTO_ENABLE_IF(                                                          \
-                        proto_children_type::proto_size::value == 1 &&                              \
-                        !(boost::proto::v5::utility::is_base_of<EXPR, proto_A_>::value)                 \
-                    )                                                                               \
-                >                                                                                   \
-                constexpr EXPR(proto_tag_type tag, proto_A_ &&a)                                    \
-                    noexcept(noexcept(                                                              \
-                        BASE(static_cast<proto_tag_type &&>(tag), static_cast<proto_A_ &&>(a))      \
-                    ))                                                                              \
-                  : BASE(static_cast<proto_tag_type &&>(tag), static_cast<proto_A_ &&>(a))          \
-                {}                                                                                  \
-                                                                                                    \
-                template<typename proto_A_                                                          \
-                  , BOOST_PROTO_ENABLE_IF(                                                          \
-                        proto_children_type::proto_size::value == 1 &&                              \
-                        !(boost::proto::v5::utility::is_base_of<EXPR, proto_A_>::value)          \
-                    )                                                                               \
-                >                                                                                   \
-                explicit constexpr EXPR(proto_A_ &&a)                                               \
-                    noexcept(noexcept(                                                              \
-                        EXPR(proto_tag_type(), static_cast<proto_A_ &&>(a))                         \
-                    ))                                                                              \
-                  : EXPR(proto_tag_type(), static_cast<proto_A_ &&>(a))                             \
-                {}                                                                                  \
-                                                                                                    \
-                template<typename proto_A_, typename proto_B_, typename ...proto_C_                 \
-                  , BOOST_PROTO_ENABLE_IF(proto_children_type::proto_size::value == sizeof...(proto_C_) + 2) \
-                >                                                                                   \
-                constexpr EXPR(proto_tag_type tag, proto_A_ &&a, proto_B_ &&b, proto_C_ &&... c)    \
-                    noexcept(noexcept(                                                              \
-                        BASE(                                                                       \
-                            static_cast<proto_tag_type &&>(tag)                                     \
-                          , static_cast<proto_A_ &&>(a)                                             \
-                          , static_cast<proto_B_ &&>(b)                                             \
-                          , static_cast<proto_C_ &&>(c)...                                          \
-                        )                                                                           \
-                    ))                                                                              \
-                  : BASE(                                                                           \
-                        static_cast<proto_tag_type &&>(tag)                                         \
-                      , static_cast<proto_A_ &&>(a)                                                 \
-                      , static_cast<proto_B_ &&>(b)                                                 \
-                      , static_cast<proto_C_ &&>(c)...                                              \
-                    )                                                                               \
-                {}                                                                                  \
-                                                                                                    \
-                template<typename proto_A_, typename proto_B_, typename ...proto_C_                 \
-                  , BOOST_PROTO_ENABLE_IF(proto_children_type::proto_size::value == sizeof...(proto_C_) + 2)> \
-                constexpr EXPR(proto_A_ &&a, proto_B_ &&b, proto_C_ &&... c)                        \
-                    noexcept(noexcept(                                                              \
-                        EXPR(                                                                       \
-                            proto_tag_type()                                                        \
-                          , static_cast<proto_A_ &&>(a)                                             \
-                          , static_cast<proto_B_ &&>(b)                                             \
-                          , static_cast<proto_C_ &&>(c)...                                          \
-                        )                                                                           \
-                    ))                                                                              \
-                  : EXPR(                                                                           \
-                        proto_tag_type()                                                            \
-                      , static_cast<proto_A_ &&>(a)                                                 \
-                      , static_cast<proto_B_ &&>(b)                                                 \
-                      , static_cast<proto_C_ &&>(c)...                                              \
-                    )                                                                               \
-                {}                                                                                  \
-                                                                                                    \
-                using boost_proto_inherited_ctors ## __LINE__ = int                                 \
-                /**/
-
             namespace exprs
             {
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -497,9 +408,10 @@ namespace boost
                         )
                     >
                     explicit constexpr basic_expr(A &&a)
-                        noexcept(noexcept(
-                            basic_expr(Tag(), static_cast<A &&>(a))
-                        ))
+                        // http://llvm.org/bugs/show_bug.cgi?id=15757
+                        // noexcept(noexcept(
+                        //     basic_expr(Tag(), static_cast<A &&>(a))
+                        // ))
                       : basic_expr(Tag(), static_cast<A &&>(a))
                     {}
 
@@ -594,9 +506,7 @@ namespace boost
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // constructors
-                    //using basic_expr<ExprDesc, Domain>::basic_expr;
-                    using proto_base_expr_type = basic_expr<ExprDesc, Domain>;
-                    BOOST_PROTO_INHERIT_EXPR_CTORS(expr, proto_base_expr_type);
+                    using basic_expr<ExprDesc, Domain>::basic_expr;
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // operator=

@@ -30,9 +30,8 @@ struct my_expr
   : proto::expr<E, my_domain>
 {
     using tag = fusion::fusion_sequence_tag;
-    using proto_basic_expr_type = proto::expr<E, my_domain>;
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(my_expr);
-    BOOST_PROTO_INHERIT_EXPR_CTORS(my_expr, proto_basic_expr_type);
+    using proto::expr<E, my_domain>::expr;
 };
 
 // Test that we can call mpl algorithms on proto expression types, and get proto expression types back

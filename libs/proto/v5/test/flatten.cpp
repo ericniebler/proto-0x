@@ -132,9 +132,8 @@ struct My
   : proto::basic_expr<ExprDesc, MyDomain>
   , proto::expr_function<My<ExprDesc>>
 {
-    using proto_basic_expr_type = proto::basic_expr<ExprDesc, MyDomain>;
-    BOOST_PROTO_INHERIT_EXPR_CTORS(My, proto_basic_expr_type);
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(My);
+    using proto::basic_expr<ExprDesc, MyDomain>::basic_expr;
 };
 
 using my = proto::custom<My>;

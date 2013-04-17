@@ -29,8 +29,7 @@ struct ewrap
   : proto::expr<E, mydomain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(ewrap);
-    using proto_basic_expr_type = proto::expr<E, mydomain>;
-    BOOST_PROTO_INHERIT_EXPR_CTORS(ewrap, proto_basic_expr_type);
+    using proto::expr<E, mydomain>::expr;
 };
 
 void test_make_expr()
@@ -313,8 +312,7 @@ struct by_ref_expr
   , proto::expr_function<by_ref_expr<ExprDesc>>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(by_ref_expr);
-    using proto_basic_expr_type = proto::basic_expr<ExprDesc, by_ref_domain>;
-    BOOST_PROTO_INHERIT_EXPR_CTORS(by_ref_expr, proto_basic_expr_type);
+    using proto::basic_expr<ExprDesc, by_ref_domain>::basic_expr;
 };
 
 struct length_impl {};

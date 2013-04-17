@@ -34,11 +34,10 @@ template<class E>
 struct e
   : proto::basic_expr<E, d>
 {
-    using proto_basic_expr_type = proto::basic_expr<E, d>;
-    static_assert(proto::matches<proto_basic_expr_type, g>::value, "");
+    static_assert(proto::matches<proto::basic_expr<E, d>, g>::value, "");
 
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(e);
-    BOOST_PROTO_INHERIT_EXPR_CTORS(e, proto_basic_expr_type);
+    using proto::basic_expr<E, d>::basic_expr;
 };
 
 e<proto::terminal(int)> i;

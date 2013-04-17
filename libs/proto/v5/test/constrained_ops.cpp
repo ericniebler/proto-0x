@@ -76,8 +76,7 @@ struct extension
   : proto::basic_expr<ExprDesc, my_domain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(extension);
-    using proto_basic_expr_type = proto::basic_expr<ExprDesc, my_domain>;
-    BOOST_PROTO_INHERIT_EXPR_CTORS(extension, proto_basic_expr_type);
+    using proto::basic_expr<ExprDesc, my_domain>::basic_expr;
 
     void test() const
     {}
@@ -88,8 +87,7 @@ struct lhs_extension
   : proto::basic_expr<ExprDesc, my_lhs_domain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(lhs_extension);
-    using proto_basic_expr_type = proto::basic_expr<ExprDesc, my_lhs_domain>;
-    BOOST_PROTO_INHERIT_EXPR_CTORS(lhs_extension, proto_basic_expr_type);
+    using proto::basic_expr<ExprDesc, my_lhs_domain>::basic_expr;
 };
 
 template<class ExprDesc>
@@ -97,8 +95,7 @@ struct rhs_extension
   : proto::basic_expr<ExprDesc, my_rhs_domain>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(rhs_extension);
-    using proto_basic_expr_type = proto::basic_expr<ExprDesc, my_rhs_domain>;
-    BOOST_PROTO_INHERIT_EXPR_CTORS(rhs_extension, proto_basic_expr_type);
+    using proto::basic_expr<ExprDesc, my_rhs_domain>::basic_expr;
 };
 
 void test_constrained_ops()
