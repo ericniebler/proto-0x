@@ -71,7 +71,6 @@ struct lambda_expr
   , proto::expr_assign<lambda_expr<ExprDesc>>
   , proto::expr_subscript<lambda_expr<ExprDesc>>
 {
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(lambda_expr);
     using proto::expr_assign<lambda_expr>::operator=;
     using proto::basic_expr<ExprDesc, lambda_domain>::basic_expr;
 

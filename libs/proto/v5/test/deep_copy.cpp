@@ -86,7 +86,6 @@ template<typename ExprDesc>
 struct Expr
   : proto::basic_expr<ExprDesc, Domain>
 {
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(Expr);
     using proto::basic_expr<ExprDesc, Domain>::basic_expr;
 };
 

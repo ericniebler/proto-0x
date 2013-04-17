@@ -30,7 +30,6 @@ template<typename ExprDesc>
 struct MyExpr
   : proto::basic_expr<ExprDesc, MyDomain>
 {
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(MyExpr);
     using proto::basic_expr<ExprDesc, MyDomain>::basic_expr;
 
     BOOST_PROTO_EXTENDS_MEMBERS(

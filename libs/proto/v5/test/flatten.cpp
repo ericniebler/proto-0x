@@ -132,7 +132,6 @@ struct My
   : proto::basic_expr<ExprDesc, MyDomain>
   , proto::expr_function<My<ExprDesc>>
 {
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(My);
     using proto::basic_expr<ExprDesc, MyDomain>::basic_expr;
 };
 

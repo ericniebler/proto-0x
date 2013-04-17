@@ -35,8 +35,6 @@ struct e
   : proto::basic_expr<E, d>
 {
     static_assert(proto::matches<proto::basic_expr<E, d>, g>::value, "");
-
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(e);
     using proto::basic_expr<E, d>::basic_expr;
 };
 

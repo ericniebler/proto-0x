@@ -502,8 +502,6 @@ namespace boost
                   , expr_subscript<expr<ExprDesc, Domain>>
                   , expr_function<expr<ExprDesc, Domain>>
                 {
-                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr);
-
                     ////////////////////////////////////////////////////////////////////////////////
                     // constructors
                     using basic_expr<ExprDesc, Domain>::basic_expr;

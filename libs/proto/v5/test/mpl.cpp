@@ -30,7 +30,6 @@ struct my_expr
   : proto::expr<E, my_domain>
 {
     using tag = fusion::fusion_sequence_tag;
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(my_expr);
     using proto::expr<E, my_domain>::expr;
 };
 

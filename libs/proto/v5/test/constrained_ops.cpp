@@ -75,7 +75,6 @@ template<class ExprDesc>
 struct extension
   : proto::basic_expr<ExprDesc, my_domain>
 {
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(extension);
     using proto::basic_expr<ExprDesc, my_domain>::basic_expr;
 
     void test() const
@@ -86,7 +85,6 @@ template<class ExprDesc>
 struct lhs_extension
   : proto::basic_expr<ExprDesc, my_lhs_domain>
 {
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(lhs_extension);
     using proto::basic_expr<ExprDesc, my_lhs_domain>::basic_expr;
 };
 
@@ -94,7 +92,6 @@ template<class ExprDesc>
 struct rhs_extension
   : proto::basic_expr<ExprDesc, my_rhs_domain>
 {
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(rhs_extension);
     using proto::basic_expr<ExprDesc, my_rhs_domain>::basic_expr;
 };
 

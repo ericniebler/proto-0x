@@ -38,7 +38,6 @@ struct MyExpr
   , proto::expr_subscript<MyExpr<ExprDesc>>
   , proto::expr_function<MyExpr<ExprDesc>>
 {
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(MyExpr);
     using proto::basic_expr<ExprDesc, MyDomain>::basic_expr;
     using proto::expr_assign<MyExpr>::operator=;
 };

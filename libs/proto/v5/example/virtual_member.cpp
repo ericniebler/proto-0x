@@ -162,7 +162,6 @@ namespace mini_lambda
         )
 
     public:
-        BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expression);
         using proto::basic_expr<ExprDesc, domain>::basic_expr;
         using proto::expr_assign<expression>::operator=;
 
