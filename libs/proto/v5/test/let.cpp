@@ -29,7 +29,7 @@ int once::ctors = 0;
 struct LetCallOnce
   : proto::def<
         proto::let(
-            _a(proto::make(once()))
+            _a(once())
           , proto::functional::std::make_pair(_a, _a)
         )
     >

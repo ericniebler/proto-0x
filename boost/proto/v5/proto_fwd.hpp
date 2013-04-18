@@ -20,7 +20,7 @@
 //   noexcept clause from Dave Abrahams, tweaked by me.
 #define BOOST_PROTO_AUTO_RETURN(...)                                                                \
     noexcept(noexcept(                                                                              \
-        decltype(__VA_ARGS__)(boost::proto::v5::utility::move_declval<decltype(__VA_ARGS__)>())  \
+        decltype(__VA_ARGS__)(boost::proto::v5::utility::move_declval<decltype(__VA_ARGS__)>())     \
     )) -> decltype(__VA_ARGS__)                                                                     \
     {                                                                                               \
         return (__VA_ARGS__);                                                                       \
@@ -29,7 +29,7 @@
 
 #define BOOST_PROTO_RETURN(...)                                                                     \
     noexcept(noexcept(                                                                              \
-        decltype(__VA_ARGS__)(boost::proto::v5::utility::move_declval<decltype(__VA_ARGS__)>())  \
+        decltype(__VA_ARGS__)(boost::proto::v5::utility::move_declval<decltype(__VA_ARGS__)>())     \
     ))                                                                                              \
     {                                                                                               \
         return (__VA_ARGS__);                                                                       \

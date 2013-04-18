@@ -12,6 +12,7 @@
 #include <utility>
 #include <type_traits>
 #include <boost/proto/v5/proto_fwd.hpp>
+#include <boost/proto/v5/utility.hpp>
 
 namespace boost
 {

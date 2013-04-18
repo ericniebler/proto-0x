@@ -22,9 +22,10 @@ template<typename T>
 struct placeholder
   : proto::env_var_tag<placeholder<T>>
 {
-    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(placeholder);
     using proto::env_var_tag<placeholder<T>>::operator=;
 };
+
+static_assert(std::is_trivial<placeholder<std::integral_constant<std::size_t, 0>>>::value, "");
 
 // So placeholder terminals can be pretty-printed with display_expr
 template<typename T>

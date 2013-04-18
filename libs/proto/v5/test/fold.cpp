@@ -41,10 +41,10 @@ struct lambda_arity
           , proto::make( mpl::next< proto::_value >() )
           , proto::if_(
                 proto::matches_( proto::terminal(_) )
-              , proto::make( mpl::int_<0>() )
+              , mpl::int_<0>()
               , Fold(
                     _
-                  , proto::make( mpl::int_<0>() )
+                  , mpl::int_<0>()
                   , proto::make( mpl::max<lambda_arity<Fold>, proto::_state>() )
                 )
             )
@@ -90,7 +90,7 @@ struct to_cons_list
   : proto::def<
         RecursiveFold(
             _
-          , proto::make( nil() )
+          , nil()
           , proto::make( cons<proto::_value, proto::_state>(proto::_value, proto::_state) )
         )
     >

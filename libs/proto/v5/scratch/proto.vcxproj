@@ -89,6 +89,7 @@
     <ClInclude Include="..\..\..\..\boost\proto\v5\def.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\detail\common_domain.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\detail\compressed_pair.hpp" />
+    <ClInclude Include="..\..\..\..\boost\proto\v5\detail\operators.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\domain.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\expr.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional.hpp" />

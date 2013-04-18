@@ -32,7 +32,8 @@ namespace linear_algebra
     {};
 
     // Define all the operator overloads for combining std::vectors
-    BOOST_PROTO_DEFINE_OPERATORS(is_std_vector, linear_algebra_domain)
+    #define BOOST_PROTO_OPERATOR_TRAITS (is_std_vector, linear_algebra_domain)
+    #include BOOST_PROTO_DEFINE_OPERATORS()
 
     // Take any expression and turn each node
     // into a subscript expression, using the
@@ -57,7 +58,7 @@ namespace linear_algebra
             proto::match(
                 proto::case_(
                     proto::subscript(Distribute, proto::terminal(_))
-                  , Distribute(proto::_left, proto::make(proto::empty_env()), proto::_right)
+                  , Distribute(proto::_left, proto::empty_env(), proto::_right)
                 )
               , proto::case_(
                     proto::plus(Optimize, Optimize)
