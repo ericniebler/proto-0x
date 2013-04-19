@@ -14,6 +14,7 @@
 #include <boost/proto/v5/action/block.hpp>
 #include <boost/proto/v5/action/apply.hpp>
 #include <boost/proto/v5/action/call.hpp>
+#include <boost/proto/v5/action/case.hpp>
 #include <boost/proto/v5/action/env.hpp>
 #include <boost/proto/v5/action/eval.hpp>
 #include <boost/proto/v5/action/fold.hpp>
@@ -31,6 +32,6 @@
 #include <boost/proto/v5/action/recursive_fold.hpp>
 #include <boost/proto/v5/action/switch.hpp>
 #include <boost/proto/v5/action/unpack.hpp>
-#include <boost/proto/v5/action/case.hpp>
+#include <boost/proto/v5/action/void.hpp>
 
 #endif

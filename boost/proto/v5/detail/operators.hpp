@@ -7,7 +7,7 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-// NO INCLUDE GUARD. THIS FILE IS MEANT TO B INCLUDED MULTIPLE TIMES.
+// NO INCLUDE GUARD. THIS FILE IS MEANT TO BE INCLUDED MULTIPLE TIMES.
 
 #ifndef BOOST_PROTO_CXX11_OPERATORS_HPP_INCLUDED
 #error This file is not meant to be included directly

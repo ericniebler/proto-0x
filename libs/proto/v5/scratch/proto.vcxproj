@@ -81,6 +81,7 @@
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\recursive_fold.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\switch.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\unpack.hpp" />
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\void.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\children.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\core.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\custom.hpp" />
@@ -146,6 +147,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\example\map_list_of.cpp" />
     <ClCompile Include="..\example\virtual_member.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>

@@ -7,6 +7,11 @@ exe lambda
         lambda.cpp
     ;
 
+exe map_list_of
+    :
+        map_list_of.cpp
+    ;
+
 exe virtual_member
     :
         virtual_member.cpp

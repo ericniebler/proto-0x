@@ -452,6 +452,17 @@ namespace boost
             using _left = _child<0>;
             using _right = _child<1>;
 
+            using _0 = _child<0>;
+            using _1 = _child<1>;
+            using _2 = _child<2>;
+            using _3 = _child<3>;
+            using _4 = _child<4>;
+            using _5 = _child<5>;
+            using _6 = _child<6>;
+            using _7 = _child<7>;
+            using _8 = _child<8>;
+            using _9 = _child<9>;
+
             template<typename T>
             struct is_action;
 
@@ -480,6 +491,8 @@ namespace boost
 
             template<typename Local>
             struct _local;
+
+            struct _noop;
 
             struct pack;
 

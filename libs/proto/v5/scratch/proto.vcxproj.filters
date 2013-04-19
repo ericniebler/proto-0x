@@ -282,6 +282,9 @@
     <ClInclude Include="..\..\..\..\boost\proto\v5\detail\operators.hpp">
       <Filter>Proto Files\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\void.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -364,6 +367,9 @@
     </ClCompile>
     <ClCompile Include="..\test\pass.cpp">
       <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\example\map_list_of.cpp">
+      <Filter>Example Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
