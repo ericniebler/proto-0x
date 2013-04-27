@@ -170,6 +170,12 @@ namespace boost
                     using type = exprs::basic_expr<Tag(typename as_child_<Children, Domain>::type...), Domain>;
                 };
 
+                template<typename Expr, typename Domain>
+                struct as_expr_
+                {
+                    using type = exprs::expr<Expr, Domain>;
+                };
+
                 template<typename Tag, typename ...Children, typename Domain>
                 struct as_expr_<Tag(Children...), Domain>
                 {
@@ -202,7 +208,7 @@ namespace boost
                     template<typename U, typename E = Expr
                       , typename Domain = typename E::proto_domain_type
                       , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<expr_assign, U>::value))>
-                    auto operator=(U && u) const &
+                    constexpr auto operator=(U && u) const &
                     BOOST_PROTO_AUTO_RETURN(
                         v5::make_expr<v5::assign, Domain>(
                             static_cast<E const &>(*this)
@@ -213,17 +219,13 @@ namespace boost
                     template<typename U, typename E = Expr
                       , typename Domain = typename E::proto_domain_type
                       , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<expr_assign, U>::value))>
-                    auto operator=(U && u) &&
+                    constexpr auto operator=(U && u) const &&
                     BOOST_PROTO_AUTO_RETURN(
                         v5::make_expr<v5::assign, Domain>(
-                            static_cast<E &&>(static_cast<expr_assign &&>(*this))
+                            static_cast<E &&>(const_cast<expr_assign &&>(*this))
                           , static_cast<U &&>(u)
                         )
                     )
-
-                    template<typename U
-                      , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<expr_assign, U>::value))>
-                    void operator=(U && u) const && = delete;
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -247,7 +249,7 @@ namespace boost
 
                     template<typename U, typename E = Expr
                       , typename Domain = typename E::proto_domain_type>
-                    auto operator[](U && u) const &
+                    constexpr auto operator[](U && u) const &
                     BOOST_PROTO_AUTO_RETURN(
                         v5::make_expr<v5::subscript, Domain>(
                             static_cast<E const &>(*this)
@@ -257,16 +259,13 @@ namespace boost
 
                     template<typename U, typename E = Expr
                       , typename Domain = typename E::proto_domain_type>
-                    auto operator[](U && u) &&
+                    constexpr auto operator[](U && u) const &&
                     BOOST_PROTO_AUTO_RETURN(
                         v5::make_expr<v5::subscript, Domain>(
-                            static_cast<E &&>(static_cast<expr_subscript &&>(*this))
+                            static_cast<E &&>(const_cast<expr_subscript &&>(*this))
                           , static_cast<U &&>(u)
                         )
                     )
-
-                    template<typename U>
-                    void operator[](U && u) const && = delete;
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -290,7 +289,7 @@ namespace boost
 
                     template<typename ...U, typename E = Expr
                       , typename Domain = typename E::proto_domain_type>
-                    auto operator()(U &&... u) const &
+                    constexpr auto operator()(U &&... u) const &
                     BOOST_PROTO_AUTO_RETURN(
                         v5::make_expr<v5::function, Domain>(
                             static_cast<E const &>(*this)
@@ -300,16 +299,13 @@ namespace boost
 
                     template<typename ...U, typename E = Expr
                       , typename Domain = typename E::proto_domain_type>
-                    auto operator()(U &&... u) &&
+                    constexpr auto operator()(U &&... u) const &&
                     BOOST_PROTO_AUTO_RETURN(
                         v5::make_expr<v5::function, Domain>(
-                            static_cast<E &&>(static_cast<expr_function &&>(*this))
+                            static_cast<E &&>(const_cast<expr_function &&>(*this))
                           , static_cast<U &&>(u)...
                         )
                     )
-
-                    template<typename ...U>
-                    void operator()(U &&... u) const && = delete;
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -361,6 +357,7 @@ namespace boost
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // constructors
+                private:
                     constexpr basic_expr(Tag tag, proto_children_type args)
                         noexcept(
                             noexcept(
@@ -381,6 +378,7 @@ namespace boost
                       : basic_expr(Tag(), static_cast<proto_children_type &&>(args))
                     {}
 
+                public:
                     template<typename A
                       , BOOST_PROTO_ENABLE_IF(
                             sizeof...(Children) == 1 && !(utility::is_base_of<basic_expr, A>::value)
@@ -495,16 +493,39 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // struct expr
-                template<typename ExprDesc, typename Domain>
-                struct expr
+                template<
+                    template<typename, typename...> class DerivedExpr
+                  , typename ExprDesc
+                  , typename ...Rest
+                  , typename Domain
+                >
+                struct expr<DerivedExpr<ExprDesc, Rest...>, Domain>
                   : basic_expr<ExprDesc, Domain>
-                  , expr_assign<expr<ExprDesc, Domain>>
-                  , expr_subscript<expr<ExprDesc, Domain>>
-                  , expr_function<expr<ExprDesc, Domain>>
+                  , expr_assign<DerivedExpr<ExprDesc, Rest...>>
+                  , expr_subscript<DerivedExpr<ExprDesc, Rest...>>
+                  , expr_function<DerivedExpr<ExprDesc, Rest...>>
                 {
                     ////////////////////////////////////////////////////////////////////////////////
                     // constructors
                     using basic_expr<ExprDesc, Domain>::basic_expr;
+
+                    ////////////////////////////////////////////////////////////////////////////////
+                    // operator=
+                    using expr_assign<DerivedExpr<ExprDesc, Rest...>>::operator=;
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // struct expr
+                template<typename Tag, typename ...Children, typename Domain>
+                struct expr<Tag(Children...), Domain>
+                  : basic_expr<Tag(Children...), Domain>
+                  , expr_assign<expr<Tag(Children...), Domain>>
+                  , expr_subscript<expr<Tag(Children...), Domain>>
+                  , expr_function<expr<Tag(Children...), Domain>>
+                {
+                    ////////////////////////////////////////////////////////////////////////////////
+                    // constructors
+                    using basic_expr<Tag(Children...), Domain>::basic_expr;
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // operator=

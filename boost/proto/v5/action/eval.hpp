@@ -80,13 +80,7 @@ namespace boost
                 struct _eval_case<ActiveGrammar, terminal>
                   : def<case_(terminal(_), _value)>
                 {};
-            }
 
-            template<typename Tag>
-            using op = typename detail::_op<Tag>::type;
-
-            namespace detail
-            {
                 template<typename Tag, typename Action>
                 struct _op_unpack
                   : basic_action<_op_unpack<Tag, Action>>
@@ -94,7 +88,7 @@ namespace boost
                     template<std::size_t ...I, typename Expr, typename ...Rest>
                     auto impl(utility::indices<I...>, Expr && expr, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        BOOST_PROTO_TRY_CALL(op<Tag>())(
+                        BOOST_PROTO_TRY_CALL(typename _op<Tag>::type())(
                             as_action_<Action>()(
                                 proto::v5::child<I>(static_cast<Expr &&>(expr))
                               , static_cast<Rest &&>(rest)...
@@ -187,7 +181,7 @@ namespace boost
                 struct _eval_case<ActiveGrammar, TAG>                                               \
                   : def<case_(TAG(ActiveGrammar), _op_unpack<TAG, ActiveGrammar>)>                  \
                 {};                                                                                 \
-            /**/
+                /**/
 
             #define BOOST_PROTO_BINARY_EVAL(TAG)                                                    \
                 template<>                                                                          \
@@ -298,7 +292,7 @@ namespace boost
                 template<typename Tag, typename ...T>
                 auto operator()(Tag, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
-                    BOOST_PROTO_TRY_CALL(op<Tag>())(static_cast<T &&>(t)...)
+                    BOOST_PROTO_TRY_CALL(typename detail::_op<Tag>::type())(static_cast<T &&>(t)...)
                 )
             };
 

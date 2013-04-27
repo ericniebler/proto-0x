@@ -32,7 +32,7 @@ template<
         >::value
     )
 >
-inline auto operator +(Arg &&arg)
+inline constexpr auto operator +(Arg &&arg)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::unary_plus, BOOST_PROTO_DOMAIN>(
         static_cast<Arg &&>(arg)
@@ -51,7 +51,7 @@ template<
         >::value
     )
 >
-inline auto operator -(Arg &&arg)
+inline constexpr auto operator -(Arg &&arg)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::negate, BOOST_PROTO_DOMAIN>(
         static_cast<Arg &&>(arg)
@@ -70,7 +70,7 @@ template<
         >::value
     )
 >
-inline auto operator *(Arg &&arg)
+inline constexpr auto operator *(Arg &&arg)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::dereference, BOOST_PROTO_DOMAIN>(
         static_cast<Arg &&>(arg)
@@ -89,7 +89,7 @@ template<
         >::value
     )
 >
-inline auto operator ~(Arg &&arg)
+inline constexpr auto operator ~(Arg &&arg)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::complement, BOOST_PROTO_DOMAIN>(
         static_cast<Arg &&>(arg)
@@ -108,7 +108,7 @@ template<
         >::value
     )
 >
-inline auto operator &(Arg &&arg)
+inline constexpr auto operator &(Arg &&arg)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::address_of, BOOST_PROTO_DOMAIN>(
         static_cast<Arg &&>(arg)
@@ -127,7 +127,7 @@ template<
         >::value
     )
 >
-inline auto operator !(Arg &&arg)
+inline constexpr auto operator !(Arg &&arg)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::logical_not, BOOST_PROTO_DOMAIN>(
         static_cast<Arg &&>(arg)
@@ -146,7 +146,7 @@ template<
         >::value
     )
 >
-inline auto operator ++(Arg &&arg)
+inline constexpr auto operator ++(Arg &&arg)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::pre_inc, BOOST_PROTO_DOMAIN>(
         static_cast<Arg &&>(arg)
@@ -165,7 +165,7 @@ template<
         >::value
     )
 >
-inline auto operator --(Arg &&arg)
+inline constexpr auto operator --(Arg &&arg)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::pre_dec, BOOST_PROTO_DOMAIN>(
         static_cast<Arg &&>(arg)
@@ -184,7 +184,7 @@ template<
         >::value
     )
 >
-inline auto operator ++(Arg &&arg, int)
+inline constexpr auto operator ++(Arg &&arg, int)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::post_inc, BOOST_PROTO_DOMAIN>(
         static_cast<Arg &&>(arg)
@@ -203,7 +203,7 @@ template<
         >::value
     )
 >
-inline auto operator --(Arg &&arg, int)
+inline constexpr auto operator --(Arg &&arg, int)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::post_dec, BOOST_PROTO_DOMAIN>(
         static_cast<Arg &&>(arg)
@@ -221,7 +221,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator <<(Left &&left, Right &&right)
+inline constexpr auto operator <<(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::shift_left, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -240,7 +240,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator >>(Left &&left, Right &&right)
+inline constexpr auto operator >>(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::shift_right, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -259,7 +259,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator *(Left &&left, Right &&right)
+inline constexpr auto operator *(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::multiplies, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -278,7 +278,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator /(Left &&left, Right &&right)
+inline constexpr auto operator /(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::divides, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -297,7 +297,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator %(Left &&left, Right &&right)
+inline constexpr auto operator %(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::modulus, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -316,7 +316,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator +(Left &&left, Right &&right)
+inline constexpr auto operator +(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::plus, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -335,7 +335,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator -(Left &&left, Right &&right)
+inline constexpr auto operator -(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::minus, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -354,7 +354,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator <(Left &&left, Right &&right)
+inline constexpr auto operator <(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::less, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -373,7 +373,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator >(Left &&left, Right &&right)
+inline constexpr auto operator >(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::greater, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -392,7 +392,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator <=(Left &&left, Right &&right)
+inline constexpr auto operator <=(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::less_equal, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -411,7 +411,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator >=(Left &&left, Right &&right)
+inline constexpr auto operator >=(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::greater_equal, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -430,7 +430,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator ==(Left &&left, Right &&right)
+inline constexpr auto operator ==(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::equal_to, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -449,7 +449,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator !=(Left &&left, Right &&right)
+inline constexpr auto operator !=(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::not_equal_to, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -468,7 +468,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator ||(Left &&left, Right &&right)
+inline constexpr auto operator ||(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::logical_or, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -487,7 +487,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator &&(Left &&left, Right &&right)
+inline constexpr auto operator &&(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::logical_and, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -506,7 +506,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator &(Left &&left, Right &&right)
+inline constexpr auto operator &(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::bitwise_and, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -525,7 +525,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator |(Left &&left, Right &&right)
+inline constexpr auto operator |(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::bitwise_or, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -544,7 +544,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator ^(Left &&left, Right &&right)
+inline constexpr auto operator ^(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::bitwise_xor, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -563,7 +563,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator ,(Left &&left, Right &&right)
+inline constexpr auto operator ,(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::comma, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -582,7 +582,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator ->*(Left &&left, Right &&right)
+inline constexpr auto operator ->*(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::mem_ptr, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -601,7 +601,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator <<=(Left &&left, Right &&right)
+inline constexpr auto operator <<=(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::shift_left_assign, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -620,7 +620,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator >>=(Left &&left, Right &&right)
+inline constexpr auto operator >>=(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::shift_right_assign, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -639,7 +639,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator *=(Left &&left, Right &&right)
+inline constexpr auto operator *=(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::multiplies_assign, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -658,7 +658,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator /=(Left &&left, Right &&right)
+inline constexpr auto operator /=(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::divides_assign, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -677,7 +677,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator %=(Left &&left, Right &&right)
+inline constexpr auto operator %=(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::modulus_assign, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -696,7 +696,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator +=(Left &&left, Right &&right)
+inline constexpr auto operator +=(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::plus_assign, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -715,7 +715,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator -=(Left &&left, Right &&right)
+inline constexpr auto operator -=(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::minus_assign, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -734,7 +734,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator &=(Left &&left, Right &&right)
+inline constexpr auto operator &=(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::bitwise_and_assign, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -753,7 +753,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator |=(Left &&left, Right &&right)
+inline constexpr auto operator |=(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::bitwise_or_assign, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)
@@ -772,7 +772,7 @@ template<typename Left, typename Right
         >::value
     )
 >
-inline auto operator ^=(Left &&left, Right &&right)
+inline constexpr auto operator ^=(Left &&left, Right &&right)
 BOOST_PROTO_AUTO_RETURN(
     ::boost::proto::v5::make_expr< ::boost::proto::v5::bitwise_xor_assign, BOOST_PROTO_DOMAIN>(
         static_cast<Left &&>(left)

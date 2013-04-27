@@ -449,19 +449,19 @@ namespace boost
             template<std::size_t N>
             struct _child;
 
-            using _left = _child<0>;
-            using _right = _child<1>;
+            using _left   = _child<0>;
+            using _right  = _child<1>;
 
-            using _0 = _child<0>;
-            using _1 = _child<1>;
-            using _2 = _child<2>;
-            using _3 = _child<3>;
-            using _4 = _child<4>;
-            using _5 = _child<5>;
-            using _6 = _child<6>;
-            using _7 = _child<7>;
-            using _8 = _child<8>;
-            using _9 = _child<9>;
+            using _child0 = _child<0>;
+            using _child1 = _child<1>;
+            using _child2 = _child<2>;
+            using _child3 = _child<3>;
+            using _child4 = _child<4>;
+            using _child5 = _child<5>;
+            using _child6 = _child<6>;
+            using _child7 = _child<7>;
+            using _child8 = _child<8>;
+            using _child9 = _child<9>;
 
             template<typename T>
             struct is_action;

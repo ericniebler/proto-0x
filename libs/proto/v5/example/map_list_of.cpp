@@ -12,28 +12,20 @@
 #include <boost/proto/v5/debug.hpp>
 using namespace boost::proto;
 
-struct map_insert
-{
-    template<class M, class K, class V>
-    void operator()(M & m, K k, V v) const
-    {
-        m[ k ] = v;
-    }
-};
-
 struct map_list_of_
 {};
 
-struct MapListOf
-  : def< match(
+struct MapListOf : def<
+    match(
         case_(  terminal(map_list_of_),
             void()
         ),
         case_(  function(MapListOf, terminal(_), terminal(_)),
-            MapListOf(_0),
-            map_insert(_data, _value(_1), _value(_2))
+            MapListOf(_child0),
+            assign(subscript(_data, _value(_child1)), _value(_child2))
         )
-    )>
+    )
+>
 {};
 
 template<typename Expr>
@@ -56,7 +48,7 @@ struct map_list_of_expr
     {
         assert_matches<MapListOf>(*this);
         std::map<K, V, C, A> map;
-        MapListOf()(std::move(*this), data = map);
+        MapListOf()(*this, data = map);
         return map;
     }
 };

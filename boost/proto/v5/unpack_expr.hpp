@@ -74,7 +74,7 @@ namespace boost
                     {}
 
                     template<typename ...Ts, typename Impl = with_deduced_expr_maker_impl_>
-                    constexpr auto operator()(Ts && ...ts) &&
+                    constexpr auto operator()(Ts && ...ts) const &&
                     BOOST_PROTO_AUTO_RETURN(
                         detail::expr_maker(Domain(), ts...)(
                             const_cast<Impl &&>(*this).tag_
