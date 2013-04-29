@@ -42,14 +42,14 @@ namespace boost
                         return *this;
                     }
 
-                    First const & first() const & noexcept
+                    constexpr First const & first() const & noexcept
                     {
                         return *this;
                     }
 
-                    First && first() && noexcept
+                    constexpr First && first() const && noexcept
                     {
-                        return static_cast<First &&>(*this);
+                        return const_cast<compressed_pair &&>(*this);
                     }
 
                     Second & second() & noexcept
@@ -57,14 +57,14 @@ namespace boost
                         return *this;
                     }
 
-                    Second const & second() const & noexcept
+                    constexpr Second const & second() const & noexcept
                     {
                         return *this;
                     }
 
-                    Second && second() && noexcept
+                    constexpr Second && second() const && noexcept
                     {
-                        return static_cast<Second &&>(*this);
+                        return const_cast<compressed_pair &&>(*this);
                     }
                 };
             }

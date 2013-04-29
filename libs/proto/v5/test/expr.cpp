@@ -80,7 +80,7 @@ void test_expr()
     static_assert(std::is_same<decltype(y2)::proto_tag_type, proto::assign>::value, "");
 
     // verify that args accessor on rvalue expression is itself an rvalue
-    static_assert(std::is_rvalue_reference<decltype(int_().proto_args())>::value, "isn't an rvalue reference!");
+    static_assert(std::is_rvalue_reference<decltype(proto::exprs::access::proto_args(int_()))>::value, "isn't an rvalue reference!");
 
     // verify that expression nodes are no larger than they need to be.
     static_assert(sizeof(proto::literal<int>) == sizeof(int), "sizeof(proto::literal<int>) != sizeof(int)");
@@ -94,8 +94,8 @@ void test_expr()
     auto jjj_ = iii_[42];
 
     // Test proto_equal_to
-    BOOST_CHECK(jjj_.proto_equal_to(iii_[42]));
-    BOOST_CHECK(!jjj_.proto_equal_to(iii_[43]));
+    BOOST_CHECK(proto::exprs::access::proto_equal_to(jjj_, iii_[42]));
+    BOOST_CHECK(!proto::exprs::access::proto_equal_to(jjj_, iii_[43]));
 
     // Test convertibility to bool
     BOOST_CHECK(proto::make_expr<MyDomain>(proto::equal_to(), jjj_, iii_[42]));
@@ -117,9 +117,9 @@ void test_expr()
     using int_ne_int = proto::exprs::not_equal_to<int_, int_>;
     int_ne_int inei(int_(42), int_(42));
     constexpr int_ne_int cinei(int_(42), int_(42));
-    static_assert(noexcept(int_ne_int()), "not noexcept default makeor");
-    static_assert(noexcept(int_ne_int(cinei)), "not noexcept copy makeor");
-    static_assert(noexcept(int_ne_int(int_ne_int())), "not noexcept move makeor");
+    static_assert(noexcept(int_ne_int()), "not noexcept default constructor");
+    static_assert(noexcept(int_ne_int(cinei)), "not noexcept copy constructor");
+    static_assert(noexcept(int_ne_int(int_ne_int())), "not noexcept move constructor");
     static_assert(noexcept(inei = cinei), "not noexcept copy assign");
     static_assert(noexcept(inei = int_ne_int()), "not noexcept move assign");
 

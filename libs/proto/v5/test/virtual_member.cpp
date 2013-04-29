@@ -48,17 +48,17 @@ void test_virtual_members()
     proto::literal<foo_tag> & e = proto::child<1>(xxx.foo);
 
     static_assert(std::is_lvalue_reference<decltype(proto::child<0>(xxx.foo))>::value, "");
-    static_assert(std::is_rvalue_reference<decltype(proto::child<0>(My::terminal<int>().foo))>::value, "");
+    static_assert(!std::is_reference<decltype(proto::child<0>(My::terminal<int>().foo))>::value, "");
 
     static_assert(std::is_lvalue_reference<decltype(proto::child<1>(xxx.foo))>::value, "");
-    static_assert(std::is_rvalue_reference<decltype(proto::child<1>(My::terminal<int>().foo))>::value, "");
+    static_assert(!std::is_reference<decltype(proto::child<1>(My::terminal<int>().foo))>::value, "");
 
     BOOST_CHECK_EQUAL(42, proto::value(xxx));
     BOOST_CHECK_EQUAL(42, proto::value(r));
 
     // These addresses had better be the same
     BOOST_CHECK_EQUAL(boost::addressof(xxx), boost::addressof(r));
-    BOOST_CHECK_EQUAL(boost::addressof(xxx.foo.proto_args().proto_child1), boost::addressof(e));
+    BOOST_CHECK_EQUAL(boost::addressof(proto::exprs::access::proto_args(xxx.foo).proto_child1), boost::addressof(e));
 
     // Check that member expressions match their grammars
     struct G

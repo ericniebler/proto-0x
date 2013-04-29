@@ -248,9 +248,9 @@ namespace boost
               : proto::v5::basic_action<_domain_of>
             {
                 template<typename E, typename ...Rest>
-                auto operator()(E && e, Rest &&...) const
+                auto operator()(E &&, Rest &&...) const
                 BOOST_PROTO_AUTO_RETURN(
-                    static_cast<E &&>(e).proto_domain()
+                    typename result_of::domain_of<E>::type()
                 )
             };
         }

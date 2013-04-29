@@ -19,6 +19,7 @@
 #include <boost/proto/v5/tags.hpp>
 #include <boost/proto/v5/utility.hpp>
 #include <boost/proto/v5/detail/compressed_pair.hpp>
+#include <boost/proto/v5/detail/access.hpp>
 #include <boost/proto/v5/action/basic_action.hpp>
 
 namespace boost
@@ -32,7 +33,7 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // are_equality_comparible
                 template<typename L, typename R
-                  , BOOST_PROTO_ENABLE_IF_VALID_EXPR(std::declval<L>().proto_equal_to(std::declval<R>()))>
+                  , BOOST_PROTO_ENABLE_IF_VALID_EXPR(exprs::access::proto_equal_to(std::declval<L>(), std::declval<R>()))>
                 std::true_type are_equality_comparible_(int);
 
                 template<typename L, typename R>
@@ -68,9 +69,10 @@ namespace boost
                 public:
                     inline operator unspecified_bool_type() const
                     BOOST_PROTO_RETURN(
-                        proto::v5::child<0>(static_cast<exprs::basic_expr<equal_to(T, U), Domain> const &>(*this)).proto_equal_to(
-                        proto::v5::child<1>(static_cast<exprs::basic_expr<equal_to(T, U), Domain> const &>(*this)))
-                        ? &proto_smart_bool::member : 0
+                        exprs::access::proto_equal_to(
+                            proto::v5::child<0>(static_cast<exprs::basic_expr<equal_to(T, U), Domain> const &>(*this))
+                          , proto::v5::child<1>(static_cast<exprs::basic_expr<equal_to(T, U), Domain> const &>(*this))
+                        ) ? &proto_smart_bool::member : 0
                     )
                 };
 
@@ -87,9 +89,10 @@ namespace boost
                 public:
                     inline operator unspecified_bool_type() const
                     BOOST_PROTO_RETURN(
-                        proto::v5::child<0>(static_cast<exprs::basic_expr<not_equal_to(T, U), Domain> const &>(*this)).proto_equal_to(
-                        proto::v5::child<1>(static_cast<exprs::basic_expr<not_equal_to(T, U), Domain> const &>(*this)))
-                        ? 0 : &proto_smart_bool::member
+                        exprs::access::proto_equal_to(
+                            proto::v5::child<0>(static_cast<exprs::basic_expr<not_equal_to(T, U), Domain> const &>(*this))
+                          , proto::v5::child<1>(static_cast<exprs::basic_expr<not_equal_to(T, U), Domain> const &>(*this))
+                        ) ? 0 : &proto_smart_bool::member
                     )
                 };
 
@@ -233,8 +236,6 @@ namespace boost
                 template<typename Expr>
                 struct expr_subscript
                 {
-                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr_subscript);
-
                     ////////////////////////////////////////////////////////////////////////////////
                     // operator[]
                     template<typename U, typename E = Expr
@@ -273,8 +274,6 @@ namespace boost
                 template<typename Expr>
                 struct expr_function
                 {
-                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(expr_function);
-
                     ////////////////////////////////////////////////////////////////////////////////
                     // operator()
                     template<typename ...U, typename E = Expr
@@ -321,6 +320,8 @@ namespace boost
                   , detail::expr_boolean_convertible<basic_expr<Tag(Children...), Domain>>
                 {
                 private:
+                    friend struct access;
+
                     using tag_and_children_type =
                         detail::compressed_pair<
                             Tag
@@ -347,13 +348,12 @@ namespace boost
                     using proto_domain_type             = Domain;
                     using proto_basic_expr_type         = basic_expr;
                     using proto_expr_descriptor_type    = Tag(Children...);
+                    using fusion_tag                    = proto_expr<Tag, proto_domain_type>; ///< For Fusion
                     using proto_arity                   =
                         std::integral_constant<
                             std::size_t
                           , detail::is_terminal_tag<Tag>::value ? 0 : sizeof...(Children)
                         >;
-
-                    using fusion_tag                    = proto_expr<Tag, proto_domain_type>; ///< For Fusion
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // constructors
@@ -446,72 +446,30 @@ namespace boost
                           , static_cast<A &&>(a), static_cast<B &&>(b), static_cast<C &&>(c)...
                         )
                     {}
-
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // accessors
-                    Tag & proto_tag() & noexcept
-                    {
-                        return tag_and_children_.first();
-                    }
-
-                    Tag const & proto_tag() const & noexcept
-                    {
-                        return tag_and_children_.first();
-                    }
-
-                    Tag && proto_tag() && noexcept
-                    {
-                        return static_cast<tag_and_children_type &&>(tag_and_children_).first();
-                    }
-
-                    proto_children_type & proto_args() & noexcept
-                    {
-                        return tag_and_children_.second();
-                    }
-
-                    proto_children_type const & proto_args() const & noexcept
-                    {
-                        return tag_and_children_.second();
-                    }
-
-                    proto_children_type && proto_args() && noexcept
-                    {
-                        return static_cast<tag_and_children_type &&>(tag_and_children_).second();
-                    }
-
-                    Domain proto_domain() const noexcept(noexcept(Domain()))
-                    {
-                        return Domain();
-                    }
-
-                    template<typename ...B>
-                    inline auto proto_equal_to(basic_expr<Tag(B...), Domain> const &that) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        proto_args() == that.proto_args()
-                    )
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // struct expr
                 template<
                     template<typename, typename...> class DerivedExpr
-                  , typename ExprDesc
+                  , typename Tag
+                  , typename ...Children
                   , typename ...Rest
                   , typename Domain
                 >
-                struct expr<DerivedExpr<ExprDesc, Rest...>, Domain>
-                  : basic_expr<ExprDesc, Domain>
-                  , expr_assign<DerivedExpr<ExprDesc, Rest...>>
-                  , expr_subscript<DerivedExpr<ExprDesc, Rest...>>
-                  , expr_function<DerivedExpr<ExprDesc, Rest...>>
+                struct expr<DerivedExpr<Tag(Children...), Rest...>, Domain>
+                  : basic_expr<Tag(Children...), Domain>
+                  , expr_assign<DerivedExpr<Tag(Children...), Rest...>>
+                  , expr_subscript<DerivedExpr<Tag(Children...), Rest...>>
+                  , expr_function<DerivedExpr<Tag(Children...), Rest...>>
                 {
                     ////////////////////////////////////////////////////////////////////////////////
                     // constructors
-                    using basic_expr<ExprDesc, Domain>::basic_expr;
+                    using basic_expr<Tag(Children...), Domain>::basic_expr;
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // operator=
-                    using expr_assign<DerivedExpr<ExprDesc, Rest...>>::operator=;
+                    using expr_assign<DerivedExpr<Tag(Children...), Rest...>>::operator=;
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////

@@ -58,10 +58,10 @@ namespace boost
                     template<typename E, typename ...Rest>
                     auto operator()(E && e, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        typename decltype(e.proto_domain())::make_expr()(
+                        typename result_of::domain_of<E>::type::make_expr()(
                             proto::v5::tag_of(static_cast<E &&>(e))
                           , utility::by_val()(
-                                proto::v5::as_expr<decltype(e.proto_domain())>(
+                                proto::v5::as_expr<typename result_of::domain_of<E>::type>(
                                     as_pass_action_<Actions>()(
                                         proto::v5::child<I>(static_cast<E &&>(e))
                                       , static_cast<Rest &&>(rest)...

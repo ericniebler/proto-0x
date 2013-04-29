@@ -26,6 +26,7 @@
 #include <boost/proto/v5/expr.hpp>
 #include <boost/proto/v5/fusion.hpp>
 #include <boost/proto/v5/utility.hpp>
+#include <boost/proto/v5/detail/access.hpp>
 #include <boost/detail/sp_typeinfo.hpp>
 
 #if defined(__GLIBCXX__) || defined(__GLIBCPP__)
@@ -250,7 +251,7 @@ namespace boost
                                     << tag_t()
                                     << "(\n";
                         exprs::for_each(
-                            static_cast<E &&>(e).proto_args()
+                            exprs::access::proto_args(static_cast<E &&>(e))
                           , display_expr_(this->sout_, this->depth_ + 4, names, index)
                         );
                         this->sout_ << std::setw(this->depth_)

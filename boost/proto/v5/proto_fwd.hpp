@@ -50,7 +50,7 @@
     CLASS(CLASS const &) = default; /* memberwise copy */                                           \
     CLASS(CLASS &&) = default; /* member-wise move */                                               \
     /* These would otherwise be deleted because we */                                               \
-    /* declared a move makeor! */                                                                   \
+    /* declared a move constructor! */                                                              \
     CLASS &operator=(CLASS const &) = default; /* memberwise copy assign */                         \
     CLASS &operator=(CLASS &&) = default /* memberwise move assign */                               \
     /**/
@@ -133,6 +133,9 @@ namespace boost
                 struct as_expr_;
 
                 struct def_base;
+
+                template<typename First, typename Second>
+                struct compressed_pair;
             }
 
             namespace utility

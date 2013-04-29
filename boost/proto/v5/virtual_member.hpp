@@ -21,7 +21,7 @@
 // INTERNAL ONLY
 //
 #define BOOST_PROTO_EXTENDS_MEMBER_DETAIL(R, THIS_DOMAIN, ELEM)                                     \
-    boost::proto::v5::virtual_member<                                                            \
+    boost::proto::v5::virtual_member<                                                               \
         BOOST_PP_TUPLE_ELEM(2, 0, THIS_DOMAIN)                                                      \
       , BOOST_PP_TUPLE_ELEM(2, 0, ELEM)                                                             \
       , BOOST_PP_TUPLE_ELEM(2, 1, THIS_DOMAIN)                                                      \
