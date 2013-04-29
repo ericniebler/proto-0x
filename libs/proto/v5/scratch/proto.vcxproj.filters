@@ -288,6 +288,9 @@
     <ClInclude Include="..\..\..\..\boost\proto\v5\detail\access.hpp">
       <Filter>Proto Files\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\cxx\cast.hpp">
+      <Filter>Proto Files\functional\cxx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

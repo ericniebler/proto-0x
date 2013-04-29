@@ -96,6 +96,7 @@
     <ClInclude Include="..\..\..\..\boost\proto\v5\expr.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional\cxx.hpp" />
+    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\cxx\cast.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional\cxx\construct.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional\cxx\operators.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional\fusion.hpp" />

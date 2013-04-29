@@ -24,8 +24,6 @@ A Grab-Bag of Miscellaneous Thoughts
     + Should *all* environment variables be part of a scope? Should we allow
       non-environments in the environments parameter as Proto-current does?
 
-* How about a `static_cast_` function object?
-
 * Everyplace where we directly return an rvalue reference is potentially creating a dangling
   reference.
 
