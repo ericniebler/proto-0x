@@ -140,7 +140,7 @@ namespace boost
                         typename ...Args
                       , typename X = typename detail::make_1_<Type, Args...>::type
                     >
-                    auto operator()(Args &&... args) const
+                    constexpr auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
                         as_action_<call(functional::cxx::construct<X>(Actions...))>()(static_cast<Args &&>(args)...)
                     )
@@ -156,7 +156,7 @@ namespace boost
                         typename ...Args
                       , typename Obj = typename detail::make_1_<Type, Args...>::type
                     >
-                    auto operator()(Args &&... args) const
+                    constexpr auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
                         as_action_<call(functional::cxx::construct<Obj>(Actions......))>()(static_cast<Args &&>(args)...)
                     )

@@ -48,10 +48,10 @@ void test_virtual_members()
     proto::literal<foo_tag> & e = proto::child<1>(xxx.foo);
 
     static_assert(std::is_lvalue_reference<decltype(proto::child<0>(xxx.foo))>::value, "");
-    static_assert(!std::is_reference<decltype(proto::child<0>(My::terminal<int>().foo))>::value, "");
+    static_assert(std::is_rvalue_reference<decltype(proto::child<0>(My::terminal<int>().foo))>::value, "");
 
     static_assert(std::is_lvalue_reference<decltype(proto::child<1>(xxx.foo))>::value, "");
-    static_assert(!std::is_reference<decltype(proto::child<1>(My::terminal<int>().foo))>::value, "");
+    static_assert(std::is_rvalue_reference<decltype(proto::child<1>(My::terminal<int>().foo))>::value, "");
 
     BOOST_CHECK_EQUAL(42, proto::value(xxx));
     BOOST_CHECK_EQUAL(42, proto::value(r));

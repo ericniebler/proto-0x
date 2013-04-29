@@ -56,7 +56,7 @@ namespace boost
                     );
 
                     template<typename E, typename ...Rest>
-                    auto operator()(E && e, Rest &&... rest) const
+                    constexpr auto operator()(E && e, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
                         typename result_of::domain_of<E>::type::make_expr()(
                             proto::v5::tag_of(static_cast<E &&>(e))
@@ -81,7 +81,7 @@ namespace boost
                     );
 
                     template<typename ...Args>
-                    auto operator()(Args &&... args) const
+                    constexpr auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
                         pass_0_<
                             utility::indices<I...>
@@ -103,13 +103,13 @@ namespace boost
                   : basic_action<_pass_<Actions>>
                 {
                     template<typename E, typename ...Rest, BOOST_PROTO_ENABLE_IF(is_terminal<E>::value)>
-                    auto operator()(E && e, Rest &&...) const
+                    constexpr auto operator()(E && e, Rest &&...) const
                     BOOST_PROTO_AUTO_RETURN(
                         utility::by_val()(static_cast<E &&>(e))
                     )
 
                     template<typename E, typename ...Rest, BOOST_PROTO_ENABLE_IF(!is_terminal<E>::value)>
-                    auto operator()(E && e, Rest &&... rest) const
+                    constexpr auto operator()(E && e, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
                         detail::pass_0_<
                             utility::make_indices<result_of::arity_of<E>::value>

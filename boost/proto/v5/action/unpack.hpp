@@ -160,7 +160,7 @@ namespace boost
                         >::type;
 
                     template<typename ...Args>
-                    auto operator()(Args &&... args) const
+                    constexpr auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
                         as_action_<
                             typename expand_pattern_1_<

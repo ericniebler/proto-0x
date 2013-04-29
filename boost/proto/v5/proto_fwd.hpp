@@ -711,6 +711,8 @@ namespace boost
             namespace functional
             {
                 struct deep_copy;
+
+                struct display_expr;
             }
         }
     }

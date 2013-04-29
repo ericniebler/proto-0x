@@ -36,7 +36,7 @@ namespace boost
                       : proto::v5::basic_action<case_<Tag, true>>
                     {
                         template<typename E, typename... Rest>
-                        auto operator()(E && e, Rest &&...) const
+                        constexpr auto operator()(E && e, Rest &&...) const
                         BOOST_PROTO_AUTO_RETURN(
                             typename result_of::domain_of<E>::type::make_expr()(
                                 proto::v5::tag_of(static_cast<E &&>(e))
@@ -59,7 +59,7 @@ namespace boost
             // deep_copy
             // Replaces all nodes stored by reference with nodes stored by value.
             template<typename E>
-            auto deep_copy(E && e)
+            constexpr auto deep_copy(E && e)
             BOOST_PROTO_AUTO_RETURN(
                 proto::v5::_deep_copy()(static_cast<E &&>(e))
             )
@@ -73,7 +73,7 @@ namespace boost
                 struct deep_copy
                 {
                     template<typename E>
-                    auto operator()(E && e) const
+                    constexpr auto operator()(E && e) const
                     BOOST_PROTO_AUTO_RETURN(
                         proto::v5::_deep_copy()(static_cast<E &&>(e))
                     )

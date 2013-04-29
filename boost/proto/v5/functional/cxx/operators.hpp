@@ -26,7 +26,7 @@ namespace boost
                     struct unary_plus
                     {
                         template<typename T>
-                        auto operator()(T && t) const
+                        constexpr auto operator()(T && t) const
                         BOOST_PROTO_AUTO_RETURN(
                             + static_cast<T &&>(t)
                         )
@@ -36,7 +36,7 @@ namespace boost
                     struct negate
                     {
                         template<typename T>
-                        auto operator()(T && t) const
+                        constexpr constexpr auto operator()(T && t) const
                         BOOST_PROTO_AUTO_RETURN(
                             - static_cast<T &&>(t)
                         )
@@ -46,7 +46,7 @@ namespace boost
                     struct dereference
                     {
                         template<typename T>
-                        auto operator()(T && t) const
+                        constexpr constexpr auto operator()(T && t) const
                         BOOST_PROTO_AUTO_RETURN(
                             * static_cast<T &&>(t)
                         )
@@ -56,7 +56,7 @@ namespace boost
                     struct complement
                     {
                         template<typename T>
-                        auto operator()(T && t) const
+                        constexpr constexpr auto operator()(T && t) const
                         BOOST_PROTO_AUTO_RETURN(
                             ~ static_cast<T &&>(t)
                         )
@@ -66,7 +66,7 @@ namespace boost
                     struct address_of
                     {
                         template<typename T>
-                        auto operator()(T && t) const
+                        constexpr constexpr auto operator()(T && t) const
                         BOOST_PROTO_AUTO_RETURN(
                             & static_cast<T &&>(t)
                         )
@@ -76,7 +76,7 @@ namespace boost
                     struct logical_not
                     {
                         template<typename T>
-                        auto operator()(T && t) const
+                        constexpr auto operator()(T && t) const
                         BOOST_PROTO_AUTO_RETURN(
                             ! static_cast<T &&>(t)
                         )
@@ -86,7 +86,7 @@ namespace boost
                     struct pre_inc
                     {
                         template<typename T>
-                        auto operator()(T && t) const
+                        constexpr auto operator()(T && t) const
                         BOOST_PROTO_AUTO_RETURN(
                             ++ static_cast<T &&>(t)
                         )
@@ -96,7 +96,7 @@ namespace boost
                     struct pre_dec
                     {
                         template<typename T>
-                        auto operator()(T && t) const
+                        constexpr auto operator()(T && t) const
                         BOOST_PROTO_AUTO_RETURN(
                             -- static_cast<T &&>(t)
                         )
@@ -106,7 +106,7 @@ namespace boost
                     struct post_inc
                     {
                         template<typename T>
-                        auto operator()(T && t) const
+                        constexpr auto operator()(T && t) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) ++
                         )
@@ -116,7 +116,7 @@ namespace boost
                     struct post_dec
                     {
                         template<typename T>
-                        auto operator()(T && t) const
+                        constexpr auto operator()(T && t) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) --
                         )
@@ -126,7 +126,7 @@ namespace boost
                     struct shift_left
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) << static_cast<U &&>(u)
                         )
@@ -136,7 +136,7 @@ namespace boost
                     struct shift_right
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) >> static_cast<U &&>(u)
                         )
@@ -146,7 +146,7 @@ namespace boost
                     struct multiplies
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) * static_cast<U &&>(u)
                         )
@@ -156,7 +156,7 @@ namespace boost
                     struct divides
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) / static_cast<U &&>(u)
                         )
@@ -166,7 +166,7 @@ namespace boost
                     struct modulus
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) % static_cast<U &&>(u)
                         )
@@ -176,7 +176,7 @@ namespace boost
                     struct plus
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) + static_cast<U &&>(u)
                         )
@@ -186,7 +186,7 @@ namespace boost
                     struct minus
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) - static_cast<U &&>(u)
                         )
@@ -196,7 +196,7 @@ namespace boost
                     struct less
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) < static_cast<U &&>(u)
                         )
@@ -206,7 +206,7 @@ namespace boost
                     struct greater
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) > static_cast<U &&>(u)
                         )
@@ -216,7 +216,7 @@ namespace boost
                     struct less_equal
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) <= static_cast<U &&>(u)
                         )
@@ -226,7 +226,7 @@ namespace boost
                     struct greater_equal
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) >= static_cast<U &&>(u)
                         )
@@ -236,7 +236,7 @@ namespace boost
                     struct equal_to
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) == static_cast<U &&>(u)
                         )
@@ -246,7 +246,7 @@ namespace boost
                     struct not_equal_to
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) != static_cast<U &&>(u)
                         )
@@ -256,7 +256,7 @@ namespace boost
                     struct logical_or
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) || static_cast<U &&>(u)
                         )
@@ -266,7 +266,7 @@ namespace boost
                     struct logical_and
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) && static_cast<U &&>(u)
                         )
@@ -276,7 +276,7 @@ namespace boost
                     struct bitwise_and
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) & static_cast<U &&>(u)
                         )
@@ -286,7 +286,7 @@ namespace boost
                     struct bitwise_or
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) | static_cast<U &&>(u)
                         )
@@ -296,7 +296,7 @@ namespace boost
                     struct bitwise_xor
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) ^ static_cast<U &&>(u)
                         )
@@ -306,7 +306,7 @@ namespace boost
                     struct comma
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) , static_cast<U &&>(u)
                         )
@@ -316,7 +316,7 @@ namespace boost
                     struct mem_ptr
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             utility::mem_ptr_adl(static_cast<T &&>(t), static_cast<U &&>(u))
                         )
@@ -326,7 +326,7 @@ namespace boost
                     struct assign
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) = static_cast<U &&>(u)
                         )
@@ -336,7 +336,7 @@ namespace boost
                     struct shift_left_assign
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) <<= static_cast<U &&>(u)
                         )
@@ -346,7 +346,7 @@ namespace boost
                     struct shift_right_assign
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) >>= static_cast<U &&>(u)
                         )
@@ -356,7 +356,7 @@ namespace boost
                     struct multiplies_assign
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) *= static_cast<U &&>(u)
                         )
@@ -366,7 +366,7 @@ namespace boost
                     struct divides_assign
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) /= static_cast<U &&>(u)
                         )
@@ -376,7 +376,7 @@ namespace boost
                     struct modulus_assign
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) %= static_cast<U &&>(u)
                         )
@@ -386,7 +386,7 @@ namespace boost
                     struct plus_assign
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) += static_cast<U &&>(u)
                         )
@@ -396,7 +396,7 @@ namespace boost
                     struct minus_assign
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) -= static_cast<U &&>(u)
                         )
@@ -406,7 +406,7 @@ namespace boost
                     struct bitwise_and_assign
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) &= static_cast<U &&>(u)
                         )
@@ -416,7 +416,7 @@ namespace boost
                     struct bitwise_or_assign
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) |= static_cast<U &&>(u)
                         )
@@ -426,7 +426,7 @@ namespace boost
                     struct bitwise_xor_assign
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) -= static_cast<U &&>(u)
                         )
@@ -436,7 +436,7 @@ namespace boost
                     struct subscript
                     {
                         template<typename T, typename U>
-                        auto operator()(T && t, U && u) const
+                        constexpr auto operator()(T && t, U && u) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) [ static_cast<U &&>(u) ]
                         )
@@ -446,7 +446,7 @@ namespace boost
                     struct if_else
                     {
                         template<typename T, typename U, typename V>
-                        auto operator()(T && t, U && u, V && v) const
+                        constexpr auto operator()(T && t, U && u, V && v) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<T &&>(t) ? static_cast<U &&>(u) : static_cast<V &&>(v)
                         )
@@ -456,19 +456,19 @@ namespace boost
                     struct function
                     {
                         template<typename Fun, typename ...T>
-                        auto operator()(Fun && fun, T &&... t) const
+                        constexpr auto operator()(Fun && fun, T &&... t) const
                         BOOST_PROTO_AUTO_RETURN(
                             static_cast<Fun &&>(fun)(static_cast<T &&>(t)...)
                         )
 
                         template<typename Type, typename Class, typename Obj>
-                        auto operator()(Type Class::*pm, Obj && obj) const
+                        constexpr auto operator()(Type Class::*pm, Obj && obj) const
                         BOOST_PROTO_AUTO_RETURN(
                             (utility::get_pointer_adl(static_cast<Obj &&>(obj), 1) ->* pm)
                         )
 
                         template<typename Type, typename Class, typename ...Args, typename Obj, typename ...T>
-                        auto operator()(Type (Class::*pmf)(Args...), Obj && obj, T &&... t) const
+                        constexpr auto operator()(Type (Class::*pmf)(Args...), Obj && obj, T &&... t) const
                         BOOST_PROTO_AUTO_RETURN(
                             (utility::get_pointer_adl(static_cast<Obj &&>(obj), 1) ->* pmf)(static_cast<T &&>(t)...)
                         )

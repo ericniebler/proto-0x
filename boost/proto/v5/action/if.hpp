@@ -13,6 +13,7 @@
 #include <boost/proto/v5/proto_fwd.hpp>
 #include <boost/proto/v5/tags.hpp>
 #include <boost/proto/v5/action/basic_action.hpp>
+#include <boost/proto/v5/action/void.hpp>
 
 namespace boost
 {
@@ -72,15 +73,7 @@ namespace boost
             /// \endcode
             namespace detail
             {
-                struct _void_
-                  : basic_action<_void_>
-                {
-                    template<typename ...Args>
-                    void operator()(Args &&...) const noexcept
-                    {}
-                };
-
-                template<typename If, typename Then, typename Else = _void_>
+                template<typename If, typename Then, typename Else = _void>
                 struct _if_
                   : basic_action<_if_<If, Then, Else>>
                 {

@@ -29,7 +29,7 @@ namespace boost
                   : basic_action<eval_local<Local(*)(Action)>>
                 {
                     template<typename ...Args>
-                    auto operator()(Args &&...args) const
+                    constexpr auto operator()(Args &&...args) const
                     BOOST_PROTO_AUTO_RETURN(
                         env_var_tag<Local>() = as_action_<Action>()(static_cast<Args &&>(args)...)
                     )
@@ -43,7 +43,7 @@ namespace boost
                   : basic_action<_let<Action, void(Locals...)>>
                 {
                     template<typename Expr>
-                    auto operator()(Expr &&expr) const
+                    constexpr auto operator()(Expr &&expr) const
                     BOOST_PROTO_AUTO_RETURN(
                         as_action_<Action>()(
                             static_cast<Expr &&>(expr)
@@ -52,7 +52,7 @@ namespace boost
                     )
 
                     template<typename Expr, typename Env, typename ...Rest>
-                    auto operator()(Expr &&expr, Env &&env, Rest &&... rest) const
+                    constexpr auto operator()(Expr &&expr, Env &&env, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
                         as_action_<Action>()(
                             static_cast<Expr &&>(expr)
@@ -75,7 +75,7 @@ namespace boost
               : basic_action<_local<Local>>
             {
                 template<typename Expr, typename Env, typename ...Rest, typename This = Local>
-                auto operator()(Expr &&, Env &&env, Rest &&...) const
+                constexpr auto operator()(Expr &&, Env &&env, Rest &&...) const
                 BOOST_PROTO_AUTO_RETURN(
                     static_cast<Env &&>(env)[static_cast<This const &>(*this)]
                 )

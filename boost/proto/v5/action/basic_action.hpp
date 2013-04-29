@@ -99,7 +99,7 @@ namespace boost
                   : detail::not_an_action
                 {
                     template<typename ...Args>
-                    utility::any operator()(Args &&...) const noexcept
+                    constexpr utility::any operator()(Args &&...) const noexcept
                     {
                         static_assert(
                             utility::never<T>::value

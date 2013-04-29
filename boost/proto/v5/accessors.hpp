@@ -19,15 +19,6 @@ namespace boost
     {
         inline namespace v5
         {
-            namespace detail
-            {
-                template<typename T>
-                inline constexpr T safe_return(T &&t) noexcept(noexcept(T(static_cast<T &&>(t))))
-                {
-                    return static_cast<T &&>(t);
-                }
-            }
-
             namespace exprs
             {
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -47,9 +38,7 @@ namespace boost
                 template<std::size_t I, typename ExprDesc, typename Domain>
                 inline constexpr auto child(basic_expr<ExprDesc, Domain> &&e)
                 BOOST_PROTO_AUTO_RETURN(
-                    detail::safe_return(
-                        exprs::get<I>(access::proto_args(static_cast<basic_expr<ExprDesc, Domain> &&>(e)))
-                    )
+                    exprs::get<I>(access::proto_args(static_cast<basic_expr<ExprDesc, Domain> &&>(e)))
                 )
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +58,7 @@ namespace boost
                 }
 
                 template<std::size_t I, typename L, typename R, typename Domain, BOOST_PROTO_ENABLE_IF(I == 0)>
-                inline constexpr L child(virtual_member<L, R, Domain> &&a) noexcept(noexcept(L(std::declval<L>())))
+                inline constexpr L && child(virtual_member<L, R, Domain> &&a) noexcept
                 {
                     return static_cast<L &&>(*(L*)(((char *)&a) -
                         ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a)));
@@ -92,9 +81,7 @@ namespace boost
                 template<typename Tag, typename L, typename R, typename Domain>
                 inline constexpr auto left(basic_expr<Tag(L, R), Domain> && e)
                 BOOST_PROTO_AUTO_RETURN(
-                    detail::safe_return(
-                        exprs::get<0>(access::proto_args(static_cast<basic_expr<Tag(L, R), Domain> &&>(e)))
-                    )
+                    exprs::get<0>(access::proto_args(static_cast<basic_expr<Tag(L, R), Domain> &&>(e)))
                 )
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -114,7 +101,7 @@ namespace boost
                 }
 
                 template<std::size_t I, typename L, typename R, typename Domain>
-                inline constexpr L left(virtual_member<L, R, Domain> &&a) noexcept(noexcept(L(std::declval<L>())))
+                inline constexpr L && left(virtual_member<L, R, Domain> &&a) noexcept
                 {
                     return static_cast<L &&>(*(L*)(((char *)&a) -
                         ((char *)&((L *)&a)->proto_member_union_start_ - (char *)&a)));
@@ -137,9 +124,7 @@ namespace boost
                 template<typename Tag, typename L, typename R, typename Domain>
                 inline constexpr auto right(basic_expr<Tag(L, R), Domain> && e)
                 BOOST_PROTO_AUTO_RETURN(
-                    detail::safe_return(
-                        exprs::get<1>(access::proto_args(static_cast<basic_expr<Tag(L, R), Domain> &&>(e)))
-                    )
+                    exprs::get<1>(access::proto_args(static_cast<basic_expr<Tag(L, R), Domain> &&>(e)))
                 )
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -159,9 +144,7 @@ namespace boost
                 template<typename ExprDesc, typename Domain>
                 inline constexpr auto value(basic_expr<ExprDesc, Domain> &&that)
                 BOOST_PROTO_AUTO_RETURN(
-                    detail::safe_return(
-                        access::proto_args(static_cast<basic_expr<ExprDesc, Domain> &&>(that)).proto_child0
-                    )
+                    (access::proto_args(static_cast<basic_expr<ExprDesc, Domain> &&>(that)).proto_child0) // extra parens are significant!
                 )
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -179,7 +162,7 @@ namespace boost
                 }
 
                 template<typename Tag, typename ...Children, typename Domain>
-                inline constexpr Tag tag_of(basic_expr<Tag(Children...), Domain> &&that) noexcept(noexcept(Tag(std::declval<Tag>())))
+                inline constexpr Tag && tag_of(basic_expr<Tag(Children...), Domain> &&that) noexcept
                 {
                     return access::proto_tag(static_cast<basic_expr<Tag(Children...), Domain> &&>(that));
                 }

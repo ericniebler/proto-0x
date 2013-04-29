@@ -239,33 +239,33 @@ namespace boost
                 struct identity
                 {
                     template<typename T>
-                    inline constexpr auto operator()(T &&t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        T(static_cast<T &&>(t))
-                    )
+                    inline constexpr T operator()(T &&t) const noexcept(noexcept(T(static_cast<T &&>(t))))
+                    {
+                        return static_cast<T &&>(t);
+                    }
                 };
             }
 
             namespace detail
             {
                 template<typename T>
-                inline auto constexpr by_val_(T &t, int)
+                inline constexpr auto by_val_(T &t, int)
                     BOOST_PROTO_AUTO_RETURN(T(t))
 
                 template<typename T>
-                inline auto constexpr by_val_(T const &t, int)
+                inline constexpr auto by_val_(T const &t, int)
                     BOOST_PROTO_AUTO_RETURN(T(t))
 
                 template<typename T>
-                inline auto constexpr by_val_(T &&t, int)
+                inline constexpr auto by_val_(T &&t, int)
                     BOOST_PROTO_AUTO_RETURN(T(static_cast<T &&>(t)))
 
                 template<typename T>
-                inline auto constexpr by_val_(T &t, long)
+                inline constexpr auto by_val_(T &t, long)
                     BOOST_PROTO_AUTO_RETURN(t)
 
                 template<typename T>
-                inline auto constexpr by_val_(T const &t, long)
+                inline constexpr auto by_val_(T const &t, long)
                     BOOST_PROTO_AUTO_RETURN(t)
             }
 
@@ -527,7 +527,7 @@ namespace boost
                       : value(static_cast<T &&>(t))
                     {}
 
-                    auto get() const
+                    constexpr auto get() const
                         BOOST_PROTO_AUTO_RETURN(T(static_cast<T &&>(value)))
                 };
             }
@@ -631,18 +631,18 @@ namespace boost
                 struct void_type
                 {
                     template<typename T>
-                    friend T && operator,(T && t, void_type const &) noexcept
+                    friend constexpr T && operator,(T && t, void_type const &) noexcept
                     {
                         return static_cast<T &&>(t);
                     }
 
                     template<typename T>
-                    friend T && operator,(void_type const &, T && t) noexcept
+                    friend constexpr T && operator,(void_type const &, T && t) noexcept
                     {
                         return static_cast<T &&>(t);
                     }
 
-                    friend void_type const &operator,(void_type const &, void_type const &) noexcept
+                    friend constexpr void_type const &operator,(void_type const &, void_type const &) noexcept
                     {
                         return utility::static_const<void_type>::value;
                     }
@@ -681,7 +681,7 @@ namespace boost
                     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(mem_fun_t);
 
                     template<typename U>
-                    mem_fun_t(U && u, PMF pmf) noexcept(noexcept(T(static_cast<U &&>(u))))
+                    constexpr mem_fun_t(U && u, PMF pmf) noexcept(noexcept(T(static_cast<U &&>(u))))
                       : obj_(static_cast<U &&>(u))
                       , pmf_(pmf)
                     {}
@@ -699,7 +699,7 @@ namespace boost
                 namespace adl_barrier
                 {
                     template<typename T, typename U>
-                    auto mem_ptr_helper_2(T && t, U && u)
+                    constexpr auto mem_ptr_helper_2(T && t, U && u)
                     BOOST_PROTO_AUTO_RETURN(
                         static_cast<T &&>(t) ->* static_cast<U &&>(u)
                     )
@@ -711,13 +711,13 @@ namespace boost
                     )
 
                     template<typename Obj, typename Type, typename Class, typename ...Args>
-                    auto mem_ptr_helper_2(Obj && obj, Type (Class::*pmf)(Args...))
+                    constexpr auto mem_ptr_helper_2(Obj && obj, Type (Class::*pmf)(Args...))
                     BOOST_PROTO_AUTO_RETURN(
                         mem_fun_t<Obj, Type (Class::*)(Args...)>(static_cast<Obj &&>(obj), pmf)
                     )
 
                     template<typename T, typename U>
-                    auto mem_ptr_helper(T && t, U && u, long)
+                    constexpr auto mem_ptr_helper(T && t, U && u, long)
                     BOOST_PROTO_AUTO_RETURN(
                         adl_barrier::mem_ptr_helper_2(static_cast<T &&>(t), static_cast<U &&>(u))
                     )
@@ -728,7 +728,7 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // mem_ptr_adl
                 template<typename T, typename U>
-                auto mem_ptr_adl(T && t, U && u)
+                constexpr auto mem_ptr_adl(T && t, U && u)
                 BOOST_PROTO_AUTO_RETURN(
                     mem_ptr_helper(static_cast<T &&>(t), static_cast<U &&>(u), 1)
                 )
@@ -748,7 +748,7 @@ namespace boost
 
                 public:
                     template<typename ...Args, typename Impl = substitution_failure_base>
-                    friend inline auto
+                    friend inline constexpr auto
                     boost_proto_try_find_substitution_failure(int, Args const &...args) noexcept
                         -> decltype(substitution_failure_base::find_first_failure(args...))
                     {
@@ -785,7 +785,7 @@ namespace boost
                 };
 
                 template<typename ...Args>
-                inline int boost_proto_try_find_substitution_failure(long, Args const &...) noexcept
+                inline constexpr int boost_proto_try_find_substitution_failure(long, Args const &...) noexcept
                 {
                     return 0;
                 }
@@ -798,14 +798,14 @@ namespace boost
                     Fun fun_;
 
                     template<typename ...Args>
-                    auto call_or_fail_(int, Args &&... args) const
+                    constexpr auto call_or_fail_(int, Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
                         fun_(static_cast<Args &&>(args)...)
                     )
 
                     template<typename Sig, typename ...Args>
-                    auto call_or_fail_(substitution_failure<Sig> const &, Args &&...) const noexcept
-                        -> substitution_failure<Sig>
+                    constexpr substitution_failure<Sig>
+                    call_or_fail_(substitution_failure<Sig> const &, Args &&...) const noexcept
                     {
                         return substitution_failure<Sig>();
                     }
@@ -819,7 +819,7 @@ namespace boost
                     {}
 
                     template<typename ...Args>
-                    auto operator()(Args &&...args) const
+                    constexpr auto operator()(Args &&...args) const
                     BOOST_PROTO_AUTO_RETURN(
                         this->call_or_fail_(
                             // Must be an unqualified call to possibly find the substitution_failure friend function
@@ -829,8 +829,8 @@ namespace boost
                     )
 
                     template<typename ...Args>
-                    auto operator()(Args &&...) const volatile noexcept
-                        -> substitution_failure<Fun(Args...)>
+                    constexpr substitution_failure<Fun(Args...)>
+                    operator()(Args &&...) const volatile noexcept
                     {
                         // Uncomment this line to get the full template instantiation backtrace
                         //const_cast<try_call_wrapper const *>(this)->fun_(static_cast<Args &&>(args)...);

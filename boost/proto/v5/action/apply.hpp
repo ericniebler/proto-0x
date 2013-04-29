@@ -29,7 +29,7 @@ namespace boost
                   : basic_action<_apply<Fun, Actions...>>
                 {
                     template<typename ...Args>
-                    auto operator()(Args &&... args) const
+                    constexpr auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
                         BOOST_PROTO_TRY_CALL(detail::call_1_<true, Actions...>())(
                             as_action_<Fun>()(static_cast<Args &&>(args)...)

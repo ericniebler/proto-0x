@@ -65,7 +65,7 @@ namespace boost
               , basic_grammar<_>
             {
                 template<typename Expr, typename ...Rest>
-                auto operator()(Expr && e, Rest &&...) const
+                constexpr auto operator()(Expr && e, Rest &&...) const
                 BOOST_PROTO_AUTO_RETURN(
                     static_cast<Expr &&>(e)
                 )

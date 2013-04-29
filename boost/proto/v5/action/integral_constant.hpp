@@ -24,7 +24,7 @@ namespace boost
               : basic_action<_integral_constant<T, Value>>
             {
                 template<typename ...Args>
-                T operator()(Args &&...) const noexcept(noexcept(T(std::declval<T>())))
+                constexpr T operator()(Args &&...) const noexcept(noexcept(T(std::declval<T>())))
                 {
                     return Value;
                 }

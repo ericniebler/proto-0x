@@ -26,7 +26,7 @@ namespace boost
                   : basic_action<_void>
                 {
                     template<typename ...As>
-                    void operator()(As &&...) const
+                    void operator()(As &&...) const noexcept
                     {}
                 };
             }

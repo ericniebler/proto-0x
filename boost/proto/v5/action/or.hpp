@@ -23,25 +23,25 @@ namespace boost
                 struct logical_or_
                 {
                     template<typename A, typename B>
-                    std::integral_constant<bool, static_cast<bool>(A::value) || static_cast<bool>(B::value)>
+                    constexpr std::integral_constant<bool, static_cast<bool>(A::value) || static_cast<bool>(B::value)>
                     operator()(A const &, B const &) const noexcept
                     {
                         return std::integral_constant<bool, static_cast<bool>(A::value) || static_cast<bool>(B::value)>();
                     }
 
                     template<typename B, bool BV = static_cast<bool>(B::value)>
-                    inline bool operator()(bool a, B const &) const noexcept
+                    inline constexpr bool operator()(bool a, B const &) const noexcept
                     {
                         return a || BV;
                     }
 
                     template<typename A, bool AV = static_cast<bool>(A::value)>
-                    inline bool operator()(A const &, bool b) const noexcept
+                    inline constexpr bool operator()(A const &, bool b) const noexcept
                     {
                         return AV || b;
                     }
 
-                    inline bool operator()(bool a, bool b) const noexcept
+                    inline constexpr bool operator()(bool a, bool b) const noexcept
                     {
                         return a || b;
                     }
@@ -49,13 +49,13 @@ namespace boost
 
                 struct fold_or_
                 {
-                    static std::false_type call() noexcept
+                    static constexpr std::false_type call() noexcept
                     {
                         return std::false_type();
                     }
 
                     template<typename BoolHead, typename ...BoolTail, typename Impl = fold_or_>
-                    static auto call(BoolHead const &bh, BoolTail const &...bt)
+                    static constexpr auto call(BoolHead const &bh, BoolTail const &...bt)
                     BOOST_PROTO_AUTO_RETURN(
                         BOOST_PROTO_TRY_CALL(logical_or_())(bh, Impl::call(bt...))
                     )
@@ -66,7 +66,7 @@ namespace boost
                   : basic_action<_or_<BoolActions...>>
                 {
                     template<typename ...Args>
-                    auto operator()(Args &&...args) const
+                    constexpr auto operator()(Args &&...args) const
                     BOOST_PROTO_AUTO_RETURN(
                         fold_or_::call(as_action_<BoolActions>()(static_cast<Args &&>(args)...)...)
                     )

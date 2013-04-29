@@ -27,7 +27,7 @@ namespace boost
                   : proto::v5::basic_action<_matches_<Grammar>>
                 {
                     template<typename Expr, typename... Rest>
-                    auto operator()(Expr &&, Rest &&...) const
+                    constexpr auto operator()(Expr &&, Rest &&...) const
                     BOOST_PROTO_AUTO_RETURN(
                         proto::v5::matches<Expr, Grammar>()
                     )

@@ -50,7 +50,7 @@ namespace boost
                             v5::is_expr<typename std::result_of<ThisTag(Ts...)>::type>::value
                         )
                     >
-                    auto operator()(Ts &&...ts) const
+                    constexpr auto operator()(Ts &&...ts) const
                     BOOST_PROTO_AUTO_RETURN(
                         MakeExpr()(static_cast<Ts &&>(ts)...)
                     )
@@ -66,7 +66,7 @@ namespace boost
                             !v5::is_expr<typename std::result_of<ThisTag(Ts...)>::type>::value
                         )
                     >
-                    auto operator()(Ts &&...ts) const
+                    constexpr auto operator()(Ts &&...ts) const
                     BOOST_PROTO_AUTO_RETURN(
                         BOOST_PROTO_TRY_CALL(ThisTag())(static_cast<Ts &&>(ts)...)
                     )
@@ -375,7 +375,7 @@ namespace boost
                               , domains::safe_domain_adaptor<deduce_domain>
                             >
                     >
-                    auto operator()(T && t) const
+                    constexpr auto operator()(T && t) const
                     BOOST_PROTO_AUTO_RETURN(
                         MakeExpr()(static_cast<T &&>(t))
                     )
@@ -396,7 +396,7 @@ namespace boost
                               , domains::safe_domain_adaptor<deduce_domain>
                             >
                     >
-                    auto operator()(T && t, U && u) const
+                    constexpr auto operator()(T && t, U && u) const
                     BOOST_PROTO_AUTO_RETURN(
                         MakeExpr()(static_cast<T &&>(t), static_cast<U &&>(u))
                     )
@@ -416,7 +416,7 @@ namespace boost
                         typename V
                       , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<env_var_tag, V>::value))
                     >
-                    env<Tag, V> operator=(V && v) const
+                    constexpr env<Tag, V> operator=(V && v) const
                     {
                         return env<Tag, V>(static_cast<V &&>(v));
                     }
@@ -509,7 +509,7 @@ namespace boost
               : proto::v5::basic_action<_tag_of>
             {
                 template<typename E, typename ...Rest>
-                auto operator()(E && e, Rest &&...) const
+                constexpr auto operator()(E && e, Rest &&...) const
                 BOOST_PROTO_AUTO_RETURN(
                     proto::v5::tag_of(static_cast<E &&>(e))
                 )

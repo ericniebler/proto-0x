@@ -605,7 +605,8 @@ namespace boost
               : proto::v5::basic_action<_arity_of>
             {
                 template<typename E, typename ...Rest>
-                result_of::arity_of<E> operator()(E &&, Rest &&...) const noexcept
+                constexpr result_of::arity_of<E>
+                operator()(E &&, Rest &&...) const noexcept
                 {
                     return result_of::arity_of<E>();
                 };
@@ -618,7 +619,7 @@ namespace boost
               : basic_action<_child<N>>
             {
                 template<typename E, typename ...Rest>
-                auto operator()(E && e, Rest &&...) const
+                constexpr auto operator()(E && e, Rest &&...) const
                 BOOST_PROTO_AUTO_RETURN(
                     proto::v5::child<N>(e)
                 )
@@ -630,7 +631,7 @@ namespace boost
               : basic_action<_value>
             {
                 template<typename E, typename ...Rest>
-                auto operator()(E && e, Rest &&...) const
+                constexpr auto operator()(E && e, Rest &&...) const
                 BOOST_PROTO_AUTO_RETURN(
                     proto::v5::value(e)
                 )

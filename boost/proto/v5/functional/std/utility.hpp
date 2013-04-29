@@ -36,7 +36,7 @@ namespace boost { namespace proto { inline namespace v5 { namespace functional {
     struct first
     {
         template<typename Pair>
-        auto operator()(Pair &&pair) const
+        constexpr auto operator()(Pair &&pair) const
         BOOST_PROTO_AUTO_RETURN(
             (static_cast<Pair &&>(pair).first) // extra parens are significant!
         )
@@ -50,7 +50,7 @@ namespace boost { namespace proto { inline namespace v5 { namespace functional {
     struct second
     {
         template<typename Pair>
-        auto operator()(Pair &&pair) const
+        constexpr auto operator()(Pair &&pair) const
         BOOST_PROTO_AUTO_RETURN(
             (static_cast<Pair &&>(pair).second) // extra parens are significant!
         )

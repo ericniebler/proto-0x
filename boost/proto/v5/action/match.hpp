@@ -36,7 +36,7 @@ namespace boost
                   : basic_action<_match<ActiveGrammars...>>
                 {
                     template<typename Expr, typename ...Rest>
-                    auto operator()(Expr && e, Rest &&... rest) const
+                    constexpr auto operator()(Expr && e, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
                         as_action_<
                             // This relies on details of how proto::match's grammar behavior is implemented.

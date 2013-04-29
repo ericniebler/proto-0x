@@ -47,7 +47,7 @@ namespace boost
                   : basic_action<_switch_<Cases, Action>>
                 {
                     template<typename ...Args>
-                    auto operator()(Args &&... args) const
+                    constexpr auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
                         as_action_<
                             typename Cases::template case_<
@@ -64,7 +64,7 @@ namespace boost
                   : basic_action<_switch_<Cases, _tag_of>>
                 {
                     template<typename Expr, typename ...Rest>
-                    auto operator()(Expr && e, Rest &&... rest) const
+                    constexpr auto operator()(Expr && e, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
                         as_action_<
                             typename Cases::template case_<

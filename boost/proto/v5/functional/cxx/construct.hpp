@@ -27,7 +27,7 @@ namespace boost
                     struct construct
                     {
                         template<typename ...Args>
-                        auto operator()(Args &&... args) const
+                        constexpr auto operator()(Args &&... args) const
                         BOOST_PROTO_AUTO_RETURN(
                             Type{static_cast<Args &&>(args)...}
                         )

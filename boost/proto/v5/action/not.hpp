@@ -23,13 +23,13 @@ namespace boost
                 struct logical_not_
                 {
                     template<typename A>
-                    std::integral_constant<bool, !static_cast<bool>(A::value)>
+                    constexpr std::integral_constant<bool, !static_cast<bool>(A::value)>
                     operator()(A const &) const noexcept
                     {
                         return std::integral_constant<bool, !static_cast<bool>(A::value)>();
                     }
 
-                    inline bool operator()(bool a) const noexcept
+                    inline constexpr bool operator()(bool a) const noexcept
                     {
                         return !a;
                     }
@@ -40,7 +40,7 @@ namespace boost
                   : basic_action<_not_<BoolAction>>
                 {
                     template<typename ...Args>
-                    auto operator()(Args &&...args) const
+                    constexpr auto operator()(Args &&...args) const
                     BOOST_PROTO_AUTO_RETURN(
                         logical_not_()(as_action_<BoolAction>()(static_cast<Args &&>(args)...))
                     )

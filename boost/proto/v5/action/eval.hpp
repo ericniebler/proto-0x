@@ -37,7 +37,7 @@ namespace boost
                     using type = _op;
 
                     template<typename ...T>
-                    utility::any operator()(T &&...) const noexcept
+                    constexpr utility::any operator()(T &&...) const noexcept
                     {
                         static_assert(
                             utility::never<Tag, T...>::value
@@ -59,7 +59,7 @@ namespace boost
                   : basic_action<_eval_unknown>
                 {
                     template<typename Expr, typename ...Rest>
-                    utility::any operator()(Expr && expr, Rest &&...) const noexcept
+                    constexpr utility::any operator()(Expr && expr, Rest &&...) const noexcept
                     {
                         static_assert(
                             utility::never<Expr>::value
@@ -86,7 +86,7 @@ namespace boost
                   : basic_action<_op_unpack<Tag, Action>>
                 {
                     template<std::size_t ...I, typename Expr, typename ...Rest>
-                    auto impl(utility::indices<I...>, Expr && expr, Rest &&... rest) const
+                    constexpr auto impl(utility::indices<I...>, Expr && expr, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
                         BOOST_PROTO_TRY_CALL(typename _op<Tag>::type())(
                             as_action_<Action>()(
@@ -97,7 +97,7 @@ namespace boost
                     )
 
                     template<typename Expr, typename ...Rest>
-                    auto operator()(Expr && expr, Rest &&... rest) const
+                    constexpr auto operator()(Expr && expr, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
                         this->impl(
                             utility::make_indices<result_of::arity_of<Expr>::value>()
@@ -117,7 +117,7 @@ namespace boost
                 struct _op_unpack<logical_or, ActiveGrammar>
                 {
                     template<typename Expr, typename ...Rest>
-                    auto operator()(Expr && expr, Rest &&... rest) const
+                    constexpr auto operator()(Expr && expr, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
                         as_action_<ActiveGrammar>()(
                             proto::v5::child<0>(static_cast<Expr &&>(expr))
@@ -135,7 +135,7 @@ namespace boost
                 struct _op_unpack<logical_and, ActiveGrammar>
                 {
                     template<typename Expr, typename ...Rest>
-                    auto operator()(Expr && expr, Rest &&... rest) const
+                    constexpr auto operator()(Expr && expr, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
                         as_action_<ActiveGrammar>()(
                             proto::v5::child<0>(static_cast<Expr &&>(expr))
@@ -153,7 +153,7 @@ namespace boost
                 struct _op_unpack<if_else_, ActiveGrammar>
                 {
                     template<typename Expr, typename ...Rest>
-                    auto operator()(Expr && expr, Rest &&... rest) const
+                    constexpr auto operator()(Expr && expr, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
                         as_action_<ActiveGrammar>()(
                             proto::v5::child<0>(static_cast<Expr &&>(expr))
@@ -290,7 +290,7 @@ namespace boost
             struct eval
             {
                 template<typename Tag, typename ...T>
-                auto operator()(Tag, T &&... t) const
+                constexpr auto operator()(Tag, T &&... t) const
                 BOOST_PROTO_AUTO_RETURN(
                     BOOST_PROTO_TRY_CALL(typename detail::_op<Tag>::type())(static_cast<T &&>(t)...)
                 )

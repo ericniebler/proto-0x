@@ -36,7 +36,7 @@ namespace boost
                 struct call_2_
                 {
                     template<typename Action, typename ...Args>
-                    auto operator()(
+                    constexpr auto operator()(
                         Action &&act
                       , Results &&... results
                       , utility::first<utility::any, Results>...
@@ -54,7 +54,7 @@ namespace boost
                 struct call_2_<TryCall, true, Results...>
                 {
                     template<typename Action, typename ...Ts>
-                    auto operator()(Action &&act, Results &&... results, Ts &&...) const
+                    constexpr auto operator()(Action &&act, Results &&... results, Ts &&...) const
                     BOOST_PROTO_AUTO_RETURN(
                         BOOST_PROTO_TRY_CALL_IF(TryCall)(static_cast<Action &&>(act))(
                             static_cast<Results &&>(results)...
@@ -73,7 +73,7 @@ namespace boost
                       , typename ...Args
                       , BOOST_PROTO_ENABLE_IF(is_action<Action>::value)
                     >
-                    auto operator()(Action &&act, Args &&... args) const
+                    constexpr auto operator()(Action &&act, Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
                         BOOST_PROTO_TRY_CALL_IF(TryCall)(call_2_<
                             TryCall
@@ -92,7 +92,7 @@ namespace boost
                       , typename ...Args
                       , BOOST_PROTO_ENABLE_IF(!is_action<Fun>::value)
                     >
-                    auto operator()(Fun &&fun, Args &&... args) const
+                    constexpr auto operator()(Fun &&fun, Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
                         BOOST_PROTO_TRY_CALL_IF(TryCall)(static_cast<Fun &&>(fun))(
                             as_action_<Actions>()(static_cast<Args &&>(args)...)...
@@ -107,7 +107,7 @@ namespace boost
                   : basic_action<_call<Ret, Actions...>>
                 {
                     template<typename ...Args, typename Fun = Ret>
-                    auto operator()(Args &&... t) const
+                    constexpr auto operator()(Args &&... t) const
                     BOOST_PROTO_AUTO_RETURN(
                         call_1_<true, Actions...>()(Fun(), static_cast<Args &&>(t)...)
                     )
@@ -119,7 +119,7 @@ namespace boost
                 struct call_or_construct_1_
                 {
                     template<typename ...Args, typename Fun = Ret>
-                    auto operator()(Args &&... t) const
+                    constexpr auto operator()(Args &&... t) const
                     BOOST_PROTO_AUTO_RETURN(
                         call_1_<false, Actions...>()(
                             Fun()
@@ -130,7 +130,7 @@ namespace boost
                     template<typename ...Args, typename Obj = Ret
                       , BOOST_PROTO_ENABLE_IF(!v5::is_action<Obj>::value)
                     >
-                    auto operator()(Args &&... t) const
+                    constexpr auto operator()(Args &&... t) const
                     BOOST_PROTO_AUTO_RETURN(
                         Obj{as_action_<Actions>()(static_cast<Args &&>(t)...)...}
                     )
@@ -143,7 +143,7 @@ namespace boost
                   : basic_action<_call_or_construct<Ret, Actions...>>
                 {
                     template<typename ...Args>
-                    auto operator()(Args &&... t) const
+                    constexpr auto operator()(Args &&... t) const
                     BOOST_PROTO_AUTO_RETURN(
                         BOOST_PROTO_TRY_CALL(call_or_construct_1_<Ret, Actions...>())(
                             static_cast<Args &&>(t)...
