@@ -9,7 +9,7 @@
 
 // NO INCLUDE GUARD. THIS FILE IS MEANT TO BE INCLUDED MULTIPLE TIMES.
 
-#ifndef BOOST_PROTO_CXX11_OPERATORS_HPP_INCLUDED
+#ifndef BOOST_PROTO_V5_OPERATORS_HPP_INCLUDED
 #error This file is not meant to be included directly
 #endif
 

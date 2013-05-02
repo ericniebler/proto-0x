@@ -6,8 +6,8 @@
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_CXX11_LITERALS_HPP_INCLUDED
-#define BOOST_PROTO_CXX11_LITERALS_HPP_INCLUDED
+#ifndef BOOST_PROTO_V5_LITERALS_HPP_INCLUDED
+#define BOOST_PROTO_V5_LITERALS_HPP_INCLUDED
 
 #include <boost/proto/v5/proto_fwd.hpp>
 #include <boost/proto/v5/expr.hpp>

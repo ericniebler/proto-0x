@@ -10,8 +10,8 @@
 //  Richard Smith for the ideas behind get_nth and back
 //  Dave Abrahams for some additional compile-time perf tweaks to get_nth and back
 
-#ifndef BOOST_PROTO_CXX11_UTILITY_HPP_INCLUDED
-#define BOOST_PROTO_CXX11_UTILITY_HPP_INCLUDED
+#ifndef BOOST_PROTO_V5_UTILITY_HPP_INCLUDED
+#define BOOST_PROTO_V5_UTILITY_HPP_INCLUDED
 
 #include <cstddef>
 #include <functional>
