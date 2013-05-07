@@ -136,6 +136,9 @@ namespace boost
 
                 template<typename First, typename Second>
                 struct compressed_pair;
+
+                template<typename>
+                struct default_expr;
             }
 
             namespace utility
@@ -303,9 +306,16 @@ namespace boost
                 template<typename BaseDomain>
                 struct basic_expr_domain_adaptor;
 
-                struct default_domain;
-
                 struct basic_default_domain;
+
+                template<
+                    typename Grammar = default_grammar
+                  , typename SuperDomain = no_super_domain
+                  , template<typename...> class CustomExpr = detail::default_expr
+                >
+                struct auto_domain;
+
+                struct default_domain;
 
                 template<template<typename...> class Expr, typename Domain = void>
                 struct make_custom_expr;
@@ -315,6 +325,7 @@ namespace boost
             using domains::deduce_domain;
             using domains::default_grammar;
             using domains::domain;
+            using domains::auto_domain;
             using domains::default_domain;
             using domains::basic_default_domain;
             using domains::make_custom_expr;

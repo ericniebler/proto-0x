@@ -190,15 +190,24 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // default_domain
                 struct default_domain
-                  : domain<default_domain, default_grammar>
+                  : domain<default_domain>
                 {};
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // basic_default_domain
                 struct basic_default_domain
-                  : domain<basic_default_domain, default_grammar>
+                  : domain<basic_default_domain>
                 {
                     using make_expr = make_custom_expr<exprs::basic_expr, basic_default_domain>;
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // auto_domain
+                template<typename Grammar, typename SuperDomain, template<typename...> class CustomExpr>
+                struct auto_domain
+                  : domain<auto_domain<Grammar, SuperDomain, CustomExpr>, Grammar, SuperDomain>
+                {
+                    using make_expr = make_custom_expr<CustomExpr, auto_domain>;
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////

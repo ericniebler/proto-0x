@@ -184,6 +184,23 @@ namespace boost
                 {
                     using type = exprs::expr<Tag(typename as_child_<Children, Domain>::type...), Domain>;
                 };
+
+                template<typename Domain, template<typename...> class CustomExpr>
+                struct make_domain
+                {
+                    using type = Domain;
+                };
+
+                template<
+                    typename Grammar
+                  , typename SuperDomain
+                  , template<typename...> class Ignored
+                  , template<typename...> class CustomExpr
+                >
+                struct make_domain<auto_domain<Grammar, SuperDomain, Ignored>, CustomExpr>
+                {
+                    using type = auto_domain<Grammar, SuperDomain, CustomExpr>;
+                };
             }
 
             namespace exprs
@@ -449,7 +466,7 @@ namespace boost
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // struct expr
+                // struct basic_expr
                 template<
                     template<typename, typename...> class DerivedExpr
                   , typename Tag
@@ -457,19 +474,24 @@ namespace boost
                   , typename ...Rest
                   , typename Domain
                 >
-                struct expr<DerivedExpr<Tag(Children...), Rest...>, Domain>
-                  : basic_expr<Tag(Children...), Domain>
-                  , expr_assign<DerivedExpr<Tag(Children...), Rest...>>
-                  , expr_subscript<DerivedExpr<Tag(Children...), Rest...>>
-                  , expr_function<DerivedExpr<Tag(Children...), Rest...>>
+                struct basic_expr<DerivedExpr<Tag(Children...), Rest...>, Domain>
+                  : basic_expr<
+                        Tag(Children...)
+                      , typename detail::make_domain<
+                            typename Domain::proto_domain_type
+                          , DerivedExpr
+                        >::type
+                    >
                 {
                     ////////////////////////////////////////////////////////////////////////////////
                     // constructors
-                    using basic_expr<Tag(Children...), Domain>::basic_expr;
-
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // operator=
-                    using expr_assign<DerivedExpr<Tag(Children...), Rest...>>::operator=;
+                    using basic_expr<
+                        Tag(Children...)
+                      , typename detail::make_domain<
+                            typename Domain::proto_domain_type
+                          , DerivedExpr
+                        >::type
+                    >::basic_expr;
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -488,6 +510,42 @@ namespace boost
                     ////////////////////////////////////////////////////////////////////////////////
                     // operator=
                     using expr_assign<expr>::operator=;
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // struct expr
+                template<
+                    template<typename, typename...> class DerivedExpr
+                  , typename Tag
+                  , typename ...Children
+                  , typename ...Rest
+                  , typename Domain
+                >
+                struct expr<DerivedExpr<Tag(Children...), Rest...>, Domain>
+                  : basic_expr<
+                        Tag(Children...)
+                      , typename detail::make_domain<
+                            typename Domain::proto_domain_type
+                          , DerivedExpr
+                        >::type
+                    >
+                  , expr_assign<DerivedExpr<Tag(Children...), Rest...>>
+                  , expr_subscript<DerivedExpr<Tag(Children...), Rest...>>
+                  , expr_function<DerivedExpr<Tag(Children...), Rest...>>
+                {
+                    ////////////////////////////////////////////////////////////////////////////////
+                    // constructors
+                    using basic_expr<
+                        Tag(Children...)
+                      , typename detail::make_domain<
+                            typename Domain::proto_domain_type
+                          , DerivedExpr
+                        >::type
+                    >::basic_expr;
+
+                    ////////////////////////////////////////////////////////////////////////////////
+                    // operator=
+                    using expr_assign<DerivedExpr<Tag(Children...), Rest...>>::operator=;
                 };
             }
 

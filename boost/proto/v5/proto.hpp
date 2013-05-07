@@ -10,6 +10,7 @@
 #define BOOST_PROTO_V5_PROTO_HPP_INCLUDED
 
 #include <boost/proto/v5/core.hpp>
+#include <boost/proto/v5/debug.hpp>
 #include <boost/proto/v5/functional.hpp>
 #include <boost/proto/v5/action.hpp>
 
