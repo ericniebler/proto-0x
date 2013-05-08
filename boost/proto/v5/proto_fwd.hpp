@@ -391,17 +391,14 @@ namespace boost
                 template<typename Expr>
                 struct virtual_;
 
-                template<typename ExprDesc, typename Domain>
-                constexpr auto tag_of(basic_expr<ExprDesc, Domain> &that) noexcept
-                    -> typename basic_expr<ExprDesc, Domain>::proto_tag_type &;
+                template<typename Tag, typename ...Children, typename Domain>
+                constexpr Tag &tag_of(basic_expr<Tag(Children...), Domain> &that) noexcept;
 
-                template<typename ExprDesc, typename Domain>
-                constexpr auto tag_of(basic_expr<ExprDesc, Domain> const &that) noexcept
-                    -> typename basic_expr<ExprDesc, Domain>::proto_tag_type const &;
+                template<typename Tag, typename ...Children, typename Domain>
+                constexpr Tag const &tag_of(basic_expr<Tag(Children...), Domain> const &that) noexcept;
 
-                template<typename ExprDesc, typename Domain>
-                constexpr auto tag_of(basic_expr<ExprDesc, Domain> &&that) noexcept
-                    -> typename basic_expr<ExprDesc, Domain>::proto_tag_type &&;
+                template<typename Tag, typename ...Children, typename Domain>
+                constexpr Tag &&tag_of(basic_expr<Tag(Children...), Domain> &&that) noexcept;
             }
 
             using exprs::expr_assign;

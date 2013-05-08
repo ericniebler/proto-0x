@@ -49,7 +49,7 @@ namespace boost
                 //  a functioning proto_equal_to, and also to allow a==b and a!=b to have implicit
                 //  conversions to bool only where it makes sense to allow it.
                 ////////////////////////////////////////////////////////////////////////////////////
-                template<typename ExprDesc, typename EnableIf = void>
+                template<typename BasicExpr, typename EnableIf = void>
                 struct expr_boolean_convertible
                 {};
 
@@ -215,33 +215,30 @@ namespace boost
                     ////////////////////////////////////////////////////////////////////////////////
                     // operator=
                     template<typename U, typename E = Expr
-                      , typename Domain = typename E::proto_domain_type
                       , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<expr_assign, U>::value))>
                     auto operator=(U && u) &
                     BOOST_PROTO_AUTO_RETURN(
-                        v5::make_expr<v5::assign, Domain>(
+                        v5::make_expr<v5::assign, typename result_of::domain_of<E>::type>(
                             static_cast<E &>(*this)
                           , static_cast<U &&>(u)
                         )
                     )
 
                     template<typename U, typename E = Expr
-                      , typename Domain = typename E::proto_domain_type
                       , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<expr_assign, U>::value))>
                     constexpr auto operator=(U && u) const &
                     BOOST_PROTO_AUTO_RETURN(
-                        v5::make_expr<v5::assign, Domain>(
+                        v5::make_expr<v5::assign, typename result_of::domain_of<E>::type>(
                             static_cast<E const &>(*this)
                           , static_cast<U &&>(u)
                         )
                     )
 
                     template<typename U, typename E = Expr
-                      , typename Domain = typename E::proto_domain_type
                       , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<expr_assign, U>::value))>
                     constexpr auto operator=(U && u) const &&
                     BOOST_PROTO_AUTO_RETURN(
-                        v5::make_expr<v5::assign, Domain>(
+                        v5::make_expr<v5::assign, typename result_of::domain_of<E>::type>(
                             static_cast<E &&>(const_cast<expr_assign &&>(*this))
                           , static_cast<U &&>(u)
                         )
@@ -255,31 +252,28 @@ namespace boost
                 {
                     ////////////////////////////////////////////////////////////////////////////////
                     // operator[]
-                    template<typename U, typename E = Expr
-                      , typename Domain = typename E::proto_domain_type>
+                    template<typename U, typename E = Expr>
                     auto operator[](U && u) &
                     BOOST_PROTO_AUTO_RETURN(
-                        v5::make_expr<v5::subscript, Domain>(
+                        v5::make_expr<v5::subscript, typename result_of::domain_of<E>::type>(
                             static_cast<E &>(*this)
                           , static_cast<U &&>(u)
                         )
                     )
 
-                    template<typename U, typename E = Expr
-                      , typename Domain = typename E::proto_domain_type>
+                    template<typename U, typename E = Expr>
                     constexpr auto operator[](U && u) const &
                     BOOST_PROTO_AUTO_RETURN(
-                        v5::make_expr<v5::subscript, Domain>(
+                        v5::make_expr<v5::subscript, typename result_of::domain_of<E>::type>(
                             static_cast<E const &>(*this)
                           , static_cast<U &&>(u)
                         )
                     )
 
-                    template<typename U, typename E = Expr
-                      , typename Domain = typename E::proto_domain_type>
+                    template<typename U, typename E = Expr>
                     constexpr auto operator[](U && u) const &&
                     BOOST_PROTO_AUTO_RETURN(
-                        v5::make_expr<v5::subscript, Domain>(
+                        v5::make_expr<v5::subscript, typename result_of::domain_of<E>::type>(
                             static_cast<E &&>(const_cast<expr_subscript &&>(*this))
                           , static_cast<U &&>(u)
                         )
@@ -293,31 +287,28 @@ namespace boost
                 {
                     ////////////////////////////////////////////////////////////////////////////////
                     // operator()
-                    template<typename ...U, typename E = Expr
-                      , typename Domain = typename E::proto_domain_type>
+                    template<typename ...U, typename E = Expr>
                     auto operator()(U &&... u) &
                     BOOST_PROTO_AUTO_RETURN(
-                        v5::make_expr<v5::function, Domain>(
+                        v5::make_expr<v5::function, typename result_of::domain_of<E>::type>(
                             static_cast<E &>(*this)
                           , static_cast<U &&>(u)...
                         )
                     )
 
-                    template<typename ...U, typename E = Expr
-                      , typename Domain = typename E::proto_domain_type>
+                    template<typename ...U, typename E = Expr>
                     constexpr auto operator()(U &&... u) const &
                     BOOST_PROTO_AUTO_RETURN(
-                        v5::make_expr<v5::function, Domain>(
+                        v5::make_expr<v5::function, typename result_of::domain_of<E>::type>(
                             static_cast<E const &>(*this)
                           , static_cast<U &&>(u)...
                         )
                     )
 
-                    template<typename ...U, typename E = Expr
-                      , typename Domain = typename E::proto_domain_type>
+                    template<typename ...U, typename E = Expr>
                     constexpr auto operator()(U &&... u) const &&
                     BOOST_PROTO_AUTO_RETURN(
-                        v5::make_expr<v5::function, Domain>(
+                        v5::make_expr<v5::function, typename result_of::domain_of<E>::type>(
                             static_cast<E &&>(const_cast<expr_function &&>(*this))
                           , static_cast<U &&>(u)...
                         )
@@ -363,9 +354,7 @@ namespace boost
                     using proto_children_type           = exprs::children<Children...>;
                     using proto_size                    = typename proto_children_type::proto_size;
                     using proto_domain_type             = Domain;
-                    using proto_basic_expr_type         = basic_expr;
                     using proto_expr_descriptor_type    = Tag(Children...);
-                    using fusion_tag                    = proto_expr<Tag, proto_domain_type>; ///< For Fusion
                     using proto_arity                   =
                         std::integral_constant<
                             std::size_t

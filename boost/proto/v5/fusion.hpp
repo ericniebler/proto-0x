@@ -22,6 +22,7 @@
 #include <boost/fusion/include/as_list.hpp>
 #include <boost/fusion/include/is_segmented.hpp>
 #include <boost/fusion/sequence/comparison/enable_comparison.hpp>
+#include <boost/fusion/support/tag_of_fwd.hpp>
 #include <boost/proto/v5/proto_fwd.hpp>
 #include <boost/proto/v5/children.hpp>
 #include <boost/proto/v5/expr.hpp>
@@ -46,8 +47,8 @@ namespace boost
                     using category = fusion::random_access_traversal_tag;
                     using fusion_tag =
                         proto_expr_iterator<
-                            typename Expr::proto_tag_type
-                          , typename Expr::proto_domain_type
+                            typename result_of::tag_of<Expr>::type
+                          , typename result_of::domain_of<Expr>::type
                         >;
 
                     explicit expr_iterator(Expr &e) noexcept
@@ -100,8 +101,8 @@ namespace boost
                     using category = fusion::forward_traversal_tag;
                     using fusion_tag =
                         proto_flat_view<
-                            typename Expr::proto_tag_type
-                          , typename Expr::proto_domain_type
+                            typename result_of::tag_of<Expr>::type
+                          , typename result_of::domain_of<Expr>::type
                         >;
                     using segments_type =
                         typename fusion::result_of::as_list<
@@ -468,7 +469,10 @@ namespace boost
             {
                 template<typename Sequence, typename Index>
                 struct apply
-                  : proto::v5::exprs::children_element<(std::size_t)Index::value, typename Sequence::proto_children_type>
+                  : proto::v5::exprs::children_element<
+                        (std::size_t)Index::value
+                      , typename Sequence::proto_children_type
+                    >
                 {};
             };
 
@@ -599,6 +603,16 @@ namespace boost
 
         namespace traits
         {
+            template<typename Seq>
+            struct tag_of<Seq, typename std::enable_if<proto::v5::is_expr<Seq>::value>::type>
+            {
+                using type =
+                    proto::v5::proto_expr<
+                        typename proto::v5::result_of::tag_of<Seq>::type
+                      , typename proto::v5::result_of::domain_of<Seq>::type
+                    >;
+            };
+
             template<typename Seq1, typename Seq2>
             struct enable_equality<
                 Seq1

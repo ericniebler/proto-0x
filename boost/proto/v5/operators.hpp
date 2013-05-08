@@ -39,7 +39,7 @@ namespace boost
                   , typename Expr = typename result_of::make_expr<ExprDesc, BasicDomain>::type
                 >
                 struct is_grammatical
-                  : proto::matches<Expr, typename Expr::proto_domain_type::proto_grammar_type>
+                  : proto::matches<Expr, typename result_of::domain_of<Expr>::type::proto_grammar_type>
                 {};
             }
 

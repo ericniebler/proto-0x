@@ -162,7 +162,7 @@ namespace boost
                 }
 
                 template<typename Tag, typename ...Children, typename Domain>
-                inline constexpr Tag && tag_of(basic_expr<Tag(Children...), Domain> &&that) noexcept
+                inline constexpr Tag &&tag_of(basic_expr<Tag(Children...), Domain> &&that) noexcept
                 {
                     return access::proto_tag(static_cast<basic_expr<Tag(Children...), Domain> &&>(that));
                 }

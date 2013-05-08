@@ -89,6 +89,16 @@ namespace boost
 
                 template<template<typename, typename> class T>
                 char (&template_arity())[2];
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // detail::domain_of_helper
+                template<typename T>
+                typename T::proto_domain_type domain_of_helper(int);
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // detail::domain_of_helper
+                template<typename T>
+                default_domain domain_of_helper(long);
             }
 
             namespace domains
@@ -235,19 +245,19 @@ namespace boost
                 template<typename Expr>
                 struct domain_of
                 {
-                    using type = typename Expr::proto_domain_type;
+                    using type = decltype(detail::domain_of_helper<Expr>(1));
                 };
 
                 template<typename Expr>
                 struct domain_of<Expr &>
                 {
-                    using type = typename Expr::proto_domain_type;
+                    using type = decltype(detail::domain_of_helper<Expr>(1));
                 };
 
                 template<typename Expr>
                 struct domain_of<Expr &&>
                 {
-                    using type = typename Expr::proto_domain_type;
+                    using type = decltype(detail::domain_of_helper<Expr>(1));
                 };
             }
 
