@@ -24,21 +24,21 @@ void write(std::ostream &sout, proto::bitwise_or)
     sout << "|";
 }
 
-template<typename T0, typename Domain>
-void write(std::ostream &sout, proto::exprs::basic_expr<proto::terminal(T0), Domain> const &op)
+template<typename T0>
+void write(std::ostream &sout, proto::exprs::basic_expr<proto::terminal(T0)> const &op)
 {
     sout << proto::value(op);
 }
 
-template<typename Tag, typename T0, typename Domain>
-void write(std::ostream &sout, proto::exprs::basic_expr<Tag(T0), Domain> const &op)
+template<typename Tag, typename T0>
+void write(std::ostream &sout, proto::exprs::basic_expr<Tag(T0)> const &op)
 {
     write(sout, Tag());
     write(proto::child(op));
 }
 
-template<typename Tag, typename T0, typename T1, typename Domain>
-void write(std::ostream &sout, proto::exprs::basic_expr<Tag(T0, T1), Domain> const &op)
+template<typename Tag, typename T0, typename T1>
+void write(std::ostream &sout, proto::exprs::basic_expr<Tag(T0, T1)> const &op)
 {
     write(sout, proto::left(op));
     write(sout, Tag());
@@ -129,10 +129,11 @@ struct MyDomain
 
 template<typename ExprDesc>
 struct My
-  : proto::basic_expr<ExprDesc, MyDomain>
+  : proto::basic_expr<ExprDesc>
   , proto::expr_function<My<ExprDesc>>
 {
-    using proto::basic_expr<ExprDesc, MyDomain>::basic_expr;
+    using proto_domain_type = MyDomain;
+    using proto::basic_expr<ExprDesc>::basic_expr;
 };
 
 using my = proto::custom<My>;

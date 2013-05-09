@@ -67,12 +67,13 @@ struct lambda_domain
 
 template<typename ExprDesc>
 struct lambda_expr
-  : proto::basic_expr<ExprDesc, lambda_domain>
+  : proto::basic_expr<ExprDesc>
   , proto::expr_assign<lambda_expr<ExprDesc>>
   , proto::expr_subscript<lambda_expr<ExprDesc>>
 {
+    using proto_domain_type = lambda_domain;
     using proto::expr_assign<lambda_expr>::operator=;
-    using proto::basic_expr<ExprDesc, lambda_domain>::basic_expr;
+    using proto::basic_expr<ExprDesc>::basic_expr;
 
     template<typename ...T>
     auto operator()(T &&... t) const

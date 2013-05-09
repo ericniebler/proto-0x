@@ -73,9 +73,10 @@ struct my_rhs_domain:
 
 template<class ExprDesc>
 struct extension
-  : proto::basic_expr<ExprDesc, my_domain>
+  : proto::basic_expr<ExprDesc>
 {
-    using proto::basic_expr<ExprDesc, my_domain>::basic_expr;
+    using proto_domain_type = my_domain;
+    using proto::basic_expr<ExprDesc>::basic_expr;
 
     void test() const
     {}
@@ -83,16 +84,18 @@ struct extension
 
 template<class ExprDesc>
 struct lhs_extension
-  : proto::basic_expr<ExprDesc, my_lhs_domain>
+  : proto::basic_expr<ExprDesc>
 {
-    using proto::basic_expr<ExprDesc, my_lhs_domain>::basic_expr;
+    using proto_domain_type = my_lhs_domain;
+    using proto::basic_expr<ExprDesc>::basic_expr;
 };
 
 template<class ExprDesc>
 struct rhs_extension
-  : proto::basic_expr<ExprDesc, my_rhs_domain>
+  : proto::basic_expr<ExprDesc>
 {
-    using proto::basic_expr<ExprDesc, my_rhs_domain>::basic_expr;
+    using proto_domain_type = my_rhs_domain;
+    using proto::basic_expr<ExprDesc>::basic_expr;
 };
 
 void test_constrained_ops()

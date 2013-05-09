@@ -5,74 +5,13 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <iostream>
-//#include <string>
-//
-//#define RETURN(...) -> \
-//  decltype(__VA_ARGS__) { return __VA_ARGS__; }
-//
-//template<typename Sig>
-//struct SUBSTITUTION_FAILURE;
-//
-//template<typename Fun, typename...Args>
-//struct SUBSTITUTION_FAILURE<Fun(Args...)> {
-//    virtual void what(Args&&...args) {
-//        Fun()(std::forward<Args>(args)...);
-//    }
-//};
-//
-//template<typename Fun>
-//struct try_call {
-//  template<typename...Args>
-//  auto operator()(Args&&...args) const
-//    RETURN( Fun()( std::forward<Args>(args)... ) )
-//
-//  template<typename...Args>
-//  SUBSTITUTION_FAILURE<Fun(Args...)>
-//  operator()(Args&&...args) const volatile;
-//};
-//
-//struct S0
-//{
-//  template<typename T>
-//  auto operator()(T t) const RETURN( t + 1 )
-//};
-//
-//struct S1
-//{
-//  template<typename T>
-//  auto operator()(T t) const RETURN( try_call<S0>()(t) )
-//};
-//
-//struct S2
-//{
-//  template<typename T>
-//  auto operator()(T t) const RETURN( try_call<S1>()(t) )
-//};
-//
-//struct S3
-//{
-//  template<typename T>
-//  auto operator()(T t) const RETURN( try_call<S2>()(t) )
-//};
-//
-//struct foo
-//{};
-//
-//int main()
-//{
-//    //int i = S3()(32);
-//    auto x = S3()(std::string("huh?"));
-//}
-
 #include <map>
+#include <iostream>
 #include <boost/proto/v5/proto.hpp>
-#include <boost/proto/v5/debug.hpp>
 namespace proto = boost::proto;
 using namespace proto;
 
-struct map_list_of_ 
-{};
+struct map_list_of_  {};
 
 struct MapListOf : def<
   match(
@@ -84,22 +23,13 @@ struct MapListOf : def<
       assign(subscript(_data, _value(_child1)), _value(_child2))
     )
   )
->{};
-
-template<typename ExprDesc>
-struct map_list_of_expr;
-
-struct map_list_of_domain
-  : domain<map_list_of_domain, MapListOf>
-{
-  using make_expr = make_custom_expr<map_list_of_expr>;
-};
+> {};
 
 template<typename ExprDesc>
 struct map_list_of_expr
-  : expr<map_list_of_expr<ExprDesc>, map_list_of_domain>
+  : expr<map_list_of_expr<ExprDesc>, auto_domain<MapListOf>>
 {
-  using expr<map_list_of_expr, map_list_of_domain>::expr;
+  using expr<map_list_of_expr, auto_domain<MapListOf>>::expr;
 
   template<class K, class V, class C, class A>
   operator std::map<K,V,C,A>() const
@@ -112,24 +42,24 @@ struct map_list_of_expr
 };
 
 constexpr map_list_of_expr<terminal(map_list_of_)> map_list_of {};
-//constexpr auto map_list_of = as_expr<map_list_of_domain>(map_list_of_{});
-
-constexpr auto omg = map_list_of(1,2)(2,3)(3,4)(42,5)(5,6);
-
-enum class srsly
-{
-    wtf = value(child<1>(child<0>(omg)))
-};
-
-static_assert((int)srsly::wtf == 42, "");
 
 int main()
 {
-  std::map<int, int> next = map_list_of(1,2)(2,3)(3,4)(4,5)(5,6);
+  std::map<int, int> m = map_list_of(1,2)(2,3)(3,4)(4,5)(5,6);
+
+  for(auto p : m)
+  {
+    std::cout << p.first << " => " << p.second << std::endl;
+  }
 
   void done();
   done();
 }
+
+
+
+
+
 
 /*
 #include <cstdio>
@@ -200,11 +130,12 @@ struct lambda_domain
 
 template<typename ExprDesc>
 struct lambda_expr
-  : proto::basic_expr<ExprDesc, lambda_domain>
+  : proto::basic_expr<ExprDesc>
   , proto::expr_assign<lambda_expr<ExprDesc>>
   , proto::expr_subscript<lambda_expr<ExprDesc>>
 {
-    using proto::basic_expr<ExprDesc, lambda_domain>::basic_expr;
+    using proto_domain_type = lambda_domain;
+    using proto::basic_expr<ExprDesc>::basic_expr;
     using proto::expr_assign<lambda_expr>::operator=;
 
     template<typename ...T>
@@ -277,7 +208,7 @@ int main()
 
 void done()
 {
-    char ch{};
+    char ch = 0;
     std::cout << "CTRL+D to end...";
     std::cin >> ch;
 }

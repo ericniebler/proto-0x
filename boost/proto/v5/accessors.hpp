@@ -23,22 +23,22 @@ namespace boost
             {
                 ////////////////////////////////////////////////////////////////////////////////////
                 // child
-                template<std::size_t I, typename ExprDesc, typename Domain>
-                inline constexpr auto child(basic_expr<ExprDesc, Domain> &e)
+                template<std::size_t I, typename ExprDesc>
+                inline constexpr auto child(basic_expr<ExprDesc> &e)
                 BOOST_PROTO_AUTO_RETURN(
                     exprs::get<I>(access::proto_args(e))
                 )
 
-                template<std::size_t I, typename ExprDesc, typename Domain>
-                inline constexpr auto child(basic_expr<ExprDesc, Domain> const &e)
+                template<std::size_t I, typename ExprDesc>
+                inline constexpr auto child(basic_expr<ExprDesc> const &e)
                 BOOST_PROTO_AUTO_RETURN(
                     exprs::get<I>(access::proto_args(e))
                 )
 
-                template<std::size_t I, typename ExprDesc, typename Domain>
-                inline constexpr auto child(basic_expr<ExprDesc, Domain> &&e)
+                template<std::size_t I, typename ExprDesc>
+                inline constexpr auto child(basic_expr<ExprDesc> &&e)
                 BOOST_PROTO_AUTO_RETURN(
-                    exprs::get<I>(access::proto_args(static_cast<basic_expr<ExprDesc, Domain> &&>(e)))
+                    exprs::get<I>(access::proto_args(static_cast<basic_expr<ExprDesc> &&>(e)))
                 )
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -66,22 +66,22 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // left
-                template<typename Tag, typename L, typename R, typename Domain>
-                inline constexpr auto left(basic_expr<Tag(L, R), Domain> & e)
+                template<typename Tag, typename L, typename R>
+                inline constexpr auto left(basic_expr<Tag(L, R)> & e)
                 BOOST_PROTO_AUTO_RETURN(
                     exprs::get<0>(access::proto_args(e))
                 )
 
-                template<typename Tag, typename L, typename R, typename Domain>
-                inline constexpr auto left(basic_expr<Tag(L, R), Domain> const & e)
+                template<typename Tag, typename L, typename R>
+                inline constexpr auto left(basic_expr<Tag(L, R)> const & e)
                 BOOST_PROTO_AUTO_RETURN(
                     exprs::get<0>(access::proto_args(e))
                 )
 
-                template<typename Tag, typename L, typename R, typename Domain>
-                inline constexpr auto left(basic_expr<Tag(L, R), Domain> && e)
+                template<typename Tag, typename L, typename R>
+                inline constexpr auto left(basic_expr<Tag(L, R)> && e)
                 BOOST_PROTO_AUTO_RETURN(
-                    exprs::get<0>(access::proto_args(static_cast<basic_expr<Tag(L, R), Domain> &&>(e)))
+                    exprs::get<0>(access::proto_args(static_cast<basic_expr<Tag(L, R)> &&>(e)))
                 )
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -109,62 +109,62 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // right
-                template<typename Tag, typename L, typename R, typename Domain>
-                inline constexpr auto right(basic_expr<Tag(L, R), Domain> & e)
+                template<typename Tag, typename L, typename R>
+                inline constexpr auto right(basic_expr<Tag(L, R)> & e)
                 BOOST_PROTO_AUTO_RETURN(
                     exprs::get<1>(access::proto_args(e))
                 )
 
-                template<typename Tag, typename L, typename R, typename Domain>
-                inline constexpr auto right(basic_expr<Tag(L, R), Domain> const & e)
+                template<typename Tag, typename L, typename R>
+                inline constexpr auto right(basic_expr<Tag(L, R)> const & e)
                 BOOST_PROTO_AUTO_RETURN(
                     exprs::get<1>(access::proto_args(e))
                 )
 
-                template<typename Tag, typename L, typename R, typename Domain>
-                inline constexpr auto right(basic_expr<Tag(L, R), Domain> && e)
+                template<typename Tag, typename L, typename R>
+                inline constexpr auto right(basic_expr<Tag(L, R)> && e)
                 BOOST_PROTO_AUTO_RETURN(
-                    exprs::get<1>(access::proto_args(static_cast<basic_expr<Tag(L, R), Domain> &&>(e)))
+                    exprs::get<1>(access::proto_args(static_cast<basic_expr<Tag(L, R)> &&>(e)))
                 )
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // value
-                template<typename ExprDesc, typename Domain>
-                inline constexpr auto value(basic_expr<ExprDesc, Domain> &that)
+                template<typename ExprDesc>
+                inline constexpr auto value(basic_expr<ExprDesc> &that)
                 BOOST_PROTO_AUTO_RETURN(
                     (access::proto_args(that).proto_child0) // extra parens are significant!
                 )
 
-                template<typename ExprDesc, typename Domain>
-                inline constexpr auto value(basic_expr<ExprDesc, Domain> const &that)
+                template<typename ExprDesc>
+                inline constexpr auto value(basic_expr<ExprDesc> const &that)
                 BOOST_PROTO_AUTO_RETURN(
                     (access::proto_args(that).proto_child0) // extra parens are significant!
                 )
 
-                template<typename ExprDesc, typename Domain>
-                inline constexpr auto value(basic_expr<ExprDesc, Domain> &&that)
+                template<typename ExprDesc>
+                inline constexpr auto value(basic_expr<ExprDesc> &&that)
                 BOOST_PROTO_AUTO_RETURN(
-                    (access::proto_args(static_cast<basic_expr<ExprDesc, Domain> &&>(that)).proto_child0) // extra parens are significant!
+                    (access::proto_args(static_cast<basic_expr<ExprDesc> &&>(that)).proto_child0) // extra parens are significant!
                 )
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // tag_of
-                template<typename Tag, typename ...Children, typename Domain>
-                inline constexpr Tag &tag_of(basic_expr<Tag(Children...), Domain> &that) noexcept
+                template<typename Tag, typename ...Children>
+                inline constexpr Tag &tag_of(basic_expr<Tag(Children...)> &that) noexcept
                 {
                     return access::proto_tag(that);
                 }
 
-                template<typename Tag, typename ...Children, typename Domain>
-                inline constexpr Tag const &tag_of(basic_expr<Tag(Children...), Domain> const &that) noexcept
+                template<typename Tag, typename ...Children>
+                inline constexpr Tag const &tag_of(basic_expr<Tag(Children...)> const &that) noexcept
                 {
                     return access::proto_tag(that);
                 }
 
-                template<typename Tag, typename ...Children, typename Domain>
-                inline constexpr Tag &&tag_of(basic_expr<Tag(Children...), Domain> &&that) noexcept
+                template<typename Tag, typename ...Children>
+                inline constexpr Tag &&tag_of(basic_expr<Tag(Children...)> &&that) noexcept
                 {
-                    return access::proto_tag(static_cast<basic_expr<Tag(Children...), Domain> &&>(that));
+                    return access::proto_tag(static_cast<basic_expr<Tag(Children...)> &&>(that));
                 }
             }
 

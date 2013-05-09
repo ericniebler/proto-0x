@@ -9,11 +9,9 @@
 #include <map>
 #include <iostream>
 #include <boost/proto/v5/proto.hpp>
-#include <boost/proto/v5/debug.hpp>
 using namespace boost::proto;
 
-struct map_list_of_
-{};
+struct map_list_of_ {};
 
 struct MapListOf : def<
     match(
@@ -25,23 +23,13 @@ struct MapListOf : def<
             assign(subscript(_data, _value(_child1)), _value(_child2))
         )
     )
->
-{};
-
-template<typename Expr>
-struct map_list_of_expr;
-
-struct map_list_of_domain
-  : domain<map_list_of_domain, MapListOf>
-{
-    using make_expr = make_custom_expr<map_list_of_expr>;
-};
+> {};
 
 template<typename ExprDesc>
 struct map_list_of_expr
-  : expr<ExprDesc, map_list_of_domain>
+  : expr<map_list_of_expr<ExprDesc>, auto_domain<MapListOf>>
 {
-    using expr<ExprDesc, map_list_of_domain>::expr;
+    using expr<map_list_of_expr<ExprDesc>, auto_domain<MapListOf>>::expr;
 
     template< class K, class V, class C, class A>
     operator std::map<K, V, C, A> () const
@@ -54,7 +42,6 @@ struct map_list_of_expr
 };
 
 constexpr map_list_of_expr<terminal(map_list_of_)> map_list_of{};
-static_assert(std::is_trivial<decltype(map_list_of)>::value, "");
 
 int main()
 {

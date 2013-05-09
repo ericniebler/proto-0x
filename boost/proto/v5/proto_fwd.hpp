@@ -379,7 +379,7 @@ namespace boost
 
                 struct expr_base;
 
-                template<typename ExprDesc, typename Domain>
+                template<typename ExprDesc, typename Domain = basic_default_domain>
                 struct basic_expr;
 
                 template<typename ExprDesc, typename Domain = default_domain>
@@ -391,14 +391,14 @@ namespace boost
                 template<typename Expr>
                 struct virtual_;
 
-                template<typename Tag, typename ...Children, typename Domain>
-                constexpr Tag &tag_of(basic_expr<Tag(Children...), Domain> &that) noexcept;
+                template<typename Tag, typename ...Children>
+                constexpr Tag &tag_of(basic_expr<Tag(Children...)> &that) noexcept;
 
-                template<typename Tag, typename ...Children, typename Domain>
-                constexpr Tag const &tag_of(basic_expr<Tag(Children...), Domain> const &that) noexcept;
+                template<typename Tag, typename ...Children>
+                constexpr Tag const &tag_of(basic_expr<Tag(Children...)> const &that) noexcept;
 
-                template<typename Tag, typename ...Children, typename Domain>
-                constexpr Tag &&tag_of(basic_expr<Tag(Children...), Domain> &&that) noexcept;
+                template<typename Tag, typename ...Children>
+                constexpr Tag &&tag_of(basic_expr<Tag(Children...)> &&that) noexcept;
             }
 
             using exprs::expr_assign;
@@ -407,7 +407,7 @@ namespace boost
             using exprs::expr_base;
             using exprs::tag_of;
 
-            template<typename ExprDesc, typename Domain>
+            template<typename ExprDesc, typename Domain = basic_default_domain>
             using basic_expr = typename detail::as_basic_expr_<ExprDesc, Domain>::type;
 
             template<typename ExprDesc, typename Domain = default_domain>

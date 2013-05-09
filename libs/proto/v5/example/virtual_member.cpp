@@ -150,7 +150,7 @@ namespace mini_lambda
     //    expressions like "if_(X)[Y].else_[Z]".
     template<class ExprDesc>
     struct expression
-      : proto::basic_expr<ExprDesc, domain>
+      : proto::basic_expr<ExprDesc>
       , proto::expr_assign<expression<ExprDesc>>
       , proto::expr_subscript<expression<ExprDesc>>
     {
@@ -162,7 +162,8 @@ namespace mini_lambda
         )
 
     public:
-        using proto::basic_expr<ExprDesc, domain>::basic_expr;
+        using proto_domain_type = domain;
+        using proto::basic_expr<ExprDesc>::basic_expr;
         using proto::expr_assign<expression>::operator=;
 
         // Use BOOST_PROTO_EXTENDS_MEMBERS() to define "virtual"

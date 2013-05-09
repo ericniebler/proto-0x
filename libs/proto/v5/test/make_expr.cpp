@@ -26,9 +26,10 @@ struct mydomain
 
 template<typename E>
 struct ewrap
-  : proto::expr<E, mydomain>
+  : proto::expr<E>
 {
-    using proto::expr<E, mydomain>::expr;
+    using proto_domain_type = mydomain;
+    using proto::expr<E>::expr;
 };
 
 void test_make_expr()
@@ -307,10 +308,11 @@ struct by_ref_domain
 
 template<typename ExprDesc>
 struct by_ref_expr
-  : proto::basic_expr<ExprDesc, by_ref_domain>
+  : proto::basic_expr<ExprDesc>
   , proto::expr_function<by_ref_expr<ExprDesc>>
 {
-    using proto::basic_expr<ExprDesc, by_ref_domain>::basic_expr;
+    using proto_domain_type = by_ref_domain;
+    using proto::basic_expr<ExprDesc>::basic_expr;
 };
 
 struct length_impl {};

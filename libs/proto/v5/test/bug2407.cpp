@@ -32,10 +32,11 @@ struct d
 
 template<class E>
 struct e
-  : proto::basic_expr<E, d>
+  : proto::basic_expr<E>
 {
-    static_assert(proto::matches<proto::basic_expr<E, d>, g>::value, "");
-    using proto::basic_expr<E, d>::basic_expr;
+    static_assert(proto::matches<proto::basic_expr<E>, g>::value, "");
+    using proto_domain_type = d;
+    using proto::basic_expr<E>::basic_expr;
 };
 
 e<proto::terminal(int)> i;

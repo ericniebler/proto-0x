@@ -23,46 +23,46 @@ namespace boost
                 {
                     ////////////////////////////////////////////////////////////////////////////////
                     // basic_expr accessors
-                    template<typename Tag, typename ...Children, typename Domain>
-                    static Tag & proto_tag(basic_expr<Tag(Children...), Domain> &e) noexcept
+                    template<typename Tag, typename ...Children>
+                    static Tag & proto_tag(basic_expr<Tag(Children...)> &e) noexcept
                     {
                         return e.tag_and_children_.first();
                     }
 
-                    template<typename Tag, typename ...Children, typename Domain>
-                    static constexpr Tag const & proto_tag(basic_expr<Tag(Children...), Domain> const &e) noexcept
+                    template<typename Tag, typename ...Children>
+                    static constexpr Tag const & proto_tag(basic_expr<Tag(Children...)> const &e) noexcept
                     {
                         return e.tag_and_children_.first();
                     }
 
-                    template<typename Tag, typename ...Children, typename Domain>
-                    static constexpr Tag && proto_tag(basic_expr<Tag(Children...), Domain> &&e) noexcept
+                    template<typename Tag, typename ...Children>
+                    static constexpr Tag && proto_tag(basic_expr<Tag(Children...)> &&e) noexcept
                     {
                         return static_cast<detail::compressed_pair<Tag, exprs::children<Children...>> &&>(e.tag_and_children_).first();
                     }
 
-                    template<typename Tag, typename ...Children, typename Domain>
-                    static children<Children...> & proto_args(basic_expr<Tag(Children...), Domain> &e) noexcept
+                    template<typename Tag, typename ...Children>
+                    static children<Children...> & proto_args(basic_expr<Tag(Children...)> &e) noexcept
                     {
                         return e.tag_and_children_.second();
                     }
 
-                    template<typename Tag, typename ...Children, typename Domain>
-                    static constexpr children<Children...> const & proto_args(basic_expr<Tag(Children...), Domain> const &e) noexcept
+                    template<typename Tag, typename ...Children>
+                    static constexpr children<Children...> const & proto_args(basic_expr<Tag(Children...)> const &e) noexcept
                     {
                         return e.tag_and_children_.second();
                     }
 
-                    template<typename Tag, typename ...Children, typename Domain>
-                    static constexpr children<Children...> && proto_args(basic_expr<Tag(Children...), Domain> &&e) noexcept
+                    template<typename Tag, typename ...Children>
+                    static constexpr children<Children...> && proto_args(basic_expr<Tag(Children...)> &&e) noexcept
                     {
                         return static_cast<detail::compressed_pair<Tag, exprs::children<Children...>> &&>(e.tag_and_children_).second();
                     }
 
-                    template<typename Tag, typename ...A, typename Domain, typename ...B>
+                    template<typename Tag, typename ...A, typename ...B>
                     static inline constexpr auto proto_equal_to(
-                        basic_expr<Tag(A...), Domain> const &lhs
-                      , basic_expr<Tag(B...), Domain> const &rhs)
+                        basic_expr<Tag(A...)> const &lhs
+                      , basic_expr<Tag(B...)> const &rhs)
                     BOOST_PROTO_AUTO_RETURN(
                         access::proto_args(lhs) == access::proto_args(rhs)
                     )

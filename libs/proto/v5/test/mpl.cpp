@@ -27,10 +27,11 @@ struct my_domain
 
 template<class E>
 struct my_expr
-  : proto::expr<E, my_domain>
+  : proto::expr<E>
 {
+    using proto_domain_type = my_domain;
     using tag = fusion::fusion_sequence_tag;
-    using proto::expr<E, my_domain>::expr;
+    using proto::expr<E>::expr;
 };
 
 // Test that we can call mpl algorithms on proto expression types, and get proto expression types back

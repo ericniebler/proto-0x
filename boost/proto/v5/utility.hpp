@@ -517,6 +517,13 @@ namespace boost
                 template<typename First, typename Second>
                 using second = Second;
 
+                template<template<typename...> class T, typename...Tail>
+                struct bind_tail
+                {
+                    template<typename U>
+                    using other = T<U, Tail...>;
+                };
+
                 template<typename T>
                 struct rvalue_reference_wrapper
                 {

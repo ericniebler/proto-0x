@@ -110,10 +110,10 @@ namespace boost
                     int status = 0;
                     std::unique_ptr<char, free_t> realname(
                         abi::__cxa_demangle(BOOST_SP_TYPEID(T).name(), 0, 0, &status));
-                    return realname.get();
-                #else
-                    return BOOST_SP_TYPEID(T).name();
+                    if(0 == status)
+                        return realname.get();
                 #endif
+                    return BOOST_SP_TYPEID(T).name();
                 }
             }
 

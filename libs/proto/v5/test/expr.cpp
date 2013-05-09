@@ -45,6 +45,40 @@ struct MyExpr
 using My = proto::custom<MyExpr>;
 static_assert(std::is_trivial<My::terminal<int>>::value, "not is trivial!");
 
+void test_basic_expr()
+{
+    proto::basic_expr<proto::terminal(int)> bi{42};
+
+    // Combining basic_exprs should yield more basic_exprs
+    proto::basic_expr<
+        proto::plus(
+            proto::basic_expr<proto::terminal(int)> &
+          , proto::basic_expr<proto::terminal(int)> &
+        )
+    > pbibi = bi + bi;
+    BOOST_PROTO_IGNORE_UNUSED(pbibi);
+
+    typedef
+        proto::basic_expr<
+            proto::plus(
+                proto::terminal(int)
+              , proto::terminal(int)
+            )
+        >
+    pbibi_0_t;
+
+    typedef
+        proto::basic_expr<
+            proto::plus(
+                proto::basic_expr<proto::terminal(int)>
+              , proto::basic_expr<proto::terminal(int)>
+            )
+        >
+    pbibi_1_t;
+
+    static_assert(std::is_same<pbibi_0_t, pbibi_1_t>::value, "not the same");
+}
+
 void test_expr()
 {
     int_ p(42);
@@ -149,6 +183,7 @@ test_suite* init_unit_test_suite( int argc, char* argv[] )
 {
     test_suite *test = BOOST_TEST_SUITE("basic tests for the expr data structure");
 
+    test->add(BOOST_TEST_CASE(&test_basic_expr));
     test->add(BOOST_TEST_CASE(&test_expr));
 
     return test;
