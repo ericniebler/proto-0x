@@ -124,7 +124,7 @@ struct My;
 struct MyDomain
   : proto::domain<MyDomain>
 {
-    using make_expr = proto::make_custom_expr<My>;
+    using make_expr = proto::make_custom_expr<My<_>>;
 };
 
 template<typename ExprDesc>

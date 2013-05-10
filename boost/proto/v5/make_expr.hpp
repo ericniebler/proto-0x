@@ -37,7 +37,7 @@ namespace boost
                 default_domain get_domain(long);
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // get_domain
+                // get_common_domain_impl
                 template<typename Domain, typename ...T>
                 struct get_common_domain_impl
                 {

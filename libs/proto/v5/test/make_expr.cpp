@@ -21,7 +21,7 @@ struct ewrap;
 struct mydomain
   : proto::domain<mydomain>
 {
-    using make_expr = proto::make_custom_expr<ewrap>;
+    using make_expr = proto::make_custom_expr<ewrap<_>>;
 };
 
 template<typename E>
@@ -302,7 +302,7 @@ struct by_ref_expr;
 struct by_ref_domain
   : proto::domain<by_ref_domain>
 {
-    using make_expr = proto::make_custom_expr<by_ref_expr>;
+    using make_expr = proto::make_custom_expr<by_ref_expr<_>>;
     using store_child = proto::utility::by_ref;
 };
 

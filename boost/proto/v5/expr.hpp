@@ -157,6 +157,8 @@ namespace boost
                     )
                 };
 
+                ////////////////////////////////////////////////////////////////////////////////////
+                // as_child_
                 template<typename Expr, typename Domain>
                 struct as_child_
                 {
@@ -171,24 +173,25 @@ namespace boost
                     >
                 {};
 
-                template<typename Expr, typename Domain>
-                struct as_basic_expr_
-                {
-                    using type = exprs::basic_expr<Expr, Domain>;
-                };
-
+                ////////////////////////////////////////////////////////////////////////////////////
+                // as_basic_expr_
                 template<
-                    template<typename> class DerivedExpr
+                    template<typename...> class DerivedExpr
                   , typename ExprDesc
+                  , typename ...Rest
                   , typename Grammar
                   , typename SuperDomain
                 >
-                struct as_basic_expr_<DerivedExpr<ExprDesc>, auto_domain<Grammar, SuperDomain>>
+                struct as_basic_expr_<DerivedExpr<ExprDesc, Rest...>, auto_domain<Grammar, SuperDomain>>
                 {
                     using type =
                         exprs::basic_expr<
-                            DerivedExpr<ExprDesc>
-                          , auto_domain<Grammar, SuperDomain, DerivedExpr>
+                            DerivedExpr<ExprDesc, Rest...>
+                          , auto_domain<
+                                Grammar
+                              , SuperDomain
+                              , DerivedExpr<_, Rest...>
+                            >
                         >;
                 };
 
@@ -199,24 +202,25 @@ namespace boost
                     using type = exprs::basic_expr<expr_desc, Domain>;
                 };
 
-                template<typename Expr, typename Domain>
-                struct as_expr_
-                {
-                    using type = exprs::expr<Expr, Domain>;
-                };
-
+                ////////////////////////////////////////////////////////////////////////////////////
+                // as_expr_
                 template<
-                    template<typename> class DerivedExpr
+                    template<typename...> class DerivedExpr
                   , typename ExprDesc
+                  , typename ...Rest
                   , typename Grammar
                   , typename SuperDomain
                 >
-                struct as_expr_<DerivedExpr<ExprDesc>, auto_domain<Grammar, SuperDomain>>
+                struct as_expr_<DerivedExpr<ExprDesc, Rest...>, auto_domain<Grammar, SuperDomain>>
                 {
                     using type =
                         exprs::expr<
-                            DerivedExpr<ExprDesc>
-                          , auto_domain<Grammar, SuperDomain, DerivedExpr>
+                            DerivedExpr<ExprDesc, Rest...>
+                          , auto_domain<
+                                Grammar
+                              , SuperDomain
+                              , DerivedExpr<_, Rest...>
+                            >
                         >;
                 };
 
@@ -496,13 +500,23 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // struct basic_expr
-                template<template<typename> class DerivedExpr, typename Tag, typename ...Children>
-                struct basic_expr<DerivedExpr<Tag(Children...)>>
+                template<
+                    template<typename...> class DerivedExpr
+                  , typename Tag
+                  , typename ...Children
+                  , typename ...Rest
+                >
+                struct basic_expr<DerivedExpr<Tag(Children...), Rest...>>
                   : basic_expr<Tag(Children...)>
                 {
                     ////////////////////////////////////////////////////////////////////////////////
                     // typedefs
-                    using proto_domain_type = auto_domain<default_grammar, no_super_domain, DerivedExpr>;
+                    using proto_domain_type =
+                        auto_domain<
+                            default_grammar
+                          , no_super_domain
+                          , DerivedExpr<_, Rest...>
+                        >;
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // constructors
@@ -511,8 +525,13 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // struct basic_expr
-                template<template<typename> class DerivedExpr, typename ExprDesc, typename Domain>
-                struct basic_expr<DerivedExpr<ExprDesc>, Domain>
+                template<
+                    template<typename...> class DerivedExpr
+                  , typename ExprDesc
+                  , typename ...Rest
+                  , typename Domain
+                >
+                struct basic_expr<DerivedExpr<ExprDesc, Rest...>, Domain>
                   : basic_expr<ExprDesc>
                 {
                     ////////////////////////////////////////////////////////////////////////////////
@@ -523,10 +542,6 @@ namespace boost
                     // constructors
                     using basic_expr<ExprDesc>::basic_expr;
                 };
-
-                template<typename ExprDesc, typename Domain>
-                struct expr
-                {};
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // struct expr
@@ -552,19 +567,28 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // struct expr
-                template<template<typename> class DerivedExpr, typename ExprDesc, typename Domain>
-                struct expr<DerivedExpr<ExprDesc>, Domain>
+                template<
+                    template<typename...> class DerivedExpr
+                  , typename ExprDesc
+                  , typename ...Rest
+                  , typename Domain
+                >
+                struct expr<DerivedExpr<ExprDesc, Rest...>, Domain>
                   : basic_expr<ExprDesc>
-                  , expr_assign<DerivedExpr<ExprDesc>>
-                  , expr_subscript<DerivedExpr<ExprDesc>>
-                  , expr_function<DerivedExpr<ExprDesc>>
+                  , expr_assign<DerivedExpr<ExprDesc, Rest...>>
+                  , expr_subscript<DerivedExpr<ExprDesc, Rest...>>
+                  , expr_function<DerivedExpr<ExprDesc, Rest...>>
                 {
                     ////////////////////////////////////////////////////////////////////////////////
                     // typedefs
                     using proto_domain_type =
                         typename std::conditional<
                             std::is_same<Domain, default_domain>::value
-                          , auto_domain<default_grammar, no_super_domain, DerivedExpr>
+                          , auto_domain<
+                                default_grammar
+                              , no_super_domain
+                              , DerivedExpr<_, Rest...>
+                            >
                           , Domain
                         >::type;
 
@@ -574,7 +598,7 @@ namespace boost
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // operator=
-                    using expr_assign<DerivedExpr<ExprDesc>>::operator=;
+                    using expr_assign<DerivedExpr<ExprDesc, Rest...>>::operator=;
                 };
             }
 

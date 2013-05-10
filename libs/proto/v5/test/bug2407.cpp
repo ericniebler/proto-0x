@@ -27,7 +27,7 @@ struct g
 struct d
   : proto::domain<d, g>
 {
-    using make_expr = proto::make_custom_expr<e>;
+    using make_expr = proto::make_custom_expr<e<_>>;
 };
 
 template<class E>

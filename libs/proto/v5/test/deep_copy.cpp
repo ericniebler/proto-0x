@@ -79,7 +79,7 @@ struct Domain
 {
     using store_value = proto::utility::by_ref;
     using store_child = proto::utility::by_ref;
-    using make_expr = proto::make_custom_expr<Expr>;
+    using make_expr = proto::make_custom_expr<Expr<proto::_>>;
 };
 
 template<typename ExprDesc>

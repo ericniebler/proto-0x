@@ -32,14 +32,22 @@ namespace boost
         {
             namespace detail
             {
-                ////////////////////////////////////////////////////////////////////////////////////
-                // is_grammatical
-                template<typename ExprDesc, typename Domain
-                  , typename BasicDomain = domains::basic_expr_domain_adaptor<Domain>
-                  , typename Expr = typename result_of::make_expr<ExprDesc, BasicDomain>::type
-                >
+                template<typename Expr>
+                struct is_grammatical_impl
+                  : proto::matches<
+                        Expr
+                      , typename result_of::domain_of<Expr>::type::proto_grammar_type
+                    >
+                {};
+
+                template<typename ExprDesc, typename Domain>
                 struct is_grammatical
-                  : proto::matches<Expr, typename result_of::domain_of<Expr>::type::proto_grammar_type>
+                  : is_grammatical_impl<
+                        typename result_of::make_expr<
+                            ExprDesc
+                          , domains::basic_expr_domain_adaptor<Domain>
+                        >::type
+                    >
                 {};
             }
 

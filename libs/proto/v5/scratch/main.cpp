@@ -25,9 +25,9 @@ struct MapListOf : def<
   )
 > {};
 
-template<typename ExprDesc>
+template<typename ExprDesc, typename Dummy>
 struct map_list_of_expr
-  : expr<map_list_of_expr<ExprDesc>, auto_domain<MapListOf>>
+  : expr<map_list_of_expr<ExprDesc, Dummy>, auto_domain<MapListOf>>
 {
   using expr<map_list_of_expr, auto_domain<MapListOf>>::expr;
 
@@ -41,7 +41,7 @@ struct map_list_of_expr
   }
 };
 
-constexpr map_list_of_expr<terminal(map_list_of_)> map_list_of {};
+constexpr map_list_of_expr<terminal(map_list_of_), int> map_list_of {};
 
 int main()
 {
@@ -124,7 +124,7 @@ struct lambda_expr;
 struct lambda_domain
   : proto::domain<lambda_domain>
 {
-    using make_expr = proto::make_custom_expr<lambda_expr>;
+    using make_expr = proto::make_custom_expr<lambda_expr<_>>;
     using store_child = proto::utility::by_ref;
 };
 

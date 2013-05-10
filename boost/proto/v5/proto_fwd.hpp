@@ -311,13 +311,13 @@ namespace boost
                 template<
                     typename Grammar = default_grammar
                   , typename SuperDomain = no_super_domain
-                  , template<typename...> class CustomExpr = detail::default_expr
+                  , typename CustomExpr = detail::default_expr<_>
                 >
                 struct auto_domain;
 
                 struct default_domain;
 
-                template<template<typename...> class Expr, typename Domain = void>
+                template<typename Expr>
                 struct make_custom_expr;
             }
 
