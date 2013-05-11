@@ -306,29 +306,27 @@ namespace boost
                 template<typename BaseDomain>
                 struct basic_expr_domain_adaptor;
 
-                struct basic_default_domain;
+                template<typename BaseDomain, typename CustomExpr>
+                struct custom_expr_domain_adaptor;
 
-                template<
-                    typename Grammar = default_grammar
-                  , typename SuperDomain = no_super_domain
-                  , typename CustomExpr = detail::default_expr<_>
-                >
-                struct auto_domain;
+                struct basic_default_domain;
 
                 struct default_domain;
 
                 template<typename Expr>
                 struct make_custom_expr;
+
+                using default_make_expr = make_custom_expr<detail::default_expr<_>>;
             }
 
             using domains::no_super_domain;
             using domains::deduce_domain;
             using domains::default_grammar;
             using domains::domain;
-            using domains::auto_domain;
             using domains::default_domain;
             using domains::basic_default_domain;
             using domains::make_custom_expr;
+            using domains::default_make_expr;
 
             namespace functional
             {
@@ -385,20 +383,20 @@ namespace boost
                 template<typename ExprDesc, typename Domain = default_domain>
                 struct expr;
 
-                template<typename ExprDesc, typename Domain>
+                template<typename ExprDesc>
                 struct virtual_member_;
 
                 template<typename Expr>
                 struct virtual_;
 
-                template<typename Tag, typename ...Children>
-                constexpr Tag &tag_of(basic_expr<Tag(Children...)> &that) noexcept;
+                template<typename Tag, typename ...Children, typename Domain>
+                constexpr Tag &tag_of(basic_expr<Tag(Children...), Domain> &that) noexcept;
 
-                template<typename Tag, typename ...Children>
-                constexpr Tag const &tag_of(basic_expr<Tag(Children...)> const &that) noexcept;
+                template<typename Tag, typename ...Children, typename Domain>
+                constexpr Tag const &tag_of(basic_expr<Tag(Children...), Domain> const &that) noexcept;
 
-                template<typename Tag, typename ...Children>
-                constexpr Tag &&tag_of(basic_expr<Tag(Children...)> &&that) noexcept;
+                template<typename Tag, typename ...Children, typename Domain>
+                constexpr Tag &&tag_of(basic_expr<Tag(Children...), Domain> &&that) noexcept;
             }
 
             using exprs::expr_assign;
@@ -413,12 +411,9 @@ namespace boost
             template<typename ExprDesc, typename Domain = default_domain>
             using expr = typename detail::as_expr_<ExprDesc, Domain>::type;
 
-            template<typename This, typename Value, typename Domain = default_domain>
+            template<typename This, typename Value>
             using virtual_member =
-                exprs::virtual_member_<
-                    member(exprs::virtual_<This>, exprs::expr<terminal(Value)>)
-                  , Domain
-                >;
+                exprs::virtual_member_<member(exprs::virtual_<This>, exprs::expr<terminal(Value)>)>;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // stuff for actions here
@@ -713,7 +708,7 @@ namespace boost
             template<typename T>
             using literal = exprs::terminal<T>;
 
-            template<template<typename...> class Expr, typename Domain = void>
+            template<typename Expr>
             struct custom;
 
             namespace functional

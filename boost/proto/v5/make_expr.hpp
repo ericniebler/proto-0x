@@ -31,10 +31,12 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // get_domain
                 template<typename T>
-                typename T::proto_domain_type get_domain(int);
+                typename T::proto_domain_type get_domain(T const *);
 
-                template<typename T>
-                default_domain get_domain(long);
+                template<typename A, typename B>
+                typename A::proto_domain_type get_domain(virtual_member<A, B> const *);
+
+                default_domain get_domain(void const *);
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // get_common_domain_impl
@@ -48,7 +50,7 @@ namespace boost
                 struct get_common_domain_impl<deduce_domain, T...>
                 {
                     using type =
-                        typename common_domain<decltype(detail::get_domain<T>(1))...>::type;
+                        typename common_domain<decltype(detail::get_domain((T const *)0))...>::type;
                 };
 
                 template<typename ...T>
@@ -56,7 +58,7 @@ namespace boost
                 {
                     using type =
                         domains::safe_domain_adaptor<
-                            typename common_domain<decltype(detail::get_domain<T>(1))...>::type
+                            typename common_domain<decltype(detail::get_domain((T const *)0))...>::type
                         >;
                 };
 
@@ -65,7 +67,7 @@ namespace boost
                 {
                     using type =
                         domains::basic_expr_domain_adaptor<
-                            typename common_domain<decltype(detail::get_domain<T>(1))...>::type
+                            typename common_domain<decltype(detail::get_domain((T const *)0))...>::type
                         >;
                 };
 
@@ -97,18 +99,18 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // detail::normalize_expr
-                template<typename This, typename Value, typename Domain>
-                inline constexpr auto normalize_expr(virtual_member<This, Value, Domain> && e)
+                template<typename This, typename Value>
+                inline constexpr auto normalize_expr(virtual_member<This, Value> && e)
                 BOOST_PROTO_AUTO_RETURN(
                     // Must build a real binary expression from virtual members before the left hand
                     // side (actually the member's enclosing object) dies and we lose it forever.
-                    typename Domain::make_expr()(
+                    typename result_of::domain_of<virtual_member<This, Value>>::type::make_expr()(
                         member()
                       , utility::by_val()(
-                            proto::v5::child<0>(static_cast<virtual_member<This, Value, Domain> &&>(e))
+                            proto::v5::child<0>(static_cast<virtual_member<This, Value> &&>(e))
                         )
                       , utility::by_val()(
-                            proto::v5::child<1>(static_cast<virtual_member<This, Value, Domain> &&>(e))
+                            proto::v5::child<1>(static_cast<virtual_member<This, Value> &&>(e))
                         )
                     )
                 )

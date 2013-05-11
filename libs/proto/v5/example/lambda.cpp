@@ -57,33 +57,26 @@ BOOST_PROTO_AUTO_RETURN(
 )
 
 template<typename ExprDesc>
-struct lambda_expr;
-
-struct lambda_domain
-  : proto::domain<lambda_domain>
-{
-    using make_expr = proto::make_custom_expr<lambda_expr<_>>;
-};
-
-template<typename ExprDesc>
 struct lambda_expr
-  : proto::basic_expr<ExprDesc>
+  : proto::basic_expr<lambda_expr<ExprDesc>>
   , proto::expr_assign<lambda_expr<ExprDesc>>
   , proto::expr_subscript<lambda_expr<ExprDesc>>
 {
-    using proto_domain_type = lambda_domain;
+    using proto::basic_expr<lambda_expr>::basic_expr;
     using proto::expr_assign<lambda_expr>::operator=;
-    using proto::basic_expr<ExprDesc>::basic_expr;
 
     template<typename ...T>
     auto operator()(T &&... t) const
     BOOST_PROTO_AUTO_RETURN(
-        lambda_eval_(proto::utility::make_indices<sizeof...(T)>(), *this, std::forward<T>(t)...)
+        lambda_eval_(
+            proto::utility::make_indices<sizeof...(T)>()
+          , *this, std::forward<T>(t)...
+        )
     )
 };
 
 template<typename T>
-using lambda_var = proto::custom<lambda_expr>::terminal<T>;
+using lambda_var = proto::custom<lambda_expr<_>>::terminal<T>;
 
 namespace
 {

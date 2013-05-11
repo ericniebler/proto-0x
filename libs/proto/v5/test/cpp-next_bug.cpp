@@ -29,7 +29,9 @@ namespace linear_algebra
     // A type used as a domain for linear algebra expressions
     struct linear_algebra_domain
       : proto::domain<linear_algebra_domain>
-    {};
+    {
+        using make_expr = proto::make_custom_expr<proto::expr<_, linear_algebra_domain>>;
+    };
 
     // Define all the operator overloads for combining std::vectors
     #define BOOST_PROTO_OPERATOR_TRAITS (is_std_vector, linear_algebra_domain)

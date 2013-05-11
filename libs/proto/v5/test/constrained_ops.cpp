@@ -15,8 +15,6 @@ using namespace boost;
 
 using term = proto::literal<int>;
 
-struct equation;
-
 struct addition:
     proto::def<
         proto::match(

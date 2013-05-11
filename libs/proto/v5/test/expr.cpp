@@ -42,7 +42,7 @@ struct MyExpr
     using proto::expr_assign<MyExpr>::operator=;
 };
 
-using My = proto::custom<MyExpr>;
+using My = proto::custom<MyExpr<_>>;
 static_assert(std::is_trivial<My::terminal<int>>::value, "not is trivial!");
 
 void test_basic_expr()

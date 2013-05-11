@@ -18,29 +18,19 @@ struct foo_tag {};
 struct bar_tag {};
 
 template<typename ExprDesc>
-struct MyExpr;
-
-struct MyDomain
-  : proto::domain<MyDomain>
-{
-    using make_expr = proto::make_custom_expr<MyExpr<_>>;
-};
-
-template<typename ExprDesc>
 struct MyExpr
-  : proto::basic_expr<ExprDesc>
+  : proto::basic_expr<MyExpr<ExprDesc>>
 {
-    using proto_domain_type = MyDomain;
-    using proto::basic_expr<ExprDesc>::basic_expr;
+    using proto::basic_expr<MyExpr<ExprDesc>>::basic_expr;
 
     BOOST_PROTO_EXTENDS_MEMBERS(
-        MyExpr, MyDomain,
+        MyExpr,
         ((foo_tag, foo))
         ((bar_tag, bar))
     );
 };
 
-using My = proto::custom<MyExpr>;
+using My = proto::custom<MyExpr<_>>;
 
 void test_virtual_members()
 {

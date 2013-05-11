@@ -97,7 +97,10 @@ namespace boost
                 struct domain
                   : domain_base
                 {
-                    using proto_domain_type = Domain;
+                    using proto_domain_type =
+                        typename std::conditional<
+                            std::is_same<Domain, _>::value, domain, Domain
+                        >::type;
                     using proto_grammar_type = Grammar;
                     using proto_super_domain_type = SuperDomain;
 
@@ -110,8 +113,8 @@ namespace boost
                     using store_child = typename SuperDomain::store_child;
 
                     // Define this in your derived domain class to control how expressions are
-                    // assembled.
-                    using make_expr = make_custom_expr<exprs::expr<_, Domain>>;
+                    // assembled or leave it as-is to let proto figure it out.
+                    using make_expr = default_make_expr;
 
                     // Define this in your derived domain class to /really/ control how expressions are
                     // assembled. But really, you shouldn't be messing with this. Mess with make_expr
@@ -144,6 +147,19 @@ namespace boost
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
+                // basic_expr_domain_adaptor
+                template<typename BaseDomain, template<typename...> class CustomExpr, typename ...Rest>
+                struct custom_expr_domain_adaptor<BaseDomain, CustomExpr<_, Rest...>>
+                  : domain<
+                        custom_expr_domain_adaptor<BaseDomain, CustomExpr<_, Rest...>>
+                      , typename BaseDomain::proto_grammar_type
+                      , BaseDomain
+                    >
+                {
+                    using make_expr = make_custom_expr<CustomExpr<_, Rest...>>;
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
                 // default_grammar
                 struct default_grammar
                   : detail::as_grammar_<not_(matches_(address_of(_)))>
@@ -153,7 +169,9 @@ namespace boost
                 // default_domain
                 struct default_domain
                   : domain<default_domain>
-                {};
+                {
+                    using make_expr = make_custom_expr<exprs::expr<_, default_domain>>;
+                };
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // basic_default_domain
@@ -161,24 +179,6 @@ namespace boost
                   : domain<basic_default_domain, default_grammar, default_domain>
                 {
                     using make_expr = make_custom_expr<exprs::basic_expr<_, basic_default_domain>>;
-                };
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // auto_domain
-                template<
-                    typename Grammar
-                  , typename SuperDomain
-                  , template<typename...> class CustomExpr
-                  , typename ...Rest
-                >
-                struct auto_domain<Grammar, SuperDomain, CustomExpr<_, Rest...>>
-                  : domain<
-                        auto_domain<Grammar, SuperDomain, CustomExpr<_, Rest...>>
-                      , Grammar
-                      , SuperDomain
-                    >
-                {
-                    using make_expr = make_custom_expr<CustomExpr<_, Rest...>>;
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -206,19 +206,19 @@ namespace boost
                 template<typename Expr>
                 struct domain_of
                 {
-                    using type = decltype(detail::get_domain<Expr>(1));
+                    using type = decltype(detail::get_domain((Expr const *)0));
                 };
 
                 template<typename Expr>
                 struct domain_of<Expr &>
                 {
-                    using type = decltype(detail::get_domain<Expr>(1));
+                    using type = decltype(detail::get_domain((Expr const *)0));
                 };
 
                 template<typename Expr>
                 struct domain_of<Expr &&>
                 {
-                    using type = decltype(detail::get_domain<Expr>(1));
+                    using type = decltype(detail::get_domain((Expr const *)0));
                 };
             }
 

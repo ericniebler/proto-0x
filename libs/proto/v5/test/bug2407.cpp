@@ -12,9 +12,6 @@ namespace mpl = boost::mpl;
 namespace proto = boost::proto;
 using proto::_;
 
-template<class E>
-struct e;
-
 struct g
   : proto::def<
         proto::match(
@@ -26,17 +23,14 @@ struct g
 
 struct d
   : proto::domain<d, g>
-{
-    using make_expr = proto::make_custom_expr<e<_>>;
-};
+{};
 
 template<class E>
 struct e
-  : proto::basic_expr<E>
+  : proto::basic_expr<e<E>, d>
 {
     static_assert(proto::matches<proto::basic_expr<E>, g>::value, "");
-    using proto_domain_type = d;
-    using proto::basic_expr<E>::basic_expr;
+    using proto::basic_expr<e, d>::basic_expr;
 };
 
 e<proto::terminal(int)> i;

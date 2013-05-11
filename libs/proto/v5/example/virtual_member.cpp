@@ -69,10 +69,6 @@ namespace mini_lambda
     struct grammar;
     struct eval_if_else;
 
-    // Forward declaration for the mini-lambda expression wrapper
-    template<class ExprDesc>
-    struct expression;
-
     // The grammar for mini-lambda expressions with actions for
     // evaluating the lambda expression.
     struct grammar
@@ -136,21 +132,13 @@ namespace mini_lambda
         }
     };
 
-    // Define the mini-lambda domain, in which all expressions are
-    // wrapped in mini_lambda::expression.
-    struct domain
-      : proto::domain<domain>
-    {
-        using make_expr = proto::make_custom_expr<expression<_>>;
-    };
-
     // Here is the mini-lambda expression wrapper. It serves two purposes:
     // 1) To define operator() overloads that evaluate the lambda expression, and
     // 2) To define virtual data members like "else_" so that we can write
     //    expressions like "if_(X)[Y].else_[Z]".
     template<class ExprDesc>
     struct expression
-      : proto::basic_expr<ExprDesc>
+      : proto::basic_expr<expression<ExprDesc>>
       , proto::expr_assign<expression<ExprDesc>>
       , proto::expr_subscript<expression<ExprDesc>>
     {
@@ -162,8 +150,7 @@ namespace mini_lambda
         )
 
     public:
-        using proto_domain_type = domain;
-        using proto::basic_expr<ExprDesc>::basic_expr;
+        using proto::basic_expr<expression<ExprDesc>>::basic_expr;
         using proto::expr_assign<expression>::operator=;
 
         // Use BOOST_PROTO_EXTENDS_MEMBERS() to define "virtual"
@@ -171,7 +158,7 @@ namespace mini_lambda
         // domain will have. They can be used to create expressions
         // like "if_(x)[y].else_[z]" and "do_[y].while_(z)".
         BOOST_PROTO_EXTENDS_MEMBERS(
-            expression, domain,
+            expression,
             ((keyword::else_,   else_))
             ((keyword::while_,  while_))
             ((keyword::catch_,  catch_))
@@ -185,7 +172,9 @@ namespace mini_lambda
     };
 
     template<typename T>
-    using var = proto::custom<expression>::terminal<T>;
+    using var = proto::custom<expression<_>>::terminal<T>;
+
+    using domain = proto::result_of::domain_of<var<placeholder_c<0>>>::type;
 
     namespace placeholders
     {

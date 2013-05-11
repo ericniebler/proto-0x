@@ -57,9 +57,9 @@ namespace boost
                 // We use the nasty, old smart-bool idiom below instead of an explicit converion
                 // to bool because an explicit boolean conversion doesn't satisfy the requirements
                 // of the EqualityComparible concept.
-                template<typename T, typename U>
+                template<typename T, typename U, typename Domain>
                 struct expr_boolean_convertible<
-                    exprs::basic_expr<equal_to(T, U)>
+                    exprs::basic_expr<equal_to(T, U), Domain>
                   , typename std::enable_if<are_equality_comparible<T, U>::value>::type
                 >
                 {
@@ -71,15 +71,15 @@ namespace boost
                     inline operator unspecified_bool_type() const
                     BOOST_PROTO_RETURN(
                         exprs::access::proto_equal_to(
-                            proto::v5::child<0>(static_cast<exprs::basic_expr<equal_to(T, U)> const &>(*this))
-                          , proto::v5::child<1>(static_cast<exprs::basic_expr<equal_to(T, U)> const &>(*this))
+                            proto::v5::child<0>(static_cast<exprs::basic_expr<equal_to(T, U), Domain> const &>(*this))
+                          , proto::v5::child<1>(static_cast<exprs::basic_expr<equal_to(T, U), Domain> const &>(*this))
                         ) ? &proto_smart_bool::member : 0
                     )
                 };
 
-                template<typename T, typename U>
+                template<typename T, typename U, typename Domain>
                 struct expr_boolean_convertible<
-                    exprs::basic_expr<not_equal_to(T, U)>
+                    exprs::basic_expr<not_equal_to(T, U), Domain>
                   , typename std::enable_if<are_equality_comparible<T, U>::value>::type
                 >
                 {
@@ -91,15 +91,15 @@ namespace boost
                     inline operator unspecified_bool_type() const
                     BOOST_PROTO_RETURN(
                         exprs::access::proto_equal_to(
-                            proto::v5::child<0>(static_cast<exprs::basic_expr<not_equal_to(T, U)> const &>(*this))
-                          , proto::v5::child<1>(static_cast<exprs::basic_expr<not_equal_to(T, U)> const &>(*this))
+                            proto::v5::child<0>(static_cast<exprs::basic_expr<not_equal_to(T, U), Domain> const &>(*this))
+                          , proto::v5::child<1>(static_cast<exprs::basic_expr<not_equal_to(T, U), Domain> const &>(*this))
                         ) ? 0 : &proto_smart_bool::member
                     )
                 };
 
-                template<typename T>
+                template<typename T, typename Domain>
                 struct expr_boolean_convertible<
-                    exprs::basic_expr<logical_not(T)>
+                    exprs::basic_expr<logical_not(T), Domain>
                   , typename std::enable_if<std::is_convertible<T, bool>::value>::type
                 >
                 {
@@ -110,14 +110,14 @@ namespace boost
                 public:
                     inline operator unspecified_bool_type() const
                     BOOST_PROTO_RETURN(
-                        proto::v5::child<0>(static_cast<exprs::basic_expr<logical_not(T)> const &>(*this))
+                        proto::v5::child<0>(static_cast<exprs::basic_expr<logical_not(T), Domain> const &>(*this))
                         ? 0 : &proto_smart_bool::member
                     )
                 };
 
-                template<typename T, typename U>
+                template<typename T, typename U, typename Domain>
                 struct expr_boolean_convertible<
-                    exprs::basic_expr<logical_and(T, U)>
+                    exprs::basic_expr<logical_and(T, U), Domain>
                   , typename std::enable_if<
                         std::is_convertible<T, bool>::value && std::is_convertible<U, bool>::value
                     >::type
@@ -130,15 +130,15 @@ namespace boost
                 public:
                     inline operator unspecified_bool_type() const
                     BOOST_PROTO_RETURN(
-                        static_cast<bool>(proto::v5::child<0>(static_cast<exprs::basic_expr<logical_and(T, U)> const &>(*this))) &&
-                        static_cast<bool>(proto::v5::child<1>(static_cast<exprs::basic_expr<logical_and(T, U)> const &>(*this)))
+                        static_cast<bool>(proto::v5::child<0>(static_cast<exprs::basic_expr<logical_and(T, U), Domain> const &>(*this))) &&
+                        static_cast<bool>(proto::v5::child<1>(static_cast<exprs::basic_expr<logical_and(T, U), Domain> const &>(*this)))
                         ? &proto_smart_bool::member : 0
                     )
                 };
 
-                template<typename T, typename U>
+                template<typename T, typename U, typename Domain>
                 struct expr_boolean_convertible<
-                    exprs::basic_expr<logical_or(T, U)>
+                    exprs::basic_expr<logical_or(T, U), Domain>
                   , typename std::enable_if<
                         std::is_convertible<T, bool>::value && std::is_convertible<U, bool>::value
                     >::type
@@ -151,8 +151,8 @@ namespace boost
                 public:
                     inline operator unspecified_bool_type() const
                     BOOST_PROTO_RETURN(
-                        static_cast<bool>(proto::v5::child<0>(static_cast<exprs::basic_expr<logical_or(T, U)> const &>(*this))) ||
-                        static_cast<bool>(proto::v5::child<1>(static_cast<exprs::basic_expr<logical_or(T, U)> const &>(*this)))
+                        static_cast<bool>(proto::v5::child<0>(static_cast<exprs::basic_expr<logical_or(T, U), Domain> const &>(*this))) ||
+                        static_cast<bool>(proto::v5::child<1>(static_cast<exprs::basic_expr<logical_or(T, U), Domain> const &>(*this)))
                         ? &proto_smart_bool::member : 0
                     )
                 };
@@ -175,24 +175,10 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // as_basic_expr_
-                template<
-                    template<typename...> class DerivedExpr
-                  , typename ExprDesc
-                  , typename ...Rest
-                  , typename Grammar
-                  , typename SuperDomain
-                >
-                struct as_basic_expr_<DerivedExpr<ExprDesc, Rest...>, auto_domain<Grammar, SuperDomain>>
+                template<typename Expr , typename Domain>
+                struct as_basic_expr_
                 {
-                    using type =
-                        exprs::basic_expr<
-                            DerivedExpr<ExprDesc, Rest...>
-                          , auto_domain<
-                                Grammar
-                              , SuperDomain
-                              , DerivedExpr<_, Rest...>
-                            >
-                        >;
+                    using type = exprs::basic_expr<Expr, Domain>;
                 };
 
                 template<typename Tag, typename ...Children, typename Domain>
@@ -204,24 +190,10 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // as_expr_
-                template<
-                    template<typename...> class DerivedExpr
-                  , typename ExprDesc
-                  , typename ...Rest
-                  , typename Grammar
-                  , typename SuperDomain
-                >
-                struct as_expr_<DerivedExpr<ExprDesc, Rest...>, auto_domain<Grammar, SuperDomain>>
+                template<typename Expr, typename Domain>
+                struct as_expr_
                 {
-                    using type =
-                        exprs::expr<
-                            DerivedExpr<ExprDesc, Rest...>
-                          , auto_domain<
-                                Grammar
-                              , SuperDomain
-                              , DerivedExpr<_, Rest...>
-                            >
-                        >;
+                    using type = exprs::expr<Expr, Domain>;
                 };
 
                 template<typename Tag, typename ...Children, typename Domain>
@@ -229,6 +201,56 @@ namespace boost
                 {
                     using expr_desc = Tag(typename as_child_<Children, Domain>::type...);
                     using type = exprs::expr<expr_desc, Domain>;
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // as_expr_
+                template<typename Expr, typename Domain, typename MakeExpr = typename Domain::make_expr>
+                struct make_domain;
+
+                template<typename Domain, typename MakeExpr>
+                struct make_domain<exprs::basic_expr<_, Domain>, Domain, MakeExpr>
+                {
+                    using type = Domain;
+                };
+
+                template<typename Domain>
+                struct make_domain<exprs::basic_expr<_, Domain>, Domain, default_make_expr>
+                {
+                    using type = Domain;
+                };
+
+                template<typename Domain, typename MakeExpr>
+                struct make_domain<exprs::expr<_, Domain>, Domain, MakeExpr>
+                {
+                    using type = Domain;
+                };
+
+                template<typename Domain>
+                struct make_domain<exprs::expr<_, Domain>, Domain, default_make_expr>
+                {
+                    using type = Domain;
+                };
+
+                template<
+                    template<typename...> class CustomExpr
+                  , typename ...Rest
+                  , typename Domain
+                  , typename MakeExpr
+                >
+                struct make_domain<CustomExpr<_, Rest...>, Domain, MakeExpr>
+                {
+                    using type = Domain;
+                };
+
+                template<
+                    template<typename...> class CustomExpr
+                  , typename ...Rest
+                  , typename Domain
+                >
+                struct make_domain<CustomExpr<_, Rest...>, Domain, default_make_expr>
+                {
+                    using type = domains::custom_expr_domain_adaptor<Domain, CustomExpr<_, Rest...>>;
                 };
             }
 
@@ -351,10 +373,10 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // struct basic_expr
-                template<typename Tag, typename ...Children>
-                struct basic_expr<Tag(Children...)>
+                template<typename Tag, typename ...Children, typename Domain>
+                struct basic_expr<Tag(Children...), Domain>
                   : expr_base
-                  , detail::expr_boolean_convertible<basic_expr<Tag(Children...)>>
+                  , detail::expr_boolean_convertible<basic_expr<Tag(Children...), Domain>>
                 {
                 private:
                     friend struct access;
@@ -367,13 +389,6 @@ namespace boost
                     tag_and_children_type tag_and_children_;
 
                 public:
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // Check constraints
-                    static_assert(
-                        !detail::is_terminal_tag<Tag>::value || sizeof...(Children) <= 1
-                      , "terminals can have only 1 value"
-                    );
-
                     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(basic_expr);
 
                     ////////////////////////////////////////////////////////////////////////////////
@@ -382,13 +397,30 @@ namespace boost
                     using proto_is_terminal_type        = typename proto_tag_type::proto_is_terminal_type;
                     using proto_children_type           = exprs::children<Children...>;
                     using proto_size                    = typename proto_children_type::proto_size;
-                    using proto_domain_type             = basic_default_domain;
+                    using proto_domain_type             = typename detail::make_domain<
+                                                              basic_expr<_, Domain>, Domain
+                                                          >::type;
                     using proto_expr_descriptor_type    = Tag(Children...);
                     using proto_arity                   =
                         std::integral_constant<
                             std::size_t
                           , detail::is_terminal_tag<Tag>::value ? 0 : sizeof...(Children)
                         >;
+
+                    ////////////////////////////////////////////////////////////////////////////////
+                    // Check constraints
+                    static_assert(
+                        !detail::is_terminal_tag<Tag>::value || sizeof...(Children) <= 1
+                      , "terminals can have only 1 value"
+                    );
+
+                    static_assert(
+                        !std::is_same<typename proto_domain_type::make_expr, default_make_expr>::value
+                      , "You specified a custom domain but didn't tell Proto how to make new "
+                        "expressions. If you are defining a custom expression type, inherit "
+                        "from proto::expr< YourExprTemplate<ExprDesc>, YourDomain >. Or, "
+                        "define a make_expr function object within YourDomain."
+                    );
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // constructors
@@ -485,13 +517,20 @@ namespace boost
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // struct basic_expr
-                template<typename Tag, typename ...Children, typename Domain>
-                struct basic_expr<Tag(Children...), Domain>
+                template<
+                    template<typename...> class DerivedExpr
+                  , typename Tag
+                  , typename ...Children
+                  , typename ...Rest
+                  , typename Domain
+                >
+                struct basic_expr<DerivedExpr<Tag(Children...), Rest...>, Domain>
                   : basic_expr<Tag(Children...)>
                 {
                     ////////////////////////////////////////////////////////////////////////////////
                     // typedefs
-                    using proto_domain_type = Domain;
+                    using proto_domain_type =
+                        typename detail::make_domain<DerivedExpr<_, Rest...>, Domain>::type;
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // constructors
@@ -512,35 +551,11 @@ namespace boost
                     ////////////////////////////////////////////////////////////////////////////////
                     // typedefs
                     using proto_domain_type =
-                        auto_domain<
-                            default_grammar
-                          , no_super_domain
-                          , DerivedExpr<_, Rest...>
-                        >;
+                        domains::custom_expr_domain_adaptor<basic_default_domain, DerivedExpr<_, Rest...>>;
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // constructors
                     using basic_expr<Tag(Children...)>::basic_expr;
-                };
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // struct basic_expr
-                template<
-                    template<typename...> class DerivedExpr
-                  , typename ExprDesc
-                  , typename ...Rest
-                  , typename Domain
-                >
-                struct basic_expr<DerivedExpr<ExprDesc, Rest...>, Domain>
-                  : basic_expr<ExprDesc>
-                {
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // typedefs
-                    using proto_domain_type = Domain;
-
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // constructors
-                    using basic_expr<ExprDesc>::basic_expr;
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -554,7 +569,18 @@ namespace boost
                 {
                     ////////////////////////////////////////////////////////////////////////////////
                     // typedefs
-                    using proto_domain_type = Domain;
+                    using proto_domain_type =
+                        typename detail::make_domain<expr<_, Domain>, Domain>::type;
+
+                    ////////////////////////////////////////////////////////////////////////////////
+                    // Check constraints
+                    static_assert(
+                        !std::is_same<typename proto_domain_type::make_expr, default_make_expr>::value
+                      , "You specified a custom domain but didn't tell Proto how to make new "
+                        "expressions. If you are defining a custom expression type, inherit "
+                        "from proto::expr< YourExprTemplate<ExprDesc>, YourDomain >. Or, "
+                        "define a make_expr function object within YourDomain."
+                    );
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // constructors
@@ -569,36 +595,57 @@ namespace boost
                 // struct expr
                 template<
                     template<typename...> class DerivedExpr
-                  , typename ExprDesc
+                  , typename Tag
+                  , typename ...Children
                   , typename ...Rest
                   , typename Domain
                 >
-                struct expr<DerivedExpr<ExprDesc, Rest...>, Domain>
-                  : basic_expr<ExprDesc>
-                  , expr_assign<DerivedExpr<ExprDesc, Rest...>>
-                  , expr_subscript<DerivedExpr<ExprDesc, Rest...>>
-                  , expr_function<DerivedExpr<ExprDesc, Rest...>>
+                struct expr<DerivedExpr<Tag(Children...), Rest...>, Domain>
+                  : basic_expr<Tag(Children...)>
+                  , expr_assign<DerivedExpr<Tag(Children...), Rest...>>
+                  , expr_subscript<DerivedExpr<Tag(Children...), Rest...>>
+                  , expr_function<DerivedExpr<Tag(Children...), Rest...>>
                 {
                     ////////////////////////////////////////////////////////////////////////////////
                     // typedefs
                     using proto_domain_type =
-                        typename std::conditional<
-                            std::is_same<Domain, default_domain>::value
-                          , auto_domain<
-                                default_grammar
-                              , no_super_domain
-                              , DerivedExpr<_, Rest...>
-                            >
-                          , Domain
-                        >::type;
+                        typename detail::make_domain<DerivedExpr<_, Rest...> , Domain>::type;
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // constructors
-                    using basic_expr<ExprDesc>::basic_expr;
+                    using basic_expr<Tag(Children...)>::basic_expr;
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // operator=
-                    using expr_assign<DerivedExpr<ExprDesc, Rest...>>::operator=;
+                    using expr_assign<DerivedExpr<Tag(Children...), Rest...>>::operator=;
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // struct expr
+                template<
+                    template<typename...> class DerivedExpr
+                  , typename Tag
+                  , typename ...Children
+                  , typename ...Rest
+                >
+                struct expr<DerivedExpr<Tag(Children...), Rest...>>
+                  : basic_expr<Tag(Children...)>
+                  , expr_assign<DerivedExpr<Tag(Children...), Rest...>>
+                  , expr_subscript<DerivedExpr<Tag(Children...), Rest...>>
+                  , expr_function<DerivedExpr<Tag(Children...), Rest...>>
+                {
+                    ////////////////////////////////////////////////////////////////////////////////
+                    // typedefs
+                    using proto_domain_type =
+                        domains::custom_expr_domain_adaptor<default_domain, DerivedExpr<_, Rest...>>;
+
+                    ////////////////////////////////////////////////////////////////////////////////
+                    // constructors
+                    using basic_expr<Tag(Children...)>::basic_expr;
+
+                    ////////////////////////////////////////////////////////////////////////////////
+                    // operator=
+                    using expr_assign<DerivedExpr<Tag(Children...), Rest...>>::operator=;
                 };
             }
 

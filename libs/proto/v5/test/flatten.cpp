@@ -24,21 +24,21 @@ void write(std::ostream &sout, proto::bitwise_or)
     sout << "|";
 }
 
-template<typename T0>
-void write(std::ostream &sout, proto::exprs::basic_expr<proto::terminal(T0)> const &op)
+template<typename T0, typename D>
+void write(std::ostream &sout, proto::exprs::basic_expr<proto::terminal(T0), D> const &op)
 {
     sout << proto::value(op);
 }
 
-template<typename Tag, typename T0>
-void write(std::ostream &sout, proto::exprs::basic_expr<Tag(T0)> const &op)
+template<typename Tag, typename T0, typename D>
+void write(std::ostream &sout, proto::exprs::basic_expr<Tag(T0), D> const &op)
 {
     write(sout, Tag());
     write(proto::child(op));
 }
 
-template<typename Tag, typename T0, typename T1>
-void write(std::ostream &sout, proto::exprs::basic_expr<Tag(T0, T1)> const &op)
+template<typename Tag, typename T0, typename T1, typename D>
+void write(std::ostream &sout, proto::exprs::basic_expr<Tag(T0, T1), D> const &op)
 {
     write(sout, proto::left(op));
     write(sout, Tag());
@@ -117,26 +117,15 @@ void test_expr()
 
 ////////////////////////////////////////////////////////////////////////
 // Test that expression extensions are also valid fusion sequences
-
-template<typename ExprDesc>
-struct My;
-
-struct MyDomain
-  : proto::domain<MyDomain>
-{
-    using make_expr = proto::make_custom_expr<My<_>>;
-};
-
 template<typename ExprDesc>
 struct My
-  : proto::basic_expr<ExprDesc>
+  : proto::basic_expr<My<ExprDesc>>
   , proto::expr_function<My<ExprDesc>>
 {
-    using proto_domain_type = MyDomain;
-    using proto::basic_expr<ExprDesc>::basic_expr;
+    using proto::basic_expr<My<ExprDesc>>::basic_expr;
 };
 
-using my = proto::custom<My>;
+using my = proto::custom<My<_>>;
 
 void test_extension()
 {

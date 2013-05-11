@@ -17,21 +17,11 @@ namespace fusion = boost::fusion;
 using proto::_;
 
 template<class E>
-struct my_expr;
-
-struct my_domain
-  : proto::domain<my_domain>
-{
-    using make_expr = proto::make_custom_expr<my_expr<_>>;
-};
-
-template<class E>
 struct my_expr
-  : proto::expr<E>
+  : proto::expr<my_expr<E>>
 {
-    using proto_domain_type = my_domain;
     using tag = fusion::fusion_sequence_tag;
-    using proto::expr<E>::expr;
+    using proto::expr<my_expr<E>>::expr;
 };
 
 // Test that we can call mpl algorithms on proto expression types, and get proto expression types back

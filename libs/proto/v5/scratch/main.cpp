@@ -27,9 +27,9 @@ struct MapListOf : def<
 
 template<typename ExprDesc, typename Dummy>
 struct map_list_of_expr
-  : expr<map_list_of_expr<ExprDesc, Dummy>, auto_domain<MapListOf>>
+  : expr<map_list_of_expr<ExprDesc, Dummy>, domain<_, MapListOf>>
 {
-  using expr<map_list_of_expr, auto_domain<MapListOf>>::expr;
+  using expr<map_list_of_expr, domain<_, MapListOf>>::expr;
 
   template<class K, class V, class C, class A>
   operator std::map<K,V,C,A>() const

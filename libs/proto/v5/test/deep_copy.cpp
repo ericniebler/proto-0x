@@ -84,16 +84,15 @@ struct Domain
 
 template<typename ExprDesc>
 struct Expr
-  : proto::basic_expr<ExprDesc>
+  : proto::basic_expr<ExprDesc, Domain>
 {
-    using proto_domain_type = Domain;
-    using proto::basic_expr<ExprDesc>::basic_expr;
+    using proto::basic_expr<ExprDesc, Domain>::basic_expr;
 };
 
 void test_custom_expr()
 {
     using namespace proto;
-    using My = custom<Expr>;
+    using My = custom<Expr<_>>;
 
     int i = 42;
     My::terminal<int &> t1 {i};
