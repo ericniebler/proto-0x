@@ -9,13 +9,7 @@
 #ifndef BOOST_PROTO_V5_CUSTOM_HPP_INCLUDED
 #define BOOST_PROTO_V5_CUSTOM_HPP_INCLUDED
 
-#include <utility>
-#include <boost/mpl/bool.hpp>
 #include <boost/proto/v5/proto_fwd.hpp>
-#include <boost/proto/v5/children.hpp>
-#include <boost/proto/v5/domain.hpp>
-#include <boost/proto/v5/tags.hpp>
-#include <boost/proto/v5/utility.hpp>
 
 namespace boost
 {

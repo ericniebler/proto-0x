@@ -25,11 +25,11 @@ struct MapListOf : def<
   )
 > {};
 
-template<typename ExprDesc, typename Dummy>
+template<typename ExprDesc>
 struct map_list_of_expr
-  : expr<map_list_of_expr<ExprDesc, Dummy>, domain<_, MapListOf>>
+  : expr<map_list_of_expr<ExprDesc>, domain<_, MapListOf>>
 {
-  using expr<map_list_of_expr, domain<_, MapListOf>>::expr;
+  using expr<map_list_of_expr<ExprDesc>, domain<_, MapListOf>>::expr;
 
   template<class K, class V, class C, class A>
   operator std::map<K,V,C,A>() const
@@ -41,7 +41,7 @@ struct map_list_of_expr
   }
 };
 
-constexpr map_list_of_expr<terminal(map_list_of_), int> map_list_of {};
+constexpr map_list_of_expr<terminal(map_list_of_)> map_list_of {};
 
 int main()
 {
@@ -55,10 +55,6 @@ int main()
   void done();
   done();
 }
-
-
-
-
 
 
 /*

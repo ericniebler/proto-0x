@@ -158,53 +158,7 @@ namespace boost
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // as_child_
-                template<typename Expr, typename Domain>
-                struct as_child_
-                {
-                    using type = Expr;
-                };
-
-                template<typename Tag, typename ...Children, typename Domain>
-                struct as_child_<Tag(*)(Children...), Domain>
-                  : result_of::make_expr<
-                        Tag(typename as_child_<Children, Domain>::type...)
-                      , Domain
-                    >
-                {};
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // as_basic_expr_
-                template<typename Expr , typename Domain>
-                struct as_basic_expr_
-                {
-                    using type = exprs::basic_expr<Expr, Domain>;
-                };
-
-                template<typename Tag, typename ...Children, typename Domain>
-                struct as_basic_expr_<Tag(Children...), Domain>
-                {
-                    using expr_desc = Tag(typename as_child_<Children, Domain>::type...);
-                    using type = exprs::basic_expr<expr_desc, Domain>;
-                };
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // as_expr_
-                template<typename Expr, typename Domain>
-                struct as_expr_
-                {
-                    using type = exprs::expr<Expr, Domain>;
-                };
-
-                template<typename Tag, typename ...Children, typename Domain>
-                struct as_expr_<Tag(Children...), Domain>
-                {
-                    using expr_desc = Tag(typename as_child_<Children, Domain>::type...);
-                    using type = exprs::expr<expr_desc, Domain>;
-                };
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // as_expr_
+                // make_domain
                 template<typename Expr, typename Domain, typename MakeExpr = typename Domain::make_expr>
                 struct make_domain;
 
@@ -250,7 +204,123 @@ namespace boost
                 >
                 struct make_domain<CustomExpr<_, Rest...>, Domain, default_make_expr>
                 {
-                    using type = domains::custom_expr_domain_adaptor<Domain, CustomExpr<_, Rest...>>;
+                    struct type
+                      : domains::custom_expr_domain_adaptor<Domain, CustomExpr<_, Rest...>>
+                    {};
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // as_child_
+                template<typename Expr, typename Domain>
+                struct as_child_
+                {
+                    using type = Expr;
+                };
+
+                template<typename Tag, typename ...Children, typename Domain>
+                struct as_child_<Tag(*)(Children...), Domain>
+                  : result_of::make_expr<
+                        Tag(typename as_child_<Children, Domain>::type...)
+                      , Domain
+                    >
+                {};
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // as_basic_expr_
+                template<typename Tag, typename ...Children, typename Domain>
+                struct as_basic_expr_<Tag(Children...), Domain>
+                {
+                    using domain_type =
+                        typename make_domain<exprs::basic_expr<_, Domain>, Domain>::type;
+                    using expr_desc = Tag(typename as_child_<Children, domain_type>::type...);
+                    using type = exprs::basic_expr<expr_desc, domain_type>;
+                };
+
+                template<
+                    template<typename...> class CustomExpr
+                  , typename ExprDesc
+                  , typename ...Rest
+                  , typename Domain
+                >
+                struct as_basic_expr_<CustomExpr<ExprDesc, Rest...>, Domain>
+                {
+                    using type =
+                        exprs::basic_expr<
+                            ExprDesc
+                          , typename make_domain<CustomExpr<_, Rest...>, Domain>::type
+                        >;
+                };
+
+                template<
+                    template<typename...> class CustomExpr
+                  , typename ExprDesc
+                  , typename ...Rest
+                >
+                struct as_basic_expr_<CustomExpr<ExprDesc, Rest...>, basic_default_domain>
+                {
+                    using domain_type =
+                        domains::custom_expr_domain_adaptor<
+                            basic_default_domain
+                          , CustomExpr<_, Rest...>
+                        >;
+                    using type = exprs::basic_expr<ExprDesc, domain_type>;
+                };
+
+                template<typename Domain>
+                struct as_basic_expr_<_, Domain>
+                {
+                    using domain_type =
+                        typename make_domain<exprs::basic_expr<_, Domain>, Domain>::type;
+                    using type = exprs::basic_expr<_, domain_type>;
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // as_expr_
+                template<typename Tag, typename ...Children, typename Domain>
+                struct as_expr_<Tag(Children...), Domain>
+                {
+                    using domain_type =
+                        typename make_domain<exprs::expr<_, Domain>, Domain>::type;
+                    using expr_desc = Tag(typename as_child_<Children, domain_type>::type...);
+                    using type = exprs::expr<expr_desc, domain_type>;
+                };
+
+                template<
+                    template<typename...> class CustomExpr
+                  , typename ExprDesc
+                  , typename ...Rest
+                  , typename Domain
+                >
+                struct as_expr_<CustomExpr<ExprDesc, Rest...>, Domain>
+                {
+                    using type =
+                        exprs::expr<
+                            CustomExpr<ExprDesc, Rest...>
+                          , typename make_domain<CustomExpr<_, Rest...>, Domain>::type
+                        >;
+                };
+
+                template<
+                    template<typename...> class CustomExpr
+                  , typename ExprDesc
+                  , typename ...Rest
+                >
+                struct as_expr_<CustomExpr<ExprDesc, Rest...>, default_domain>
+                {
+                    using domain_type =
+                        domains::custom_expr_domain_adaptor<
+                            default_domain
+                          , CustomExpr<_, Rest...>
+                        >;
+                    using type = exprs::expr<CustomExpr<ExprDesc, Rest...>, domain_type>;
+                };
+
+                template<typename Domain>
+                struct as_expr_<_, Domain>
+                {
+                    using domain_type =
+                        typename make_domain<exprs::expr<_, Domain>, Domain>::type;
+                    using type = exprs::expr<_, domain_type>;
                 };
             }
 
@@ -397,9 +467,7 @@ namespace boost
                     using proto_is_terminal_type        = typename proto_tag_type::proto_is_terminal_type;
                     using proto_children_type           = exprs::children<Children...>;
                     using proto_size                    = typename proto_children_type::proto_size;
-                    using proto_domain_type             = typename detail::make_domain<
-                                                              basic_expr<_, Domain>, Domain
-                                                          >::type;
+                    using proto_domain_type             = Domain;
                     using proto_expr_descriptor_type    = Tag(Children...);
                     using proto_arity                   =
                         std::integral_constant<
@@ -525,66 +593,29 @@ namespace boost
                   , typename Domain
                 >
                 struct basic_expr<DerivedExpr<Tag(Children...), Rest...>, Domain>
-                  : basic_expr<Tag(Children...)>
+                  : basic_expr<Tag(Children...), Domain>
                 {
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // typedefs
-                    using proto_domain_type =
-                        typename detail::make_domain<DerivedExpr<_, Rest...>, Domain>::type;
-
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // constructors
-                    using basic_expr<Tag(Children...)>::basic_expr;
+                    using basic_expr<Tag(Children...), Domain>::basic_expr;
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // struct basic_expr
-                template<
-                    template<typename...> class DerivedExpr
-                  , typename Tag
-                  , typename ...Children
-                  , typename ...Rest
-                >
-                struct basic_expr<DerivedExpr<Tag(Children...), Rest...>>
-                  : basic_expr<Tag(Children...)>
-                {
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // typedefs
-                    using proto_domain_type =
-                        domains::custom_expr_domain_adaptor<basic_default_domain, DerivedExpr<_, Rest...>>;
-
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // constructors
-                    using basic_expr<Tag(Children...)>::basic_expr;
-                };
+                template<typename Domain>
+                struct basic_expr<_, Domain>
+                {};
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // struct expr
                 template<typename Tag, typename ...Children, typename Domain>
                 struct expr<Tag(Children...), Domain>
-                  : basic_expr<Tag(Children...)>
+                  : basic_expr<Tag(Children...), Domain>
                   , expr_assign<expr<Tag(Children...), Domain>>
                   , expr_subscript<expr<Tag(Children...), Domain>>
                   , expr_function<expr<Tag(Children...), Domain>>
                 {
                     ////////////////////////////////////////////////////////////////////////////////
-                    // typedefs
-                    using proto_domain_type =
-                        typename detail::make_domain<expr<_, Domain>, Domain>::type;
-
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // Check constraints
-                    static_assert(
-                        !std::is_same<typename proto_domain_type::make_expr, default_make_expr>::value
-                      , "You specified a custom domain but didn't tell Proto how to make new "
-                        "expressions. If you are defining a custom expression type, inherit "
-                        "from proto::expr< YourExprTemplate<ExprDesc>, YourDomain >. Or, "
-                        "define a make_expr function object within YourDomain."
-                    );
-
-                    ////////////////////////////////////////////////////////////////////////////////
                     // constructors
-                    using basic_expr<Tag(Children...)>::basic_expr;
+                    using basic_expr<Tag(Children...), Domain>::basic_expr;
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // operator=
@@ -601,19 +632,14 @@ namespace boost
                   , typename Domain
                 >
                 struct expr<DerivedExpr<Tag(Children...), Rest...>, Domain>
-                  : basic_expr<Tag(Children...)>
+                  : basic_expr<Tag(Children...), Domain>
                   , expr_assign<DerivedExpr<Tag(Children...), Rest...>>
                   , expr_subscript<DerivedExpr<Tag(Children...), Rest...>>
                   , expr_function<DerivedExpr<Tag(Children...), Rest...>>
                 {
                     ////////////////////////////////////////////////////////////////////////////////
-                    // typedefs
-                    using proto_domain_type =
-                        typename detail::make_domain<DerivedExpr<_, Rest...> , Domain>::type;
-
-                    ////////////////////////////////////////////////////////////////////////////////
                     // constructors
-                    using basic_expr<Tag(Children...)>::basic_expr;
+                    using basic_expr<Tag(Children...), Domain>::basic_expr;
 
                     ////////////////////////////////////////////////////////////////////////////////
                     // operator=
@@ -621,32 +647,10 @@ namespace boost
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // struct expr
-                template<
-                    template<typename...> class DerivedExpr
-                  , typename Tag
-                  , typename ...Children
-                  , typename ...Rest
-                >
-                struct expr<DerivedExpr<Tag(Children...), Rest...>>
-                  : basic_expr<Tag(Children...)>
-                  , expr_assign<DerivedExpr<Tag(Children...), Rest...>>
-                  , expr_subscript<DerivedExpr<Tag(Children...), Rest...>>
-                  , expr_function<DerivedExpr<Tag(Children...), Rest...>>
-                {
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // typedefs
-                    using proto_domain_type =
-                        domains::custom_expr_domain_adaptor<default_domain, DerivedExpr<_, Rest...>>;
-
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // constructors
-                    using basic_expr<Tag(Children...)>::basic_expr;
-
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // operator=
-                    using expr_assign<DerivedExpr<Tag(Children...), Rest...>>::operator=;
-                };
+                // struct basic_expr
+                template<typename Domain>
+                struct expr<_, Domain>
+                {};
             }
 
             namespace result_of

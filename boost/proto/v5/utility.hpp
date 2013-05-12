@@ -823,7 +823,7 @@ namespace boost
                     BOOST_PROTO_AUTO_RETURN(
                         this->call_or_fail_(
                             // Must be an unqualified call to possibly find the substitution_failure friend function
-                            boost_proto_try_find_substitution_failure(1, args...)
+                            boost_proto_try_find_substitution_failure(1, static_cast<Args &&>(args)...)
                           , static_cast<Args &&>(args)...
                         )
                     )
