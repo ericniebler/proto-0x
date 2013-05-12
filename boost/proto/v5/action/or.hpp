@@ -68,7 +68,7 @@ namespace boost
                     template<typename ...Args>
                     constexpr auto operator()(Args &&...args) const
                     BOOST_PROTO_AUTO_RETURN(
-                        fold_or_::call(as_action_<BoolActions>()(static_cast<Args &&>(args)...)...)
+                        fold_or_::call(call_action_<BoolActions>()(static_cast<Args &&>(args)...)...)
                     )
                 };
             }

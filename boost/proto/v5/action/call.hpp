@@ -78,10 +78,10 @@ namespace boost
                         BOOST_PROTO_TRY_CALL_IF(TryCall)(call_2_<
                             TryCall
                           , (sizeof...(Args) <= sizeof...(Actions))
-                          , decltype(as_action_<Actions>()(static_cast<Args &&>(args)...))...
+                          , decltype(call_action_<Actions>()(static_cast<Args &&>(args)...))...
                         >())(
                             static_cast<Action &&>(act)
-                          , as_action_<Actions>()(static_cast<Args &&>(args)...)...
+                          , call_action_<Actions>()(static_cast<Args &&>(args)...)...
                           , static_cast<Args &&>(args)...
                         )
                     )
@@ -95,7 +95,7 @@ namespace boost
                     constexpr auto operator()(Fun &&fun, Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
                         BOOST_PROTO_TRY_CALL_IF(TryCall)(static_cast<Fun &&>(fun))(
-                            as_action_<Actions>()(static_cast<Args &&>(args)...)...
+                            call_action_<Actions>()(static_cast<Args &&>(args)...)...
                         )
                     )
                 };
@@ -132,7 +132,7 @@ namespace boost
                     >
                     constexpr auto operator()(Args &&... t) const
                     BOOST_PROTO_AUTO_RETURN(
-                        Obj{as_action_<Actions>()(static_cast<Args &&>(t)...)...}
+                        Obj{call_action_<Actions>()(static_cast<Args &&>(t)...)...}
                     )
                 };
 

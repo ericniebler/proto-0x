@@ -599,6 +599,21 @@ namespace boost
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
+                // struct basic_expr
+                // BUGBUG not sure why clang wants this
+                template<typename Domain>
+                struct basic_expr<_, Domain>
+                {};
+
+                template<
+                    template<typename...> class DerivedExpr
+                  , typename ...Rest
+                  , typename Domain
+                >
+                struct basic_expr<DerivedExpr<_, Rest...>, Domain>
+                {};
+
+                ////////////////////////////////////////////////////////////////////////////////////
                 // struct expr
                 template<typename Tag, typename ...Children, typename Domain>
                 struct expr<Tag(Children...), Domain>
@@ -639,6 +654,21 @@ namespace boost
                     // operator=
                     using expr_assign<DerivedExpr<Tag(Children...), Rest...>>::operator=;
                 };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // struct basic_expr
+                // BUGBUG not sure why clang wants these
+                template<typename Domain>
+                struct expr<_, Domain>
+                {};
+
+                template<
+                    template<typename...> class DerivedExpr
+                  , typename ...Rest
+                  , typename Domain
+                >
+                struct expr<DerivedExpr<_, Rest...>, Domain>
+                {};
             }
 
             namespace result_of

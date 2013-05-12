@@ -49,9 +49,9 @@ namespace boost
                     template<typename ...Args>
                     constexpr auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
-                        as_action_<
+                        call_action_<
                             typename Cases::template case_<
-                                decltype(as_action_<Action>()(static_cast<Args &&>(args)...))
+                                decltype(call_action_<Action>()(static_cast<Args &&>(args)...))
                             >
                         >()(static_cast<Args &&>(args)...)
                     )
@@ -66,7 +66,7 @@ namespace boost
                     template<typename Expr, typename ...Rest>
                     constexpr auto operator()(Expr && e, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        as_action_<
+                        call_action_<
                             typename Cases::template case_<
                                 typename proto::v5::result_of::tag_of<Expr>::type
                             >

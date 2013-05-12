@@ -30,8 +30,17 @@ namespace boost
                   : basic_action<_has_tag<Tag>>
                 {
                     template<typename E, typename ...Rest>
-                    std::integral_constant<bool, std::is_same<typename E::proto_tag_type, Tag>::value>
-                    operator()(E const &, Rest &&...) const;
+                    constexpr std::integral_constant<
+                        bool
+                      , std::is_same<typename E::proto_tag_type, Tag>::value
+                    >
+                    operator()(E const &, Rest &&...) const
+                    {
+                        return std::integral_constant<
+                            bool
+                          , std::is_same<typename E::proto_tag_type, Tag>::value
+                        >();
+                    }
                 };
 
                 template<typename Tag, typename Fun>
@@ -93,9 +102,9 @@ namespace boost
                   : basic_action<_recursive_fold<Sequence, State0, Fun>>
                 {
                     template<typename E, typename ...Rest>
-                    auto operator()(E && e, Rest &&... rest) const
+                    constexpr auto operator()(E && e, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        as_action_<
+                        call_action_<
                             fold(
                                 Sequence
                               , State0
@@ -145,9 +154,9 @@ namespace boost
                   : basic_action<_reverse_recursive_fold<Sequence, State0, Fun>>
                 {
                     template<typename E, typename ...Rest>
-                    auto operator()(E && e, Rest &&... rest) const
+                    constexpr auto operator()(E && e, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        as_action_<
+                        call_action_<
                             reverse_fold(
                                 Sequence
                               , State0

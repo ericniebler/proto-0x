@@ -107,7 +107,7 @@ namespace mini_lambda
                       , proto::_env
                     )
                 )
-              , proto::case_( _,
+              , proto::default_(
                     proto::_eval<grammar>
                 )
             )

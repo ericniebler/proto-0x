@@ -31,7 +31,7 @@ namespace boost
                     template<typename ...Args>
                     constexpr auto operator()(Args &&...args) const
                     BOOST_PROTO_AUTO_RETURN(
-                        env_var_tag<Local>() = as_action_<Action>()(static_cast<Args &&>(args)...)
+                        env_var_tag<Local>() = call_action_<Action>()(static_cast<Args &&>(args)...)
                     )
                 };
 
@@ -45,7 +45,7 @@ namespace boost
                     template<typename Expr>
                     constexpr auto operator()(Expr &&expr) const
                     BOOST_PROTO_AUTO_RETURN(
-                        as_action_<Action>()(
+                        call_action_<Action>()(
                             static_cast<Expr &&>(expr)
                           , proto::v5::make_env(eval_local<Locals>()(static_cast<Expr &&>(expr))...)
                         )
@@ -54,7 +54,7 @@ namespace boost
                     template<typename Expr, typename Env, typename ...Rest>
                     constexpr auto operator()(Expr &&expr, Env &&env, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        as_action_<Action>()(
+                        call_action_<Action>()(
                             static_cast<Expr &&>(expr)
                           , proto::v5::make_env(
                                 static_cast<Env &&>(env)

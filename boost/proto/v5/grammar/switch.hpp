@@ -30,24 +30,22 @@ namespace boost
                 struct grammar_impl<proto::v5::switch_(Cases)>
                 {
                     template<typename Expr>
-                    struct apply
-                      : matches<
+                    using apply =
+                        matches<
                             Expr
                           , typename Cases::template case_<typename result_of::tag_of<Expr>::type>
-                        >
-                    {};
+                        >;
                 };
 
                 template<typename Cases, typename Action>
                 struct grammar_impl<proto::v5::switch_(Cases, Action)>
                 {
                     template<typename Expr>
-                    struct apply
-                      : matches<
+                    using apply =
+                        matches<
                             Expr
-                          , typename Cases::template case_<decltype(detail::as_action_<Action>()(std::declval<Expr>()))>
-                        >
-                    {};
+                          , typename Cases::template case_<decltype(detail::call_action_<Action>()(std::declval<Expr>()))>
+                        >;
                 };
             }
         }

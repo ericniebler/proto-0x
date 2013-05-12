@@ -63,7 +63,7 @@ namespace boost
                 template<bool IsAction, typename R, typename ...Args>
                 struct make_3_
                 {
-                    using type = decltype(utility::by_val()(as_action_<R>()(std::declval<Args>()...)));
+                    using type = decltype(utility::by_val()(call_action_<R>()(std::declval<Args>()...)));
                     using applied = std::true_type;
                 };
 
@@ -86,7 +86,7 @@ namespace boost
                 template<typename R, typename ...A, typename ...Args>
                 struct make_2_<R(A...), Args...>
                 {
-                    using type = decltype(utility::by_val()(as_action_<R(A...)>()(std::declval<Args>()...)));
+                    using type = decltype(utility::by_val()(call_action_<R(A...)>()(std::declval<Args>()...)));
                     using applied = std::true_type;
                 };
 
@@ -142,7 +142,7 @@ namespace boost
                     >
                     constexpr auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
-                        as_action_<call(functional::cxx::construct<X>(Actions...))>()(static_cast<Args &&>(args)...)
+                        call_action_<call(functional::cxx::construct<X>(Actions...))>()(static_cast<Args &&>(args)...)
                     )
                 };
 
@@ -158,7 +158,7 @@ namespace boost
                     >
                     constexpr auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
-                        as_action_<call(functional::cxx::construct<Obj>(Actions......))>()(static_cast<Args &&>(args)...)
+                        call_action_<call(functional::cxx::construct<Obj>(Actions......))>()(static_cast<Args &&>(args)...)
                     )
                 };
             }

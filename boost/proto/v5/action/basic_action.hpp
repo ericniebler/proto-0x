@@ -23,6 +23,10 @@ namespace boost
             namespace detail
             {
                 ////////////////////////////////////////////////////////////////////////////////////
+                template<typename T>
+                using call_action_ = BOOST_PROTO_TRY_CALL_WRAP(as_action_<T>);
+
+                ////////////////////////////////////////////////////////////////////////////////////
                 struct not_an_action
                 {};
 
@@ -33,7 +37,7 @@ namespace boost
                         bool
                       , static_cast<bool>(
                             std::remove_reference<
-                                decltype(as_action_<BoolAction>()(std::declval<Args>()...))
+                                decltype(call_action_<BoolAction>()(std::declval<Args>()...))
                             >::type::value
                         )
                     >
@@ -156,7 +160,10 @@ namespace boost
             struct is_action<Ret(Args...)>
               : std::integral_constant<
                     bool
-                  , !std::is_base_of<detail::not_an_action, detail::as_action_<Ret(Args...)>>::value
+                  , !std::is_base_of<
+                        detail::not_an_action
+                      , detail::as_action_<Ret(Args...)>
+                    >::value
                 >
             {};
 
@@ -164,7 +171,10 @@ namespace boost
             struct is_action<Ret(Args......)>
               : std::integral_constant<
                     bool
-                  , !std::is_base_of<detail::not_an_action, detail::as_action_<Ret(Args......)>>::value
+                  , !std::is_base_of<
+                        detail::not_an_action
+                      , detail::as_action_<Ret(Args......)>
+                    >::value
                 >
             {};
 

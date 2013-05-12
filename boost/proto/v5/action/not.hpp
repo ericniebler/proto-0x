@@ -42,7 +42,7 @@ namespace boost
                     template<typename ...Args>
                     constexpr auto operator()(Args &&...args) const
                     BOOST_PROTO_AUTO_RETURN(
-                        logical_not_()(as_action_<BoolAction>()(static_cast<Args &&>(args)...))
+                        logical_not_()(call_action_<BoolAction>()(static_cast<Args &&>(args)...))
                     )
                 };
             }

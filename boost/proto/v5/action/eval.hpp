@@ -89,7 +89,7 @@ namespace boost
                     constexpr auto impl(utility::indices<I...>, Expr && expr, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
                         BOOST_PROTO_TRY_CALL(typename _op<Tag>::type())(
-                            as_action_<Action>()(
+                            call_action_<Action>()(
                                 proto::v5::child<I>(static_cast<Expr &&>(expr))
                               , static_cast<Rest &&>(rest)...
                             )...
@@ -119,11 +119,11 @@ namespace boost
                     template<typename Expr, typename ...Rest>
                     constexpr auto operator()(Expr && expr, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        as_action_<ActiveGrammar>()(
+                        call_action_<ActiveGrammar>()(
                             proto::v5::child<0>(static_cast<Expr &&>(expr))
                           , static_cast<Rest &&>(rest)...
                         )
-                     || as_action_<ActiveGrammar>()(
+                     || call_action_<ActiveGrammar>()(
                             proto::v5::child<1>(static_cast<Expr &&>(expr))
                           , static_cast<Rest &&>(rest)...
                         )
@@ -137,11 +137,11 @@ namespace boost
                     template<typename Expr, typename ...Rest>
                     constexpr auto operator()(Expr && expr, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        as_action_<ActiveGrammar>()(
+                        call_action_<ActiveGrammar>()(
                             proto::v5::child<0>(static_cast<Expr &&>(expr))
                           , static_cast<Rest &&>(rest)...
                         )
-                     && as_action_<ActiveGrammar>()(
+                     && call_action_<ActiveGrammar>()(
                             proto::v5::child<1>(static_cast<Expr &&>(expr))
                           , static_cast<Rest &&>(rest)...
                         )
@@ -155,15 +155,15 @@ namespace boost
                     template<typename Expr, typename ...Rest>
                     constexpr auto operator()(Expr && expr, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        as_action_<ActiveGrammar>()(
+                        call_action_<ActiveGrammar>()(
                             proto::v5::child<0>(static_cast<Expr &&>(expr))
                           , static_cast<Rest &&>(rest)...
                         )
-                      ? as_action_<ActiveGrammar>()(
+                      ? call_action_<ActiveGrammar>()(
                             proto::v5::child<1>(static_cast<Expr &&>(expr))
                           , static_cast<Rest &&>(rest)...
                         )
-                      : as_action_<ActiveGrammar>()(
+                      : call_action_<ActiveGrammar>()(
                             proto::v5::child<2>(static_cast<Expr &&>(expr))
                           , static_cast<Rest &&>(rest)...
                         )

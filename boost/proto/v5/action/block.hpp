@@ -39,7 +39,7 @@ namespace boost
                     constexpr auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
                         BOOST_PROTO_TRY_CALL(utility::functional::back())(
-                            (as_action_<Actions>()(static_cast<Args &&>(args)...), utility::void_)...
+                            (call_action_<Actions>()(static_cast<Args &&>(args)...), utility::void_)...
                         )
                     )
                 };

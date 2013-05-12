@@ -288,48 +288,44 @@ namespace boost
                 struct grammar_impl<expr_tag<Tag, Arity, Action>(Grammars...)>
                 {
                     template<typename Expr>
-                    struct apply
-                      : detail::matches_expr_<
+                    using apply =
+                        detail::matches_expr_<
                             typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
                           , Tag(Grammars...)
-                        >
-                    {};
+                        >;
                 };
 
                 template<typename Tag, typename Arity, typename Action, typename ...Grammars>
                 struct grammar_impl<expr_tag<Tag, Arity, Action>(Grammars......)>
                 {
                     template<typename Expr>
-                    struct apply
-                      : detail::matches_expr_<
+                    using apply =
+                        detail::matches_expr_<
                             typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
                           , Tag(Grammars......)
-                        >
-                    {};
+                        >;
                 };
 
                 template<typename ...Children>
                 struct grammar_impl<_(Children...)>
                 {
                     template<typename Expr>
-                    struct apply
-                      : detail::matches_expr_<
+                    using apply =
+                        detail::matches_expr_<
                             typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
                           , _(Children...)
-                        >
-                    {};
+                        >;
                 };
 
                 template<typename ...Children>
                 struct grammar_impl<_(Children......)>
                 {
                     template<typename Expr>
-                    struct apply
-                      : detail::matches_expr_<
+                    using apply =
+                        detail::matches_expr_<
                             typename std::remove_reference<Expr>::type::proto_expr_descriptor_type
                           , _(Children......)
-                        >
-                    {};
+                        >;
                 };
             }
         }

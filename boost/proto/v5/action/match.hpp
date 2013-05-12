@@ -31,6 +31,11 @@ namespace boost
                   : std::true_type
                 {};
 
+                template<typename ActionHead, typename ...ActionTail>
+                struct is_case_stmt_<default_(*)(ActionHead, ActionTail...)>
+                  : std::true_type
+                {};
+
                 template<typename... ActiveGrammars>
                 struct _match
                   : basic_action<_match<ActiveGrammars...>>
@@ -38,9 +43,12 @@ namespace boost
                     template<typename Expr, typename ...Rest>
                     constexpr auto operator()(Expr && e, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        as_action_<
+                        call_action_<
                             // This relies on details of how proto::match's grammar behavior is implemented.
-                            typename matches<Expr, proto::v5::match(ActiveGrammars...)>::which::proto_grammar_type
+                            typename matches<
+                                Expr
+                              , proto::v5::match(ActiveGrammars...)
+                            >::which::proto_grammar_type
                         >()(
                             static_cast<Expr &&>(e)
                           , static_cast<Rest &&>(rest)...

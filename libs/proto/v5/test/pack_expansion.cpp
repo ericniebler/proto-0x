@@ -35,7 +35,7 @@ struct eval
             proto::case_(proto::terminal(_),
                 proto::_value
             )
-          , proto::case_(_,
+          , proto::default_(
                 // could use _tag_of here, but make is a nice test case.
                 do_eval(proto::make(proto::result_of::tag_of<_>()), eval(proto::pack(_))...)
             )

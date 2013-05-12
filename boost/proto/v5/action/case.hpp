@@ -23,9 +23,9 @@ namespace boost
             {
                 ////////////////////////////////////////////////////////////////////////////////////
                 // case_
-                template<typename Grammar, typename ...Action>
-                struct action_impl<case_(Grammar, Action...)>
-                  : detail::_block<Action...>
+                template<typename Grammar, typename ...Actions>
+                struct action_impl<case_(Grammar, Actions...)>
+                  : detail::_block<Actions...>
                 {};
 
                 template<typename Grammar, typename Action>
@@ -39,6 +39,18 @@ namespace boost
 
                 template<typename Tag, typename ...ActiveGrammars>
                 struct action_impl<case_(Tag(ActiveGrammars......), pass)>;
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // default_
+                template<typename ...Actions>
+                struct action_impl<default_(Actions...)>
+                  : detail::_block<Actions...>
+                {};
+
+                template<typename Action>
+                struct action_impl<default_(Action)>
+                  : detail::as_action_<Action>
+                {};
             }
         }
     }

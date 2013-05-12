@@ -221,18 +221,14 @@ namespace boost
             struct is_sequence_impl<proto::v5::proto_flat_view<Tag, Domain>>
             {
                 template<typename Sequence>
-                struct apply
-                  : std::true_type
-                {};
+                using apply = std::true_type;
             };
 
             template<typename Tag, typename Domain>
             struct is_sequence_impl<proto::v5::proto_expr<Tag, Domain>>
             {
                 template<typename Sequence>
-                struct apply
-                  : std::true_type
-                {};
+                using apply = std::true_type;
             };
 
             template<typename Tag>
@@ -242,18 +238,14 @@ namespace boost
             struct is_view_impl<proto::v5::proto_flat_view<Tag, Domain>>
             {
                 template<typename Sequence>
-                struct apply
-                  : std::true_type
-                {};
+                using apply = std::true_type;
             };
 
             template<typename Tag, typename Domain>
             struct is_view_impl<proto::v5::proto_expr<Tag, Domain>>
             {
                 template<typename Sequence>
-                struct apply
-                  : std::false_type
-                {};
+                using apply = std::false_type;
             };
 
             template<typename Tag>
@@ -263,12 +255,11 @@ namespace boost
             struct value_of_impl<proto::v5::proto_expr_iterator<Tag, Domain>>
             {
                 template<typename Iterator>
-                struct apply
-                  : proto::v5::exprs::children_element<
+                using apply =
+                    proto::v5::exprs::children_element<
                         Iterator::index
                       , typename Iterator::expr_type::proto_children_type
-                    >
-                {};
+                    >;
             };
 
             template<typename Tag>
@@ -354,12 +345,11 @@ namespace boost
             struct distance_impl<proto::v5::proto_expr_iterator<Tag, Domain>>
             {
                 template<typename IteratorFrom, typename IteratorTo>
-                struct apply
-                  : std::integral_constant<
+                using apply =
+                    std::integral_constant<
                         int
                       , (int)((std::ptrdiff_t)IteratorTo::index - (std::ptrdiff_t)IteratorFrom::index)
-                    >
-                {};
+                    >;
             };
 
             template<typename Tag>
@@ -412,9 +402,7 @@ namespace boost
             struct size_impl<proto::v5::proto_expr<Tag, Domain>>
             {
                 template<typename Sequence>
-                struct apply
-                  : Sequence::proto_size
-                {};
+                using apply = typename Sequence::proto_size;
             };
 
             template<typename Tag>
@@ -468,12 +456,11 @@ namespace boost
             struct value_at_impl<proto::v5::proto_expr<Tag, Domain>>
             {
                 template<typename Sequence, typename Index>
-                struct apply
-                  : proto::v5::exprs::children_element<
+                using apply =
+                    proto::v5::exprs::children_element<
                         (std::size_t)Index::value
                       , typename Sequence::proto_children_type
-                    >
-                {};
+                    >;
             };
 
             template<typename Tag>
@@ -566,9 +553,7 @@ namespace boost
             struct is_segmented_impl<proto::v5::proto_flat_view<Tag, Domain>>
             {
                 template<typename Iterator>
-                struct apply
-                  : std::true_type
-                {};
+                using apply = std::true_type;
             };
 
             template<typename Tag>

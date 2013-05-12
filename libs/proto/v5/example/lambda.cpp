@@ -40,7 +40,7 @@ struct lambda_eval
           , proto::case_( proto::terminal(_),
                 proto::_value
             )
-          , proto::case_( _,
+          , proto::default_(
                 proto::_eval<lambda_eval>
             )
         )

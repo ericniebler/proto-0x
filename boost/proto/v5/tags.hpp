@@ -47,7 +47,9 @@ namespace boost
                             ThisTag::proto_arity_type::equal_to(sizeof...(Ts))
                         )
                       , BOOST_PROTO_ENABLE_IF(
-                            v5::is_expr<typename std::result_of<ThisTag(Ts...)>::type>::value
+                            v5::is_expr<
+                                decltype(BOOST_PROTO_TRY_CALL(ThisTag())(std::declval<Ts>()...))
+                            >::value
                         )
                     >
                     constexpr auto operator()(Ts &&...ts) const
@@ -63,7 +65,9 @@ namespace boost
                             ThisTag::proto_arity_type::equal_to(sizeof...(Ts))
                         )
                       , BOOST_PROTO_ENABLE_IF(
-                            !v5::is_expr<typename std::result_of<ThisTag(Ts...)>::type>::value
+                            !v5::is_expr<
+                                decltype(BOOST_PROTO_TRY_CALL(ThisTag())(std::declval<Ts>()...))
+                            >::value
                         )
                     >
                     constexpr auto operator()(Ts &&...ts) const

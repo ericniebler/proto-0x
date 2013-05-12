@@ -62,7 +62,7 @@ namespace boost
                     template<typename Tag, typename ...A, typename ...B, typename Domain>
                     static inline constexpr auto proto_equal_to(
                         basic_expr<Tag(A...), Domain> const &lhs
-                        , basic_expr<Tag(B...), Domain> const &rhs)
+                      , basic_expr<Tag(B...), Domain> const &rhs)
                     BOOST_PROTO_AUTO_RETURN(
                         access::proto_args(lhs) == access::proto_args(rhs)
                     )

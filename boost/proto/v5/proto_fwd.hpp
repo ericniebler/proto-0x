@@ -264,6 +264,7 @@ namespace boost
             struct if_;
             struct switch_;
             struct case_;
+            struct default_;
             struct pass;
             struct match;
             struct matches_;

@@ -27,22 +27,21 @@ namespace boost
         {
             namespace detail
             {
-                // BUGBUG these calls should be wrapped with BOOST_PROTO_TRY_CALL
+                ////////////////////////////////////////////////////////////////////////////////////
+                // fold_2_
                 template<typename Fun>
-                struct fold_impl_
+                struct fold_2_
                 {
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // fold_2_
                     template<typename Cur, typename End, typename Env, typename State, typename ...Rest
-                      , typename Impl = fold_impl_<Fun>
+                      , typename Impl = fold_2_<Fun>
                       , BOOST_PROTO_ENABLE_IF(!(fusion::result_of::equal_to<Cur, End>::value))>
-                    static auto fold_2_(Cur const &cur, End const &end, Env &&env, State const &state, Rest &&...rest)
+                    constexpr auto operator()(Cur const &cur, End const &end, Env &&env, State const &state, Rest &&...rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        Impl::fold_2_(
+                        BOOST_PROTO_TRY_CALL(Impl())(
                             fusion::next(cur)
                           , end
                           , static_cast<Env &&>(env)
-                          , as_action_<Fun>()(
+                          , call_action_<Fun>()(
                                 fusion::deref(cur)
                               , static_cast<Env &&>(env)
                               , state
@@ -54,18 +53,22 @@ namespace boost
 
                     template<typename Cur, typename End, typename Env, typename State, typename ...Rest
                       , BOOST_PROTO_ENABLE_IF((fusion::result_of::equal_to<Cur, End>::value))>
-                    static State fold_2_(Cur const &, End const &, Env &&, State const &state, Rest &&...)
+                    constexpr State operator()(Cur const &, End const &, Env &&, State const &state, Rest &&...) const
                     {
                         return state;
                     }
+                };
 
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // fold_1_
-                    // TODO: Optimize when Sequence == children<T...>
+                ////////////////////////////////////////////////////////////////////////////////////
+                // fold_1_
+                // TODO: Optimize when Sequence == children<T...>
+                template<typename Fun>
+                struct fold_1_
+                {
                     template<typename Sequence, typename Env, typename State0, typename ...Rest>
-                    static auto fold_1_(Sequence && seq, Env &&env, State0 const &state0, Rest &&... rest)
+                    constexpr auto operator()(Sequence && seq, Env &&env, State0 const &state0, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        fold_impl_<Fun>::fold_2_(
+                        BOOST_PROTO_TRY_CALL(fold_2_<Fun>())(
                             fusion::begin(static_cast<Sequence &&>(seq))
                           , fusion::end(static_cast<Sequence &&>(seq))
                           , static_cast<Env &&>(env)
@@ -73,19 +76,23 @@ namespace boost
                           , static_cast<Rest &&>(rest)...
                         )
                     )
+                };
 
-                    ////////////////////////////////////////////////////////////////////////////////////
-                    // reverse_fold_2_
+                ////////////////////////////////////////////////////////////////////////////////////
+                // reverse_fold_2_
+                template<typename Fun>
+                struct reverse_fold_2_
+                {
                     template<typename Cur, typename End, typename Env, typename State, typename ...Rest
-                      , typename Impl = fold_impl_<Fun>
+                      , typename Impl = reverse_fold_2_<Fun>
                       , BOOST_PROTO_ENABLE_IF(!(fusion::result_of::equal_to<Cur, End>::value))>
-                    static auto reverse_fold_2_(Cur const &cur, End const &end, Env &&env, State const &state, Rest &&...rest)
+                    constexpr auto operator()(Cur const &cur, End const &end, Env &&env, State const &state, Rest &&...rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        Impl::reverse_fold_2_(
+                        BOOST_PROTO_TRY_CALL(Impl())(
                             cur
                           , fusion::prior(end)
                           , static_cast<Env &&>(env)
-                          , as_action_<Fun>()(
+                          , call_action_<Fun>()(
                                 fusion::deref(fusion::prior(end))
                               , static_cast<Env &&>(env)
                               , state
@@ -97,18 +104,22 @@ namespace boost
 
                     template<typename Cur, typename End, typename Env, typename State, typename ...Rest
                       , BOOST_PROTO_ENABLE_IF((fusion::result_of::equal_to<Cur, End>::value))>
-                    static State reverse_fold_2_(Cur const &, End const &, Env &&, State const &state, Rest &&...)
+                    constexpr State operator()(Cur const &, End const &, Env &&, State const &state, Rest &&...) const
                     {
                         return state;
                     }
+                };
 
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // reverse_fold_1_
-                    // TODO: Optimize when Sequence == children<T...>
+                ////////////////////////////////////////////////////////////////////////////////////
+                // reverse_fold_1_
+                // TODO: Optimize when Sequence == children<T...>
+                template<typename Fun>
+                struct reverse_fold_1_
+                {
                     template<typename Sequence, typename Env, typename State0, typename ...Rest>
-                    static auto reverse_fold_1_(Sequence && seq, Env &&env, State0 const &state0, Rest &&... rest)
+                    constexpr auto operator()(Sequence && seq, Env &&env, State0 const &state0, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        fold_impl_<Fun>::reverse_fold_2_(
+                        BOOST_PROTO_TRY_CALL(reverse_fold_2_<Fun>())(
                             fusion::begin(static_cast<Sequence &&>(seq))
                           , fusion::end(static_cast<Sequence &&>(seq))
                           , static_cast<Env &&>(env)
@@ -127,32 +138,32 @@ namespace boost
                   : basic_action<_fold<Sequence, State0, Fun>>
                 {
                     template<typename E>
-                    auto operator()(E && e) const
+                    constexpr auto operator()(E && e) const
                     BOOST_PROTO_AUTO_RETURN(
-                        fold_impl_<Fun>::fold_1_(
-                            as_action_<Sequence>()(static_cast<E &&>(e))
+                        BOOST_PROTO_TRY_CALL(fold_1_<Fun>())(
+                            call_action_<Sequence>()(static_cast<E &&>(e))
                           , empty_env()
-                          , as_action_<State0>()(static_cast<E &&>(e))
+                          , call_action_<State0>()(static_cast<E &&>(e))
                         )
                     )
 
                     template<typename E, typename D>
-                    auto operator()(E && e, D && d) const
+                    constexpr auto operator()(E && e, D && d) const
                     BOOST_PROTO_AUTO_RETURN(
-                        fold_impl_<Fun>::fold_1_(
-                            as_action_<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d))
+                        BOOST_PROTO_TRY_CALL(fold_1_<Fun>())(
+                            call_action_<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d))
                           , static_cast<D &&>(d)
-                          , as_action_<State0>()(static_cast<E &&>(e), static_cast<D &&>(d))
+                          , call_action_<State0>()(static_cast<E &&>(e), static_cast<D &&>(d))
                         )
                     )
 
                     template<typename E, typename D, typename S, typename ...Rest>
-                    auto operator()(E && e, D && d, S && s, Rest &&... rest) const
+                    constexpr auto operator()(E && e, D && d, S && s, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        fold_impl_<Fun>::fold_1_(
-                            as_action_<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                        BOOST_PROTO_TRY_CALL(fold_1_<Fun>())(
+                            call_action_<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
                           , static_cast<D &&>(d)
-                          , as_action_<State0>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                          , call_action_<State0>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
                           , static_cast<Rest &&>(rest)...
                         )
                     )
@@ -167,32 +178,32 @@ namespace boost
                   : basic_action<_reverse_fold<Sequence, State0, Fun>>
                 {
                     template<typename E>
-                    auto operator()(E && e) const
+                    constexpr auto operator()(E && e) const
                     BOOST_PROTO_AUTO_RETURN(
-                        fold_impl_<Fun>::reverse_fold_1_(
-                            as_action_<Sequence>()(static_cast<E &&>(e))
+                        BOOST_PROTO_TRY_CALL(reverse_fold_1_<Fun>())(
+                            call_action_<Sequence>()(static_cast<E &&>(e))
                           , empty_env()
-                          , as_action_<State0>()(static_cast<E &&>(e))
+                          , call_action_<State0>()(static_cast<E &&>(e))
                         )
                     )
 
                     template<typename E, typename D>
-                    auto operator()(E && e, D && d) const
+                    constexpr auto operator()(E && e, D && d) const
                     BOOST_PROTO_AUTO_RETURN(
-                        fold_impl_<Fun>::reverse_fold_1_(
-                            as_action_<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d))
+                        BOOST_PROTO_TRY_CALL(reverse_fold_1_<Fun>())(
+                            call_action_<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d))
                           , static_cast<D &&>(d)
-                          , as_action_<State0>()(static_cast<E &&>(e), static_cast<D &&>(d))
+                          , call_action_<State0>()(static_cast<E &&>(e), static_cast<D &&>(d))
                         )
                     )
 
                     template<typename E, typename D, typename S, typename ...Rest>
-                    auto operator()(E && e, D && d, S && s, Rest &&... rest) const
+                    constexpr auto operator()(E && e, D && d, S && s, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        fold_impl_<Fun>::reverse_fold_1_(
-                            as_action_<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                        BOOST_PROTO_TRY_CALL(reverse_fold_1_<Fun>())(
+                            call_action_<Sequence>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
                           , static_cast<D &&>(d)
-                          , as_action_<State0>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
+                          , call_action_<State0>()(static_cast<E &&>(e), static_cast<D &&>(d), static_cast<S &&>(s), static_cast<Rest &&>(rest)...)
                           , static_cast<Rest &&>(rest)...
                         )
                     )

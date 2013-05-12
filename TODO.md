@@ -1,6 +1,14 @@
 A Grab-Bag of Miscellaneous Thoughts
 ====================================
 
+* Should `_(A(_left), B(_right))` be synonymous for `pass(A, B)`? That would be consistent with the
+  use of `_` in expression patterns like `_(A,B)`, where `_` means "any tag", but inconsistent with
+  the use of `_` as a primitive transform, where `_(A,B)` simply returns `a`.
+
+* Each domain should have a post-process function object that takes and returns an expression. This
+  is to replicate the generator functionality from Proto v4, where actions can be used to select
+  between several wrapper types based on structural matching of the new expression.
+
 * Thoughts about `make(foo<some_action<int>>())`
     + It doesn't invoke `some_action<>`. Should it? With what semantics? Is it right to be looking
       for a nested `::type` after substitution, or should it be checking for action-ness instead
@@ -11,6 +19,8 @@ A Grab-Bag of Miscellaneous Thoughts
 
 * Proto v4 needs inline namespace also, and a macro-based solution for picking which namespace
   (v4 or v5) gets inlined.
+
+* `_eval<lambda_eval>` should be `eval(lambda_eval)` or even `eval_with(lambda_eval)`
 
 * Implement proper lexical scoping for `let` expressions.
     + Can the call action be modified to automatically create a proper lexical scope?
@@ -29,10 +39,3 @@ A Grab-Bag of Miscellaneous Thoughts
 
 * Implementation of `unpack_expr` could probably use `fusion::invoke_function_object`.
 
-* Should `_(A(_left), B(_right))` be synonymous for `pass(A, B)`? That would be consistent with the
-  use of `_` in expression patterns like `_(A,B)`, where `_` means "any tag", but inconsistent with
-  the use of `_` as a primitive transform, where `_(A,B)` simply returns `a`.
-
-* Each domain should have a post-process function object that takes and returns an expression. This
-  is to replicate the generator functionality from Proto v4, where actions can be used to select
-  between several wrapper types based on structural matching of the new expression.
