@@ -38,11 +38,13 @@
 
 // New-style enable_if from Matt Calabrese
 #define BOOST_PROTO_ENABLE_IF(...)                                                                  \
-    typename std::enable_if<static_cast<bool>(__VA_ARGS__)>::type *& = boost::proto::v5::detail::enabler
+    typename std::enable_if<static_cast<bool>(__VA_ARGS__)>::type *const & =                        \
+        boost::proto::v5::utility::static_const<void *>::value
 
 // New-style enable_if from Matt Calabrese
 #define BOOST_PROTO_ENABLE_IF_VALID_EXPR(...)                                                       \
-    decltype(static_cast<void>(__VA_ARGS__)) *& = boost::proto::v5::detail::enabler
+    decltype(static_cast<void>(__VA_ARGS__)) *const & =                                             \
+        boost::proto::v5::utility::static_const<void *>::value
 
 // For adding defaulted default, copy and move constructors, and move/copy assign.
 #define BOOST_PROTO_REGULAR_TRIVIAL_CLASS(CLASS)                                                    \
@@ -62,7 +64,7 @@
         {}                                                                                          \
     } BOOST_PP_CAT(boost_proto_ignore_unused_obj_, __LINE__)                                        \
     {                                                                                               \
-        (boost::proto::v5::utility::ignore(__VA_ARGS__), 0)                                      \
+        (boost::proto::v5::utility::ignore(__VA_ARGS__), 0)                                         \
     }                                                                                               \
     /**/
 
@@ -76,10 +78,6 @@ namespace boost
 
             namespace detail
             {
-                ////////////////////////////////////////////////////////////////////////////////////
-                // for use by BOOST_PROTO_ENABLE_IF
-                extern void* enabler;
-
                 struct not_a_grammar;
                 struct not_a_domain;
 
@@ -155,7 +153,15 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // static_const
                 template<typename T>
-                struct static_const;
+                struct static_const
+                {
+                    static constexpr T value{};
+                };
+
+                template<typename T>
+                constexpr T static_const<T>::value;
+
+                constexpr void *const &enabler = static_const<void *>::value;
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // a declval+move that allows void

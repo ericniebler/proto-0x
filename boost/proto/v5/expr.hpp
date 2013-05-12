@@ -599,12 +599,6 @@ namespace boost
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // struct basic_expr
-                template<typename Domain>
-                struct basic_expr<_, Domain>
-                {};
-
-                ////////////////////////////////////////////////////////////////////////////////////
                 // struct expr
                 template<typename Tag, typename ...Children, typename Domain>
                 struct expr<Tag(Children...), Domain>
@@ -645,12 +639,6 @@ namespace boost
                     // operator=
                     using expr_assign<DerivedExpr<Tag(Children...), Rest...>>::operator=;
                 };
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // struct basic_expr
-                template<typename Domain>
-                struct expr<_, Domain>
-                {};
             }
 
             namespace result_of

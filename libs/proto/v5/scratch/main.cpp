@@ -29,7 +29,7 @@ template<typename ExprDesc>
 struct map_list_of_expr
   : expr<map_list_of_expr<ExprDesc>, domain<_, MapListOf>>
 {
-  using expr<map_list_of_expr<ExprDesc>, domain<_, MapListOf>>::expr;
+  using expr<map_list_of_expr, domain<_, MapListOf>>::expr;
 
   template<class K, class V, class C, class A>
   operator std::map<K,V,C,A>() const

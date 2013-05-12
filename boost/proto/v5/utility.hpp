@@ -48,17 +48,6 @@ namespace boost
                 {};
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // static_const
-                template<typename T>
-                struct static_const
-                {
-                    static constexpr T value{};
-                };
-
-                template<typename T>
-                constexpr T static_const<T>::value;
-
-                ////////////////////////////////////////////////////////////////////////////////////
                 // always_void
                 template<typename ...T>
                 using always_void = void;
