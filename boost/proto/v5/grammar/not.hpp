@@ -27,11 +27,12 @@ namespace boost
                 struct grammar_impl<proto::v5::not_(BoolAction)>
                 {
                     template<typename Expr>
-                    using apply =
-                        std::integral_constant<
+                    struct apply
+                      : std::integral_constant<
                             bool
                           , !detail::eval_bool_action_<BoolAction, Expr>::value
-                        >;
+                        >
+                    {};
                 };
             }
         }

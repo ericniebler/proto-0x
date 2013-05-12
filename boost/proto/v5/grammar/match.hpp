@@ -39,7 +39,9 @@ namespace boost
                 struct grammar_impl<proto::v5::match(Grammars...)>
                 {
                     template<typename Expr>
-                    using apply = utility::or_<detail::matches_wrap_<Expr, Grammars>...>;
+                    struct apply
+                      : utility::or_<detail::matches_wrap_<Expr, Grammars>...>
+                    {};
                 };
             }
         }

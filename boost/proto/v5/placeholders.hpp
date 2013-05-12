@@ -72,7 +72,9 @@ namespace boost
 
                 // Makes _ a basic grammar element:
                 template<typename Expr>
-                using apply = std::true_type;
+                struct apply
+                  : std::true_type
+                {};
             };
         }
     }

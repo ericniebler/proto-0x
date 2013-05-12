@@ -26,7 +26,9 @@ namespace boost
                 struct grammar_impl<proto::v5::or_(BoolActions...)>
                 {
                     template<typename Expr>
-                    using apply = utility::or_<detail::eval_bool_action_<BoolActions, Expr>...>;
+                    struct apply
+                      : utility::or_<detail::eval_bool_action_<BoolActions, Expr>...>
+                    {};
                 };
             }
         }

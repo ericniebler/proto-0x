@@ -26,7 +26,9 @@ namespace boost
                 struct grammar_impl<proto::v5::if_(If)>
                 {
                     template<typename Expr>
-                    using apply = detail::eval_bool_action_<If, Expr>;
+                    struct apply
+                      : detail::eval_bool_action_<If, Expr>
+                    {};
                 };
             }
         }

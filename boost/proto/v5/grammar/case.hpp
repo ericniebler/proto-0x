@@ -28,7 +28,9 @@ namespace boost
                 struct grammar_impl<proto::v5::case_(Grammar, Actions...)>
                 {
                     template<typename Expr>
-                    using apply = matches<Expr, Grammar>;
+                    struct apply
+                      : matches<Expr, Grammar>
+                    {};
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +39,9 @@ namespace boost
                 struct grammar_impl<proto::v5::default_(Actions...)>
                 {
                     template<typename Expr>
-                    using apply = std::true_type;
+                    struct apply
+                      : std::true_type
+                    {};
                 };
             }
         }
