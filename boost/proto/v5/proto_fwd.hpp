@@ -522,6 +522,8 @@ namespace boost
             struct recursive_fold;
             struct reverse_recursive_fold;
 
+            struct everywhere;
+
             ////////////////////////////////////////////////////////////////////////////////////////
             // Misc. traits
             template<typename T>

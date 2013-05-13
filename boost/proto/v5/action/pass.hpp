@@ -35,12 +35,18 @@ namespace boost
                 {};
 
                 template<typename Tag, typename ...Grammars>
-                struct as_pass_action_<Tag(*)(Grammars...), typename std::enable_if<proto::v5::is_tag<Tag>::value>::type>
+                struct as_pass_action_<
+                    Tag(*)(Grammars...)
+                  , typename std::enable_if<proto::v5::is_tag<Tag>::value>::type
+                >
                   : _pass_<Tag(Grammars...)>
                 {};
 
                 template<typename Tag, typename ...Grammars>
-                struct as_pass_action_<Tag(*)(Grammars......), typename std::enable_if<proto::v5::is_tag<Tag>::value>::type>
+                struct as_pass_action_<
+                    Tag(*)(Grammars......)
+                  , typename std::enable_if<proto::v5::is_tag<Tag>::value>::type
+                >
                   : _pass_<Tag(Grammars......)>
                 {};
 

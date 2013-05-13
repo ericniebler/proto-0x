@@ -273,8 +273,8 @@ void test_make_expr_transform()
 
     proto::expr<
         proto::plus(
-            proto::terminal(int &)
-          , proto::terminal(int &)
+            proto::terminal(int const &)
+          , proto::terminal(int const &)
         )
     > t2 = ByRef()(proto::as_expr(1) + 1);
 

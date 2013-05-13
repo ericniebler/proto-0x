@@ -801,7 +801,7 @@ namespace boost
                 template<typename E, typename ...Rest>
                 constexpr auto operator()(E && e, Rest &&...) const
                 BOOST_PROTO_AUTO_RETURN(
-                    proto::v5::child<N>(e)
+                    proto::v5::child<N>(static_cast<E &&>(e))
                 )
             };
 
@@ -813,7 +813,7 @@ namespace boost
                 template<typename E, typename ...Rest>
                 constexpr auto operator()(E && e, Rest &&...) const
                 BOOST_PROTO_AUTO_RETURN(
-                    proto::v5::value(e)
+                    proto::v5::value(static_cast<E &&>(e))
                 )
             };
         }

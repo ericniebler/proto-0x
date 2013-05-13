@@ -10,6 +10,7 @@
 #include <boost/proto/v5/proto.hpp>
 namespace proto = boost::proto;
 using namespace proto;
+using namespace literals;
 
 struct map_list_of_  {};
 
@@ -43,9 +44,38 @@ struct map_list_of_expr
 
 constexpr map_list_of_expr<terminal(map_list_of_)> map_list_of {};
 
+constexpr auto omg = map_list_of(1,2)(2,3)(3,4)(4,5)(5,6);
+
+struct Square : def<
+    everywhere(
+        case_(
+            terminal(int),
+            terminal(multiplies(_value, _value))
+        )
+    )
+>{};
+
+constexpr auto sq = Square()(omg);
+static_assert(value(child<1>(child<0>(sq))) == 4*4, "whoa");
+
+//struct Sum
+//  : def<
+//        match(
+//            case_(terminal(int), _value)
+//          , case_(terminal(_), _int<0>)
+//          , default_(
+//                fold(_, _state, plus(_state, Sum))
+//            )
+//        )
+//    >
+//{};
+//
+//const int sum = Sum()(map_list_of(1,2), empty_env(), 0);
+//static_assert(35 == sum, "dude");
+
 int main()
 {
-  std::map<int, int> m = map_list_of(1,2)(2,3)(3,4)(4,5)(5,6);
+  std::map<int, int> m = Square()(map_list_of(1,2)(2,3)(3,4)(4,5)(5,6));
 
   for(auto p : m)
   {
@@ -98,7 +128,7 @@ struct lambda_eval
           , proto::case_( proto::terminal(_),
                 proto::_value
             )
-          , proto::case_( _,
+          , proto::default_(
                 proto::_eval<lambda_eval>
             )
         )
