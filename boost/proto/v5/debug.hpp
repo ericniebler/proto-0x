@@ -27,6 +27,7 @@
 #include <boost/proto/v5/fusion.hpp>
 #include <boost/proto/v5/utility.hpp>
 #include <boost/proto/v5/detail/access.hpp>
+#include <boost/proto/v5/action/basic_action.hpp>
 #include <boost/detail/sp_typeinfo.hpp>
 
 #if defined(__GLIBCXX__) || defined(__GLIBCPP__)
@@ -102,8 +103,58 @@ namespace boost
 
             namespace detail
             {
+                inline std::string tidy(std::string name)
+                {
+                    const std::string from("boost::proto::v5::");
+                    const std::string to("proto::");
+                    for(std::size_t p = name.find(from);
+                        p != std::string::npos;
+                        p = name.find(from, p + to.size()))
+                    {
+                        name.replace(p, from.size(), to);
+                    }
+                    return name;
+                }
+
                 template<typename T>
                 std::string name_of()
+                {
+                    return detail::tidy(name_of_<T>()());
+                }
+
+                struct concat
+                {
+                    explicit concat(char const *delim = "")
+                      : delim_(delim)
+                    {}
+
+                    std::string operator()() const
+                    {
+                        return std::string();
+                    }
+
+                    std::string operator()(std::string head) const
+                    {
+                        return head;
+                    }
+
+                    template<typename ...Strings>
+                    std::string operator()(std::string head, Strings... tail) const
+                    {
+                        return head + delim_ + (*this)(tail...);
+                    }
+
+                    char const *delim_;
+                };
+
+                template<template<typename...> class T>
+                struct template_name_
+                {
+                    static constexpr char const* value = 0;
+                };
+
+                template<typename T>
+                std::string name_of_impl_()
                 {
                 #ifdef BOOST_PROTO_USE_DEMANGLING
                     struct free_t { void operator()(void *p) { free(p); } };
@@ -115,6 +166,56 @@ namespace boost
                 #endif
                     return BOOST_SP_TYPEID(T).name();
                 }
+
+                template<typename T>
+                struct name_of_
+                {
+                    std::string operator()() const
+                    {
+                        return detail::name_of_impl_<T>();
+                    }
+                };
+
+                template<typename Ret, typename ...Args>
+                struct name_of_<Ret(Args...)>
+                {
+                    std::string operator()() const
+                    {
+                        return name_of<Ret>() + "(" + concat(",")(name_of<Args>()...) + ")";
+                    }
+                };
+
+                template<typename Ret, typename ...Args>
+                struct name_of_<Ret(*)(Args...)>
+                  : name_of_<Ret(Args...)>
+                {};
+
+                template<typename Ret, typename ...Args>
+                struct name_of_<Ret(Args......)>
+                {
+                    std::string operator()() const
+                    {
+                        return name_of<Ret>() + "(" + concat(",")(name_of<Args>()...) + "...)";
+                    }
+                };
+
+                template<typename Ret, typename ...Args>
+                struct name_of_<Ret(*)(Args......)>
+                  : name_of_<Ret(Args......)>
+                {};
+
+                template<template<typename...> class T, typename ...Args>
+                struct name_of_<T<Args...>>
+                {
+                    std::string operator()() const
+                    {
+                        if(template_name_<T>::value)
+                            return std::string(template_name_<T>::value) + "<" +
+                                concat(",")(name_of<Args>()...) + ">";
+                        else
+                            return detail::tidy(detail::name_of_impl_<T<Args...>>());
+                    }
+                };
             }
 
             namespace hidden_detail_
@@ -141,6 +242,12 @@ namespace boost
                 inline std::ostream &operator<<(ostream_wrapper sout_wrap, named_any t)
                 {
                     return sout_wrap.sout_ << t.name_;
+                }
+
+                template<typename T, BOOST_PROTO_ENABLE_IF(!is_expr<T>::value)>
+                std::ostream &maybe_output_expr(std::ostream &sout, T const &t, int depth)
+                {
+                    return sout << std::setw(depth) << "" << t;
                 }
             }
 
@@ -268,6 +375,52 @@ namespace boost
                     ::std::size_t &index_;
                     std::ostream &sout_;
                 };
+
+                template<typename T>
+                struct _name_of_
+                  : basic_action<_name_of_<T>>
+                {
+                    template<typename...As>
+                    std::string operator()(As &&...) const
+                    {
+                        return detail::name_of<T>();
+                    }
+                };
+
+                template<typename Action, typename Name = _name_of_<Action>>
+                struct _trace_
+                  : basic_action<_trace_<Action, Name>>
+                {
+                    template<typename Expr, typename ...Rest
+                      , typename DisplayExpr = functional::display_expr>
+                    auto operator()(Expr && e, Rest &&... rest) const
+                     -> decltype(call_action_<Action>()(
+                            static_cast<Expr &&>(e)
+                          , static_cast<Rest &&>(rest)...
+                        ))
+                    {
+                        using result_t =
+                            decltype(call_action_<Action>()(
+                                static_cast<Expr &&>(e)
+                              , static_cast<Rest &&>(rest)...
+                            ));
+                        std::cout << "TRACE CALL: "
+                                  << call_action_<Name>()(
+                                          static_cast<Expr &&>(e)
+                                        , static_cast<Rest &&>(rest)...
+                                      )
+                                  << "\n";
+                        DisplayExpr(4)(e);
+                        result_t res = call_action_<Action>()(
+                            static_cast<Expr &&>(e)
+                          , static_cast<Rest &&>(rest)...
+                        );
+                        std::cout << "TRACE RETURN:\n";
+                        maybe_output_expr(std::cout, res, 4);
+                        std::cout << "\n";
+                        return static_cast<result_t>(res);
+                    }
+                };
             }
 
             namespace functional
@@ -279,6 +432,16 @@ namespace boost
                 /// purposes.
                 struct display_expr
                 {
+                    /// \param sout  The \c ostream to which the expression tree
+                    ///              will be written.
+                    /// \param depth The starting indentation depth for this node.
+                    ///              Children nodes will be displayed at a starting
+                    ///              depth of <tt>depth+4</tt>.
+                    explicit display_expr(int depth)
+                      : depth_(depth)
+                      , sout_(::std::cout)
+                    {}
+
                     /// \param sout  The \c ostream to which the expression tree
                     ///              will be written.
                     /// \param depth The starting indentation depth for this node.
@@ -382,6 +545,31 @@ namespace boost
                     !proto::v5::matches<E, Grammar>::value
                   , "The expression matches the specified grammar"
                 );
+            }
+
+            struct trace
+            {};
+
+            namespace extension
+            {
+                template<typename Action>
+                struct action_impl<trace(Action)>
+                  : detail::_trace_<Action>
+                {};
+
+                template<typename Action, typename Name>
+                struct action_impl<trace(Action, Name)>
+                  : detail::_trace_<Action, Name>
+                {};
+            }
+
+            namespace exprs
+            {
+                template<typename Expr, BOOST_PROTO_ENABLE_IF(is_expr<Expr>::value)>
+                std::ostream &maybe_output_expr(std::ostream &sout, Expr const &e, int depth)
+                {
+                    return sout << proto::pretty_expr(e, depth);
+                }
             }
 
             /// \brief Assert at compile time that a particular expression

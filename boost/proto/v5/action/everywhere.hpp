@@ -11,6 +11,7 @@
 
 #include <boost/proto/v5/proto_fwd.hpp>
 #include <boost/proto/v5/def.hpp>
+#include <boost/proto/v5/utility.hpp>
 #include <boost/proto/v5/action/match.hpp>
 #include <boost/proto/v5/action/pass.hpp>
 #include <boost/proto/v5/grammar/expr.hpp>
@@ -26,28 +27,40 @@ namespace boost
             {
                 ////////////////////////////////////////////////////////////////////////////////////
                 // return_
-                struct return_
-                {
-                    template<typename T>
-                    constexpr T &operator()(T &t) const noexcept
-                    {
-                        return t;
-                    }
+                using return_ = utility::identity;
 
-                    template<typename T>
-                    constexpr auto operator()(T &&t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        T(static_cast<T &&>(t))
-                    )
+                ////////////////////////////////////////////////////////////////////////////////////
+                // as_case_
+                template<typename ActiveGrammar>
+                struct as_case_
+                {
+                    using type = case_(ActiveGrammar, ActiveGrammar);
+                };
+
+                template<typename Grammar, typename ...Actions>
+                struct as_case_<case_(*)(Grammar, Actions...)>
+                {
+                    using type = case_(*)(Grammar, Actions...);
+                };
+
+                template<typename R, typename ...As>
+                struct as_case_<R(*)(As...)>
+                {
+                    static_assert(
+                        utility::never<R(As...)>::value
+                      , "In everything(...), expected either a case_(...) statement or an "
+                        "active grammar."
+                    );
+                    using type = R(*)(As...);
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // everywhere
+                // substitute_if_
                 template<typename ...Cases>
-                struct apply_if_
+                struct substitute_if_
                   : def<
                         match(
-                            Cases...
+                            typename as_case_<Cases>::type...
                           , default_(
                                 return_(_) // avoid returning an rvalue ref to a temporary
                             )
@@ -55,15 +68,17 @@ namespace boost
                     >
                 {};
 
+                ////////////////////////////////////////////////////////////////////////////////////
+                // _everywhere_
                 template<typename ...Cases>
                 struct _everywhere_
                   : def<
                         match(
                             case_( terminal(_),
-                                apply_if_<Cases...>
+                                substitute_if_<Cases...>
                             )
                           , default_(
-                                apply_if_<Cases...>(
+                                substitute_if_<Cases...>(
                                     pass(_everywhere_<Cases...>...)
                                 )
                             )

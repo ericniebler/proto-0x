@@ -47,7 +47,7 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // _data
             struct _data
-              : _env_var<data_type>
+              : _get_env<data_type>
             {};
         }
     }

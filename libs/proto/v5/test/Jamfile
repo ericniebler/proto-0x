@@ -9,6 +9,7 @@ project
     : requirements
         <library>/boost/test//boost_unit_test_framework
         <link>static
+        <cxxflags>-Wno-multichar
     ;
 
 test-suite "proto"

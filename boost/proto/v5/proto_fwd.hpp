@@ -137,6 +137,12 @@ namespace boost
 
                 template<typename>
                 struct default_expr;
+
+                template<typename T>
+                struct name_of_;
+
+                template<template<typename...> class T>
+                struct template_name_;
             }
 
             namespace utility
@@ -347,7 +353,10 @@ namespace boost
                 struct unpack_expr;
 
                 template<typename Key>
-                struct env_var;
+                struct has_env;
+
+                template<typename Key>
+                struct get_env;
             }
 
             namespace result_of
@@ -362,7 +371,10 @@ namespace boost
                 struct unpack_expr;
 
                 template<typename Env, typename Key>
-                struct env_var;
+                struct has_env;
+
+                template<typename Env, typename Key>
+                struct get_env;
             }
 
             namespace exprs
@@ -450,8 +462,11 @@ namespace boost
 
             struct _state;
 
-            template<typename Tag>
-            struct _env_var;
+            template<typename Key>
+            struct _has_env;
+
+            template<typename Key>
+            struct _get_env;
 
             struct _env;
 
@@ -517,12 +532,17 @@ namespace boost
 
             struct let;
 
+            template<int ...Is>
+            struct _string;
+
             struct fold;
             struct reverse_fold;
             struct recursive_fold;
             struct reverse_recursive_fold;
 
             struct everywhere;
+
+            struct trace;
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // Misc. traits

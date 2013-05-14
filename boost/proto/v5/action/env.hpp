@@ -132,7 +132,7 @@ namespace boost
             namespace functional
             {
                 template<typename Key>
-                struct env_var
+                struct get_env
                 {
                     template<typename Env>
                     constexpr auto operator()(Env &&env) const
@@ -140,25 +140,76 @@ namespace boost
                         static_cast<Env &&>(env)[Key()]
                     )
                 };
+
+                template<typename Key>
+                struct has_env
+                {
+                    template<typename Env>
+                    constexpr bool operator()(Env &&env) const noexcept
+                    {
+                        return ::std::is_same<
+                            decltype(static_cast<Env &&>(env)[Key()])
+                          , envs::key_not_found
+                        >::value;
+                    }
+                };
             }
 
             namespace result_of
             {
                 template<typename Env, typename Key>
-                struct env_var
+                struct has_env
                 {
-                    using type = decltype(functional::env_var<Key>()(std::declval<Env>()));
+                    using type = bool;
+                };
+
+                template<typename Env, typename Key>
+                struct get_env
+                {
+                    using type = decltype(functional::get_env<Key>()(std::declval<Env>()));
                 };
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // _env_var
+            // has_env
+            template<typename Key, typename Env>
+            constexpr bool has_env(Env &&env) noexcept
+            {
+                return functional::has_env<Key>()(static_cast<Env &&>(env));
+            }
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // get_env
+            template<typename Key, typename Env>
+            constexpr auto get_env(Env && env)
+            BOOST_PROTO_AUTO_RETURN(
+                static_cast<Env &&>(env)[Key()]
+            )
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // _has_env
             template<typename Key>
-            struct _env_var
-              : basic_action<_env_var<Key>>
+            struct _has_env
+              : basic_action<_has_env<Key>>
             {
                 template<typename E, typename Env, typename ...Rest>
-                constexpr auto operator()(E &&, Env && env, Rest &&...) const
+                constexpr bool operator()(E &&, Env &&env, Rest &&...) const noexcept
+                {
+                    return ::std::is_same<
+                        decltype(static_cast<Env &&>(env)[Key()])
+                      , envs::key_not_found
+                    >::value;
+                }
+            };
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // _get_env
+            template<typename Key>
+            struct _get_env
+              : basic_action<_get_env<Key>>
+            {
+                template<typename E, typename Env, typename ...Rest>
+                constexpr auto operator()(E &&, Env &&env, Rest &&...) const
                 BOOST_PROTO_AUTO_RETURN(
                     static_cast<Env &&>(env)[Key()]
                 )

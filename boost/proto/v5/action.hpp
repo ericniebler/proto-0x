@@ -31,6 +31,7 @@
 #include <boost/proto/v5/action/placeholders.hpp>
 #include <boost/proto/v5/action/protect.hpp>
 #include <boost/proto/v5/action/recursive_fold.hpp>
+#include <boost/proto/v5/action/string.hpp>
 #include <boost/proto/v5/action/switch.hpp>
 #include <boost/proto/v5/action/unpack.hpp>
 #include <boost/proto/v5/action/void.hpp>
