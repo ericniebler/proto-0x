@@ -21,9 +21,9 @@ namespace boost
             namespace detail
             {
                 ////////////////////////////////////////////////////////////////////////////////////
-                // _void
-                struct _void
-                  : basic_action<_void>
+                // _void_
+                struct _void_
+                  : basic_action<_void_>
                 {
                     template<typename ...As>
                     void operator()(As &&...) const noexcept
@@ -37,7 +37,7 @@ namespace boost
                 // action_impl
                 template<>
                 struct action_impl<void()>
-                  : detail::_void
+                  : detail::_void_
                 {};
             }
         }

@@ -9,9 +9,8 @@ A Grab-Bag of Miscellaneous Thoughts
   is to replicate the generator functionality from Proto v4, where actions can be used to select
   between several wrapper types based on structural matching of the new expression.
 
-* Replace `_get_env<Key>` with `get_env(Key())`. Ditto for `_has_key`.
-
-* Add `set_env(Key(), _value)`.
+* Add `reset_env(Key(), _value)` that mutates a value in-place if a key exists, or adds it if it
+  doesn't.
 
 * Thoughts about `make(foo<some_action<int>>())`
     + It doesn't invoke `some_action<>`. Should it? With what semantics? Is it right to be looking

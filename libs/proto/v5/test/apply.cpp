@@ -29,8 +29,8 @@ namespace
 struct eval_unpack
   : proto::def<
         proto::apply(
-            proto::_get_env<fN<0>>
-          , proto::apply(proto::_get_env<fN<1>>, proto::pack(_))...
+            proto::get_env(fN<0>())
+          , proto::apply(proto::get_env(fN<1>()), proto::pack(_))...
         )
     >
 {};

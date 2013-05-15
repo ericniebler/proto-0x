@@ -351,12 +351,6 @@ namespace boost
 
                 template<typename TagOrDomain = void, typename DomainOrVoid = void>
                 struct unpack_expr;
-
-                template<typename Key>
-                struct has_env;
-
-                template<typename Key>
-                struct get_env;
             }
 
             namespace result_of
@@ -369,12 +363,6 @@ namespace boost
 
                 template<typename Tag, typename Seq, typename Domain = deduce_domain>
                 struct unpack_expr;
-
-                template<typename Env, typename Key>
-                struct has_env;
-
-                template<typename Env, typename Key>
-                struct get_env;
             }
 
             namespace exprs
@@ -462,12 +450,6 @@ namespace boost
 
             struct _state;
 
-            template<typename Key>
-            struct _has_env;
-
-            template<typename Key>
-            struct _get_env;
-
             struct _env;
 
             struct _data;
@@ -531,6 +513,11 @@ namespace boost
             struct call;
 
             struct let;
+
+            struct has_env;
+            struct get_env;
+            struct set_env;
+            struct reset_env;
 
             template<int ...Is>
             struct _string;

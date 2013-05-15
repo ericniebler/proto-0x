@@ -73,7 +73,7 @@ namespace boost
             /// \endcode
             namespace detail
             {
-                template<typename If, typename Then, typename Else = _void>
+                template<typename If, typename Then, typename Else = _void_>
                 struct _if_
                   : basic_action<_if_<If, Then, Else>>
                 {

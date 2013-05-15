@@ -35,15 +35,15 @@ namespace boost
                     }
 
                     template<typename T>
-                    constexpr T at(utility::any, T && t) const noexcept(noexcept(T(static_cast<T &&>(t))))
-                    {
-                        return static_cast<T &&>(t);
-                    }
+                    constexpr auto at(utility::any, T && t) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        T(static_cast<T &&>(t))
+                    )
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // env
-                // A basic_action env is a slot-based storage mechanism, accessible by Key.
+                // An env is a slot-based storage mechanism, accessible by Key.
                 template<typename Key, typename Value, typename Env /*= empty_env*/>
                 struct env
                   : private Env
@@ -56,7 +56,7 @@ namespace boost
                       , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<env, V>::value))>
                     constexpr explicit env(V && v, B && b = B())
                       : Env(static_cast<B &&>(b))
-                      , value_(static_cast<V &&>(v))
+                      , value_(v) // copy, not move
                     {}
 
                     // For key-based lookups not intended to fail
@@ -83,6 +83,15 @@ namespace boost
                         );
                     }
                 };
+
+                template<typename Key, typename Value>
+                using key_value = env<Key, Value>;
+
+                template<typename Key, typename Value>
+                constexpr key_value<Key, Value> make_key_value(Key, Value &&value)
+                {
+                    return key_value<Key, Value>(static_cast<Value &&>(value));
+                }
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -104,19 +113,113 @@ namespace boost
 
             namespace detail
             {
-                struct make_env_impl_
+                struct make_env_
                 {
                     template<typename T>
-                    constexpr static T make_env(T && t)
+                    constexpr T operator()(T && t) const
                     {
                         static_assert(is_env<T>::value, "make_env used in non-env context");
                         return t;
                     }
 
-                    template<typename T, typename U, typename ...V, typename Impl = make_env_impl_>
-                    constexpr static auto make_env(T && t, U && u, V &&... v)
+                    template<typename T, typename U, typename ...V, typename Impl = make_env_>
+                    constexpr auto operator()(T && t, U && u, V &&... v) const
                     BOOST_PROTO_AUTO_RETURN(
-                        Impl::make_env((static_cast<T &&>(t), static_cast<U &&>(u)), static_cast<V &&>(v)...)
+                        Impl()((static_cast<T &&>(t), static_cast<U &&>(u)), static_cast<V &&>(v)...)
+                    )
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // _has_env_
+                template<typename Key>
+                struct _has_env_
+                  : basic_action<_has_env_<Key>>
+                {
+                    template<typename E>
+                    constexpr std::false_type operator()(E &&) const noexcept
+                    {
+                        return std::false_type();
+                    }
+
+                    template<typename E, typename Env, typename ...Rest>
+                    constexpr auto operator()(E &&e, Env &&env, Rest &&...rest) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        std::integral_constant<
+                            bool
+                          , ::std::is_same<
+                                decltype(
+                                    static_cast<Env &&>(env)[
+                                        call_action_<Key>()(
+                                            static_cast<E &&>(e)
+                                          , static_cast<Env &&>(env)
+                                          , static_cast<Rest &&>(rest)...
+                                        )
+                                    ]
+                                )
+                              , envs::key_not_found
+                            >::value
+                        >()
+                    )
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////////
+                // _get_env_
+                template<typename Key>
+                struct _get_env_
+                  : basic_action<_get_env_<Key>>
+                {
+                    template<typename E>
+                    constexpr key_not_found operator()(E &&) const noexcept
+                    {
+                        return key_not_found();
+                    }
+
+                    template<typename E, typename Env, typename ...Rest>
+                    constexpr auto operator()(E &&e, Env &&env, Rest &&...rest) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        static_cast<Env &&>(env)[
+                            call_action_<Key>()(
+                                static_cast<E &&>(e)
+                              , static_cast<Env &&>(env)
+                              , static_cast<Rest &&>(rest)...
+                            )
+                        ]
+                    )
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////////
+                // _set_env_
+                template<typename Key, typename Value>
+                struct _set_env_
+                  : basic_action<_set_env_<Key, Value>>
+                {
+                    template<typename E>
+                    constexpr auto operator()(E &&e) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        envs::make_key_value(
+                            call_action_<Key>()(static_cast<E &&>(e))
+                          , call_action_<Value>()(static_cast<E &&>(e))
+                        )
+                    )
+
+                    template<typename E, typename Env, typename ...Rest>
+                    constexpr auto operator()(E &&e, Env &&env, Rest &&...rest) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        BOOST_PROTO_TRY_CALL(make_env_())(
+                            envs::make_key_value(
+                                call_action_<Key>()(
+                                    static_cast<E &&>(e)
+                                  , static_cast<Env &&>(env)
+                                  , static_cast<Rest &&>(rest)...
+                                )
+                              , call_action_<Value>()(
+                                    static_cast<E &&>(e)
+                                  , static_cast<Env &&>(env)
+                                  , static_cast<Rest &&>(rest)...
+                                )
+                            )
+                          , static_cast<Env &&>(env)
+                        )
                     )
                 };
             }
@@ -124,96 +227,46 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // make_env
             template<typename ...T>
-            inline constexpr auto make_env(T &&... t)
+            constexpr auto make_env(T &&... t)
             BOOST_PROTO_AUTO_RETURN(
-                detail::make_env_impl_::make_env(static_cast<T &&>(t)...)
+                detail::make_env_()(static_cast<T &&>(t)...)
             )
 
-            namespace functional
+            struct has_env
+            {};
+
+            struct get_env
+            {};
+
+            struct set_env
+            {};
+
+            struct reset_env
+            {};
+
+            namespace extension
             {
+                ////////////////////////////////////////////////////////////////////////////////////
+                // has_env
                 template<typename Key>
-                struct get_env
-                {
-                    template<typename Env>
-                    constexpr auto operator()(Env &&env) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        static_cast<Env &&>(env)[Key()]
-                    )
-                };
+                struct action_impl<has_env(Key)>
+                  : detail::_has_env_<Key>
+                {};
 
+                ////////////////////////////////////////////////////////////////////////////////////
+                // get_env
                 template<typename Key>
-                struct has_env
-                {
-                    template<typename Env>
-                    constexpr bool operator()(Env &&env) const noexcept
-                    {
-                        return ::std::is_same<
-                            decltype(static_cast<Env &&>(env)[Key()])
-                          , envs::key_not_found
-                        >::value;
-                    }
-                };
+                struct action_impl<get_env(Key)>
+                  : detail::_get_env_<Key>
+                {};
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // set_env
+                template<typename Key, typename Value>
+                struct action_impl<set_env(Key, Value)>
+                  : detail::_set_env_<Key, Value>
+                {};
             }
-
-            namespace result_of
-            {
-                template<typename Env, typename Key>
-                struct has_env
-                {
-                    using type = bool;
-                };
-
-                template<typename Env, typename Key>
-                struct get_env
-                {
-                    using type = decltype(functional::get_env<Key>()(std::declval<Env>()));
-                };
-            }
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // has_env
-            template<typename Key, typename Env>
-            constexpr bool has_env(Env &&env) noexcept
-            {
-                return functional::has_env<Key>()(static_cast<Env &&>(env));
-            }
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // get_env
-            template<typename Key, typename Env>
-            constexpr auto get_env(Env && env)
-            BOOST_PROTO_AUTO_RETURN(
-                static_cast<Env &&>(env)[Key()]
-            )
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // _has_env
-            template<typename Key>
-            struct _has_env
-              : basic_action<_has_env<Key>>
-            {
-                template<typename E, typename Env, typename ...Rest>
-                constexpr bool operator()(E &&, Env &&env, Rest &&...) const noexcept
-                {
-                    return ::std::is_same<
-                        decltype(static_cast<Env &&>(env)[Key()])
-                      , envs::key_not_found
-                    >::value;
-                }
-            };
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // _get_env
-            template<typename Key>
-            struct _get_env
-              : basic_action<_get_env<Key>>
-            {
-                template<typename E, typename Env, typename ...Rest>
-                constexpr auto operator()(E &&, Env &&env, Rest &&...) const
-                BOOST_PROTO_AUTO_RETURN(
-                    static_cast<Env &&>(env)[Key()]
-                )
-            };
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // _env
