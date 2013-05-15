@@ -73,6 +73,7 @@ namespace boost
             /// \endcode
             namespace detail
             {
+
                 template<typename If, typename Then, typename Else = _void_>
                 struct _if_
                   : basic_action<_if_<If, Then, Else>>
@@ -80,11 +81,13 @@ namespace boost
                     template<typename ...Args>
                     auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
-                        typename std::conditional<
-                            eval_bool_action_<If, Args...>::value
-                          , call_action_<Then>
-                          , call_action_<Else>
-                        >::type()(static_cast<Args &&>(args)...)
+                        call_action_<
+                            typename std::conditional<
+                                eval_bool_action_<If, Args...>::value
+                              , Then
+                              , Else
+                            >::type
+                        >()(static_cast<Args &&>(args)...)
                     )
                 };
             }

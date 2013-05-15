@@ -819,11 +819,12 @@ namespace boost
 
                     template<typename ...Args>
                     constexpr substitution_failure<Fun(Args...)>
-                    operator()(Args &&...) const volatile noexcept
+                    operator()(Args &&...args) const volatile noexcept
                     {
-                        // Uncomment this line to get the full template instantiation backtrace
-                        //const_cast<try_call_wrapper const *>(this)->fun_(static_cast<Args &&>(args)...);
-                        return substitution_failure<Fun(Args...)>();
+                        return
+                            // Uncomment this line to get the full template instantiation backtrace
+                            //const_cast<try_call_wrapper const *>(this)->fun_(static_cast<Args &&>(args)...),
+                            substitution_failure<Fun(Args...)>();
                     }
                 };
 

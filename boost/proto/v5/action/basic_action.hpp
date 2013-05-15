@@ -23,8 +23,15 @@ namespace boost
             namespace detail
             {
                 ////////////////////////////////////////////////////////////////////////////////////
-                template<typename T>
-                using call_action_ = BOOST_PROTO_TRY_CALL_WRAP(as_action_<T>);
+                template<typename Action>
+                struct call_action_
+                {
+                    template<typename ...Args, typename A = Action>
+                    constexpr auto operator()(Args &&... args) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        BOOST_PROTO_TRY_CALL(as_action_<A>())(static_cast<Args &&>(args)...)
+                    )
+                };
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 struct not_an_action

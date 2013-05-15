@@ -516,8 +516,8 @@ namespace boost
 
             struct has_env;
             struct get_env;
+            struct push_env;
             struct set_env;
-            struct reset_env;
 
             template<int ...Is>
             struct _string;

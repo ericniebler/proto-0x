@@ -98,7 +98,7 @@ namespace boost
                 template<typename Action, typename ...Actions>
                 struct collect_pack_actions_<pack(Action), void(Actions...)>
                 {
-                    using type = void(Actions..., call_action_<Action>);
+                    using type = void(Actions..., Action);
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +133,7 @@ namespace boost
                 template<typename Head, typename...Tail, typename ...Args>
                 struct compute_indices_1_<void(Head, Tail...), Args...>
                 {
-                    using arity = result_of::arity_of<decltype(Head()(std::declval<Args>()...))>;
+                    using arity = result_of::arity_of<decltype(call_action_<Head>()(std::declval<Args>()...))>;
                     using tail = compute_indices_1_<void(Tail...), Args...>;
                     using type = typename compute_indices_2_<arity::value, tail::arity::value>::type;
                 };
@@ -141,7 +141,7 @@ namespace boost
                 template<typename Head, typename ...Args>
                 struct compute_indices_1_<void(Head), Args...>
                 {
-                    using arity = result_of::arity_of<decltype(Head()(std::declval<Args>()...))>;
+                    using arity = result_of::arity_of<decltype(call_action_<Head>()(std::declval<Args>()...))>;
                     using type = typename compute_indices_2_<arity::value>::type;
                 };
 

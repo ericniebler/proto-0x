@@ -34,14 +34,12 @@ void test_action()
     int_ p(42);
 
     {
-        int i = (proto::data = 42)[proto::data];
+        int i = (proto::data = 42)(proto::data);
         BOOST_CHECK_EQUAL(i, 42);
         auto env = (proto::data = 42, scope = "hello", scope = "goodbye");
-        i = env[proto::data];
-        char const *loc = env[scope];
+        i = env(proto::data);
+        char const *loc = env(scope);
         BOOST_CHECK_EQUAL(std::string(loc), std::string("goodbye"));
-        i = env.at(1,1); // lookup with a key that doesn't exist, return default
-        BOOST_CHECK_EQUAL(i, 1);
 
         // Look, ma! A basic_action!
         char const (&sz)[6] = proto::_data()(p, (proto::data = "hello"));

@@ -75,8 +75,8 @@ namespace mini_lambda
       : proto::def<
             proto::match(
                 // When evaluating a placeholder, use the placeholder
-                // to index into the "data" parameter, which is a fusion
-                // vector containing the arguments to the lambda expression.
+                // fetch a value from the environment parameter, which
+                // is a key/value store set up before calling grammar.
                 proto::case_(
                     proto::terminal(placeholder<_>)
                   , proto::get_env(proto::_value)

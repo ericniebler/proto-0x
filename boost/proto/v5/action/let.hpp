@@ -22,11 +22,11 @@ namespace boost
             namespace detail
             {
                 template<typename Local>
-                struct eval_local;
+                struct _eval_local_;
 
                 template<typename Local, typename Action>
-                struct eval_local<Local(*)(Action)>
-                  : basic_action<eval_local<Local(*)(Action)>>
+                struct _eval_local_<Local(*)(Action)>
+                  : basic_action<_eval_local_<Local(*)(Action)>>
                 {
                     template<typename ...Args>
                     constexpr auto operator()(Args &&...args) const
@@ -47,7 +47,9 @@ namespace boost
                     BOOST_PROTO_AUTO_RETURN(
                         call_action_<Action>()(
                             static_cast<Expr &&>(expr)
-                          , proto::v5::make_env(eval_local<Locals>()(static_cast<Expr &&>(expr))...)
+                          , proto::v5::make_env(
+                                _eval_local_<Locals>()(static_cast<Expr &&>(expr))...
+                            )
                         )
                     )
 
@@ -58,7 +60,7 @@ namespace boost
                             static_cast<Expr &&>(expr)
                           , proto::v5::make_env(
                                 static_cast<Env &&>(env)
-                              , eval_local<Locals>()(
+                              , _eval_local_<Locals>()(
                                     static_cast<Expr &&>(expr)
                                   , static_cast<Env &&>(env)
                                   , static_cast<Rest &&>(rest)...
@@ -77,7 +79,7 @@ namespace boost
                 template<typename Expr, typename Env, typename ...Rest, typename This = Local>
                 constexpr auto operator()(Expr &&, Env &&env, Rest &&...) const
                 BOOST_PROTO_AUTO_RETURN(
-                    static_cast<Env &&>(env)[static_cast<This const &>(*this)]
+                    static_cast<Env &&>(env)(static_cast<This const &>(*this))
                 )
             };
 

@@ -430,7 +430,6 @@ namespace boost
                 struct data_type
                   : env_var_tag<data_type>
                 {
-                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(data_type);
                     using env_var_tag<data_type>::operator=;
                 };
 

@@ -23,11 +23,18 @@
 #include <boost/mpl/quote.hpp>
 #include <boost/fusion/mpl.hpp>
 #include <boost/proto/v5/proto_fwd.hpp>
+#include <boost/proto/v5/def.hpp>
 #include <boost/proto/v5/expr.hpp>
+#include <boost/proto/v5/tags.hpp>
 #include <boost/proto/v5/fusion.hpp>
 #include <boost/proto/v5/utility.hpp>
 #include <boost/proto/v5/detail/access.hpp>
 #include <boost/proto/v5/action/basic_action.hpp>
+#include <boost/proto/v5/action/env.hpp>
+#include <boost/proto/v5/action/if.hpp>
+#include <boost/proto/v5/action/integral_constant.hpp>
+#include <boost/proto/v5/action/make.hpp>
+#include <boost/proto/v5/action/call.hpp>
 #include <boost/detail/sp_typeinfo.hpp>
 
 #if defined(__GLIBCXX__) || defined(__GLIBCPP__)
@@ -376,6 +383,8 @@ namespace boost
                     std::ostream &sout_;
                 };
 
+                ////////////////////////////////////////////////////////////////////////////////////
+                // _name_of_
                 template<typename T>
                 struct _name_of_
                   : basic_action<_name_of_<T>>
@@ -387,39 +396,83 @@ namespace boost
                     }
                 };
 
+                ////////////////////////////////////////////////////////////////////////////////////
+                // depth_tag: For use in the trace action to handle indenting levels
+                struct depth_tag
+                  : env_var_tag<depth_tag>
+                {
+                    using env_var_tag<depth_tag>::operator=;
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // _get_depth_
+                // Fetch the current depth from the environment
+                struct _get_depth_
+                  : def<get_env(depth_tag())>
+                {};
+
+                struct _push_depth_if
+                  : def<if_(
+                        has_env(depth_tag())
+                      , set_env(depth_tag(), plus(_get_depth_, _int<4>))
+                      , push_env(depth_tag(), _int<0>)
+                    )>
+                {};
+
                 template<typename Action, typename Name = _name_of_<Action>>
                 struct _trace_
                   : basic_action<_trace_<Action, Name>>
                 {
-                    template<typename Expr, typename ...Rest
+                    template<typename Expr, typename Env, typename ...Rest
                       , typename DisplayExpr = functional::display_expr>
-                    auto operator()(Expr && e, Rest &&... rest) const
+                    auto operator()(Expr && e, Env &&env, Rest &&... rest) const
                      -> decltype(call_action_<Action>()(
                             static_cast<Expr &&>(e)
+                          , std::declval<decltype(_push_depth_if()(
+                                static_cast<Expr &&>(e)
+                              , static_cast<Env &&>(env)
+                            )) &>()
                           , static_cast<Rest &&>(rest)...
                         ))
                     {
+                        auto new_env =
+                            _push_depth_if()(
+                                static_cast<Expr &&>(e)
+                              , static_cast<Env &&>(env)
+                            );
                         using result_t =
                             decltype(call_action_<Action>()(
                                 static_cast<Expr &&>(e)
+                              , new_env
                               , static_cast<Rest &&>(rest)...
                             ));
-                        std::cout << "TRACE CALL: "
+                        int depth = _get_depth_()(e, new_env);
+                        std::cout << std::setw(depth) << ""
+                                  << "TRACE CALL: "
                                   << call_action_<Name>()(
                                           static_cast<Expr &&>(e)
+                                        , new_env
                                         , static_cast<Rest &&>(rest)...
                                       )
                                   << "\n";
-                        DisplayExpr(4)(e);
+                        DisplayExpr{depth}(e);
                         result_t res = call_action_<Action>()(
                             static_cast<Expr &&>(e)
+                          , new_env
                           , static_cast<Rest &&>(rest)...
                         );
-                        std::cout << "TRACE RETURN:\n";
-                        maybe_output_expr(std::cout, res, 4);
-                        std::cout << "\n";
+                        std::cout << std::setw(depth) << ""
+                                  << "TRACE RETURN:\n";
+                        maybe_output_expr(std::cout, res, depth);
+                        std::cout << std::setw(depth) << "" << "\n";
                         return static_cast<result_t>(res);
                     }
+
+                    template<typename Expr>
+                    auto operator()(Expr && e) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        this->operator()(static_cast<Expr &&>(e), empty_env())
+                    )
                 };
             }
 

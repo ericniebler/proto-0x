@@ -22,6 +22,8 @@ namespace boost
         {
             namespace envs
             {
+                ////////////////////////////////////////////////////////////////////////////////////
+                // key_not_found
                 struct key_not_found
                 {};
 
@@ -29,16 +31,16 @@ namespace boost
                 // empty_env
                 struct empty_env
                 {
-                    constexpr key_not_found operator[](utility::any) const noexcept
+                    constexpr key_not_found operator()(utility::any) const noexcept
                     {
                         return key_not_found();
                     }
 
-                    template<typename T>
-                    constexpr auto at(utility::any, T && t) const
-                    BOOST_PROTO_AUTO_RETURN(
-                        T(static_cast<T &&>(t))
-                    )
+                    template<typename T, typename V>
+                    friend constexpr env<T, V> operator,(empty_env, env<T, V> head)
+                    {
+                        return head;
+                    }
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -59,19 +61,17 @@ namespace boost
                       , value_(v) // copy, not move
                     {}
 
-                    // For key-based lookups not intended to fail
-                    using Env::operator[];
-                    constexpr Value operator[](Key) const
-                    BOOST_PROTO_RETURN(
-                        this->value_
+                    using Env::operator();
+
+                    constexpr auto operator()(Key) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        Value(this->value_)
                     )
 
-                    // For key-based lookups that can fail, use the default if key not found.
-                    using Env::at;
-                    template<typename T>
-                    constexpr Value at(Key, T &&) const
-                    BOOST_PROTO_RETURN(
-                        this->value_
+                    template<typename V>
+                    auto operator()(Key, V &&v)
+                    BOOST_PROTO_AUTO_RETURN(
+                        this->value_ = v // copy, don't move
                     )
 
                     template<typename T, typename V>
@@ -125,7 +125,10 @@ namespace boost
                     template<typename T, typename U, typename ...V, typename Impl = make_env_>
                     constexpr auto operator()(T && t, U && u, V &&... v) const
                     BOOST_PROTO_AUTO_RETURN(
-                        Impl()((static_cast<T &&>(t), static_cast<U &&>(u)), static_cast<V &&>(v)...)
+                        BOOST_PROTO_TRY_CALL(Impl())(
+                            (static_cast<T &&>(t), static_cast<U &&>(u))
+                          , static_cast<V &&>(v)...
+                        )
                     )
                 };
 
@@ -146,17 +149,17 @@ namespace boost
                     BOOST_PROTO_AUTO_RETURN(
                         std::integral_constant<
                             bool
-                          , ::std::is_same<
+                          , !::std::is_same<
                                 decltype(
-                                    static_cast<Env &&>(env)[
+                                    static_cast<Env &&>(env)(
                                         call_action_<Key>()(
                                             static_cast<E &&>(e)
                                           , static_cast<Env &&>(env)
                                           , static_cast<Rest &&>(rest)...
                                         )
-                                    ]
+                                    )
                                 )
-                              , envs::key_not_found
+                              , key_not_found
                             >::value
                         >()
                     )
@@ -177,13 +180,47 @@ namespace boost
                     template<typename E, typename Env, typename ...Rest>
                     constexpr auto operator()(E &&e, Env &&env, Rest &&...rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        static_cast<Env &&>(env)[
+                        static_cast<Env &&>(env)(
                             call_action_<Key>()(
                                 static_cast<E &&>(e)
                               , static_cast<Env &&>(env)
                               , static_cast<Rest &&>(rest)...
                             )
-                        ]
+                        )
+                    )
+                };
+
+                ////////////////////////////////////////////////////////////////////////////////////////
+                // _push_env_
+                template<typename Key, typename Value>
+                struct _push_env_
+                  : basic_action<_push_env_<Key, Value>>
+                {
+                    template<typename E>
+                    constexpr auto operator()(E &&e) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        envs::make_key_value(
+                            call_action_<Key>()(static_cast<E &&>(e))
+                          , call_action_<Value>()(static_cast<E &&>(e))
+                        )
+                    )
+
+                    template<typename E, typename Env, typename ...Rest>
+                    constexpr auto operator()(E &&e, Env &&env, Rest &&...rest) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        static_cast<Env &&>(env)
+                      , envs::make_key_value(
+                            call_action_<Key>()(
+                                static_cast<E &&>(e)
+                              , static_cast<Env &&>(env)
+                              , static_cast<Rest &&>(rest)...
+                            )
+                          , call_action_<Value>()(
+                                static_cast<E &&>(e)
+                              , static_cast<Env &&>(env)
+                              , static_cast<Rest &&>(rest)...
+                            )
+                        )
                     )
                 };
 
@@ -205,8 +242,8 @@ namespace boost
                     template<typename E, typename Env, typename ...Rest>
                     constexpr auto operator()(E &&e, Env &&env, Rest &&...rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        BOOST_PROTO_TRY_CALL(make_env_())(
-                            envs::make_key_value(
+                        utility::functional::back()(
+                            BOOST_PROTO_TRY_CALL(static_cast<Env &&>(env))(
                                 call_action_<Key>()(
                                     static_cast<E &&>(e)
                                   , static_cast<Env &&>(env)
@@ -219,6 +256,24 @@ namespace boost
                                 )
                             )
                           , static_cast<Env &&>(env)
+                        )
+                    )
+
+                    template<typename E, typename Env, typename ...Rest>
+                    constexpr auto operator()(E &&e, Env &&env, Rest &&...rest) const volatile
+                    BOOST_PROTO_AUTO_RETURN(
+                        static_cast<Env &&>(env)
+                      , envs::make_key_value(
+                            call_action_<Key>()(
+                                static_cast<E &&>(e)
+                              , static_cast<Env &&>(env)
+                              , static_cast<Rest &&>(rest)...
+                            )
+                          , call_action_<Value>()(
+                                static_cast<E &&>(e)
+                              , static_cast<Env &&>(env)
+                              , static_cast<Rest &&>(rest)...
+                            )
                         )
                     )
                 };
@@ -238,10 +293,10 @@ namespace boost
             struct get_env
             {};
 
-            struct set_env
+            struct push_env
             {};
 
-            struct reset_env
+            struct set_env
             {};
 
             namespace extension
@@ -266,6 +321,13 @@ namespace boost
                 struct action_impl<set_env(Key, Value)>
                   : detail::_set_env_<Key, Value>
                 {};
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // push_env
+                template<typename Key, typename Value>
+                struct action_impl<push_env(Key, Value)>
+                  : detail::_push_env_<Key, Value>
+                {};
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -273,6 +335,12 @@ namespace boost
             struct _env
               : basic_action<_env>
             {
+                template<typename E>
+                constexpr auto operator()(E &&) const
+                BOOST_PROTO_AUTO_RETURN(
+                    empty_env()
+                )
+
                 template<typename E, typename Env, typename ...Rest>
                 constexpr auto operator()(E &&, Env && env, Rest &&...) const
                 BOOST_PROTO_AUTO_RETURN(
