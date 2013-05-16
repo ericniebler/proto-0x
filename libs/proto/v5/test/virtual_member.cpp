@@ -57,7 +57,7 @@ void test_virtual_members()
             proto::match(
                 proto::case_(
                     proto::member(proto::terminal(int), proto::terminal(foo_tag))
-                  , proto::pass
+                  , proto::passthru
                 )
             )
         >

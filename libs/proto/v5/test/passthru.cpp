@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// protect.hpp
+// passthru.hpp
 //
 //  Copyright 2013 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
@@ -20,17 +20,17 @@ struct MinusToPlus
             )
           , proto::case_(
                 _(MinusToPlus...)
-              , proto::pass
+              , proto::passthru
             )
           , proto::case_(
                 proto::terminal(_)
-              , proto::pass
+              , proto::passthru
             )
         )
     >
 {};
 
-void test_pass()
+void test_passthru()
 {
     using namespace proto::literals;
     auto x = - (1_et - 2);
@@ -51,9 +51,9 @@ using namespace boost::unit_test;
 //
 test_suite* init_unit_test_suite( int argc, char* argv[] )
 {
-    test_suite *test = BOOST_TEST_SUITE("test proto::_pass");
+    test_suite *test = BOOST_TEST_SUITE("test proto::passthru");
 
-    test->add(BOOST_TEST_CASE(&test_pass));
+    test->add(BOOST_TEST_CASE(&test_passthru));
 
     return test;
 }

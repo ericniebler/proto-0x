@@ -28,8 +28,8 @@ static_assert(!proto::is_action<proto::match(proto::terminal(int))>::value, "");
 struct GrammarAndAction
   : proto::def<
         proto::match(
-            proto::case_(proto::terminal(int), proto::pass)
-          , proto::case_(proto::plus(Grammar, Grammar), proto::pass)
+            proto::case_(proto::terminal(int), proto::passthru)
+          , proto::case_(proto::plus(Grammar, Grammar), proto::passthru)
         )
     >
 {};
@@ -37,8 +37,8 @@ struct GrammarAndAction
 static_assert(proto::is_grammar<GrammarAndAction>::value, "");
 static_assert(proto::is_action<GrammarAndAction>::value, "");
 
-static_assert(proto::is_grammar<proto::match(proto::case_(proto::terminal(int), proto::pass))>::value, "");
-static_assert(proto::is_action<proto::match(proto::case_(proto::terminal(int), proto::pass))>::value, "");
+static_assert(proto::is_grammar<proto::match(proto::case_(proto::terminal(int), proto::passthru))>::value, "");
+static_assert(proto::is_action<proto::match(proto::case_(proto::terminal(int), proto::passthru))>::value, "");
 
 struct Action
   : proto::def<

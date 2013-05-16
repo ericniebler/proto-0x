@@ -13,7 +13,7 @@
 #include <boost/proto/v5/def.hpp>
 #include <boost/proto/v5/utility.hpp>
 #include <boost/proto/v5/action/match.hpp>
-#include <boost/proto/v5/action/pass.hpp>
+#include <boost/proto/v5/action/passthru.hpp>
 #include <boost/proto/v5/grammar/expr.hpp>
 #include <boost/proto/v5/grammar/placeholders.hpp>
 
@@ -79,7 +79,7 @@ namespace boost
                             )
                           , default_(
                                 substitute_if_<Cases...>(
-                                    pass(_everywhere_<Cases...>...)
+                                    passthru(_everywhere_<Cases...>...)
                                 )
                             )
                         )

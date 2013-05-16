@@ -209,7 +209,7 @@ struct ByVal
             )
           , proto::case_(
                 proto::_(ByVal...)
-              , proto::pass
+              , proto::passthru
             )
         )
     >
@@ -225,7 +225,7 @@ struct ByRef
             )
           , proto::case_(
                 proto::_(ByRef...)
-              , proto::pass
+              , proto::passthru
             )
         )
     >
@@ -237,7 +237,7 @@ struct Minus
         proto::match(
             proto::case_(
                 proto::terminal(proto::_)
-              , proto::pass
+              , proto::passthru
             )
           , proto::case_(
                 proto::plus(Minus, Minus)
@@ -256,7 +256,7 @@ struct Square
             )
           , proto::case_(
                 proto::plus(Square, Square)
-              , proto::pass
+              , proto::passthru
             )
         )
     >

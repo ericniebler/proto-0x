@@ -35,7 +35,7 @@ test-suite "proto"
         [ run mpl.cpp ]
         [ run noinvoke.cpp ]
         [ run pack_expansion.cpp ]
-        [ run pass.cpp ]
+        [ run passthru.cpp ]
         [ run protect.cpp ]
         [ run virtual_member.cpp ]
     ;

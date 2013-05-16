@@ -63,9 +63,9 @@ void test_action()
 
     // Check the pass-through basic_action
     using X = proto::terminal(int);
-    proto::def<proto::pass(X, X, X...)>()(p(p));
-    proto::def<proto::pass(X, X, X...)>()(p(p, p));
-    proto::def<proto::pass(X, X, X...)>()(p(p, p, p));
+    proto::def<proto::passthru(X, X, X...)>()(p(p));
+    proto::def<proto::passthru(X, X, X...)>()(p(p, p));
+    proto::def<proto::passthru(X, X, X...)>()(p(p, p, p));
 }
 
 template<typename T>

@@ -33,12 +33,12 @@ namespace boost
                   : detail::as_action_<Action>
                 {};
 
-                // These two are defined in pass.hpp
+                // These two are defined in passthru.hpp
                 template<typename Tag, typename ...ActiveGrammars>
-                struct action_impl<case_(Tag(ActiveGrammars...), pass)>;
+                struct action_impl<case_(Tag(ActiveGrammars...), passthru)>;
 
                 template<typename Tag, typename ...ActiveGrammars>
-                struct action_impl<case_(Tag(ActiveGrammars......), pass)>;
+                struct action_impl<case_(Tag(ActiveGrammars......), passthru)>;
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // default_

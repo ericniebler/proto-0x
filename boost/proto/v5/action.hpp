@@ -27,7 +27,7 @@
 #include <boost/proto/v5/action/matches.hpp>
 #include <boost/proto/v5/action/not.hpp>
 #include <boost/proto/v5/action/or.hpp>
-#include <boost/proto/v5/action/pass.hpp>
+#include <boost/proto/v5/action/passthru.hpp>
 #include <boost/proto/v5/action/placeholders.hpp>
 #include <boost/proto/v5/action/protect.hpp>
 #include <boost/proto/v5/action/recursive_fold.hpp>

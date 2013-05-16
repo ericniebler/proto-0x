@@ -76,7 +76,7 @@
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\matches.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\not.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\or.hpp" />
-    <ClInclude Include="..\..\..\..\boost\proto\v5\action\pass.hpp" />
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\passthru.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\placeholders.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\protect.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\recursive_fold.hpp" />
@@ -243,7 +243,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\test\pass.cpp">
+    <ClCompile Include="..\test\passthru.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>

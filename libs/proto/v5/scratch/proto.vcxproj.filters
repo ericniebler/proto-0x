@@ -225,9 +225,6 @@
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\matches.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\boost\proto\v5\action\pass.hpp">
-      <Filter>Proto Files\action</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\match.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
@@ -295,6 +292,9 @@
       <Filter>Proto Files\action</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\string.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\passthru.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
   </ItemGroup>
@@ -377,11 +377,11 @@
     <ClCompile Include="..\test\make.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\test\pass.cpp">
-      <Filter>Test Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\example\map_list_of.cpp">
       <Filter>Example Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\passthru.cpp">
+      <Filter>Test Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

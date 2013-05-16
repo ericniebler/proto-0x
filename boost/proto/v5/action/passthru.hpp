@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// pass.hpp
+// passthru.hpp
 // Rebuild an expression where each child has been transformed according
 // to the corresponding action.
 //
@@ -7,8 +7,8 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PROTO_V5_ACTION_pass_HPP_INCLUDED
-#define BOOST_PROTO_V5_ACTION_pass_HPP_INCLUDED
+#ifndef BOOST_PROTO_V5_ACTION_PASSTHRU_HPP_INCLUDED
+#define BOOST_PROTO_V5_ACTION_PASSTHRU_HPP_INCLUDED
 
 #include <utility>
 #include <type_traits>
@@ -27,34 +27,34 @@ namespace boost
             namespace detail
             {
                 template<typename Actions>
-                struct _pass_;
+                struct _passthru_;
 
                 template<typename Action, typename Enable = void>
-                struct as_pass_action_
+                struct as_passthru_action_
                   : as_action_<Action>
                 {};
 
                 template<typename Tag, typename ...Grammars>
-                struct as_pass_action_<
+                struct as_passthru_action_<
                     Tag(*)(Grammars...)
                   , typename std::enable_if<proto::v5::is_tag<Tag>::value>::type
                 >
-                  : _pass_<Tag(Grammars...)>
+                  : _passthru_<Tag(Grammars...)>
                 {};
 
                 template<typename Tag, typename ...Grammars>
-                struct as_pass_action_<
+                struct as_passthru_action_<
                     Tag(*)(Grammars......)
                   , typename std::enable_if<proto::v5::is_tag<Tag>::value>::type
                 >
-                  : _pass_<Tag(Grammars......)>
+                  : _passthru_<Tag(Grammars......)>
                 {};
 
                 template<typename Indices, typename Pattern>
-                struct pass_0_;
+                struct passthru_0_;
 
                 template<std::size_t ...I, typename Tag, typename ...Actions>
-                struct pass_0_<utility::indices<I...>, Tag(Actions...)>
+                struct passthru_0_<utility::indices<I...>, Tag(Actions...)>
                 {
                     static_assert(
                         sizeof...(I) == sizeof...(Actions)
@@ -68,7 +68,7 @@ namespace boost
                             proto::v5::tag_of(static_cast<E &&>(e))
                           , utility::by_val()(
                                 proto::v5::as_expr<typename result_of::domain_of<E>::type>(
-                                    as_pass_action_<Actions>()(
+                                    as_passthru_action_<Actions>()(
                                         proto::v5::child<I>(static_cast<E &&>(e))
                                       , static_cast<Rest &&>(rest)...
                                     )
@@ -79,7 +79,7 @@ namespace boost
                 };
 
                 template<std::size_t ...I, typename Tag, typename ...Actions>
-                struct pass_0_<utility::indices<I...>, Tag(Actions......)>
+                struct passthru_0_<utility::indices<I...>, Tag(Actions......)>
                 {
                     static_assert(
                         sizeof...(I) + 1 >= sizeof...(Actions)
@@ -89,7 +89,7 @@ namespace boost
                     template<typename ...Args>
                     constexpr auto operator()(Args &&... args) const
                     BOOST_PROTO_AUTO_RETURN(
-                        pass_0_<
+                        passthru_0_<
                             utility::indices<I...>
                           , typename utility::concat<
                                 typename utility::pop_back<Tag(Actions...)>::type
@@ -103,10 +103,10 @@ namespace boost
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // _pass_
+                // _passthru_
                 template<typename Actions>
-                struct _pass_
-                  : basic_action<_pass_<Actions>>
+                struct _passthru_
+                  : basic_action<_passthru_<Actions>>
                 {
                     template<typename E, typename ...Rest, BOOST_PROTO_ENABLE_IF(is_terminal<E>::value)>
                     constexpr auto operator()(E && e, Rest &&...) const
@@ -117,7 +117,7 @@ namespace boost
                     template<typename E, typename ...Rest, BOOST_PROTO_ENABLE_IF(!is_terminal<E>::value)>
                     constexpr auto operator()(E && e, Rest &&... rest) const
                     BOOST_PROTO_AUTO_RETURN(
-                        detail::pass_0_<
+                        detail::passthru_0_<
                             utility::make_indices<result_of::arity_of<E>::value>
                           , Actions
                         >()(static_cast<E &&>(e), static_cast<Rest &&>(rest)...)
@@ -125,29 +125,29 @@ namespace boost
                 };
             }
 
-            struct pass
+            struct passthru
             {};
 
             namespace extension
             {
                 template<typename ...Actions>
-                struct action_impl<pass(Actions...)>
-                  : detail::_pass_<pass(Actions...)>
+                struct action_impl<passthru(Actions...)>
+                  : detail::_passthru_<passthru(Actions...)>
                 {};
 
                 template<typename ...Actions>
-                struct action_impl<pass(Actions......)>
-                  : detail::_pass_<pass(Actions......)>
+                struct action_impl<passthru(Actions......)>
+                  : detail::_passthru_<passthru(Actions......)>
                 {};
 
                 template<typename Tag, typename ...ActiveGrammars>
-                struct action_impl<case_(Tag(ActiveGrammars...), pass)>
-                  : detail::_pass_<pass(ActiveGrammars...)>
+                struct action_impl<case_(Tag(ActiveGrammars...), passthru)>
+                  : detail::_passthru_<passthru(ActiveGrammars...)>
                 {};
 
                 template<typename Tag, typename ...ActiveGrammars>
-                struct action_impl<case_(Tag(ActiveGrammars......), pass)>
-                  : detail::_pass_<pass(ActiveGrammars......)>
+                struct action_impl<case_(Tag(ActiveGrammars......), passthru)>
+                  : detail::_passthru_<passthru(ActiveGrammars......)>
                 {};
             }
         }

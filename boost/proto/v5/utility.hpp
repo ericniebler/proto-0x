@@ -848,11 +848,9 @@ namespace boost
 
             #ifndef BOOST_PROTO_NDEBUG
                 #define BOOST_PROTO_TRY_CALL boost::proto::v5::utility::try_call
-                #define BOOST_PROTO_TRY_CALL_WRAP(...) boost::proto::v5::utility::try_call_wrapper<__VA_ARGS__>
                 #define BOOST_PROTO_TRY_CALL_IF(B) boost::proto::v5::utility::try_call_if<B>
             #else
                 #define BOOST_PROTO_TRY_CALL
-                #define BOOST_PROTO_TRY_CALL_WRAP(...) __VA_ARGS__
                 #define BOOST_PROTO_TRY_CALL_IF(B)
             #endif
             }

@@ -49,7 +49,7 @@ namespace linear_algebra
                 )
               , proto::case_(
                     proto::plus(Distribute, Distribute)
-                  , proto::pass
+                  , proto::passthru
                 )
             )
         >
@@ -64,11 +64,11 @@ namespace linear_algebra
                 )
               , proto::case_(
                     proto::plus(Optimize, Optimize)
-                  , proto::pass
+                  , proto::passthru
                 )
               , proto::case_(
                     proto::terminal(_)
-                  , proto::pass
+                  , proto::passthru
                 )
             )
         >

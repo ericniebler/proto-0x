@@ -271,10 +271,9 @@ namespace boost
             struct switch_;
             struct case_;
             struct default_;
-            struct pass;
             struct match;
             struct matches_;
-            struct pass;
+            struct passthru;
             struct block;
 
             using then = block;
