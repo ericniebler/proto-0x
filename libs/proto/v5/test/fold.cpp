@@ -126,8 +126,8 @@ test_suite* init_unit_test_suite( int argc, char* argv[] )
 
     test->add(BOOST_TEST_CASE(&test_fold));
     test->add(BOOST_TEST_CASE(&test_reverse_fold));
-    //test->add(BOOST_TEST_CASE(&test_recursive_fold));
-    //test->add(BOOST_TEST_CASE(&test_reverse_recursive_fold));
+    test->add(BOOST_TEST_CASE(&test_recursive_fold));
+    test->add(BOOST_TEST_CASE(&test_reverse_recursive_fold));
 
     return test;
 }
