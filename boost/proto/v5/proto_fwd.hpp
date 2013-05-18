@@ -180,6 +180,10 @@ namespace boost
                 using sized_type = char(&)[N];
 
                 ////////////////////////////////////////////////////////////////////////////////////
+                // identity
+                struct identity;
+
+                ////////////////////////////////////////////////////////////////////////////////////
                 // substitution_failure
                 template<typename Sig>
                 struct substitution_failure;
@@ -527,6 +531,8 @@ namespace boost
             struct reverse_recursive_fold;
 
             struct everywhere;
+            struct everything;
+            struct nothing;
 
             struct trace;
 
@@ -574,8 +580,14 @@ namespace boost
                 struct action_impl;
             }
 
+            namespace result_of
+            {
+                template<typename Expr, typename Grammar>
+                struct matches;
+            }
+
             template<typename Expr, typename Grammar>
-            struct matches;
+            constexpr bool matches() noexcept;
 
             namespace exprs
             {

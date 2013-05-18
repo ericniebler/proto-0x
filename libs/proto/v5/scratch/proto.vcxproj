@@ -41,7 +41,7 @@
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <ExecutablePath>C:\cygwin\bin;$(ExecutablePath)</ExecutablePath>
     <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;C:\Users\eric\Code\proto-0x;C:\boost\org\trunk</IncludePath>
-    <NMakeIncludeSearchPath>C:\proto-0x</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>C:\Users\eric\Code\proto-0x</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <NMakeBuildCommandLine>C:\gnuwin32\bin\make.exe all</NMakeBuildCommandLine>
@@ -51,7 +51,7 @@
     <NMakePreprocessorDefinitions>NDEBUG;WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <ExecutablePath>C:\cygwin\bin;$(ExecutablePath)</ExecutablePath>
     <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;C:\boost\org\trunk;</IncludePath>
-    <NMakeIncludeSearchPath>C:\proto-0x</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>C:\Users\eric\Code\proto-0x</NMakeIncludeSearchPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
@@ -66,6 +66,7 @@
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\case.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\env.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\eval.hpp" />
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\everything.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\everywhere.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\fold.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\if.hpp" />

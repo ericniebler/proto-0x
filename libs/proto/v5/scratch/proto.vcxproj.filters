@@ -297,6 +297,9 @@
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\passthru.hpp">
       <Filter>Proto Files\action</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\everything.hpp">
+      <Filter>Proto Files\action</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

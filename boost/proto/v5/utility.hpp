@@ -573,6 +573,8 @@ namespace boost
                     };
                 }
 
+                ////////////////////////////////////////////////////////////////////////////////////
+                // back
                 namespace result_of
                 {
                     template<typename... Ts>
@@ -592,6 +594,19 @@ namespace boost
                         )
                     };
                 }
+
+                template<typename List>
+                struct back;
+
+                template<typename Ret, typename ...Ts>
+                struct back<Ret(Ts...)>
+                  : result_of::back<Ts...>
+                {};
+
+                template<template<typename...> class T, typename ...Ts>
+                struct back<T<Ts...>>
+                  : result_of::back<Ts...>
+                {};
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 // is_base_of

@@ -45,7 +45,7 @@ namespace boost
                     BOOST_PROTO_AUTO_RETURN(
                         call_action_<
                             // This relies on details of how proto::match's grammar behavior is implemented.
-                            typename matches<
+                            typename result_of::matches<
                                 Expr
                               , proto::v5::match(ActiveGrammars...)
                             >::which::proto_grammar_type

@@ -541,10 +541,9 @@ namespace boost
                         )
                     >
                     explicit constexpr basic_expr(A &&a)
-                        // http://llvm.org/bugs/show_bug.cgi?id=15757
-                        // noexcept(noexcept(
-                        //     basic_expr(Tag(), static_cast<A &&>(a))
-                        // ))
+                         noexcept(noexcept(
+                             basic_expr(Tag(), static_cast<A &&>(a))
+                         ))
                       : basic_expr(Tag(), static_cast<A &&>(a))
                     {}
 

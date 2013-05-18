@@ -23,6 +23,10 @@ namespace boost
             namespace detail
             {
                 ////////////////////////////////////////////////////////////////////////////////////
+                // return_
+                using return_ = utility::identity;
+
+                ////////////////////////////////////////////////////////////////////////////////////
                 template<typename Action>
                 struct call_action_
                 {

@@ -577,11 +577,11 @@ namespace boost
             ///
             /// \note Equivalent to <tt>BOOST_MPL_ASSERT((proto::matches\<E, Grammar\>))</tt>
             /// \param expr The Proto expression to check againts <tt>Grammar</tt>
-            template<typename Grammar, typename E>
-            void assert_matches(E const & /*expr*/)
+            template<typename Grammar, typename Expr>
+            void assert_matches(Expr const &)
             {
                 static_assert(
-                    proto::v5::matches<E, Grammar>::value
+                    proto::v5::matches<Expr, Grammar>()
                   , "The expression does not match the specified grammar"
                 );
             }
@@ -591,11 +591,11 @@ namespace boost
             ///
             /// \note Equivalent to <tt>BOOST_MPL_ASSERT_NOT((proto::matches\<E, Grammar\>))</tt>
             /// \param expr The Proto expression to check againts <tt>Grammar</tt>
-            template<typename Grammar, typename E>
-            void assert_matches_not(E const & /*expr*/)
+            template<typename Grammar, typename Expr>
+            void assert_matches_not(Expr const &)
             {
                 static_assert(
-                    !proto::v5::matches<E, Grammar>::value
+                    !proto::v5::matches<Expr, Grammar>()
                   , "The expression matches the specified grammar"
                 );
             }

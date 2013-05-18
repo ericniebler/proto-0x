@@ -29,7 +29,7 @@ template<class E>
 struct e
   : proto::basic_expr<e<E>, d>
 {
-    static_assert(proto::matches<proto::basic_expr<E>, g>::value, "");
+    static_assert(proto::matches<proto::basic_expr<E>, g>(), "");
     using proto::basic_expr<e, d>::basic_expr;
 };
 

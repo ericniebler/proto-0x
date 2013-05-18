@@ -31,7 +31,7 @@ namespace boost
                 {
                     template<typename Expr>
                     struct apply
-                      : matches<
+                      : result_of::matches<
                             Expr
                           , typename Cases::template case_<typename result_of::tag_of<Expr>::type>
                         >
@@ -43,7 +43,7 @@ namespace boost
                 {
                     template<typename Expr>
                     struct apply
-                      : matches<
+                      : result_of::matches<
                             Expr
                           , typename Cases::template case_<decltype(detail::call_action_<Action>()(std::declval<Expr>()))>
                         >

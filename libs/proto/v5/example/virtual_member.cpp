@@ -167,7 +167,7 @@ namespace mini_lambda
         template<typename ...A>
         auto operator()(A &&... a) const
         BOOST_PROTO_AUTO_RETURN(
-            expression::eval(proto::utility::make_indices<sizeof...(A)>(), std::forward<A>(a)...)
+            this->eval(proto::utility::make_indices<sizeof...(A)>(), std::forward<A>(a)...)
         )
     };
 

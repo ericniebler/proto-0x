@@ -26,32 +26,11 @@ namespace boost
             namespace detail
             {
                 ////////////////////////////////////////////////////////////////////////////////////
-                // return_
-                using return_ = utility::identity;
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // as_case_
+                // as_everywhere_case_
                 template<typename ActiveGrammar>
-                struct as_case_
+                struct as_everywhere_case_
                 {
-                    using type = case_(ActiveGrammar, ActiveGrammar);
-                };
-
-                template<typename Grammar, typename ...Actions>
-                struct as_case_<case_(*)(Grammar, Actions...)>
-                {
-                    using type = case_(*)(Grammar, Actions...);
-                };
-
-                template<typename R, typename ...As>
-                struct as_case_<R(*)(As...)>
-                {
-                    static_assert(
-                        utility::never<R(As...)>::value
-                      , "In everything(...), expected either a case_(...) statement or an "
-                        "active grammar."
-                    );
-                    using type = R(*)(As...);
+                    using type = case_(as_grammar_<ActiveGrammar>, as_action_<ActiveGrammar>);
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +39,7 @@ namespace boost
                 struct substitute_if_
                   : def<
                         match(
-                            typename as_case_<Cases>::type...
+                            typename as_everywhere_case_<Cases>::type...
                           , default_(
                                 return_(_) // avoid returning an rvalue ref to a temporary
                             )

@@ -29,7 +29,7 @@ namespace boost
                 {
                     template<typename Expr>
                     struct apply
-                      : matches<Expr, Grammar>
+                      : result_of::matches<Expr, Grammar>
                     {};
                 };
 

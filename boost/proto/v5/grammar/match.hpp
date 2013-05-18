@@ -26,7 +26,7 @@ namespace boost
                 // matches_wrap_
                 template<typename Expr, typename Grammar>
                 struct matches_wrap_
-                  : matches<Expr, Grammar>
+                  : result_of::matches<Expr, Grammar>
                 {
                     using proto_grammar_type = Grammar;
                 };

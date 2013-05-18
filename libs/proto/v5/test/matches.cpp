@@ -19,16 +19,16 @@ struct MyIntWrap : int_ {};
 
 void test_matches()
 {
-    static_assert(proto::matches<int_, proto::terminal(int)>::value, "");
-    static_assert(proto::matches<MyIntWrap, proto::terminal(int)>::value, "");
-    static_assert(proto::matches<MyIntWrap &, proto::terminal(int)>::value, "");
-    static_assert(!proto::matches<int_, proto::unary_plus(_)>::value, "");
-    static_assert(!proto::matches<int_, proto::terminal(std::string)>::value, "");
-    static_assert(proto::matches<proto::exprs::function<int_, int_, int_>, proto::function(proto::terminal(int)...)>::value, "");
-    static_assert(proto::matches<proto::exprs::function<int_>, proto::function(proto::terminal(int), proto::terminal(std::string)...)>::value, "");
-    static_assert(proto::matches<proto::exprs::function<int_>, proto::function(proto::terminal(int)...)>::value, "");
-    static_assert(!proto::matches<proto::exprs::function<int_, int_, string_>, proto::function(proto::terminal(int)...)>::value, "");
-    static_assert(!proto::matches<int_, proto::function(proto::terminal(int), proto::terminal(int))>::value, "");
+    static_assert(proto::matches<int_, proto::terminal(int)>(), "");
+    static_assert(proto::matches<MyIntWrap, proto::terminal(int)>(), "");
+    static_assert(proto::matches<MyIntWrap &, proto::terminal(int)>(), "");
+    static_assert(!proto::matches<int_, proto::unary_plus(_)>(), "");
+    static_assert(!proto::matches<int_, proto::terminal(std::string)>(), "");
+    static_assert(proto::matches<proto::exprs::function<int_, int_, int_>, proto::function(proto::terminal(int)...)>(), "");
+    static_assert(proto::matches<proto::exprs::function<int_>, proto::function(proto::terminal(int), proto::terminal(std::string)...)>(), "");
+    static_assert(proto::matches<proto::exprs::function<int_>, proto::function(proto::terminal(int)...)>(), "");
+    static_assert(!proto::matches<proto::exprs::function<int_, int_, string_>, proto::function(proto::terminal(int)...)>(), "");
+    static_assert(!proto::matches<int_, proto::function(proto::terminal(int), proto::terminal(int))>(), "");
 }
 
 using namespace boost::unit_test;

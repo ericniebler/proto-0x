@@ -205,7 +205,7 @@ namespace boost
                 template<typename Head0, typename ...Tail0, typename Head1, typename ...Tail1>
                 struct vararg_matches<void(Head0, Tail0...), void(Head1, Tail1...)>
                   : utility::and_<
-                        matches<Head0, Head1>
+                        result_of::matches<Head0, Head1>
                       , vararg_matches<void(Tail0...), void(Tail1...)>
                     >
                 {};
@@ -213,8 +213,8 @@ namespace boost
                 template<typename Head0, typename ...Tail0, typename Grammar>
                 struct vararg_matches<void(Head0, Tail0...), void(Grammar)>
                   : utility::and_<
-                        matches<Head0, Grammar>
-                      , matches<Tail0, Grammar>...
+                        result_of::matches<Head0, Grammar>
+                      , result_of::matches<Tail0, Grammar>...
                     >
                 {};
 
@@ -245,7 +245,7 @@ namespace boost
                 >
                   : utility::and_<
                         tag_matches<Tag0, Tag1>
-                      , matches<Child0, Child1>...
+                      , result_of::matches<Child0, Child1>...
                     >
                 {};
 
