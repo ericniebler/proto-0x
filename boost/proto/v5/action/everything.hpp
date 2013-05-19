@@ -48,26 +48,17 @@ namespace boost
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
-                // as_everything_case_
-                template<typename BinOp, typename Case>
-                struct as_everything_case_
-                {
-                    using type =
-                        case_(
-                            detail::as_grammar_<Case>
-                          , reduce_<BinOp>(_state, detail::as_action_<Case>)
-                        );
-                };
-
-                ////////////////////////////////////////////////////////////////////////////////////
                 // _reduce_if_
                 template<typename BinOp, typename ...Cases>
                 struct _reduce_if_
                   : def<
                         match(
-                            typename as_everything_case_<BinOp, Cases>::type...
+                            case_(*...Case)(
+                                as_grammar_<Cases>
+                              , reduce_<BinOp>(_state, as_action_<Cases>)
+                            )
                           , default_(
-                                return_(_state)
+                                return_(_state) // avoid returning an rvalue ref to a temporary
                             )
                         )
                     >

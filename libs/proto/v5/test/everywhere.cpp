@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// everything.cpp
+// everywhere.cpp
 //
-//  Copyright 2012 Eric Niebler. Distributed under the Boost
+//  Copyright 2013 Eric Niebler. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
@@ -54,7 +54,7 @@ struct Flip
     >
 {};
 
-void test_everything()
+void test_everywhere()
 {
     using namespace proto::literals;
 
@@ -121,9 +121,9 @@ using namespace boost::unit_test;
 //
 test_suite* init_unit_test_suite( int argc, char* argv[] )
 {
-    test_suite *test = BOOST_TEST_SUITE("testing the everything action");
+    test_suite *test = BOOST_TEST_SUITE("testing the everywhere action");
 
-    test->add(BOOST_TEST_CASE(&test_everything));
+    test->add(BOOST_TEST_CASE(&test_everywhere));
 
     return test;
 }

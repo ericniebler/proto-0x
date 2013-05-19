@@ -26,20 +26,15 @@ namespace boost
             namespace detail
             {
                 ////////////////////////////////////////////////////////////////////////////////////
-                // as_everywhere_case_
-                template<typename ActiveGrammar>
-                struct as_everywhere_case_
-                {
-                    using type = case_(as_grammar_<ActiveGrammar>, as_action_<ActiveGrammar>);
-                };
-
-                ////////////////////////////////////////////////////////////////////////////////////
-                // substitute_if_
+                // _substitute_if_
                 template<typename ...Cases>
-                struct substitute_if_
+                struct _substitute_if_
                   : def<
                         match(
-                            typename as_everywhere_case_<Cases>::type...
+                            case_(*...Case)(
+                                as_grammar_<Cases>
+                              , as_action_<Cases>
+                            )
                           , default_(
                                 return_(_) // avoid returning an rvalue ref to a temporary
                             )
@@ -53,11 +48,12 @@ namespace boost
                 struct _everywhere_
                   : def<
                         match(
-                            case_( terminal(_),
-                                substitute_if_<Cases...>
+                            case_(
+                                terminal(_)
+                              , _substitute_if_<Cases...>
                             )
                           , default_(
-                                substitute_if_<Cases...>(
+                                _substitute_if_<Cases...>(
                                     passthru(_everywhere_<Cases...>...)
                                 )
                             )
@@ -71,6 +67,8 @@ namespace boost
 
             namespace extension
             {
+                ////////////////////////////////////////////////////////////////////////////////////
+                // e.g. everywhere(case_(plus(_,_), minus(_left,_right)))
                 template<typename ...Cases>
                 struct action_impl<everywhere(Cases...)>
                   : detail::_everywhere_<Cases...>
