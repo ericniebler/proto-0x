@@ -5,6 +5,8 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#pragma clang diagnostic ignored "-Wmultichar"
+#include <typeinfo>
 #include <map>
 #include <iostream>
 #include <boost/proto/v5/proto.hpp>
@@ -15,76 +17,48 @@ using namespace literals;
 struct map_list_of_  {};
 
 struct MapListOf : def<
-  match(
-    case_(  terminal(map_list_of_),
-      void()
-    ),
-    case_(  function(MapListOf, terminal(_), terminal(_)),
-      MapListOf(_child0),
-      assign(subscript(_data, _value(_child1)), _value(_child2))
+    match(
+        case_(  terminal(map_list_of_),
+            void()
+        ),
+        case_(  function(MapListOf, terminal(_), terminal(_)),
+            MapListOf(_child0),
+            assign(subscript(_data, _value(_child1)), _value(_child2))
+        )
     )
-  )
 > {};
 
 template<typename ExprDesc>
 struct map_list_of_expr
   : expr<map_list_of_expr<ExprDesc>, domain<_, MapListOf>>
 {
-  using expr<map_list_of_expr, domain<_, MapListOf>>::expr;
+    using expr<map_list_of_expr, domain<_, MapListOf>>::expr;
 
-  template<class K, class V, class C, class A>
-  operator std::map<K,V,C,A>() const
-  {
-    BOOST_PROTO_ASSERT_MATCHES(*this, MapListOf);
-    std::map<K,V,C,A> m;
-    MapListOf()( *this, data = m );
-    return m;
-  }
+    template<class K, class V, class C, class A>
+    operator std::map<K,V,C,A>() const
+    {
+        BOOST_PROTO_ASSERT_MATCHES(*this, MapListOf);
+        std::map<K,V,C,A> m;
+        MapListOf()( *this, data = m );
+        return m;
+    }
 };
 
 constexpr map_list_of_expr<terminal(map_list_of_)> map_list_of {};
 
-constexpr auto omg = map_list_of(1,2)(2,3)(3,4)(4,5)(5,6);
-
-struct Square : def<
-    everywhere(
-        case_(
-            terminal(int),
-            terminal(multiplies(_value, _value))
-        )
-    )
->{};
-
-constexpr auto sq = Square()(omg);
-static_assert(value(child<1>(child<0>(sq))) == 4*4, "whoa");
-
-//struct Sum
-//  : def<
-//        match(
-//            case_(terminal(int), _value)
-//          , case_(terminal(_), _int<0>)
-//          , default_(
-//                fold(_, _state, plus(_state, Sum))
-//            )
-//        )
-//    >
-//{};
-//
-//const int sum = Sum()(map_list_of(1,2), empty_env(), 0);
-//static_assert(35 == sum, "dude");
-
 int main()
 {
-  std::map<int, int> m = Square()(map_list_of(1,2)(2,3)(3,4)(4,5)(5,6));
+    std::map<int, int> m = map_list_of(1,2)(2,3)(3,4)(4,5)(5,6);
 
-  for(auto p : m)
-  {
-    std::cout << p.first << " => " << p.second << std::endl;
-  }
+    for(auto p : m)
+    {
+        std::cout << p.first << " => " << p.second << std::endl;
+    }
 
-  void done();
-  done();
+    void done();
+    done();
 }
+
 
 
 /*
@@ -123,13 +97,13 @@ struct lambda_eval
   : proto::def<
         proto::match(
             proto::case_( proto::terminal(placeholder<_>),
-                proto::apply(proto::make(proto::_env_var<proto::_value>()))
+                proto:get_env(proto::_value)
             )
           , proto::case_( proto::terminal(_),
                 proto::_value
             )
           , proto::default_(
-                proto::_eval<lambda_eval>
+                proto::eval_with(lambda_eval)
             )
         )
     >
@@ -195,7 +169,7 @@ struct Invert
                             proto::minus(Invert(proto::_left),
                                          Invert(proto::_right)) )
           , proto::case_(   _(Invert...),
-                            proto::pass                         )
+                            proto::passthru                         )
         )
     >
 {};
@@ -232,6 +206,7 @@ int main()
 }
 //*/
 
+#include <iostream>
 void done()
 {
     char ch = 0;

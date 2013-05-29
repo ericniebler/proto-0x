@@ -26,12 +26,12 @@ namespace boost
             namespace detail
             {
                 ////////////////////////////////////////////////////////////////////////////////////
-                // _substitute_if_
+                // _replace_if_
                 template<typename ...Cases>
-                struct _substitute_if_
+                struct _replace_if_
                   : def<
                         match(
-                            case_(*...Case)(
+                            case_...(
                                 as_grammar_<Cases>
                               , as_action_<Cases>
                             )
@@ -50,10 +50,10 @@ namespace boost
                         match(
                             case_(
                                 terminal(_)
-                              , _substitute_if_<Cases...>
+                              , _replace_if_<Cases...>
                             )
                           , default_(
-                                _substitute_if_<Cases...>(
+                                _replace_if_<Cases...>(
                                     passthru(_everywhere_<Cases...>...)
                                 )
                             )

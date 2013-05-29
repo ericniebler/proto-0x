@@ -41,7 +41,7 @@ struct lambda_eval
                 proto::_value
             )
           , proto::default_(
-                proto::_eval<lambda_eval>
+                proto::eval_with(lambda_eval)
             )
         )
     >

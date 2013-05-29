@@ -179,4 +179,6 @@ namespace boost
     }
 }
 
+#undef ADDROF
+
 #endif // BOOST_PROTO_V5_ACCESSORS_HPP_INCLUDED

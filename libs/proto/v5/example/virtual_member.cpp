@@ -108,7 +108,7 @@ namespace mini_lambda
                     )
                 )
               , proto::default_(
-                    proto::_eval<grammar>
+                    proto::eval_with(grammar)
                 )
             )
         >

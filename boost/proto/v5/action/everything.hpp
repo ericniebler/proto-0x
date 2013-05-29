@@ -53,7 +53,7 @@ namespace boost
                 struct _reduce_if_
                   : def<
                         match(
-                            case_(*...Case)(
+                            case_...(
                                 as_grammar_<Cases>
                               , reduce_<BinOp>(_state, as_action_<Cases>)
                             )

@@ -30,7 +30,7 @@ struct S
 void test_mem_fun()
 {
     proto::literal<std::plus<int>> plus;
-    int i = proto::_eval<>()(plus(1,2));
+    int i = proto::_eval()(plus(1,2));
     BOOST_CHECK_EQUAL(i, 3);
 
     S s{42};
@@ -39,48 +39,48 @@ void test_mem_fun()
     proto::literal<void (S::*)()> pf{&S::foo};
     proto::literal<int (S::*)(int)> pb{&S::bar};
 
-    i = proto::_eval<>()(pm(&s));
+    i = proto::_eval()(pm(&s));
     BOOST_CHECK_EQUAL(i, 42);
 
-    i = proto::_eval<>()(pm(s));
+    i = proto::_eval()(pm(s));
     BOOST_CHECK_EQUAL(i, 42);
 
-    i = proto::_eval<>()(pm(ps));
+    i = proto::_eval()(pm(ps));
     BOOST_CHECK_EQUAL(i, 69);
 
-    proto::_eval<>()(pf(&s));
-    proto::_eval<>()(pf(s));
-    proto::_eval<>()(pf(ps));
+    proto::_eval()(pf(&s));
+    proto::_eval()(pf(s));
+    proto::_eval()(pf(ps));
 
-    i = proto::_eval<>()(pb(&s, 1));
+    i = proto::_eval()(pb(&s, 1));
     BOOST_CHECK_EQUAL(i, 1);
 
-    i = proto::_eval<>()(pb(s, 2));
+    i = proto::_eval()(pb(s, 2));
     BOOST_CHECK_EQUAL(i, 2);
 
-    i = proto::_eval<>()(pb(ps, 3));
+    i = proto::_eval()(pb(ps, 3));
     BOOST_CHECK_EQUAL(i, 3);
 
-    i = proto::_eval<>()(&s ->* pm);
+    i = proto::_eval()(&s ->* pm);
     BOOST_CHECK_EQUAL(i, 42);
 
-    i = proto::_eval<>()(s ->* pm);
+    i = proto::_eval()(s ->* pm);
     BOOST_CHECK_EQUAL(i, 42);
 
-    i = proto::_eval<>()(ps ->* pm);
+    i = proto::_eval()(ps ->* pm);
     BOOST_CHECK_EQUAL(i, 69);
 
-    proto::_eval<>()((&s ->* pf)());
-    proto::_eval<>()((s ->* pf)());
-    proto::_eval<>()((ps ->* pf)());
+    proto::_eval()((&s ->* pf)());
+    proto::_eval()((s ->* pf)());
+    proto::_eval()((ps ->* pf)());
 
-    i = proto::_eval<>()((&s ->* pb)(1));
+    i = proto::_eval()((&s ->* pb)(1));
     BOOST_CHECK_EQUAL(i, 1);
 
-    i = proto::_eval<>()((s ->* pb)(2));
+    i = proto::_eval()((s ->* pb)(2));
     BOOST_CHECK_EQUAL(i, 2);
 
-    i = proto::_eval<>()((ps ->* pb)(3));
+    i = proto::_eval()((ps ->* pb)(3));
     BOOST_CHECK_EQUAL(i, 3);
 }
 

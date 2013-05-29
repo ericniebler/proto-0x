@@ -1,5 +1,5 @@
 #CXX=C:\cygwin\usr\local\gcc-4.7\bin\g++
-CXX="C:/cygwin/usr/local/bin/clang++.exe"
+CXX="C:/cygwin/usr/local/clang-trunk/bin/clang++.exe"
 #CFLAGS=-c -Wall -O2 -DNDEBUG
 #CFLAGS=-c -O2 -DNDEBUG
 CFLAGS=-c -O0

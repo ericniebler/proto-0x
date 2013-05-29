@@ -632,7 +632,11 @@ namespace boost
             /// \param E The Proto expression to check againts <tt>Grammar</tt>
             /// \param Grammar The grammar used to validate E.
             #define BOOST_PROTO_ASSERT_MATCHES(E, Grammar)                                          \
-                (true ? (void)0 : boost::proto::v5::assert_matches<Grammar>(E))
+                static_assert(                                                                      \
+                    boost::proto::v5::matches<decltype(E), Grammar>()                               \
+                  , "The expression does not match the specified grammar"                           \
+                );                                                                                  \
+                /**/
 
             /// \brief Assert at compile time that a particular expression
             ///        does not match the specified grammar.
@@ -641,7 +645,11 @@ namespace boost
             /// \param E The Proto expression to check againts <tt>Grammar</tt>
             /// \param Grammar The grammar used to validate E.
             #define BOOST_PROTO_ASSERT_MATCHES_NOT(E, Grammar)                                      \
-                (true ? (void)0 : boost::proto::v5::assert_matches_not<Grammar>(E))
+                static_assert(                                                                      \
+                    !boost::proto::v5::matches<decltype(E), Grammar>()                              \
+                  , "The expression matches the specified grammar"                                  \
+                );                                                                                  \
+                /**/
         }
     }
 }

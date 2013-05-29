@@ -82,7 +82,7 @@ std::vector<int> A(value, value+celems), B(A);
 void test1()
 {
     using namespace linear_algebra;
-    proto::_eval<> eval;
+    proto::_eval eval;
     int result = eval(Optimize()((A + B)[3]));
     proto::assert_matches<Optimize>((A + B)[3]);
     proto::assert_matches_not<Optimize>((A - B)[3]);

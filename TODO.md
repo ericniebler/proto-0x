@@ -1,9 +1,9 @@
 A Grab-Bag of Miscellaneous Thoughts
 ====================================
 
-* Should `_(A(_left), B(_right))` be synonymous for `pass(A, B)`? That would be consistent with the
+* Should `_(A(_left), B(_right))` be synonymous for `passthru(A, B)`? That would be consistent with the
   use of `_` in expression patterns like `_(A,B)`, where `_` means "any tag", but inconsistent with
-  the use of `_` as a primitive transform, where `_(A,B)` simply returns `a`.
+  the use of `_` as a primitive transform, where `_(A,B)` simply returns `A`.
 
 * Each domain should have a post-process function object that takes and returns an expression. This
   is to replicate the generator functionality from Proto v4, where actions can be used to select
@@ -19,8 +19,6 @@ A Grab-Bag of Miscellaneous Thoughts
 
 * Proto v4 needs inline namespace also, and a macro-based solution for picking which namespace
   (v4 or v5) gets inlined.
-
-* `_eval<lambda_eval>` should be `eval(lambda_eval)` or even `eval_with(lambda_eval)`
 
 * Implement proper lexical scoping for `let` expressions.
     + Can the call action be modified to automatically create a proper lexical scope?
@@ -38,3 +36,5 @@ A Grab-Bag of Miscellaneous Thoughts
   reference.
 
 * Implementation of `unpack_expr` could probably use `fusion::invoke_function_object`.
+
+* Observation from Haskell land: `passthru` == `zipWith ($)`

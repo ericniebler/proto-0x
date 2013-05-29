@@ -488,8 +488,9 @@ namespace boost
             template<std::size_t N>
             using _size_t = _integral_constant<std::size_t, N>;
 
-            template<typename Grammar = detail::_eval>
             struct _eval;
+
+            struct eval_with;
 
             template<typename T>
             struct noinvoke;

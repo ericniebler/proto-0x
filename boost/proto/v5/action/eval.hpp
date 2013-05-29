@@ -276,32 +276,39 @@ namespace boost
                     template<typename Tag>
                     using case_ = _eval_case<ActiveGrammar, Tag>;
                 };
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                // _eval_
+                template<typename ActiveGrammar = _eval>
+                struct _eval_
+                  : detail::as_action_<switch_(detail::_eval_cases<ActiveGrammar>)>
+                {};
+
+                // Loopy indirection that allows proto::_eval_<> to be
+                // used without specifying an ActiveGrammar argument.
+                struct _eval
+                  : _eval_<>
+                {};
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // _eval
-            template<typename ActiveGrammar>
             struct _eval
-              : detail::as_action_<switch_(detail::_eval_cases<ActiveGrammar>)>
+              : detail::_eval_<>
             {};
 
             ////////////////////////////////////////////////////////////////////////////////////////
-            // eval
-            struct eval
-            {
-                template<typename Tag, typename ...T>
-                constexpr auto operator()(Tag, T &&... t) const
-                BOOST_PROTO_AUTO_RETURN(
-                    BOOST_PROTO_TRY_CALL(typename detail::_op<Tag>::type())(static_cast<T &&>(t)...)
-                )
-            };
+            // eval_with
+            struct eval_with
+            {};
 
-            namespace detail
+            namespace extension
             {
-                // Loopy indirection that allows proto::_eval<> to be
-                // used without specifying an ActiveGrammar argument.
-                struct _eval
-                  : proto::v5::_eval<>
+                ////////////////////////////////////////////////////////////////////////////////////
+                // e.g. eval_with(X)
+                template<typename ActiveGrammar>
+                struct action_impl<eval_with(ActiveGrammar)>
+                  : detail::_eval_<ActiveGrammar>
                 {};
             }
         }
