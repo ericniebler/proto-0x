@@ -68,6 +68,7 @@
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\eval.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\everything.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\everywhere.hpp" />
+    <ClInclude Include="..\..\..\..\boost\proto\v5\action\external.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\fold.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\if.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\action\integral_constant.hpp" />
@@ -201,6 +202,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\test\expr.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\test\external.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>

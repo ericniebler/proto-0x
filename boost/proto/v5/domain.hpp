@@ -141,7 +141,7 @@ namespace boost
                 // basic_expr_domain_adaptor
                 template<typename BaseDomain>
                 struct basic_expr_domain_adaptor
-                  : domain<basic_expr_domain_adaptor<BaseDomain>, proto::_, BaseDomain>
+                  : domain<basic_expr_domain_adaptor<BaseDomain>, _, BaseDomain>
                 {
                     using make_expr = make_custom_expr<exprs::basic_expr<_, BaseDomain>>;
                 };

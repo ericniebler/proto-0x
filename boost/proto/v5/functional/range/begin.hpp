@@ -12,19 +12,29 @@
 #include <boost/range/begin.hpp>
 #include <boost/proto/v5/proto_fwd.hpp>
 
-namespace boost { namespace proto { inline namespace v5 { namespace functional { namespace range
+namespace boost
 {
-
-    // A PolymorphicFunctionObject that wraps boost::begin()
-    struct begin
+    namespace proto
     {
-        template<typename Rng>
-        auto operator()(Rng &&rng) const
-        BOOST_PROTO_AUTO_RETURN(
-            boost::begin(static_cast<Rng &&>(rng))
-        )
-    };
-
-}}}}}
+        inline namespace v5
+        {
+            namespace functional
+            {
+                namespace range
+                {
+                    // A PolymorphicFunctionObject that wraps boost::begin()
+                    struct begin
+                    {
+                        template<typename Rng>
+                        auto operator()(Rng &&rng) const
+                        BOOST_PROTO_AUTO_RETURN(
+                            boost::begin(static_cast<Rng &&>(rng))
+                        )
+                    };
+                }
+            }
+        }
+    }
+}
 
 #endif

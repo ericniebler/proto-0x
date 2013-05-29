@@ -556,7 +556,7 @@ namespace boost
 
                 friend std::ostream &operator <<(std::ostream &sout, pretty_expr_wrap const &e)
                 {
-                    proto::display_expr(e.expr_, sout, e.depth_);
+                    proto::v5::display_expr(e.expr_, sout, e.depth_);
                     return sout;
                 }
             private:
@@ -621,7 +621,7 @@ namespace boost
                 template<typename Expr, BOOST_PROTO_ENABLE_IF(is_expr<Expr>::value)>
                 std::ostream &maybe_output_expr(std::ostream &sout, Expr const &e, int depth)
                 {
-                    return sout << proto::pretty_expr(e, depth);
+                    return sout << proto::v5::pretty_expr(e, depth);
                 }
             }
 

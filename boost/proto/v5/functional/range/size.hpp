@@ -12,18 +12,25 @@
 #include <boost/range/size.hpp>
 #include <boost/proto/v5/proto_fwd.hpp>
 
-namespace boost { namespace proto { inline namespace v5 { namespace functional { namespace range
+namespace boost
 {
-
-    // A PolymorphicFunctionObject that wraps boost::size()
-    struct size
+    namespace proto
     {
-        template<typename Rng>
-        auto operator()(Rng const &rng) const
-        BOOST_PROTO_AUTO_RETURN(
-            boost::size(rng)
-        )
-    };
+        inline namespace v5
+        {
+            namespace functional
+            {
+                namespace range
+                {
+                    // A PolymorphicFunctionObject that wraps boost::size()
+                    struct size
+                    {
+                        template<typename Rng>
+                        auto operator()(Rng const &rng) const
+                        BOOST_PROTO_AUTO_RETURN(
+                            boost::size(rng)
+                        )
+                    };
 
 }}}}}
 

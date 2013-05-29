@@ -16,26 +16,38 @@
 #include <boost/fusion/include/pop_back.hpp>
 #include <boost/proto/v5/proto_fwd.hpp>
 
-namespace boost { namespace proto { inline namespace v5 { namespace functional { namespace fusion
+namespace boost
 {
-    /// \brief A PolymorphicFunctionObject type that invokes the
-    /// \c fusion::pop_back() action on its argument.
-    ///
-    /// A PolymorphicFunctionObject type that invokes the
-    /// \c fusion::pop_back() action on its argument.
-    struct pop_back
+    namespace proto
     {
-        template<typename Seq>
-        auto operator ()(Seq &&seq) const
-        BOOST_PROTO_AUTO_RETURN(
-            typename boost::fusion::result_of::pop_back<
-                typename ::std::remove_reference<Seq>::type
-            >::type(
-                boost::fusion::begin(static_cast<Seq &&>(seq))
-              , boost::fusion::prior(boost::fusion::end(static_cast<Seq &&>(seq)))
-            )
-        )
-    };
-}}}}}
+        inline namespace v5
+        {
+            namespace functional
+            {
+                namespace fusion
+                {
+                    /// \brief A PolymorphicFunctionObject type that invokes the
+                    /// \c fusion::pop_back() action on its argument.
+                    ///
+                    /// A PolymorphicFunctionObject type that invokes the
+                    /// \c fusion::pop_back() action on its argument.
+                    struct pop_back
+                    {
+                        template<typename Seq>
+                        auto operator ()(Seq &&seq) const
+                        BOOST_PROTO_AUTO_RETURN(
+                            typename boost::fusion::result_of::pop_back<
+                                typename ::std::remove_reference<Seq>::type
+                            >::type(
+                                boost::fusion::begin(static_cast<Seq &&>(seq))
+                              , boost::fusion::prior(boost::fusion::end(static_cast<Seq &&>(seq)))
+                            )
+                        )
+                    };
+                }
+            }
+        }
+    }
+}
 
 #endif

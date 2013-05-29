@@ -12,21 +12,33 @@
 #include <boost/fusion/include/at.hpp>
 #include <boost/proto/v5/proto_fwd.hpp>
 
-namespace boost { namespace proto { inline namespace v5 { namespace functional { namespace fusion
+namespace boost
 {
-    /// \brief A PolymorphicFunctionObject type that invokes the
-    /// \c fusion::at() accessor on its argument.
-    ///
-    /// A PolymorphicFunctionObject type that invokes the
-    /// \c fusion::at() accessor on its argument.
-    struct at
+    namespace proto
     {
-        template<typename Seq, typename N>
-        auto operator ()(Seq &&seq, N const &) const
-        BOOST_PROTO_AUTO_RETURN(
-            boost::fusion::at<N>(static_cast<Seq &&>(seq))
-        )
-    };
-}}}}}
+        inline namespace v5
+        {
+            namespace functional
+            {
+                namespace fusion
+                {
+                    /// \brief A PolymorphicFunctionObject type that invokes the
+                    /// \c fusion::at() accessor on its argument.
+                    ///
+                    /// A PolymorphicFunctionObject type that invokes the
+                    /// \c fusion::at() accessor on its argument.
+                    struct at
+                    {
+                        template<typename Seq, typename N>
+                        auto operator ()(Seq &&seq, N const &) const
+                        BOOST_PROTO_AUTO_RETURN(
+                            boost::fusion::at<N>(static_cast<Seq &&>(seq))
+                        )
+                    };
+                }
+            }
+        }
+    }
+}
 
 #endif

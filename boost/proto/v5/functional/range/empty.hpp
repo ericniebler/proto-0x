@@ -12,19 +12,29 @@
 #include <boost/range/empty.hpp>
 #include <boost/proto/v5/proto_fwd.hpp>
 
-namespace boost { namespace proto { inline namespace v5 { namespace functional { namespace range
+namespace boost
 {
-
-    // A PolymorphicFunctionObject that wraps boost::empty()
-    struct empty
+    namespace proto
     {
-        template<typename Rng>
-        bool operator()(Rng const &rng) const noexcept(noexcept(boost::empty(rng)))
+        inline namespace v5
         {
-            return boost::empty(rng);
+            namespace functional
+            {
+                namespace range
+                {
+                    // A PolymorphicFunctionObject that wraps boost::empty()
+                    struct empty
+                    {
+                        template<typename Rng>
+                        bool operator()(Rng const &rng) const noexcept(noexcept(boost::empty(rng)))
+                        {
+                            return boost::empty(rng);
+                        }
+                    };
+                }
+            }
         }
-    };
-
-}}}}}
+    }
+}
 
 #endif

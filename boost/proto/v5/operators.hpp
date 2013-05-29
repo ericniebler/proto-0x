@@ -34,7 +34,7 @@ namespace boost
             {
                 template<typename Expr>
                 struct is_grammatical_impl
-                  : proto::result_of::matches<
+                  : result_of::matches<
                         Expr
                       , typename result_of::domain_of<Expr>::type::proto_grammar_type
                     >

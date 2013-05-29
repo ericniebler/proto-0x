@@ -12,50 +12,61 @@
 #include <utility>
 #include <boost/proto/v5/proto_fwd.hpp>
 
-namespace boost { namespace proto { inline namespace v5 { namespace functional { namespace std
+namespace boost
 {
-    /// \brief A PolymorphicFunctionObject type that invokes the
-    /// \c std::make_pair() action on its arguments.
-    ///
-    /// A PolymorphicFunctionObject type that invokes the
-    /// \c std::make_pair() action on its arguments.
-    struct make_pair
+    namespace proto
     {
-        template<typename First, typename Second>
-        auto operator()(First &&first, Second &&second) const
-        BOOST_PROTO_AUTO_RETURN(
-            ::std::make_pair(::std::forward<First>(first), ::std::forward<Second>(second))
-        )
-    };
+        inline namespace v5
+        {
+            namespace functional
+            {
+                namespace std
+                {
+                    /// \brief A PolymorphicFunctionObject type that invokes the
+                    /// \c std::make_pair() action on its arguments.
+                    ///
+                    /// A PolymorphicFunctionObject type that invokes the
+                    /// \c std::make_pair() action on its arguments.
+                    struct make_pair
+                    {
+                        template<typename First, typename Second>
+                        auto operator()(First &&first, Second &&second) const
+                        BOOST_PROTO_AUTO_RETURN(
+                            ::std::make_pair(::std::forward<First>(first), ::std::forward<Second>(second))
+                        )
+                    };
 
-    /// \brief A PolymorphicFunctionObject type that returns
-    /// the first element of a std::pair.
-    ///
-    /// A PolymorphicFunctionObject type that returns
-    /// the first element of a std::pair..
-    struct first
-    {
-        template<typename Pair>
-        constexpr auto operator()(Pair &&pair) const
-        BOOST_PROTO_AUTO_RETURN(
-            (static_cast<Pair &&>(pair).first) // extra parens are significant!
-        )
-    };
+                    /// \brief A PolymorphicFunctionObject type that returns
+                    /// the first element of a std::pair.
+                    ///
+                    /// A PolymorphicFunctionObject type that returns
+                    /// the first element of a std::pair..
+                    struct first
+                    {
+                        template<typename Pair>
+                        constexpr auto operator()(Pair &&pair) const
+                        BOOST_PROTO_AUTO_RETURN(
+                            (static_cast<Pair &&>(pair).first) // extra parens are significant!
+                        )
+                    };
 
-    /// \brief A PolymorphicFunctionObject type that returns
-    /// the second element of a std::pair.
-    ///
-    /// A PolymorphicFunctionObject type that returns
-    /// the second element of a std::pair..
-    struct second
-    {
-        template<typename Pair>
-        constexpr auto operator()(Pair &&pair) const
-        BOOST_PROTO_AUTO_RETURN(
-            (static_cast<Pair &&>(pair).second) // extra parens are significant!
-        )
-    };
-
-}}}}}
+                    /// \brief A PolymorphicFunctionObject type that returns
+                    /// the second element of a std::pair.
+                    ///
+                    /// A PolymorphicFunctionObject type that returns
+                    /// the second element of a std::pair..
+                    struct second
+                    {
+                        template<typename Pair>
+                        constexpr auto operator()(Pair &&pair) const
+                        BOOST_PROTO_AUTO_RETURN(
+                            (static_cast<Pair &&>(pair).second) // extra parens are significant!
+                        )
+                    };
+                }
+            }
+        }
+    }
+}
 
 #endif

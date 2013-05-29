@@ -16,31 +16,43 @@
 #include <boost/fusion/include/pop_front.hpp>
 #include <boost/proto/v5/proto_fwd.hpp>
 
-namespace boost { namespace proto { inline namespace v5 { namespace functional { namespace fusion
+namespace boost
 {
-    /// \brief A PolymorphicFunctionObject type that invokes the
-    /// \c fusion::pop_front() action on its argument.
-    ///
-    /// A PolymorphicFunctionObject type that invokes the
-    /// \c fusion::pop_front() action on its argument. This is
-    /// useful for defining a CallableAction like \c pop_front(_)
-    /// which removes the first child from a Proto expression node.
-    /// Such a basic_action might be used as the first argument to the
-    /// \c proto::fold\<\> basic_action; that is, fold all but
-    /// the first child.
-    struct pop_front
+    namespace proto
     {
-        template<typename Seq>
-        auto operator ()(Seq &&seq) const
-        BOOST_PROTO_AUTO_RETURN(
-            typename boost::fusion::result_of::pop_front<
-                typename ::std::remove_reference<Seq>::type
-            >::type(
-                boost::fusion::next(boost::fusion::begin(static_cast<Seq &&>(seq)))
-              , boost::fusion::end(static_cast<Seq &&>(seq))
-            )
-        )
-    };
-}}}}}
+        inline namespace v5
+        {
+            namespace functional
+            {
+                namespace fusion
+                {
+                    /// \brief A PolymorphicFunctionObject type that invokes the
+                    /// \c fusion::pop_front() action on its argument.
+                    ///
+                    /// A PolymorphicFunctionObject type that invokes the
+                    /// \c fusion::pop_front() action on its argument. This is
+                    /// useful for defining a CallableAction like \c pop_front(_)
+                    /// which removes the first child from a Proto expression node.
+                    /// Such a basic_action might be used as the first argument to the
+                    /// \c proto::fold\<\> basic_action; that is, fold all but
+                    /// the first child.
+                    struct pop_front
+                    {
+                        template<typename Seq>
+                        auto operator ()(Seq &&seq) const
+                        BOOST_PROTO_AUTO_RETURN(
+                            typename boost::fusion::result_of::pop_front<
+                                typename ::std::remove_reference<Seq>::type
+                            >::type(
+                                boost::fusion::next(boost::fusion::begin(static_cast<Seq &&>(seq)))
+                              , boost::fusion::end(static_cast<Seq &&>(seq))
+                            )
+                        )
+                    };
+                }
+            }
+        }
+    }
+}
 
 #endif

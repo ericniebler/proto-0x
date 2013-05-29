@@ -19,6 +19,7 @@
 #include <boost/proto/v5/action/eval.hpp>
 #include <boost/proto/v5/action/everything.hpp>
 #include <boost/proto/v5/action/everywhere.hpp>
+#include <boost/proto/v5/action/external.hpp>
 #include <boost/proto/v5/action/fold.hpp>
 #include <boost/proto/v5/action/if.hpp>
 #include <boost/proto/v5/action/integral_constant.hpp>

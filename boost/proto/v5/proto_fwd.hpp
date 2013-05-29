@@ -537,6 +537,8 @@ namespace boost
 
             struct trace;
 
+            struct external;
+
             ////////////////////////////////////////////////////////////////////////////////////////
             // Misc. traits
             template<typename T>

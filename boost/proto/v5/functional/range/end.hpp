@@ -12,19 +12,29 @@
 #include <boost/range/end.hpp>
 #include <boost/proto/v5/proto_fwd.hpp>
 
-namespace boost { namespace proto { inline namespace v5 { namespace functional { namespace range
+namespace boost
 {
-
-    // A PolymorphicFunctionObject that wraps boost::end()
-    struct end
+    namespace proto
     {
-        template<typename Rng>
-        auto operator()(Rng &&rng) const
-        BOOST_PROTO_AUTO_RETURN(
-            boost::end(static_cast<Rng &&>(rng))
-        )
-    };
-
-}}}}}
+        inline namespace v5
+        {
+            namespace functional
+            {
+                namespace range
+                {
+                    // A PolymorphicFunctionObject that wraps boost::end()
+                    struct end
+                    {
+                        template<typename Rng>
+                        auto operator()(Rng &&rng) const
+                        BOOST_PROTO_AUTO_RETURN(
+                            boost::end(static_cast<Rng &&>(rng))
+                        )
+                    };
+                }
+            }
+        }
+    }
+}
 
 #endif
