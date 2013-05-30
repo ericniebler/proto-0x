@@ -10,10 +10,9 @@
 #define BOOST_PROTO_V5_ACTION_EXTERNAL_HPP_INCLUDED
 
 #include <boost/proto/v5/proto_fwd.hpp>
-#include <boost/proto/v5/action/apply.hpp>
+#include <boost/proto/v5/utility.hpp>
+#include <boost/proto/v5/action/basic_action.hpp>
 #include <boost/proto/v5/action/env.hpp>
-#include <boost/proto/v5/action/call.hpp>
-#include <boost/proto/v5/functional/cxx/construct.hpp>
 
 namespace boost
 {
@@ -21,6 +20,35 @@ namespace boost
     {
         inline namespace v5
         {
+            namespace detail
+            {
+                template<typename RuleName>
+                struct _external_
+                  : basic_action<_external_<RuleName>>
+                {
+                    template<typename Expr>
+                    constexpr utility::any operator()(Expr &&) const
+                    {
+                        static_assert(
+                            utility::never<Expr>::value
+                          , "The proto::extern action requires you to pass in an "
+                            "environment with mappings from rule names to actions."
+                        );
+                        return utility::any();
+                    }
+
+                    template<typename Expr, typename Env, typename ...Rest, typename Rule = RuleName>
+                    constexpr auto operator()(Expr &&e, Env &&env, Rest &&...rest) const
+                    BOOST_PROTO_AUTO_RETURN(
+                        BOOST_PROTO_TRY_CALL(static_cast<Env &&>(env)(Rule()))(
+                            static_cast<Expr &&>(e)
+                          , static_cast<Env &&>(env)
+                          , static_cast<Rest &&>(rest)...
+                        )
+                    )
+                };
+            }
+
             struct external
             {};
 
@@ -28,7 +56,7 @@ namespace boost
             {
                 template<typename RuleName>
                 struct action_impl<case_(RuleName, external)>
-                  : def<apply(get_env(call(functional::cxx::construct<RuleName>())))>
+                  : detail::_external_<RuleName>
                 {};
             }
         }
