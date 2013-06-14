@@ -36,7 +36,7 @@ namespace boost
                     struct negate
                     {
                         template<typename T>
-                        constexpr constexpr auto operator()(T && t) const
+                        constexpr auto operator()(T && t) const
                         BOOST_PROTO_AUTO_RETURN(
                             - static_cast<T &&>(t)
                         )
@@ -46,7 +46,7 @@ namespace boost
                     struct dereference
                     {
                         template<typename T>
-                        constexpr constexpr auto operator()(T && t) const
+                        constexpr auto operator()(T && t) const
                         BOOST_PROTO_AUTO_RETURN(
                             * static_cast<T &&>(t)
                         )
@@ -56,7 +56,7 @@ namespace boost
                     struct complement
                     {
                         template<typename T>
-                        constexpr constexpr auto operator()(T && t) const
+                        constexpr auto operator()(T && t) const
                         BOOST_PROTO_AUTO_RETURN(
                             ~ static_cast<T &&>(t)
                         )
@@ -66,7 +66,7 @@ namespace boost
                     struct address_of
                     {
                         template<typename T>
-                        constexpr constexpr auto operator()(T && t) const
+                        constexpr auto operator()(T && t) const
                         BOOST_PROTO_AUTO_RETURN(
                             & static_cast<T &&>(t)
                         )
