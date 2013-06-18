@@ -12,5 +12,5 @@ Pre-requisites
 
 This library depends on:
 
-* An up-to-date clang built from trunk.
-* Boost, also trunk.
+* Clang 3.3
+* Boost >= 1.52
