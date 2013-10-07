@@ -12,5 +12,6 @@
 #include <boost/proto/v5/functional/cxx/cast.hpp>
 #include <boost/proto/v5/functional/cxx/construct.hpp>
 #include <boost/proto/v5/functional/cxx/operators.hpp>
+#include <boost/proto/v5/functional/cxx/throw.hpp>
 
 #endif

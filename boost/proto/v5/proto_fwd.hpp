@@ -258,15 +258,15 @@ namespace boost
                 template<typename Tag, typename Domain> struct proto_expr;
                 template<typename Tag, typename Domain> struct proto_expr_iterator;
                 template<typename Tag, typename Domain> struct proto_flat_view;
-
-                template<typename Tag>
-                struct env_var_tag;
-
-                // Action environment tags
-                struct data_type;
             }
 
             using namespace tags;
+
+            template<typename Tag>
+            struct env_tag;
+
+            // Action environment tags
+            struct data_tag;
 
             struct or_;
             struct not_;

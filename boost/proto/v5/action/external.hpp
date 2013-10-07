@@ -31,7 +31,7 @@ namespace boost
                     {
                         static_assert(
                             utility::never<Expr>::value
-                          , "The proto::extern action requires you to pass in an "
+                          , "The proto::external action requires you to pass in an "
                             "environment with mappings from rule names to actions."
                         );
                         return utility::any();

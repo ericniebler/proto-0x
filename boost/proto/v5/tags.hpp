@@ -406,42 +406,6 @@ namespace boost
                     )
                 };
 
-                ////////////////////////////////////////////////////////////////////////////////////
-                // env_var_tag
-                template<typename Tag>
-                struct env_var_tag
-                {
-                    BOOST_PROTO_REGULAR_TRIVIAL_CLASS(env_var_tag);
-
-                    // So that tag objects of type (derived from) env_var_tag can be used
-                    // to create basic_action environments like (data=x, myvar=y),
-                    // where "data" and "myvar" are tags.
-                    template<
-                        typename V
-                      , BOOST_PROTO_ENABLE_IF(!(utility::is_base_of<env_var_tag, V>::value))
-                    >
-                    constexpr env<Tag, V> operator=(V && v) const
-                    {
-                        return env<Tag, V>(static_cast<V &&>(v));
-                    }
-                };
-
-                /// Tag type for the data parameter in the basic_action environment
-                struct data_type
-                  : env_var_tag<data_type>
-                {
-                    using env_var_tag<data_type>::operator=;
-                };
-
-                namespace
-                {
-                    ////////////////////////////////////////////////////////////////////////////////
-                    // data
-                    constexpr auto const & data = utility::static_const<data_type>::value;
-                }
-
-                BOOST_PROTO_IGNORE_UNUSED(data);
-
             } // namespace tags
 
             // Miscelaneous tags

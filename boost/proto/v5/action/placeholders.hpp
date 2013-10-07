@@ -47,7 +47,7 @@ namespace boost
             ////////////////////////////////////////////////////////////////////////////////////////
             // _data
             struct _data
-              : detail::as_action_<get_env(data_type())>
+              : detail::as_action_<get_env(data_tag())>
             {};
         }
     }

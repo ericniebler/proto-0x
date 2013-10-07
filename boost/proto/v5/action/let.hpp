@@ -31,7 +31,7 @@ namespace boost
                     template<typename ...Args>
                     constexpr auto operator()(Args &&...args) const
                     BOOST_PROTO_AUTO_RETURN(
-                        env_var_tag<Local>() = call_action_<Action>()(static_cast<Args &&>(args)...)
+                        env_tag<Local>() = call_action_<Action>()(static_cast<Args &&>(args)...)
                     )
                 };
 

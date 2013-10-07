@@ -104,7 +104,6 @@
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional\cxx\cast.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional\cxx\construct.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional\cxx\operators.hpp" />
-    <ClInclude Include="..\..\..\..\boost\proto\v5\functional\cxx\throw.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional\fusion.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional\fusion\at.hpp" />
     <ClInclude Include="..\..\..\..\boost\proto\v5\functional\fusion\pop_back.hpp" />

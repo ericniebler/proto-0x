@@ -21,9 +21,9 @@ using proto::_;
 // The argument placeholder type
 template<typename I>
 struct placeholder
-  : I, proto::env_var_tag<placeholder<I>>
+  : I, proto::env_tag<placeholder<I>>
 {
-    using proto::env_var_tag<placeholder<I>>::operator=;
+    using proto::env_tag<placeholder<I>>::operator=;
 };
 
 // Give each rule in the grammar a "name". This is so that we
@@ -31,9 +31,9 @@ struct placeholder
 struct calc_grammar;
 struct divides_rule
   : proto::def<proto::divides(calc_grammar, calc_grammar)>
-  , proto::env_var_tag<divides_rule>
+  , proto::env_tag<divides_rule>
 {
-    using proto::env_var_tag<divides_rule>::operator=;
+    using proto::env_tag<divides_rule>::operator=;
 };
 
 // Use external transforms in calc_gramar

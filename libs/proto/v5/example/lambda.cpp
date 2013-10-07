@@ -16,10 +16,10 @@ using proto::_;
 
 template<typename T>
 struct placeholder
-  : proto::env_var_tag<placeholder<T>>
+  : proto::env_tag<placeholder<T>>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(placeholder);
-    using proto::env_var_tag<placeholder<T>>::operator=;
+    using proto::env_tag<placeholder<T>>::operator=;
 
     // So placeholder terminals can be pretty-printed with display_expr
     friend std::ostream & operator << (std::ostream & s, placeholder<T>)

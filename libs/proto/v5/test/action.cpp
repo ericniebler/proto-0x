@@ -18,10 +18,10 @@ using int_ = proto::literal<int>;
 using string_ = proto::literal<std::string>;
 
 struct scope_type
-  : proto::env_var_tag<scope_type>
+  : proto::env_tag<scope_type>
 {
     BOOST_PROTO_REGULAR_TRIVIAL_CLASS(scope_type);
-    using proto::env_var_tag<scope_type>::operator=;
+    using proto::env_tag<scope_type>::operator=;
 };
 
 namespace

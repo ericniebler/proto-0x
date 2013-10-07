@@ -399,9 +399,9 @@ namespace boost
                 ////////////////////////////////////////////////////////////////////////////////////
                 // depth_tag: For use in the trace action to handle indenting levels
                 struct depth_tag
-                  : env_var_tag<depth_tag>
+                  : env_tag<depth_tag>
                 {
-                    using env_var_tag<depth_tag>::operator=;
+                    using env_tag<depth_tag>::operator=;
                 };
 
                 ////////////////////////////////////////////////////////////////////////////////////
